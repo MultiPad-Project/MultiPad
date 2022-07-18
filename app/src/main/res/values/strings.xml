@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LaunchpadPlus</string>
+	<string name="permission_storage_necessary">Permissão para armazenamento necessária!</string>
+    <string name="diag_invalidfiles_title">Erros...</string>
+
+
+</resources>

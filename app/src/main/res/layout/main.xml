@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:gravity="center|center_vertical|center_horizontal"
+	android:id="@+id/ActivityLinearLayout"
+	android:orientation="vertical"
+	style="@style/FullScreenApp"
+	android:layout_gravity="center|center_vertical|center_horizontal"
+	android:background="@drawable/bgactivity">
+
+	<RelativeLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="40dp"
+		android:gravity="center|center_vertical|center_horizontal"
+		android:id="@+id/topBar">
+
+		<ImageView
+			android:src="@drawable/customlogo"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"/>
+
+		<ImageView
+			android:src="@drawable/topbar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"
+			android:scaleType="fitXY"/>
+
+	</RelativeLayout>
+
+	<ListView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:id="@+id/listViewProjects"
+		android:layout_weight="1.0"/>
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="40dp"
+		android:background="#000000">
+
+		<ImageView
+			android:src="@drawable/topbar"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:id="@+id/bottomBar"
+			android:scaleType="fitXY"
+			android:rotationX="180"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+
