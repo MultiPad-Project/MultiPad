@@ -49,7 +49,7 @@ public class playPads extends Activity
 		new makePads(getCurrentPath, R.id.contAllPads, getIntent().getExtras().getInt("height"), this).makePadInLayout();
         progress.dismiss();
 	}
-	private boolean checkLine(String line){
+	private boolean checkLine(String line, String fileName){
             line = line.replace(" ", "");
 			switch (line.substring(0, 1)){
 				case "o":
@@ -60,7 +60,10 @@ public class playPads extends Activity
 					}else{
 						ye = line.matches("[on]{1,2}[1-8]{2}a\\d{1,3}");
                     }
-					if(ye && Integer.parseInt(line.substring(line.indexOf("a")+1)) <= 127){
+					if(ye){
+						if(Integer.parseInt(line.substring(line.indexOf("a")+1)) > 127){
+							invalid_formats.add(R.string.invalid_led_color + "Color" + line.substring(line.indexOf("a")+1) + ", File: " + fileName);
+						}
 						return true;
 					} else{
 						return false;
@@ -98,7 +101,7 @@ public class playPads extends Activity
 									while (line != null)
 									{
 											if (!line.isEmpty())
-												if(checkLine(line.toLowerCase())){
+												if(checkLine(line.toLowerCase(), l.getName())){
 													line = line.replace(" ", "").toLowerCase().replace("off", "f").replace("on", "o");
 													keyReaded.add(line);
 												} else{

@@ -4,6 +4,7 @@ import android.app.*;
 import android.content.*;
 import android.content.pm.*;
 import android.os.*;
+import android.text.ClipboardManager;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
@@ -21,11 +22,37 @@ public class MainActivity extends Activity
 	File rootFolder = new File(Environment.getExternalStorageDirectory() + "/LaunchpadPlus/Projects");
 	final String[] per = new String[]{"android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE"};
 	final int STORAGE_PERMISSION = 1000;
+	String traceLog;
 	@Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-				setContentView(R.layout.main);
+		
+		if(logRastreador()){
+			setContentView(R.layout.crash);
+			TextView textLog = findViewById(R.id.logText);
+			textLog.setText(traceLog);
+		
+			Button copyToClipboard = findViewById(R.id.copyLog);
+			Button finishApp = findViewById(R.id.exitcrash);
+			copyToClipboard.setOnClickListener(new View.OnClickListener(){
+				@Override
+				public void onClick(View v){
+					ClipboardManager clipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+					clipboard.setText(traceLog);
+					Toast.makeText(getApplicationContext(), R.string.cop, Toast.LENGTH_SHORT).show();
+				}
+			});
+			finishApp.setOnClickListener(new View.OnClickListener(){
+				@Override
+				public void onClick(View v){
+				finishAffinity();
+				}
+			});
+			
+		} else{
+			Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
+			setContentView(R.layout.main);
 				getWindowManager().getDefaultDisplay().getMetrics(display);
 				if(display.heightPixels < display.widthPixels){
 					height = display.heightPixels;
@@ -33,6 +60,29 @@ public class MainActivity extends Activity
 					height = display.widthPixels;
 				}
 				checarPermissao();
+			}
+	}
+	public boolean logRastreador(){
+		if(this.getFileStreamPath("stack.trace").exists()){
+			traceLog = null;
+			try {
+				BufferedReader reader = new BufferedReader(
+					new InputStreamReader(this.openFileInput("stack.trace")));
+				String line = null;
+				while ((line = reader.readLine()) != null)
+				{
+					traceLog += line + "\n";
+				}
+
+			} catch(FileNotFoundException fnfe) {
+				// ...
+			} catch(IOException ioe) {
+				// ...
+			}
+			this.deleteFile("stack.trace");
+			return true;
+		}
+		return false;
 	}
 
 	public void makeActivity(boolean granted)

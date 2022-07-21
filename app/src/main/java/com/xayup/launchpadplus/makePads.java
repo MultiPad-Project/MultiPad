@@ -262,6 +262,8 @@ public class makePads
                                 /*pressed.setImageDrawable(context.getDrawable(R.drawable.btn_));
                                 pressed.setAlpha(1.0f);*/
                     boolean seek = false;
+					if(obt.keySound.containsKey(obt.chainSl)){
+						
                     if(obt.keySound.get(obt.chainSl).containsKey(viewId+"")){
 
                         if(playPads.soundrpt.get(""+viewId) == playPads.keySound.get(playPads.chainSl).get(view.getId() + "").size()){
@@ -301,6 +303,7 @@ public class makePads
 
                         playPads.soundrpt.put(""+viewId, playPads.soundrpt.get(""+viewId)+1);
                     }
+					}
                     if(playPads.ledFiles.get(playPads.chainSl+viewId) != null){
                         if(playPads.ledrpt.get(""+viewId) == playPads.ledFiles.get(playPads.chainSl+viewId).size()){
                             playPads.ledrpt.put(""+viewId, 0);

@@ -64,6 +64,9 @@ public class keyLedColors {
                                         padId = Integer.parseInt(line.substring(1, 3));
                                     }
                                     corcode = Integer.parseInt(line.substring(line.indexOf("a") + 1));
+									if(corcode > 127){
+										corcode = 0;
+									}
                                     break;
                                 case "f":
                                     corcode = 0;
