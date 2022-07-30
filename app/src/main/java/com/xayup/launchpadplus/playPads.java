@@ -1,8 +1,27 @@
 package com.xayup.launchpadplus;
+
 import android.app.*;
+import android.content.AsyncTaskLoader;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
+import android.content.res.Resources;
 import android.graphics.*;
+import android.graphics.drawable.Drawable;
 import android.media.*;
 import android.os.*;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.view.LayoutInflater;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import com.xayup.alertdialog.skinthmeAdapter;
+import android.widget.ListView;
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -11,130 +30,151 @@ import android.net.*;
 import android.view.View;
 import android.widget.TextView;
 
-public class playPads extends Activity
-{
+public class playPads extends Activity {
+	
 	public static String chainSl = "1";
-	String getCurrentPath;
-	public static boolean pressLed;
+	public static String getCurrentPath;
+	
 	Color cor;
+	
 	Readers filter = new Readers();
-	public static Map<String, File> fileProj = new HashMap<String, File>();
-	public static Map<String, Map<Integer, List<String>>> ledFiles = new HashMap<String, Map<Integer, List<String>>>();
-	public static int otherChain = 19;
+	
 	public static Map<String, Map<String, List<Uri>>> keySound;
-	public static MediaPlayer startSound = new MediaPlayer();
-	public static Map<String, MediaPlayer> padPlayer = new HashMap<String, MediaPlayer>();
+	public static MediaPlayer startSound;
+	public static Map<String, MediaPlayer> padPlayer;
+	public static Map<String, Integer> soundrpt;
+	public static Map<String, Integer> ledrpt;
+	public static Map<String, File> fileProj;
+	public static Map<String, Map<Integer, List<String>>> ledFiles;
+	
+	public static int otherChain;
+	public static int oldPad;
+	
+	public static boolean pressLed;
+	public static boolean mk2;
+	public static boolean autoPlayCheck;
+	
 	public static List<String> autoPlay;
-	public static boolean autoPlayCheck = false;
-	public static Map<String, Integer> soundrpt = new HashMap<String, Integer>();
-	public static Map<String, Integer> ledrpt = new HashMap<String, Integer>();
-	public static int oldPad = 0;
-	public static boolean mk2 = false;
-	public static List<String> invalid_formats = new ArrayList<>();
+	public static List<String> invalid_formats;
+	
+	public static makePads makepads;
+	
 	public static Thread ledOn;
-
-    ProgressDialog progress;
+	boolean lodedSkin = false;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO: Implement this method
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.playpads);
+	//	ProgressBar progress = findViewById(R.id.loading_project_progress);
+//		progress.setVisibility(View.VISIBLE);
+		varInstance();
+		SkinTheme.varInstance(true);
+		 /*
+		setDrawables(getDrawable(R.drawable.phantom_), getDrawable(R.drawable.phantom),
+				getDrawable(R.drawable.chainled), getDrawable(R.drawable.btn), getDrawable(R.drawable.btn_),
+				getDrawable(R.drawable.playbg), getDrawable(R.drawable.customlogo)); */
 		getCurrentPath = getIntent().getExtras().getString("currentPath");
-        progress = new ProgressDialog(this);
-        progress.setMessage("Carregando dados...");
-        progress.show();
-		getFiles();
-		new makePads(getCurrentPath, R.id.contAllPads, getIntent().getExtras().getInt("height"), this).makePadInLayout();
-        progress.dismiss();
-	}
-	private boolean checkLine(String line, String fileName){
-            line = line.replace(" ", "");
-			switch (line.substring(0, 1)){
-				case "o":
-					boolean ye;
-				    if(line.contains("mc")){
-						ye = line.matches("[on]{1,2}mc[0-3]?[0-9]a\\d{1,3}");
-
-					}else{
-						ye = line.matches("[on]{1,2}[1-8]{2}a\\d{1,3}");
-                    }
-					if(ye){
-						if(Integer.parseInt(line.substring(line.indexOf("a")+1)) > 127){
-							invalid_formats.add(R.string.invalid_led_color + "Color" + line.substring(line.indexOf("a")+1) + ", File: " + fileName);
-						}
-						return true;
-					} else{
-						return false;
-					}
-				case "f":
-                    return line.matches("[off]{1,3}[1-8]{2}");
-				case "d":
-					return line.matches("\\w\\d+");
-				default:
-					return false;
-			}
+		
+		//getFiles();
+		new GetFilesTask(this).execute();
+			
+		
+	//	progress.setVisibility(View.GONE);
 	}
 
-	public void getFiles()
-	{
-		String[] fs = {"keyled", "sounds", "autoplay", "info", "keysound"};
+	public void varInstance() {
+		
+		padPlayer = new HashMap<String, MediaPlayer>();
+		soundrpt = new HashMap<String, Integer>();
+		ledrpt = new HashMap<String, Integer>();
+		fileProj = new HashMap<String, File>();
+		ledFiles = new HashMap<String, Map<Integer, List<String>>>();
+		
+		invalid_formats = new ArrayList<String>();
+		autoPlay = new ArrayList<String>();
+		
+		//logo = new ImageView();
+		
+		otherChain = 19;
+		oldPad = 0;
+		
+		autoPlayCheck = false;
+		mk2 = false;
+		
+		startSound = new MediaPlayer();
+		
+		SkinTheme.playBgimg = findViewById(R.id.playbgimg);
+	}
+	
+	private boolean checkLine(String line, String fileName) {
+		line = line.replace(" ", "");
+		switch (line.substring(0, 1)) {
+		case "o":
+			boolean ye;
+			if (line.contains("mc")) {
+				ye = line.matches("[on]{1,2}mc[0-3]?[0-9]a\\d{1,3}");
 
-		for(File f : new File(getCurrentPath).listFiles())
-		{
-			if(Arrays.asList(fs).contains(f.getName().toLowerCase()))
-			{
-				fileProj.put(f.getName().toLowerCase(), f);
-				if(f.getName().equalsIgnoreCase("keyled"))
-				{
-					progress.setMessage(f.getPath());
-					List<String> keyReaded;
-					for(File l : f.listFiles(filter.filterFiles))
-					{
-							progress.setMessage(l.getPath());
-							keyReaded = new ArrayList<String>();
-							try
-							{
-									BufferedReader read = new BufferedReader(new FileReader(l));
-									String line = read.readLine();
-									while (line != null)
-									{
-											if (!line.isEmpty())
-												if(checkLine(line.toLowerCase(), l.getName())){
-													line = line.replace(" ", "").toLowerCase().replace("off", "f").replace("on", "o");
-													keyReaded.add(line);
-												} else{
-													invalid_formats.add(line);
-												}
-											line = read.readLine();
-									}
-									read.close();
-							}
-							catch (IOException e)
-							{}
-                            String idLed = l.getName().replace(" ", "").substring(0, 3);
-							if(ledFiles.get(idLed) != null){
-							    int size = ledFiles.get(idLed).size();
-							    ledFiles.get(idLed).put(size, keyReaded);
-                            } else{
-							    Map<Integer, List<String>> map = new HashMap<Integer, List<String>>();
-							    map.put(0, keyReaded);
-							    ledFiles.put(idLed, map);
-                            }
-							
-					} 
-					keyReaded = null;
-
-				} 
+			} else {
+				ye = line.matches("[on]{1,2}[1-8]{2}a\\d{1,3}");
 			}
+			if (ye) {
+				if (Integer.parseInt(line.substring(line.indexOf("a") + 1)) > 127) {
+					invalid_formats.add(getString(R.string.invalid_led_color) + " "
+							+ line.substring(line.indexOf("a") + 1) + ", File: " + fileName);
+				}
+				return true;
+			} else {
+				return false;
+			}
+		case "f":
+			return line.matches("[off]{1,3}[1-8]{2}");
+		case "d":
+			return line.matches("\\w\\d+");
+		default:
+			return false;
 		}
-			if (fileProj.containsKey("keysound") && fileProj.containsKey("sounds")){
-					keySound = filter.readKeySounds(fileProj.get("keysound"), fileProj.get("sounds").getPath(), this);
+	}
+
+	@Override
+	public void onBackPressed() {
+		View onExitDialog = getLayoutInflater().inflate(R.layout.alertexit_dialog, null);
+		RelativeLayout onExitButton = onExitDialog.findViewById(R.id.alertExitButtonExit);
+		ListView listSkins = onExitDialog.findViewById(R.id.alertExitListSkins);
+		SkinTheme getSkinList = new SkinTheme(playPads.this, listSkins, true);
+		getSkinList.getSkinsTheme();
+		onExitButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				exitPads();
+				playPads.super.onBackPressed();
 			}
-			if(fileProj.containsKey("autoplay")){
-				autoPlay = filter.readautoPlay(fileProj.get("autoplay"));
-				//autoPlayPross = ;
-			}
+		});
+		AlertDialog.Builder alertExit = new AlertDialog.Builder(this);
+		alertExit.setView(onExitDialog);
+		AlertDialog alertDialog = alertExit.create();
+		alertDialog.show();
+		alertDialog.getWindow().setLayout(450, WindowManager.LayoutParams.MATCH_PARENT);
+		alertDialog.getWindow().setGravity(Gravity.RIGHT);
+	}
+
+	public void exitPads() {
+		autoPlayCheck = false;
+	}
+	
+	public static void end(Activity context){
+		if (!invalid_formats.isEmpty()) {
+			AlertDialog.Builder alertInvalidFiles = new AlertDialog.Builder(context);
+			View alertDiagView = context.getLayoutInflater().inflate(R.layout.alert_dialog, null);
+			ListView listInvalids = alertDiagView.findViewById(R.id.listWarnings);
+			listInvalids.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, invalid_formats));
+			alertInvalidFiles.setView(alertDiagView);
+			alertInvalidFiles.create().show();
+		}
+		new makePads(getCurrentPath, R.id.contAllPads, context.getIntent().getExtras().getInt("height"), context).makePadInLayout();
+		
+		SkinTheme.playBgimg.setImageDrawable(SkinTheme.playBg);
+		
 	}
 }

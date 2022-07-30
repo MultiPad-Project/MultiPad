@@ -41,23 +41,21 @@ public class customArray extends BaseAdapter
 	
 		TextView producerName = p2.findViewById(R.id.projectAutor);
 		TextView title = p2.findViewById(R.id.projectTitle);
-		ImageView currentState = p2.findViewById(R.id.currentItemState);
+		View currentState = p2.findViewById(R.id.currentItemState);
 		
 		if(thisMap.keySet().toArray()[p1].equals("pr")){
-			title.setText("Permissão de armazenamentro necessária!");
-			producerName.setText("Leitura das packs. Toque para solicitar");
+			title.setText(thisContexto.getString(R.string.get_storage));
+			producerName.setText(thisContexto.getString(R.string.get_storage_subtitle));
 			currentState.setTag(2);
 		}else{
 			TextView path = p2.findViewById(R.id.pathText);
-			LinearLayout itemList = p2.findViewById(R.id.intemListBackground);
-			LinearLayout itemInfo = p2.findViewById(R.id.itemInfoList);
+			RelativeLayout itemList = p2.findViewById(R.id.itemInfoList);
 			currentState.setTag(1); //BAD = 1, NOT BAD = 0, STORAGE_REQUEST = 2
 			
 		if (thisMap.keySet().toArray()[p1].equals("Empyt")){
-			title.setText("Não há projetos!");
-			producerName.setText("Baixe alguns projetos");
+			title.setText(thisContexto.getString(R.string.without_projects));
+			producerName.setText(thisContexto.getString(R.string.without_project_subtitle));
 			itemList.setAlpha(0.5f);
-			itemInfo.setGravity(1);
 			currentState.setAlpha(0);
 		} else{
 			String t = thisMap.get(thisMap.keySet().toArray()[p1]).get("title").toString();
@@ -71,7 +69,7 @@ public class customArray extends BaseAdapter
 			} else{
 				title.setText(t);
 				producerName.setText(p);
-				currentState.setImageDrawable(thisContexto.getDrawable(R.drawable.badstate));
+				currentState.setBackground(thisContexto.getDrawable(R.drawable.project_file_state_bad));
 			}
 		}
 		}

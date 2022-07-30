@@ -1,27 +1,30 @@
 package com.xayup.launchpadplus;
 
+import android.content.Context;
+import android.net.Uri;
 import java.io.*;
 import java.util.*;
 
 import android.app.*;
-import android.net.*;
-
-public class Readers {
-    FileFilter filterFolder = new FileFilter() {
-        @Override
+		
+	public class Readers {
+		
+	public static FileFilter filterFolder = new FileFilter() {
+		@Override
         public boolean accept(File file) {
             return file.isDirectory();
         }
     };
-    public FileFilter filterFiles = new FileFilter() {
+    public static FileFilter filterFiles = new FileFilter() {
         @Override
+		
         public boolean accept(File file) {
             return file.isFile();
         }
 
     };
 
-    public Map<String, Map> readInfo(File projectDir, boolean granted) {
+    public Map<String, Map> readInfo(Activity context, File projectDir, boolean granted) {
         Map<String, String> infoInfo;
         Map<String, Map> mapFolder = new HashMap<String, Map>();
         if (!granted) {
@@ -58,8 +61,8 @@ public class Readers {
                         infoInfo.put("title", title.replaceFirst(title.substring(0, title.indexOf("=") + 1), "").trim());
                         infoInfo.put("producerName", producerName.replaceFirst(producerName.substring(0, producerName.indexOf("=") + 1), "").trim());
                     } else {
-                        infoInfo.put("title", "Aquivo 'Info' não existe");
-                        infoInfo.put("producerName", "Projeto incompleto");
+                        infoInfo.put("title", context.getString(R.string.without_info));
+                        infoInfo.put("producerName", context.getString(R.string.incomplet_project));
                         infoInfo.put("bad", "True");
                     }
                     infoInfo.put("local", projectFolder.getPath());
@@ -73,12 +76,12 @@ public class Readers {
         }
     }
 
-    public boolean checkKeySound(String line) {
+    public static boolean checkKeySound(String line) {
 
        return line.matches("[1-8]{3}\\S+.\\w{3}");
     }
 
-    public Map<String, Map<String, List<Uri>>> readKeySounds(File keySound, String soundPath, Activity act) {
+    public static Map<String, Map<String, List<Uri>>> readKeySounds(Activity context, File keySound, String soundPath, Activity act) {
         String chain = "";
         String id = "";
         String soundName = "";
@@ -88,7 +91,7 @@ public class Readers {
         //MediaPlayer wavv;
         if (keySound.exists()) {
             try {
-                List<String> invalid_format = new ArrayList<String>();
+              //  List<String> invalid_format = new ArrayList<String>();
                 BufferedReader bufferInfo = new BufferedReader(new FileReader(keySound));
                 String line = bufferInfo.readLine();
                 while (line != null) {
@@ -116,22 +119,19 @@ public class Readers {
                             chainMap.put(chain, soundMap);
                             rpt = 1;
                         } else {
-                            invalid_format.add("KeySound inválido: " + line);
+                            playPads.invalid_formats.add(context.getString(R.string.invalid_sound) + " " + line);
                         }
                     }
                     line = bufferInfo.readLine();
                 }
                 bufferInfo.close();
-                if(!invalid_format.isEmpty()){
-                    playPads.invalid_formats = invalid_format;
-                }
             } catch (IOException e) {
             }
         }
         return chainMap;
     }
 
-    private boolean checkAutoPlayFormat(String line){
+    private static boolean checkAutoPlayFormat(String line){
         switch (line.toLowerCase().substring(0, 1)){
            case "d":
                 return line.matches("\\w+\\d+");
@@ -143,9 +143,9 @@ public class Readers {
         }
     }
 
-    public List<String> readautoPlay(File autoPlay) {
+    public static List<String> readautoPlay(Activity context, File autoPlay) {
         List<String> autoplayLineList = new ArrayList<String>();
-        List<String> invalid_format = new ArrayList<String>();
+      // List<String> invalid_format = new ArrayList<String>();
         try {
             BufferedReader autoplayReader = new BufferedReader(new FileReader(autoPlay));
             String line = autoplayReader.readLine();
@@ -155,7 +155,7 @@ public class Readers {
                         autoplayLineList.add(line);
                     }
                     else {
-                        playPads.invalid_formats.add("autoPlay Inválido: " + line);
+                        playPads.invalid_formats.add(context.getString(R.string.invalid_autoplay) + " " + line);
                     }
                 }
                 line = autoplayReader.readLine();
