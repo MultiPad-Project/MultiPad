@@ -1,58 +1,57 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:gravity="center|center_vertical|center_horizontal"
-	android:id="@+id/ActivityLinearLayout"
-	android:orientation="vertical"
-	style="@style/FullScreenApp"
-	android:layout_gravity="center|center_vertical|center_horizontal"
-	android:background="@drawable/bgactivity">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ActivityLinearLayout"
+    style="@style/FullScreenApp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical|center|center_horizontal"
+    android:background="@drawable/bgactivity"
+    android:scaleType="centerCrop" >
 
-	<RelativeLayout
-		android:orientation="horizontal"
-		android:layout_width="match_parent"
-		android:layout_height="40dp"
-		android:gravity="center|center_vertical|center_horizontal"
-		android:id="@+id/topBar">
+    <ImageView
+        android:id="@+id/maintopbarlogo"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:src="@drawable/customlogo" />
 
-		<ImageView
-			android:src="@drawable/customlogo"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerInParent="true"/>
+    <ImageView
+        android:id="@+id/maintopbar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/topbar" />
 
-		<ImageView
-			android:src="@drawable/topbar"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_centerInParent="true"
-			android:scaleType="fitXY"/>
+    <ImageView
+        android:id="@+id/mainbottombar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:rotationX="180"
+        android:scaleType="fitXY"
+        android:src="@drawable/topbar" />
 
-	</RelativeLayout>
+    <ListView
+        android:id="@+id/listViewProjects"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/mainbottombar"
+        android:layout_below="@id/maintopbar"
+		android:padding="4dp"
+		android:dividerHeight="4dp" />
 
-	<ListView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:id="@+id/listViewProjects"
-		android:layout_weight="1.0"/>
+    <Button
+        android:id="@+id/main_floating_menu_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="14dp"
+        android:layout_marginRight="14dp"
+        android:background="@drawable/inter_floating_button" />
 
-	<LinearLayout
-		android:orientation="horizontal"
-		android:layout_width="match_parent"
-		android:layout_height="40dp"
-		android:background="#000000">
+    <include layout="@layout/splash_screen" />
 
-		<ImageView
-			android:src="@drawable/topbar"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:id="@+id/bottomBar"
-			android:scaleType="fitXY"
-			android:rotationX="180"/>
-
-	</LinearLayout>
-
-</LinearLayout>
-
+</RelativeLayout>

@@ -1,29 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:id="@+id/layoutbackground"
-	android:gravity="center|center_vertical|center_horizontal"
-	android:layout_gravity="center|center_vertical|center_horizontal">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutbackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical|center|center_horizontal"
+    android:gravity="center_vertical|center|center_horizontal"
+    android:orientation="vertical" >
 
-	<ImageView
-		android:src="@drawable/playbg"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:scaleType="centerCrop"
-		android:id="@+id/playbgimg"
-		android:layout_centerInParent="true"
-		android:alpha="1.0"/>
+    <ImageView
+        android:id="@+id/playbgimg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:alpha="1.0"
+        android:scaleType="centerCrop"
+        android:src="@drawable/playbg" />
 
-	<LinearLayout
-		android:id="@+id/contAllPads"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerInParent="true"
-		android:background="#00FFFFFF"
-		android:orientation="vertical" />
+    <LinearLayout
+        android:id="@+id/contAllPads"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="#0000"
+        android:orientation="vertical" />
+
+    
 
 </RelativeLayout>
-

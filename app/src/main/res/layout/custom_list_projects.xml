@@ -1,67 +1,43 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="70dp"
-	android:orientation="vertical"
-	android:gravity="left"
-	android:background="#AFAFAF"
-	android:id="@+id/intemListBackground"
-	android:layout_marginBottom="15dp"
-	android:layout_marginTop="15dp"
-	android:layout_marginLeft="10dp"
-	android:layout_marginRight="10dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/itemInfoList"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:background="@drawable/item_list_background" >
 
-	<RelativeLayout
-		android:layout_height="match_parent"
-		android:layout_width="match_parent"
-		android:id="@+id/relativeItemList">
+    <TextView
+        android:id="@+id/projectTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Text"
+        android:textColor="#ff1d1c1c"
+        android:textSize="22sp" />
 
-		<LinearLayout
-			android:orientation="vertical"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:gravity="left"
-			android:id="@+id/itemInfoList"
-			android:paddingLeft="16dp"
-			android:paddingTop="5dp">
+    <TextView
+        android:id="@+id/projectAutor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/projectTitle"
+        android:layout_below="@id/projectTitle"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#ff717171"
+        android:textSize="16sp" />
 
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="Text"
-				android:id="@+id/projectTitle"
-				android:textColor="#1D1C1C"
-				android:textSize="22sp"/>
+    <View
+        android:id="@+id/currentItemState"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|center_vertical"
+        android:background="@drawable/project_file_state" />
 
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="Small Text"
-				android:textAppearance="?android:attr/textAppearanceSmall"
-				android:id="@+id/projectAutor"
-				android:textColor="#717171"
-				android:textSize="16sp"/>
+    <TextView
+        android:id="@+id/pathText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-			<ImageView
-				android:layout_width="match_parent"
-				android:layout_height="8dp"
-				android:background="#3979E4"
-				android:scaleType="fitXY"
-				android:id="@+id/currentItemState"
-				android:layout_gravity="bottom"
-				android:layout_marginTop="7dp"/>
-
-		</LinearLayout>
-
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:id="@+id/pathText"
-			android:alpha="0"/>
-
-	</RelativeLayout>
-
-</LinearLayout>
-
+</RelativeLayout>
