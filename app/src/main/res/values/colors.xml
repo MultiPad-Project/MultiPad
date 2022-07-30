@@ -3,4 +3,18 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+	<color name="background_floating_material_dark">#FF4DACFF</color>
+	<color name="background_material_dark">#ff424242</color>
+	<color name="primary_text_default_material_dark">@android:color/white</color>
+	<color name="secondary_text_material_dark">#b3ffffff</color>
+	<color name="button_material_dark">#ffc9c9c9</color>
+	<color name="material_green_100">#fff5f5f5</color>
+	<color name="project_state">#FF3979E4</color>
+	<color name="project_state_bad">#FFE44330</color>
+	<color name="material_green_300">#ffe0e0e0</color>
+	<color name="background_floating_material_dark_pressed">#FF3C85C5</color>
+	<color name="accent_material_dark">#ffffffff</color>
+	<color name="background_item_clicked">#12FFFFFF</color>
+	<color name="view_divider_color">#FF7D7D7D</color>
+	
 </resources>

@@ -1,9 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">LaunchpadPlus</string>
-	<string name="permission_storage_necessary">Permissão para armazenamento necessária!</string>
+    <string name="app_name">MultiPad</string>
+	<string name="permission_storage_necessary">Permission to storage needed!</string>
     <string name="diag_invalidfiles_title">Erros...</string>
-
-
+	<string name="copy_log">Copy Log</string>
+	<string name="cop">Copied to the clipboard!</string>
+	<string name="exitcrash">Close app</string>
+	<string name="invalid_led_color">Color led invalid:</string>
+	<string name="warning">Warning!</string>
+	<string name="invalid_keyled">Invalid KeyLed:</string>
+	<string name="invalid_led_file">Invalid KeyLed File: </string>
+	<string name="alert_exit_title">Options</string>
+	<string name="skins">Skins</string>
+	<string name="skins_subtitle">Select your favorite skins</string>
+	<string name="default_skin">Default Skin</string>
+	<string name="app_version">1.1</string>
+	<string name="use_unipad_folder">Use Unipad folder</string>
+	<string name="use_unipad_folder_subtitle">Read unipack in Unipad folder</string>
+	<string name="mychannel">My channel</string>
+	<string name="mychannel_subtitle">Know my channel!</string>
+	<string name="sourcecode">Source code</string>
+	<string name="sourcecode_subtitle">Source code and reporting bugs of MultiPad!</string>
+	<string name="main_floating_title">Settings</string>
+	<string name="restart_app">Restart App</string>
+	<string name="without_projects">There is no projects available!</string>
+	<string name="without_project_subtitle">Download some projects (Unipacks)</string>
+	<string name="get_storage">It is necessary to the permission to storage :(</string>
+	<string name="get_storage_subtitle">Let I read the unipacks present!</string>
+	<string name="without_info">The file "info" does not exist</string>
+	<string name="incomplet_project">Project incomplet!</string>
+	<string name="invalid_sound">Invalid sound:</string>
+	<string name="invalid_autoplay">Invalid Autoplay:</string>
+	
 </resources>
