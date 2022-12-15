@@ -1,0 +1,15 @@
+<resources>
+
+    <style name="FullScreenApp" parent="@android:style/Theme.Material.Light.NoActionBar.Fullscreen">
+	<item name="android:windowActionBar">false</item>
+	<item name="android:windowNoTitle">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <style name="alertdialog_transparent" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:colorBackground">#00000000</item>
+    </style>
+
+</resources>

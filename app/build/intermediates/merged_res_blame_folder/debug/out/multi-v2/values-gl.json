@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.xayup.multipad.app-mergeDebugResources-7:/values-gl/values-gl.xml",
+            "map": [
+                {
+                    "source": "/data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/a8ae712879ce8c88a52d8e9788344966/transformed/core-1.7.0/res/values-gl/values-gl.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    },
+                    "to": {
+                        "startLines": "11",
+                        "startColumns": "4",
+                        "startOffsets": "753",
+                        "endColumns": "100",
+                        "endOffsets": "849"
+                    }
+                },
+                {
+                    "source": "/data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/dfb3d2bb603ffba5d8c466d745921abf/transformed/exoplayer-core-2.18.0/res/values-gl/values-gl.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10",
+                        "startColumns": "4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,129,192,257,336,413,489,588,684",
+                        "endColumns": "73,62,64,78,76,75,98,95,68",
+                        "endOffsets": "124,187,252,331,408,484,583,679,748"
+                    }
+                }
+            ]
+        }
+    ]
+}

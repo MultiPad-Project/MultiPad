@@ -1,0 +1,158 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/glow_cfg_window"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:paddingBottom="6dp"
+    android:paddingLeft="6dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    android:visibility="gone" >
+
+    <Button
+        android:id="@+id/glow_cfg_exit"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="0dp"
+        android:background="@drawable/oval_exit_float_window"
+        android:gravity="center_vertical|center|center_horizontal"
+        android:padding="0dp"
+        android:text="X" />
+
+    <RelativeLayout
+        android:id="@+id/glow_cfg_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="6dp"
+        android:background="@color/background_material_dark"
+        android:padding="6dp" >
+
+        <TextView
+            android:id="@+id/glow_config_radius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:digits="0123456789."
+            android:inputType="number"
+            android:text="@string/glow_cfg_radius"
+            android:textColor="@color/primary_text_default_material_dark"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/glow_cfg_r_minus"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_below="@id/glow_config_radius"
+            android:background="@android:color/transparent"
+            android:text="—"
+            android:textColor="#ffffffff" />
+
+        <Button
+            android:id="@+id/glow_cfg_r_plus"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/glow_config_radius"
+            android:background="@android:color/transparent"
+            android:text="+"
+            android:textColor="#ffffffff" />
+
+        <EditText
+            android:id="@+id/glow_config_edit_radius"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/glow_config_radius"
+            android:layout_toLeftOf="@id/glow_cfg_r_plus"
+            android:layout_toRightOf="@id/glow_cfg_r_minus"
+            android:background="#22aaaaaa"
+            android:digits="0123456789."
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:lines="1"
+            android:textColor="@color/secondary_text_material_dark" />
+
+        <TextView
+            android:id="@+id/glow_config_intensidade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/glow_config_edit_radius"
+            android:text="@string/glow_cfg_intensidade"
+            android:textColor="@color/primary_text_default_material_dark"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/glow_cfg_i_minus"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_below="@id/glow_config_intensidade"
+            android:background="@android:color/transparent"
+            android:text="—"
+            android:textColor="#ffffffff" />
+
+        <Button
+            android:id="@+id/glow_cfg_i_plus"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/glow_config_intensidade"
+            android:background="@android:color/transparent"
+            android:text="+"
+            android:textColor="#ffffffff" />
+
+        <EditText
+            android:id="@+id/glow_config_edit_intensidade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/glow_config_intensidade"
+            android:layout_toLeftOf="@id/glow_cfg_i_plus"
+            android:layout_toRightOf="@id/glow_cfg_i_minus"
+            android:background="#22aaaaaa"
+            android:digits="0123456789."
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:lines="1"
+            android:textColor="@color/secondary_text_material_dark" />
+
+        <TextView
+            android:id="@+id/textPad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+			android:layout_below="@id/glow_config_edit_intensidade"
+            android:text="Pads"
+			android:textColor="@color/secondary_text_material_dark" />
+
+        <TextView
+            android:id="@+id/textChain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+			android:alpha="0.5"
+			android:layout_below="@id/glow_config_edit_intensidade"
+            android:text="Chains"
+			android:textColor="@color/secondary_text_material_dark" />
+
+        <Switch
+            android:id="@+id/glow_cfg_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+			android:layout_toLeftOf="@id/textChain"
+			android:layout_below="@id/glow_config_edit_intensidade"
+			android:layout_toRightOf="@id/textPad" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/glow_cfg_changecfgs"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@id/glow_cfg_background"
+        android:layout_marginRight="6dp"
+        android:background="#ff6100f5"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:text="@string/change"
+        android:textSize="14dp" />
+
+</RelativeLayout>

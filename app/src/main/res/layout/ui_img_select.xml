@@ -1,0 +1,288 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ui_img_select"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/exit_select_pads"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/alertExit_phantom_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="1.0"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/phantom_select_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/phantom_select_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/phantom_select_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/phantom_select_title"
+                android:text="@string/phantom_select_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:rotation="180"
+                android:src="@drawable/prev" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/alertExit_phantomC_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/phantomC_select_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/phantomC_select_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/phantomC_select_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/phantomC_select_title"
+                android:text="@string/phantomC_select_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:rotation="180"
+                android:src="@drawable/prev" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/alertExit_chain_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/chain_select_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/chain_select_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/chain_select_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/chain_select_title"
+                android:text="@string/chain_select_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:rotation="180"
+                android:src="@drawable/prev" />
+        </RelativeLayout>
+		
+		<RelativeLayout
+            android:id="@+id/alertExit_btn_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/btn_select_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_select_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/bnt_select_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/btn_select_title"
+                android:text="@string/btn_select_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:rotation="180"
+                android:src="@drawable/prev" />
+        </RelativeLayout>
+
+		
+        <RelativeLayout
+            android:id="@+id/alertExit_logo_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="1.0"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/logo_select_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/logo_select_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/logo_select_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/logo_select_title"
+                android:text="@string/logo_select_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:rotation="180"
+                android:src="@drawable/prev" />
+        </RelativeLayout>
+			
+		<RelativeLayout
+            android:id="@+id/alertExit_logo_bg_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="1.0"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/logo_bg_select_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/logo_bg_select_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/logo_bg_select_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/logo_bg_select_title"
+                android:text="@string/logo_bg_select_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:rotation="180"
+                android:src="@drawable/prev" />
+        </RelativeLayout>
+	
+			
+        <RelativeLayout
+            android:id="@+id/alertExit_background_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/alertExit_background_select_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="@string/background_select_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/alertExit_background_select_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/alertExit_background_select_title"
+                android:text="@string/background_select_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:rotation="180"
+                android:src="@drawable/prev" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</ScrollView>

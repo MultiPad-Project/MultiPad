@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.xayup.multipad"
+    platformBuildVersionName="@string/app_version"
+    android:versionCode="2112122022"
+    android:versionName="2.1" >
+
+    <uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="32" />
+
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+    </queries>
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:debuggable="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
+        android:resizeableActivity="true"
+        android:theme="@style/FullScreenApp" >
+        <activity
+            android:name="com.xayup.multipad.MainActivity"
+            android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|    screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/FullScreenApp" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.xayup.multipad.playPads"
+            android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|    screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize"
+            android:label="play"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/FullScreenApp" >
+        </activity>
+        <activity
+            android:name="com.xayup.multipad.crashApp"
+            android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|   screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize"
+            android:label="crash"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/FullScreenApp" >
+        </activity>
+        <activity
+            android:name="com.xayup.multipad.UsbDeviceActivity"
+            android:exported="true"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/FullScreenApp" >
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+    </application>
+
+</manifest>

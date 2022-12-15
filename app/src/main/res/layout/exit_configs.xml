@@ -1,0 +1,447 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_floating_menu_mainlist"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/exit_configs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/alertExit_hide_buttoms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/hide_buttoms_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hide_buttoms"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/hide_buttoms_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/hide_buttoms_title"
+                android:text="@string/hide_buttoms_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <CheckBox
+                android:id="@+id/hide_buttoms_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="false" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/alertExit_glow_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/glow_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/glow_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/glow_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/glow_title"
+                android:text="@string/glow_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <CheckBox
+                android:id="@+id/glow_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="false" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/alertExit_glow_cfg_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.6"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/glow_cfg_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/glow_cfg_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/glow_cfg_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/glow_cfg_title"
+                android:text="@string/glow_cfg_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <CheckBox
+                android:id="@+id/glow_cfg_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="false" />
+        </RelativeLayout>
+        <!-- Pad/Chain/Background select -->
+
+        <RelativeLayout
+            android:id="@+id/alertExit_ui_img_select_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="1.0"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/ui_img_select_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_img_select_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/ui_img_select_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ui_img_select_title"
+                android:text="@string/ui_img_select_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:rotation="180"
+                android:src="@drawable/prev" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/alertExit_slide_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/slide_mode_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/slide_mode"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/slide_mode_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/slide_mode_title"
+                android:text="@string/slide_mode_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <CheckBox
+                android:id="@+id/slide_mode_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="false" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/alertExit_rec_autoplay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/rec_autoplay_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/recordAutoplay"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/rec_autoplay_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rec_autoplay_title"
+                android:text="@string/slide_mode_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <CheckBox
+                android:id="@+id/rec_autoplay_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="false" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/alertExit_old_colors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/old_colors_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/old_colors"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/old_colors_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/old_colors_title"
+                android:text="@string/old_colors_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <CheckBox
+                android:id="@+id/old_colors_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="false" />
+        </RelativeLayout>
+
+        <!-- Decoração -->
+
+        <RelativeLayout
+            android:id="@+id/alertExit_layer_decoration_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.6"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/layer_decoration_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/layer_decoration"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/layer_decoration_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layer_decoration_title"
+                android:text="@string/layer_decoration_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <CheckBox
+                android:id="@+id/layer_decoration_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="true" />
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@id/layer_decoration_check"
+                android:background="@color/view_divider_color" />
+        </RelativeLayout>
+		
+		<LinearLayout
+		android:id="@+id/alertExit_item_layer_cfg"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@drawable/inter_main_floating_item"
+		android:clickable="true"
+		android:orientation="vertical"
+		android:paddingBottom="8dp"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp"
+		android:alpha="0.6"
+		android:paddingTop="8dp" >
+		
+		<TextView
+		android:id="@+id/item_layer_cfg_title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/layer_cfg"
+		android:textColor="@color/primary_text_default_material_dark"
+		android:textSize="14dp" />
+		
+		<TextView
+		android:id="@+id/item_layer_cfg_subtitle"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/layer_cfg_subtitle"
+		android:textColor="@color/secondary_text_material_dark"
+		android:textSize="12dp" />
+		
+		</LinearLayout>
+
+        <!-- Spam de som -->
+
+        <RelativeLayout
+            android:id="@+id/alertExit_spam_sound_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/spam_sound_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="@string/sound_spam"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/spam_sound_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/spam_sound_title"
+                android:text="@string/sounds_spam_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <CheckBox
+                android:id="@+id/soundSpam"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="false"
+                android:typeface="monospace" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/alertExit_spam_led_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/spam_led_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="@string/led_spam"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/spam_led_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/spam_led_title"
+                android:text="@string/led_spam_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <CheckBox
+                android:id="@+id/ledSpam"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="false"
+                android:typeface="monospace" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</ScrollView>

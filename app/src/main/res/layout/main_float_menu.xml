@@ -1,0 +1,84 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_floating_menu"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/main_floating_menu_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_material_dark"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/main_floating_menu_bar_button_prev"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/inter_prev" />
+
+        <TextView
+            android:id="@+id/main_floating_menu_bar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="@string/main_floating_title"
+            android:textColor="@color/primary_text_default_material_dark"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/main_floating_menu_button_exit"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="7dp"
+        android:background="@drawable/inter_floating_button_x"
+        android:rotation="45" />
+
+    <Button
+        android:id="@+id/main_floating_menu_button_midi_devices"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="7dp"
+		android:layout_marginRight="12dp"
+        android:layout_toLeftOf="@id/main_floating_menu_button_exit"
+        android:background="@drawable/midi_usb"
+        android:rotation="0" />
+
+    <ViewFlipper
+        android:id="@+id/main_floating_menu_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/main_floating_menu_button_exit"
+        android:layout_below="@id/main_floating_menu_bar"
+        android:layout_marginTop="1dp"
+        android:background="@color/background_material_dark"
+        android:orientation="vertical" >
+	<!-- 0 -->
+	<include layout="@layout/main_floating_menu_main" />
+	<!-- 1 -->
+	<ListView
+		android:id="@+id/list_skins"
+		android:layout_height="match_parent"
+		android:layout_width="match_parent" />
+	<!-- 2 -->
+	<ListView
+		android:id="@+id/list_usb_midi_devices"
+		android:layout_height="match_parent"
+		android:layout_width="match_parent" />
+	
+	</ViewFlipper>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/main_floating_menu_bar"
+        android:background="@color/view_divider_color" />
+
+</RelativeLayout>

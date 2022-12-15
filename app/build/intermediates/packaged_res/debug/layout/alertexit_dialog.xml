@@ -1,0 +1,119 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical"
+    android:background="@color/background_material_dark"
+    android:paddingBottom="0dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="0dp" >
+
+    <LinearLayout
+        android:id="@+id/alertExit_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_material_dark"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/alertExit_prev"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/inter_prev" />
+
+        <TextView
+            android:id="@+id/alertExitTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="@string/alert_exit_title"
+            android:textColor="@color/primary_text_default_material_dark"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/alertExitButtonExit"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="6dp"
+        android:layout_marginRight="15dp"
+        android:background="@drawable/material_button_background" >
+
+        <ImageView
+            android:id="@+id/exit_button_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="6dp"
+            android:src="@drawable/exit_icon" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/alert_color_table_buttom"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="6dp"
+        android:layout_toLeftOf="@id/alert_configs_buttom"
+        android:background="@drawable/ic_color_table"
+        android:padding="20dp" />
+
+    <Button
+        android:id="@+id/alert_configs_buttom"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="6dp"
+        android:layout_toLeftOf="@id/alertExitButtonExit"
+        android:background="@drawable/icon_settings"
+        android:padding="20dp" />
+
+    <Button
+        android:id="@+id/alert_default_color_table_buttom"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="6dp"
+        android:background="@drawable/refresh"
+        android:padding="20dp"
+        android:visibility="gone" />
+
+    <ViewFlipper
+        android:id="@+id/exitMenuSwitcher"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/alertExitButtonExit"
+        android:layout_below="@id/alertExit_bar" >
+
+        <ListView
+            android:id="@+id/alertExitListSkins"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <include layout="@layout/exit_configs" />
+
+        <include layout="@layout/ui_img_select" />
+
+        <ListView
+            android:id="@+id/alertExit_list_color_table"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </ViewFlipper>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/alertExit_bar"
+        android:background="@color/view_divider_color" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_above="@id/alertExitButtonExit"
+        android:background="@color/view_divider_color" />
+
+</RelativeLayout>

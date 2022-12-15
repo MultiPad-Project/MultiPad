@@ -1,0 +1,139 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.xayup.multipad"
+4    platformBuildVersionName="@string/app_version"
+5    android:versionCode="2112122022"
+6    android:versionName="2.1" >
+7
+8    <uses-sdk
+9        android:minSdkVersion="21"
+9-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml
+10        android:targetSdkVersion="32" />
+10-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml
+11
+12    <uses-feature
+12-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:5:2-83
+13        android:name="android.hardware.usb.host"
+13-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:5:16-56
+14        android:required="false" />
+14-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:5:57-81
+15
+16    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+16-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:6:5-81
+16-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:6:22-78
+17    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+17-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:7:5-80
+17-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:7:22-77
+18    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+18-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:8:5-82
+18-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:8:22-79
+19
+20    <queries>
+20-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:10:5-14:15
+21        <intent>
+21-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:11:9-13:18
+22            <action android:name="android.intent.action.MAIN" />
+22-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:12:13-65
+22-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:12:21-62
+23        </intent>
+24    </queries>
+25
+26    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+26-->[com.google.android.exoplayer:exoplayer-core:2.18.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/dfb3d2bb603ffba5d8c466d745921abf/transformed/exoplayer-core-2.18.0/AndroidManifest.xml:24:5-79
+26-->[com.google.android.exoplayer:exoplayer-core:2.18.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/dfb3d2bb603ffba5d8c466d745921abf/transformed/exoplayer-core-2.18.0/AndroidManifest.xml:24:22-76
+27
+28    <application
+28-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:16:5-61:19
+29        android:allowBackup="true"
+29-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:17:9-35
+30        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+30-->[androidx.core:core:1.7.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/a8ae712879ce8c88a52d8e9788344966/transformed/core-1.7.0/AndroidManifest.xml:24:18-86
+31        android:debuggable="true"
+32        android:icon="@drawable/ic_launcher"
+32-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:18:9-45
+33        android:label="@string/app_name"
+33-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:19:9-41
+34        android:requestLegacyExternalStorage="true"
+34-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:20:9-52
+35        android:resizeableActivity="true"
+35-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:21:9-42
+36        android:theme="@style/FullScreenApp" >
+36-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:22:9-45
+37        <activity
+37-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:23:9-35:20
+38            android:name="com.xayup.multipad.MainActivity"
+38-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:24:13-59
+39            android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|    screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize"
+39-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:25:13-167
+40            android:exported="true"
+40-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:29:13-36
+41            android:label="@string/app_name"
+41-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:26:13-45
+42            android:screenOrientation="sensorLandscape"
+42-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:27:13-56
+43            android:theme="@style/FullScreenApp" >
+43-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:28:13-49
+44            <intent-filter>
+44-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:30:13-34:29
+45                <action android:name="android.intent.action.MAIN" />
+45-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:12:13-65
+45-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:12:21-62
+46
+47                <category android:name="android.intent.category.LAUNCHER" />
+47-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:33:17-77
+47-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:33:27-74
+48            </intent-filter>
+49        </activity>
+50        <activity
+50-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:36:9-42:20
+51            android:name="com.xayup.multipad.playPads"
+51-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:37:13-55
+52            android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|    screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize"
+52-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:38:13-167
+53            android:label="play"
+53-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:39:13-33
+54            android:screenOrientation="sensorLandscape"
+54-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:40:13-56
+55            android:theme="@style/FullScreenApp" >
+55-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:41:13-49
+56        </activity>
+57        <activity
+57-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:43:9-49:20
+58            android:name="com.xayup.multipad.crashApp"
+58-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:44:13-55
+59            android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|   screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize"
+59-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:45:13-166
+60            android:label="crash"
+60-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:46:13-34
+61            android:screenOrientation="sensorLandscape"
+61-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:47:13-56
+62            android:theme="@style/FullScreenApp" >
+62-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:48:13-49
+63        </activity>
+64        <activity
+64-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:50:3-60:14
+65            android:name="com.xayup.multipad.UsbDeviceActivity"
+65-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:51:4-55
+66            android:exported="true"
+66-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:54:13-36
+67            android:screenOrientation="sensorLandscape"
+67-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:52:4-47
+68            android:theme="@style/FullScreenApp" >
+68-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:53:4-40
+69            <intent-filter>
+69-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:55:4-57:20
+70                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+70-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:56:5-77
+70-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:56:13-75
+71            </intent-filter>
+72
+73            <meta-data
+73-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:58:4-118
+74                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+74-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:58:15-77
+75                android:resource="@xml/device_filter" />
+75-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:58:78-115
+76        </activity>
+77    </application>
+78
+79</manifest>

@@ -1,0 +1,12 @@
+com.xayup.multipad.app-annotation-experimental-1.1.0-0 /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/42e7a018b3fde59aabb44ef077965c79/transformed/annotation-experimental-1.1.0/res
+com.xayup.multipad.app-lifecycle-runtime-2.3.1-1 /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/7cbd1290df572ba2846bd2fb50418823/transformed/lifecycle-runtime-2.3.1/res
+com.xayup.multipad.app-core-1.7.0-2 /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/a8ae712879ce8c88a52d8e9788344966/transformed/core-1.7.0/res
+com.xayup.multipad.app-exoplayer-core-2.18.0-3 /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/dfb3d2bb603ffba5d8c466d745921abf/transformed/exoplayer-core-2.18.0/res
+com.xayup.multipad.app-pngs-4 /storage/emulated/0/AndroidIDEProjects/MultiPad/app/build/generated/res/pngs/debug
+com.xayup.multipad.app-resValues-5 /storage/emulated/0/AndroidIDEProjects/MultiPad/app/build/generated/res/resValues/debug
+com.xayup.multipad.app-rs-6 /storage/emulated/0/AndroidIDEProjects/MultiPad/app/build/generated/res/rs/debug
+com.xayup.multipad.app-packageDebugResources-7 /storage/emulated/0/AndroidIDEProjects/MultiPad/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.xayup.multipad.app-packageDebugResources-8 /storage/emulated/0/AndroidIDEProjects/MultiPad/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.xayup.multipad.app-merged_res-9 /storage/emulated/0/AndroidIDEProjects/MultiPad/app/build/intermediates/merged_res/debug
+com.xayup.multipad.app-debug-10 /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/debug/res
+com.xayup.multipad.app-main-11 /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/res

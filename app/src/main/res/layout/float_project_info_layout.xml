@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<Button
+            android:layout_height="80dp"
+            android:layout_width="80dp"
+            android:id="@+id/float_project_info_preview"
+            android:background="@drawable/preview_sound_pack"
+            android:layout_margin="30dp"/>
+        
+<TextView
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:text="TextView"
+            android:layout_toRightOf="@id/float_project_info_preview"
+            android:textSize="30sp"
+            android:id="@+id/float_project_info_name"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/primary_text_default_material_dark"/>
+        
+<TextView
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:text="TextView"
+            android:layout_toRightOf="@id/float_project_info_preview"
+            android:layout_below="@id/float_project_info_name"
+            android:textSize="18sp"
+            android:alpha="0.7"
+            android:textColor="@color/secondary_text_material_dark"
+            android:id="@+id/float_project_info_autor"/>
+        
+<Button
+            android:layout_height="30dp"
+            android:layout_width="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/float_project_info_close"
+            android:background="@drawable/inter_floating_button_x"
+            android:layout_margin="16dp"/>
+        
+<Button
+            android:layout_height="50dp"
+            android:layout_width="match_parent"
+            android:text="PLAY"
+            android:textStyle="bold"
+            android:id="@+id/float_project_info_play"
+            android:background="@drawable/project_file_state"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="0dp"
+            android:backgroundTint="#ffe2e2e2"/>
+</merge>
