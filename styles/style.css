@@ -1,6 +1,6 @@
 /* Variáveis */
 :root {
-  --footer-size: 50px;
+  --footer-size: 80px;
   
 }
 
@@ -9,7 +9,7 @@ html{
   background-color: #1b1b1b;
   height: 100%;
 }
-dir {
+.conteudo {
   margin: 0px;
   padding: 0px;
   padding-bottom: var(--footer-size);
@@ -84,9 +84,33 @@ nav ul::after{
 footer {
   display: block;
   background-color: #000000b8;
-  text-align: center;
   position: absolute;
   bottom: 0;
   width: 100%;
   height: var(--footer-size);
+}
+footer li::after{
+  display: block;
+  content: "";
+  clear: both;
+}
+footer li {
+  float: left;
+  list-style: none;
+}
+footer li p {
+  float: left;
+  width: unset;
+}
+footer img {
+  max-width: 50px;
+  float: left;
+  margin-top: 0 auto;
+  margin-bottom: 0 auto;
+  width: box-sizing;
+}
+footer > dir {
+  diplay: block;
+  margin: auto;
+  width: fit-content;
 }
