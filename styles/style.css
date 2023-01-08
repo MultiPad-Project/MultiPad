@@ -1,9 +1,12 @@
+/*Renderizar bordas*/
+ {
+  background-color: rgb(0 0 0 / 21%) !important;
+}
 /* Variáveis */
 :root {
   --footer-size: 80px;
   
 }
-
 /* Padrão */
 html{
   background-color: #1b1b1b;
@@ -26,20 +29,27 @@ p {
   color: #ffffffd1
 }
 a {
-  text: underline;
   text-decoration: none;
   color: #c80bad;
 }
-
+h1 {
+  font: sans-serif;
+}
 /* Cabeçalho - Posicionamento*/
 .titulo {
-  padding: 0px;
-  color: #20d3ea
+  padding: 30px;
+  color: #20d3ea;
+  font-size: 40px;
 }
-
 .cabecalho {
-  background-color: #000000b8;
-  
+  background-image: url("../img/navegacao-background.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding-top: 0.1px;
 }
 .main_menu > li {
   list-style: none;
@@ -63,14 +73,10 @@ nav ul::after{
   padding: unset;
   margin-left: auto;
   margin-right: auto;
-  width: fit-content;  
+  width: fit-content; 
 }
-.cabecalho {
-  display: block;
-  width: 100%;
-  text-align: center;
-  padding-top: 15px;
-  padding-bottom: 0px;
+.main-menu-background{
+  background-color: #0000009c;
 }
 
 /* Cabeçalho - Interações */
@@ -83,34 +89,43 @@ nav ul::after{
 /* rodapé */
 footer {
   display: block;
-  background-color: #000000b8;
+  background: #000000b8;
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: var(--footer-size);
-}
-footer li::after{
-  display: block;
-  content: "";
-  clear: both;
+  height: max-content;
 }
 footer li {
+  diplay: block;
   float: left;
   list-style: none;
+  padding: 4px;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
-footer li p {
+footer a:hover {
+  opacity: 1;
+}
+footer a {
+  opacity: 0.6;
+}
+footer p {
   float: left;
-  width: unset;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 0px;
+  padding-left: 8px;
+  translate: 0 50%;
+  height: fit-content;
 }
 footer img {
-  max-width: 50px;
+  max-width: 38px;
   float: left;
-  margin-top: 0 auto;
-  margin-bottom: 0 auto;
-  width: box-sizing;
 }
-footer > dir {
-  diplay: block;
+footer > ul {
+  display: block;
   margin: auto;
   width: fit-content;
 }
