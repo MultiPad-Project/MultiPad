@@ -24,6 +24,9 @@ html {
     padding: 10px;
     background-color: #ffffff14;
 }
+.descricao-versao {
+    list-style: none;
+}
 
 body, html {
     margin: 0px;
