@@ -179,7 +179,7 @@ public class playPads extends Activity {
 		oldColors = app_config.getBoolean("oldColors", false);;
 		changeChainGlows = false;
 		custom_color_table = app_config.getBoolean("custom_color_table", false);
-		useSoundPool = app_config.getBoolean("use_sound_pool", true);
+		useSoundPool = app_config.getBoolean("use_soundpool", false);
         
 		stopRecAutoplay = findViewById(R.id.stopAutoplayRec);
 		

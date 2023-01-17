@@ -18,6 +18,8 @@
     <string name="app_version">2.0</string>
     <string name="use_unipad_folder">Use Unipad folder</string>
     <string name="use_unipad_folder_subtitle">Read unipack in Unipad folder</string>
+    <string name="use_soundpool_title">Samples without delay</string>
+    <string name="use_soundpool_subtitle">This limits the samples</string>
     <string name="mychannel">My channel</string>
     <string name="mychannel_subtitle">Know my channel!</string>
     <string name="sourcecode">Source code</string>

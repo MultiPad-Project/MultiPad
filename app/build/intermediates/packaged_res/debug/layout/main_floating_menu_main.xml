@@ -90,6 +90,47 @@
                 android:typeface="monospace" />
         </RelativeLayout>
 		
+        <RelativeLayout
+            android:id="@+id/main_floating_item_usesoundpool"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/inter_main_floating_item"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp" >
+
+            <TextView
+                android:id="@+id/main_floating_item_usesoundpool_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="@string/use_soundpool_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/main_floating_item_usesoundpool_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/main_floating_item_useunipadfolder_title"
+                android:text="@string/use_soundpool_subtitle"
+                android:textColor="@color/secondary_text_material_dark"
+                android:textSize="12dp" />
+
+            <CheckBox
+                android:id="@+id/main_floating_menu_usesoundpool_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="false"
+                android:typeface="monospace" />
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/main_floating_item_manual"

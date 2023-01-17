@@ -59,6 +59,15 @@ public final class MainFloatingMenuMainBinding implements ViewBinding {
   public final TextView mainFloatingItemSourcecodeTitle;
 
   @NonNull
+  public final RelativeLayout mainFloatingItemUsesoundpool;
+
+  @NonNull
+  public final TextView mainFloatingItemUsesoundpoolSubtitle;
+
+  @NonNull
+  public final TextView mainFloatingItemUsesoundpoolTitle;
+
+  @NonNull
   public final RelativeLayout mainFloatingItemUseunipadfolder;
 
   @NonNull
@@ -72,6 +81,9 @@ public final class MainFloatingMenuMainBinding implements ViewBinding {
 
   @NonNull
   public final LinearLayout mainFloatingMenuMainlistLayout;
+
+  @NonNull
+  public final CheckBox mainFloatingMenuUsesoundpoolCheck;
 
   @NonNull
   public final CheckBox mainFloatingMenuUseunipadfolderCheck;
@@ -88,11 +100,15 @@ public final class MainFloatingMenuMainBinding implements ViewBinding {
       @NonNull LinearLayout mainFloatingItemSourcecode,
       @NonNull TextView mainFloatingItemSourcecodeSubtitle,
       @NonNull TextView mainFloatingItemSourcecodeTitle,
+      @NonNull RelativeLayout mainFloatingItemUsesoundpool,
+      @NonNull TextView mainFloatingItemUsesoundpoolSubtitle,
+      @NonNull TextView mainFloatingItemUsesoundpoolTitle,
       @NonNull RelativeLayout mainFloatingItemUseunipadfolder,
       @NonNull TextView mainFloatingItemUseunipadfolderSubtitle,
       @NonNull TextView mainFloatingItemUseunipadfolderTitle,
       @NonNull ScrollView mainFloatingMenuMainlist,
       @NonNull LinearLayout mainFloatingMenuMainlistLayout,
+      @NonNull CheckBox mainFloatingMenuUsesoundpoolCheck,
       @NonNull CheckBox mainFloatingMenuUseunipadfolderCheck) {
     this.rootView = rootView;
     this.mainFloatingItemManual = mainFloatingItemManual;
@@ -107,11 +123,15 @@ public final class MainFloatingMenuMainBinding implements ViewBinding {
     this.mainFloatingItemSourcecode = mainFloatingItemSourcecode;
     this.mainFloatingItemSourcecodeSubtitle = mainFloatingItemSourcecodeSubtitle;
     this.mainFloatingItemSourcecodeTitle = mainFloatingItemSourcecodeTitle;
+    this.mainFloatingItemUsesoundpool = mainFloatingItemUsesoundpool;
+    this.mainFloatingItemUsesoundpoolSubtitle = mainFloatingItemUsesoundpoolSubtitle;
+    this.mainFloatingItemUsesoundpoolTitle = mainFloatingItemUsesoundpoolTitle;
     this.mainFloatingItemUseunipadfolder = mainFloatingItemUseunipadfolder;
     this.mainFloatingItemUseunipadfolderSubtitle = mainFloatingItemUseunipadfolderSubtitle;
     this.mainFloatingItemUseunipadfolderTitle = mainFloatingItemUseunipadfolderTitle;
     this.mainFloatingMenuMainlist = mainFloatingMenuMainlist;
     this.mainFloatingMenuMainlistLayout = mainFloatingMenuMainlistLayout;
+    this.mainFloatingMenuUsesoundpoolCheck = mainFloatingMenuUsesoundpoolCheck;
     this.mainFloatingMenuUseunipadfolderCheck = mainFloatingMenuUseunipadfolderCheck;
   }
 
@@ -214,6 +234,24 @@ public final class MainFloatingMenuMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.main_floating_item_usesoundpool;
+      RelativeLayout mainFloatingItemUsesoundpool = ViewBindings.findChildViewById(rootView, id);
+      if (mainFloatingItemUsesoundpool == null) {
+        break missingId;
+      }
+
+      id = R.id.main_floating_item_usesoundpool_subtitle;
+      TextView mainFloatingItemUsesoundpoolSubtitle = ViewBindings.findChildViewById(rootView, id);
+      if (mainFloatingItemUsesoundpoolSubtitle == null) {
+        break missingId;
+      }
+
+      id = R.id.main_floating_item_usesoundpool_title;
+      TextView mainFloatingItemUsesoundpoolTitle = ViewBindings.findChildViewById(rootView, id);
+      if (mainFloatingItemUsesoundpoolTitle == null) {
+        break missingId;
+      }
+
       id = R.id.main_floating_item_useunipadfolder;
       RelativeLayout mainFloatingItemUseunipadfolder = ViewBindings.findChildViewById(rootView, id);
       if (mainFloatingItemUseunipadfolder == null) {
@@ -240,6 +278,12 @@ public final class MainFloatingMenuMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.main_floating_menu_usesoundpool_check;
+      CheckBox mainFloatingMenuUsesoundpoolCheck = ViewBindings.findChildViewById(rootView, id);
+      if (mainFloatingMenuUsesoundpoolCheck == null) {
+        break missingId;
+      }
+
       id = R.id.main_floating_menu_useunipadfolder_check;
       CheckBox mainFloatingMenuUseunipadfolderCheck = ViewBindings.findChildViewById(rootView, id);
       if (mainFloatingMenuUseunipadfolderCheck == null) {
@@ -251,9 +295,11 @@ public final class MainFloatingMenuMainBinding implements ViewBinding {
           mainFloatingItemMychannelSubtitle, mainFloatingItemMychannelTitle,
           mainFloatingItemSkinSubtitle, mainFloatingItemSkinTitle, mainFloatingItemSkins,
           mainFloatingItemSourcecode, mainFloatingItemSourcecodeSubtitle,
-          mainFloatingItemSourcecodeTitle, mainFloatingItemUseunipadfolder,
-          mainFloatingItemUseunipadfolderSubtitle, mainFloatingItemUseunipadfolderTitle,
-          mainFloatingMenuMainlist, mainFloatingMenuMainlistLayout,
+          mainFloatingItemSourcecodeTitle, mainFloatingItemUsesoundpool,
+          mainFloatingItemUsesoundpoolSubtitle, mainFloatingItemUsesoundpoolTitle,
+          mainFloatingItemUseunipadfolder, mainFloatingItemUseunipadfolderSubtitle,
+          mainFloatingItemUseunipadfolderTitle, mainFloatingMenuMainlist,
+          mainFloatingMenuMainlistLayout, mainFloatingMenuUsesoundpoolCheck,
           mainFloatingMenuUseunipadfolderCheck);
     }
     String missingId = rootView.getResources().getResourceName(id);

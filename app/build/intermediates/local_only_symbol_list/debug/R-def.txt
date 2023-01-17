@@ -247,6 +247,9 @@ id main_floating_item_skins
 id main_floating_item_sourcecode
 id main_floating_item_sourcecode_subtitle
 id main_floating_item_sourcecode_title
+id main_floating_item_usesoundpool
+id main_floating_item_usesoundpool_subtitle
+id main_floating_item_usesoundpool_title
 id main_floating_item_useunipadfolder
 id main_floating_item_useunipadfolder_subtitle
 id main_floating_item_useunipadfolder_title
@@ -261,6 +264,7 @@ id main_floating_menu_button_import_project
 id main_floating_menu_button_midi_devices
 id main_floating_menu_mainlist
 id main_floating_menu_mainlist_layout
+id main_floating_menu_usesoundpool_check
 id main_floating_menu_useunipadfolder_check
 id mainbottombar
 id maintopbar
@@ -439,6 +443,8 @@ string sourcecode_subtitle
 string ui_img_select_subtitle
 string ui_img_select_title
 string usb_midi
+string use_soundpool_subtitle
+string use_soundpool_title
 string use_unipad_folder
 string use_unipad_folder_subtitle
 string warning

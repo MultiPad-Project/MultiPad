@@ -105,6 +105,8 @@
     <string name="ui_img_select_subtitle">Select phantom/chainled/logo/background/btn</string>
     <string name="ui_img_select_title">Select Skin items</string>
     <string name="usb_midi">USBs/MIDIs</string>
+    <string name="use_soundpool_subtitle">This limits the samples</string>
+    <string name="use_soundpool_title">Samples without delay</string>
     <string name="use_unipad_folder">Use Unipad folder</string>
     <string name="use_unipad_folder_subtitle">Read unipack in Unipad folder</string>
     <string name="warning">Warning!</string>
