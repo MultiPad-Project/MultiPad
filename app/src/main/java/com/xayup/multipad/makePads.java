@@ -576,10 +576,12 @@ public class makePads {
 			}
 		}
 	}
-
+    
+    String playing_exo = "";
 	private void playSound(View view) {
 		int viewId = view.getId();
 		String pad = playPads.chainSl + view.getId();
+        playing_exo = pad;
 		System.out.println(view.getId());
 		//Pad press watermark
 		if (playPads.pressLed)
@@ -590,8 +592,16 @@ public class makePads {
 			playPads.autoPlayThread.touch(Integer.parseInt(playPads.chainId + "" + view.getId()));
 		}
 
-		if ((playPads.keySound != null) && (playPads.keySound.containsKey(pad))) {
-			if (playPads.exoplayers.get(pad) != null) {
+		if ((playPads.keySound != null) && (playPads.keySound.containsKey(pad)) || (playPads.keySoundPool != null) && (playPads.keySoundPool.containsKey(pad))) {
+		    if(playPads.useSoundPool){
+                //SoundPool
+                try {playPads.soundPool.stop(playPads.streamsPool.get(pad));} catch (NullPointerException n){playPads.soundrpt.put(viewId, 0);}
+                playPads.streamsPool.put(pad, playPads.soundPool.play(playPads.keySoundPool.get(pad).get(playPads.soundrpt.get(viewId)), 1f, 1f, 1, 0, 1f ));
+                if (playPads.keySoundPool.get(pad).size() == playPads.soundrpt.get(viewId) + 1)
+				playPads.soundrpt.put(viewId, 0); else playPads.soundrpt.put(viewId, playPads.soundrpt.get(viewId) + 1);
+            } else {
+                //ExoPlayer
+        	if (playPads.exoplayers.get(pad) != null) {
 				if (!playPads.spamSounds && playPads.exoplayers.get(pad).isPlaying()) {
 					//if(!playPads.spamSounds)
 					playPads.exoplayers.get(pad).pause();
@@ -622,7 +632,8 @@ public class makePads {
 			String mediaId = playPads.exoplayers.get(pad).getCurrentMediaItem().mediaId;
 			if (mediaId != "")
 				XayUpFunctions.touchAndRelease(context, Integer.parseInt(chainsID.get(Integer.parseInt(mediaId))));
-		}
+        	}
+        }
 		if (((!playPads.stopAll) && playPads.ledFiles != null) && playPads.ledFiles.get(pad) != null) {
 			if ((playPads.ledrpt.get(view.getId() + "") == null)
 					|| playPads.ledFiles.get(pad).size() == playPads.ledrpt.get(view.getId() + "")) {

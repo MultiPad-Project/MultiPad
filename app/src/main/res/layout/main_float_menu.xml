@@ -50,6 +50,17 @@
         android:layout_toLeftOf="@id/main_floating_menu_button_exit"
         android:background="@drawable/midi_usb"
         android:rotation="0" />
+    
+    <Button
+        android:id="@+id/main_floating_menu_button_import_project"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="7dp"
+		android:layout_marginRight="12dp"
+        android:layout_toLeftOf="@id/main_floating_menu_button_midi_devices"
+        android:background="@drawable/inter_button_import_project"
+        android:rotation="0" />
 
     <ViewFlipper
         android:id="@+id/main_floating_menu_background"

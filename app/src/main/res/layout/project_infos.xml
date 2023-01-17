@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fv_project_swith"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content">
+    <android.widget.TextView
+            android:id="@+id/fv_project_name"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textSize="22sp"
+            android:textStyle="bold"
+             />
+            
+        <android.widget.TextView
+            android:id="@+id/fv_project_author"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textSize="18sp"
+            android:layout_below="@id/fv_project_name" />
+            
+        <android.widget.TextView
+            android:id="@+id/fv_project_size"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textSize="18sp"
+            android:layout_below="@id/fv_project_author" />
+        
+        <android.widget.Button
+            android:id="@+id/fv_project_import"
+            android:layout_height="90dp"
+            android:layout_width="90dp"
+            android:text="Import"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />    
+    
+</android.widget.RelativeLayout>

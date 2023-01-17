@@ -64,7 +64,8 @@ public class playPads extends Activity {
 	Readers filter = new Readers();
 
 	public static Map<String, List<MediaItem>> keySound;
-	public static MediaPlayer startSound;
+    public static Map<String, List<Integer>> keySoundPool;
+    public static Map<String, Integer> streamsPool;
 	public static Map<String, MediaPlayer> padPlayer;
 	public static Map<Integer, Integer> soundrpt;
 	public static Map<String, Integer> ledrpt;
@@ -111,6 +112,8 @@ public class playPads extends Activity {
 	public static List<String> autoPlay;
 	public static List<String> invalid_formats;
 //	public static List<Integer> ledOcuped;
+    
+    public static SoundPool soundPool;
 
 	public static makePads makepads;
 
@@ -123,13 +126,15 @@ public class playPads extends Activity {
 	private static Button stopRecAutoplay;
 
 	boolean lodedSkin = false;
-	public static boolean stopAll;
+	
 	private boolean hide_buttoms_b;
 	private boolean layer_decoration;
-	public static boolean glowEf;
 	private boolean ifglow_cfg_show;
+    public static boolean stopAll;
 	public static VerticalSeekBar progressAutoplay;
-	public static boolean recAutoplay;
+    public static boolean glowEf;
+    public static boolean recAutoplay;
+    public static boolean useSoundPool;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -174,7 +179,8 @@ public class playPads extends Activity {
 		oldColors = app_config.getBoolean("oldColors", false);;
 		changeChainGlows = false;
 		custom_color_table = app_config.getBoolean("custom_color_table", false);
-		
+		useSoundPool = app_config.getBoolean("use_sound_pool", true);
+        
 		stopRecAutoplay = findViewById(R.id.stopAutoplayRec);
 		
 		otherChain = 19;

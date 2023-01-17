@@ -1,0 +1,56 @@
+package com.xayup.filesexplorer;
+
+import com.xayup.multipad.R;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.view.View;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.xayup.filesexplorer.FilesAdapter;
+import java.io.File;
+
+public class FilesAdapter extends BaseAdapter {
+    File[] files;
+    Context context;
+    public FilesAdapter(Context context, File[] files){
+        this.files = files;
+        this.context = context;
+    }
+    
+  @Override
+  public int getCount() {
+      return files.length;
+  }
+
+  @Override
+  public Object getItem(int arg0) {
+      return files[arg0];
+  }
+
+  @Override
+  public long getItemId(int arg0) {
+      return 0;
+  }
+
+  @Override
+  public View getView(int pos, View v, ViewGroup parent) {
+      v = LayoutInflater.from(context).inflate(R.layout.layout_files_adapter, null);
+      ImageView icon = v.findViewById(R.id.file_item_icon);
+      TextView name = v.findViewById(R.id.file_item_name);
+      TextView size = v.findViewById(R.id.file_item_size);
+      
+      File file = ((File)getItem(pos));
+      
+      if(file.isFile()){
+          icon.setImageDrawable(context.getDrawable(R.drawable.icon_file));
+          size.setText(""+file.length());
+      } else {
+          icon.setImageDrawable(context.getDrawable(R.drawable.icon_folder));
+      }
+      name.setText(""+file.getName());
+      
+      return v;
+  }
+}

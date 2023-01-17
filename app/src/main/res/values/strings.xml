@@ -91,4 +91,11 @@
     <string name="usb_midi">USBs/MIDIs</string>
 	<string name="midi_aready_connected">MIDI aready connected!</string>
     <string name="midi_lp_pro_live">Set your launchpad to "Live" mode manually, please.</string>
+
+    <string name="progress_extract">Extracting:</string>
+    <string name="dialog_replace_title">Existing file</string>
+    <string name="dialog_replace_mensage">Do you want to replace?</string>
+    <string name="dialog_replace_check">Apply for next items</string>
+    <string name="replace">Replace</string>
+    
 </resources>

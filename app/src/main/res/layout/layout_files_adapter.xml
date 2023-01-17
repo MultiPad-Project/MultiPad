@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    
+    <android.widget.ImageView 
+        android:id="@+id/file_item_icon"
+        android:layout_height="36dp"
+        android:layout_width="36dp"
+        android:layout_centerVertical="true"
+        android:layout_margin="12dp"/>
+    
+    <android.widget.TextView 
+        android:id="@+id/file_item_name"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textSize="22sp"
+        android:layout_toRightOf="@id/file_item_icon"/>
+    
+    <android.widget.TextView 
+        android:id="@+id/file_item_size"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textSize="18sp"
+        android:layout_toRightOf="@id/file_item_icon"
+        android:layout_below="@id/file_item_name"/>
+    
+</android.widget.RelativeLayout>

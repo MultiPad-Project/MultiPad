@@ -34,6 +34,9 @@
     <string name="default_color_table">Using the standard color table</string>
     <string name="default_skin">Default Skin</string>
     <string name="diag_invalidfiles_title">Erros...</string>
+    <string name="dialog_replace_check">Apply for next items</string>
+    <string name="dialog_replace_mensage">Do you want to replace?</string>
+    <string name="dialog_replace_title">Existing file</string>
     <string name="done">Done</string>
     <string name="exitcrash">Close app</string>
     <string name="get_storage">It is necessary to the permission to storage :(</string>
@@ -83,9 +86,11 @@
     <string name="phantomC_select_title">Select Phatom Central</string>
     <string name="phantom_select_subtitle">Selec your phatom.png</string>
     <string name="phantom_select_title">Select Phatom</string>
+    <string name="progress_extract">Extracting:</string>
     <string name="rec_ap_recstarted">Record started</string>
     <string name="rec_ap_saving">Saving...</string>
     <string name="recordAutoplay">Record to autoplay</string>
+    <string name="replace">Replace</string>
     <string name="restart_app">Restart App</string>
     <string name="scale_layer_decoration">layer scale</string>
     <string name="skins">Skins</string>

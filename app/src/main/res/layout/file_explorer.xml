@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_height="match_parent"
+     android:layout_width="match_parent"
+     android:orientation="vertical">
+
+    <LinearLayout
+         android:layout_height="wrap_content"
+         android:layout_width="match_parent"
+         android:orientation="horizontal"
+         android:id="@+id/fv_topbar">
+
+        <Button
+             android:layout_height="42dp"
+             android:layout_width="42dp"
+             android:gravity="center"
+             android:background="@drawable/inter_prev"
+             android:id="@+id/fv_prev"
+            android:backgroundTint="#FFFFFFFF" />
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:textSize="16dp"
+             android:layout_weight="1"
+             android:id="@+id/fv_current_folder"
+             android:layout_gravity="center"
+             android:textStyle="bold" />
+
+        <Button
+             android:layout_height="42dp"
+             android:layout_width="42dp"
+             android:id="@+id/fv_close"
+            android:background="@drawable/inter_floating_button_x" />
+
+    </LinearLayout>
+
+    <ListView
+         android:layout_height="match_parent"
+         android:layout_width="match_parent"
+         android:layout_below="@id/fv_topbar"
+         android:layout_above="@+id/fv_project_infos"
+         android:id="@+id/fv_list_files">
+
+    </ListView>
+
+    <LinearLayout
+         android:layout_height="30dp"
+         android:layout_width="match_parent"
+         android:visibility="gone"
+         android:orientation="horizontal"
+         android:layout_alignParentBottom="true"
+         android:id="@+id/fv_project_swith">
+
+        <Button
+             android:layout_height="30dp"
+             android:layout_width="30dp"
+             android:id="@+id/fv_project_prev" />
+
+        <TextView
+             android:layout_height="match_parent"
+             android:layout_width="match_parent"
+             android:gravity="center"
+             android:layout_weight="1"
+             android:id="@+id/fv_project_count"
+             android:textStyle="bold" />
+
+        <Button
+             android:layout_height="30dp"
+             android:layout_width="30dp"
+             android:id="@+id/fv_project_next" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+         android:layout_height="90dp"
+         android:layout_width="match_parent"
+         android:visibility="gone"
+         android:layout_margin="0dp"
+         android:layout_above="@id/fv_project_swith"
+         android:id="@+id/fv_project_infos">
+
+        <ViewFlipper
+             android:layout_height="90dp"
+             android:layout_width="match_parent"
+             android:visibility="gone"
+             android:id="@+id/fv_flipper">
+
+        </ViewFlipper>
+
+        <ProgressBar
+             android:layout_height="match_parent"
+             android:layout_width="match_parent"
+             android:layout_centerInParent="true"
+             android:visibility="visible"
+             android:id="@+id/fv_progress_bar" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

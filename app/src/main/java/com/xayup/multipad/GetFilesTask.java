@@ -2,6 +2,8 @@ package com.xayup.multipad;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -100,8 +102,14 @@ public class GetFilesTask extends AsyncTask<Void, Void, Boolean> {
 			switch (file.getName().toLowerCase()){
 				case "keysound":
 					bar.setMessage("Reading keySound");
+                if(playPads.useSoundPool){
+                    playPads.soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+                    playPads.streamsPool = new HashMap<String, Integer>();
+                    playPads.keySoundPool = Readers.readKeySoundsPool(context, file, file.getParent() + "/sounds");
+                } else {
 					playPads.keySound = Readers.readKeySounds(context, file, file.getParent() + "/sounds");
-					break;
+				}
+                	break;
 				case "autoplay":
 					bar.setMessage("Reading autoPlay");
 					playPads.autoPlay = Readers.readautoPlay(context, file);

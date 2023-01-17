@@ -16,6 +16,10 @@
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/cantos.xml"
     },
     {
+        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/dialog_replace_file.xml",
+        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/dialog_replace_file.xml"
+    },
+    {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/simple_list_item.xml",
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/simple_list_item.xml"
     },
@@ -26,6 +30,14 @@
     {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/main_float_menu.xml",
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/main_float_menu.xml"
+    },
+    {
+        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/project_infos.xml",
+        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/project_infos.xml"
+    },
+    {
+        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/file_explorer.xml",
+        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/file_explorer.xml"
     },
     {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/dialog_with_edittext.xml",
@@ -44,16 +56,16 @@
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/glow_configs.xml"
     },
     {
+        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/layout_files_adapter.xml",
+        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/layout_files_adapter.xml"
+    },
+    {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/main.xml",
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/main.xml"
     },
     {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/splash_screen.xml",
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/splash_screen.xml"
-    },
-    {
-        "merged": "com.xayup.multipad.app-mergeDebugResources-8:/layout/float_project_info_layout.xml",
-        "source": "com.xayup.multipad.app-main-11:/layout/float_project_info_layout.xml"
     },
     {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/float_project_info_layout.xml",
@@ -88,8 +100,16 @@
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/custom_alertexitlistskin.xml"
     },
     {
+        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/dialog_extract_file.xml",
+        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/dialog_extract_file.xml"
+    },
+    {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/alertexit_dialog.xml",
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/alertexit_dialog.xml"
+    },
+    {
+        "merged": "com.xayup.multipad.app-mergeDebugResources-8:/layout/main_float_menu.xml",
+        "source": "com.xayup.multipad.app-main-11:/layout/main_float_menu.xml"
     },
     {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-mergeDebugResources-8:/layout/ui_img_select.xml",

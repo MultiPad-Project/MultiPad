@@ -2,6 +2,7 @@ package com.xayup.multipad;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.widget.ArrayAdapter;
 import com.google.android.exoplayer2.MediaItem;
@@ -237,6 +238,51 @@ public class Readers {
 						} else {
 							sounds.get(line.substring(0, indextheSound)).add(new MediaItem.Builder().setMediaId(toChain)
 									.setUri(soundPath + "/" + line.substring(indextheSound)).build());
+						}
+					//	System.out.println("FNL "+toChain + " "+line);
+					} else {
+						playPads.invalid_formats.add("("+keySound.getName()+")"+context.getString(R.string.invalid_sound) + " " + line);
+					}
+					
+				}
+				return sounds;
+			} catch (IOException e) {
+			}
+		}
+		return null;
+	}
+    
+    public static Map<String, List<Integer>> readKeySoundsPool(Activity context, File keySound, String soundPath) {
+		if (keySound.exists()) {
+			//	System.out.println()
+			try {
+				List<String> keys = Files.readLines(keySound, StandardCharsets.UTF_8);
+				Map<String, List<Integer>> sounds = new HashMap<String, List<Integer>>();
+				for (String line : keys) {
+					int indextheSound = 3;
+					int indexPad = 1;
+				if((!line.replaceAll("\\s", "").isEmpty()))
+					if (checkKeySound(line.replaceAll("\\s", ""))) {
+						if (line.substring(0, 2).matches("[1-2][0-9]")){
+							indextheSound = 4;
+							indexPad = 2;
+						}	
+						line = line.replace(" ", "");
+						String toChain = "";
+						String ifToChain = line.substring(line.indexOf(".") + 4);
+						if (ifToChain.matches("1([1-9]|[1-2][0-9])"))
+							toChain = ifToChain.substring(1);
+						//	System.out.println("CMC "+toChain);
+				//		System.out.println(toChain);
+						line = line.substring(0, line.indexOf(".") + 4);
+                        String sound = soundPath + "/" + line.substring(indextheSound);
+						if (sounds.get(line.substring(0, indextheSound)) == null) {
+                            List<Integer> soundSec = new ArrayList<Integer>();
+                            soundSec.add(playPads.soundPool.load(sound, 1));
+							sounds.put(line.substring(0, indextheSound), soundSec);
+							playPads.chainClickable.put(line.substring(indexPad, indextheSound), null);
+						} else {
+							sounds.get(line.substring(0, indextheSound)).add(playPads.soundPool.load(sound, 1));
 						}
 					//	System.out.println("FNL "+toChain + " "+line);
 					} else {

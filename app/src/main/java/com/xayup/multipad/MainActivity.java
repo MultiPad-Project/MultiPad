@@ -23,6 +23,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
+import com.xayup.filesexplorer.FileExplorerDialog;
 import java.io.*;
 import java.net.URL;
 
@@ -256,6 +257,7 @@ public class MainActivity extends Activity {
 		TextView barTitle = menu.findViewById(R.id.main_floating_menu_bar_title);
 		ViewFlipper swit = menu.findViewById(R.id.main_floating_menu_background);
 		Button prev = menu.findViewById(R.id.main_floating_menu_bar_button_prev);
+        Button import_project = menu.findViewById(R.id.main_floating_menu_button_import_project);
 		//View..
 		View item_skins = menu.findViewById(R.id.main_floating_item_skins);
 		View item_useUnipadFolder = menu.findViewById(R.id.main_floating_item_useunipadfolder);
@@ -306,6 +308,13 @@ public class MainActivity extends Activity {
 				});
 			}
 		});
+        
+        import_project.setOnClickListener(new Button.OnClickListener(){
+            @Override
+                public void onClick(View v){
+                    new FileExplorerDialog(context).getExplorerDialog();
+                }
+        });
 
 		prev.setOnClickListener(new Button.OnClickListener() {
 			@Override

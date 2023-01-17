@@ -63,7 +63,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@drawable/background_round"
-        android:backgroundTint="#ff505050">
+        android:backgroundTint="#ff505050"
+        android:visibility="gone">
         
         <include layout="@layout/float_project_info_layout" />
         

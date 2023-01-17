@@ -48,6 +48,9 @@ public final class MainFloatMenuBinding implements ViewBinding {
   public final Button mainFloatingMenuButtonExit;
 
   @NonNull
+  public final Button mainFloatingMenuButtonImportProject;
+
+  @NonNull
   public final Button mainFloatingMenuButtonMidiDevices;
 
   private MainFloatMenuBinding(@NonNull RelativeLayout rootView, @NonNull ListView listSkins,
@@ -55,6 +58,7 @@ public final class MainFloatMenuBinding implements ViewBinding {
       @NonNull ViewFlipper mainFloatingMenuBackground, @NonNull LinearLayout mainFloatingMenuBar,
       @NonNull Button mainFloatingMenuBarButtonPrev, @NonNull TextView mainFloatingMenuBarTitle,
       @NonNull Button mainFloatingMenuButtonExit,
+      @NonNull Button mainFloatingMenuButtonImportProject,
       @NonNull Button mainFloatingMenuButtonMidiDevices) {
     this.rootView = rootView;
     this.listSkins = listSkins;
@@ -65,6 +69,7 @@ public final class MainFloatMenuBinding implements ViewBinding {
     this.mainFloatingMenuBarButtonPrev = mainFloatingMenuBarButtonPrev;
     this.mainFloatingMenuBarTitle = mainFloatingMenuBarTitle;
     this.mainFloatingMenuButtonExit = mainFloatingMenuButtonExit;
+    this.mainFloatingMenuButtonImportProject = mainFloatingMenuButtonImportProject;
     this.mainFloatingMenuButtonMidiDevices = mainFloatingMenuButtonMidiDevices;
   }
 
@@ -139,6 +144,12 @@ public final class MainFloatMenuBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.main_floating_menu_button_import_project;
+      Button mainFloatingMenuButtonImportProject = ViewBindings.findChildViewById(rootView, id);
+      if (mainFloatingMenuButtonImportProject == null) {
+        break missingId;
+      }
+
       id = R.id.main_floating_menu_button_midi_devices;
       Button mainFloatingMenuButtonMidiDevices = ViewBindings.findChildViewById(rootView, id);
       if (mainFloatingMenuButtonMidiDevices == null) {
@@ -148,7 +159,7 @@ public final class MainFloatMenuBinding implements ViewBinding {
       return new MainFloatMenuBinding((RelativeLayout) rootView, listSkins, listUsbMidiDevices,
           mainFloatingMenu, mainFloatingMenuBackground, mainFloatingMenuBar,
           mainFloatingMenuBarButtonPrev, mainFloatingMenuBarTitle, mainFloatingMenuButtonExit,
-          mainFloatingMenuButtonMidiDevices);
+          mainFloatingMenuButtonImportProject, mainFloatingMenuButtonMidiDevices);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

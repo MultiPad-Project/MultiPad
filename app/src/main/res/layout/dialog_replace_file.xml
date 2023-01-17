@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="12dp">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/dialog_replace_title"
+			android:textStyle="bold"
+			android:textSize="22sp"
+			android:layout_alignParentTop="true"
+			android:id="@+id/override_title"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/dialog_replace_mensage"
+			android:textSize="18sp"
+			android:layout_below="@id/override_title"
+			android:id="@+id/override_mensage"/>
+		<LinearLayout
+			android:id="@+id/override_all_background"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:orientation="horizontal"
+			android:layout_below="@id/override_mensage"
+			android:gravity="center_vertical">
+				
+			<CheckBox
+				android:id="@+id/override_all_check"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content" 
+				android:layout_margin="8dp"/>
+
+			<TextView
+				android:id="@+id/override_all"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:gravity="center_vertical|center|center_horizontal"
+				android:text="@string/dialog_replace_check"
+				android:textSize="18sp" />
+			
+		</LinearLayout>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/override_yes"
+            android:text="@string/replace"
+			android:layout_below="@id/override_all_background"
+			android:layout_alignParentRight="true"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/override_no"
+			android:layout_below="@id/override_all_background"
+			android:layout_toLeftOf="@+id/override_yes"/>
+
+	</android.widget.RelativeLayout>
