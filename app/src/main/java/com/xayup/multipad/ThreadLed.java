@@ -6,6 +6,8 @@ import android.os.SystemClock;
 import android.view.View;
 import android.widget.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.*;
 
 public class ThreadLed implements Runnable {
@@ -14,6 +16,7 @@ public class ThreadLed implements Runnable {
 	private String cpled;
 	private int rpt;
 	private View root;
+    private int loop = -1;
 
 	public ThreadLed(final Activity context, final String cpled, final int rpt, View root) {
 		this.context = context;
@@ -27,8 +30,9 @@ public class ThreadLed implements Runnable {
 	};
 
 	protected void stop() {
-		running.set(false);
-
+        try {
+		    running.set(false);
+        } catch(NullPointerException n){}
 	}
 
 	public void runn() {
@@ -37,28 +41,111 @@ public class ThreadLed implements Runnable {
 
 	protected void start() {
 		running.set(true);
-		new Thread() {
-			public void e() {
-			}
-
-			@Override
-			public void run() {
-				runn();
-			}
-		}.start();
+        new Thread(this).start();
 	}
-
+    //Quando o tipo de led e 0: (2 5 1 0 a)
+    //                                 ^ 
+    public void stopZeroLooper(){
+        if(loop == 0){
+            stop();
+        }
+    }
+    private void offCurrentLedLoop(List<String> led){
+        boolean mc = false; /* chainLed */
+        int padId; /* padLed */
+        int corcode = 0; /* Color code. 0 = OFF */
+        /*
+        * haveOff sera usado para armazenar as pads
+        * que ja foram desligados para evitar o mesmo
+        * processo em uma pad ja processada
+        */
+        List<Integer> haveOff = new ArrayList<Integer>();
+        read: for(String line : led){
+            switch (line.substring(0, 1)) {
+				case "o":
+					if (line.contains("mc")) {
+						mc = true;
+						padId = VariaveisStaticas.chainCode[Integer.parseInt(line.substring(3, line.indexOf("a")))];
+					} else if(line.toLowerCase().contains("l")){
+						padId = 9;
+					} else {
+						padId = Integer.parseInt(line.substring(1, 3));
+					}
+                    if(haveOff.contains(padId)){
+                        continue read;
+                    } else {
+                        haveOff.add(padId);
+                        showLed(padId, corcode, mc);
+                    }
+					break;
+				}
+        }
+        haveOff = null;
+    }
+    
+    private void showLed(final int padid, final int corCode, final boolean MC){
+        context.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							ImageView pad = context.findViewById(padid).findViewById(R.id.led);
+							int color = VariaveisStaticas.colorInt(corCode, playPads.custom_color_table, playPads.oldColors);
+							byte NOTE = MidiStaticVars.NOTE_ON;
+							if(corCode == 0) NOTE = MidiStaticVars.NOTE_OFF;
+							if(playPads.glowEf && padid != 9){
+									ImageView glowEF = context.findViewById(Integer.parseInt("100"+padid));
+									if(color == 0){
+										glowEF.setAlpha(0.0f);
+									} else {
+										if(MC){
+											glowEF.setAlpha(playPads.glowChainIntensity);
+										} else {
+											glowEF.setAlpha(playPads.glowIntensity);
+										}
+										
+										glowEF.setColorFilter(color);
+									}
+							}
+							pad.setBackgroundColor(color);
+							if(MidiStaticVars.midiInput != null){
+								try{
+								int offset = 0;
+								int channel = 1;
+								int numBytes = 0;
+								byte[] bytes = new byte[32];
+								bytes[numBytes++] = (byte) (NOTE + (channel - 1));
+								bytes[numBytes++] = (byte) (UsbDeviceActivity.rowProgramMode(padid));
+								bytes[numBytes++] = (byte) corCode;
+								MidiStaticVars.midiInput.send(bytes, offset, numBytes);
+								} catch (IOException e){
+									Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+								}
+							}
+						}
+					});
+    }
+    
 	@Override
 	public void run() {
 		if (playPads.ledFiles.get(cpled) != null) {
 			long time = SystemClock.uptimeMillis();
 			boolean nobreak = true;
 			boolean delay = false;
-			//int size =
-			for (String line : playPads.ledFiles.get(cpled).get(rpt)) {
+            int indexLoop = 1;
+            try {
+                loop = Integer.parseInt(playPads.ledFiles.get(cpled).get(rpt).get(0));
+                } catch (NumberFormatException n){
+                    loop = 1;
+                } catch (IndexOutOfBoundsException i){}
+			String line;
+            looper: while(true){
+            for (int i = 1; i < playPads.ledFiles.get(cpled).get(rpt).size(); i++) {
+                line = playPads.ledFiles.get(cpled).get(rpt).get(i);
 				if (!isRunning() || playPads.stopAll) {
-					XayUpFunctions.clearLeds(context, root);
-					return;
+                    if(loop == 0)
+                        offCurrentLedLoop(playPads.ledFiles.get(cpled).get(rpt));
+                    else
+				    	XayUpFunctions.clearLeds(context, root);
+					break looper;
 				}
 				//	String line = playPads.ledFiles.get(cpled).get(rpt).get(i);
 				delay = false;
@@ -100,57 +187,21 @@ public class ThreadLed implements Runnable {
 					delay = true;
 					break;
 				}
-				//time += System.currentTimeMillis();
 				while ((SystemClock.uptimeMillis() < time) && (!playPads.stopAll) && isRunning()) {
 				}
 
 				if (!delay) {
-					//	runUithread(context, padId, corcode);
-					final int padid = padId;
-					final int corCode = corcode;
-					final boolean MC = mc;
-					context.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							ImageView pad = context.findViewById(padid).findViewById(R.id.led);
-							int color = VariaveisStaticas.colorInt(corCode, playPads.custom_color_table, playPads.oldColors);
-							byte NOTE = MidiStaticVars.NOTE_ON;
-							if(corCode == 0) NOTE = MidiStaticVars.NOTE_OFF;
-							if(playPads.glowEf && padid != 9){
-									ImageView glowEF = context.findViewById(Integer.parseInt("100"+padid));
-									if(color == 0){
-										glowEF.setAlpha(0.0f);
-										
-									} else {
-										if(MC){
-											glowEF.setAlpha(playPads.glowChainIntensity);
-										} else {
-											glowEF.setAlpha(playPads.glowIntensity);
-										}
-										
-										glowEF.setColorFilter(color);
-									}
-							}
-							pad.setBackgroundColor(color);
-							if(MidiStaticVars.midiInput != null){
-								try{
-								int offset = 0;
-								int channel = 1;
-								int numBytes = 0;
-								byte[] bytes = new byte[32];
-								bytes[numBytes++] = (byte) (NOTE + (channel - 1));
-								bytes[numBytes++] = (byte) (UsbDeviceActivity.rowProgramMode(padid));
-								bytes[numBytes++] = (byte) corCode;
-								MidiStaticVars.midiInput.send(bytes, offset, numBytes);
-								} catch (IOException e){
-									Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
-								}
-							}
-						}
-					});
+					showLed(padId, corcode, mc);
 				}
 			}
-			 
+                if(loop != 0){
+                    if(indexLoop < loop){
+                        indexLoop++;
+                    } else {
+                        break;
+                    }
+                }
+                }
 		}
 	}
 }

@@ -1,10 +1,11 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-63:12
-INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-63:12
-INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-63:12
-INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-63:12
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-64:12
+INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-64:12
+INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-64:12
+INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-64:12
 MERGED from [androidx.databinding:viewbinding:7.2.1] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/addda1b8b83b184c0f696484891374ea/transformed/viewbinding-7.2.1/AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.oboe:oboe:1.7.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/f5234eb5231242014e66caf2d69db4a4/transformed/oboe-1.7.0/AndroidManifest.xml:1:1-3:12
 MERGED from [com.google.android.exoplayer:exoplayer-core:2.18.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/dfb3d2bb603ffba5d8c466d745921abf/transformed/exoplayer-core-2.18.0/AndroidManifest.xml:17:1-26:12
 MERGED from [androidx.core:core:1.7.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/a8ae712879ce8c88a52d8e9788344966/transformed/core-1.7.0/AndroidManifest.xml:17:1-26:12
 MERGED from [com.google.android.exoplayer:exoplayer-datasource:2.18.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/ffbe6c769717da4e6dfcd983aa3da903/transformed/exoplayer-datasource-2.18.0/AndroidManifest.xml:17:1-24:12
@@ -16,9 +17,9 @@ MERGED from [androidx.lifecycle:lifecycle-runtime:2.3.1] /data/data/com.itsaky.a
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/01109a31d59d1ef715a0ac57bab61d63/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
 MERGED from [androidx.arch.core:core-runtime:2.1.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/22244c14da60f03cfcbea536d714c222/transformed/core-runtime-2.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.annotation:annotation-experimental:1.1.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/42e7a018b3fde59aabb44ef077965c79/transformed/annotation-experimental-1.1.0/AndroidManifest.xml:17:1-24:12
-INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-63:12
-INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-63:12
-INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-63:12
+INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-64:12
+INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-64:12
+INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-64:12
 	package
 		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:2:5-33
 		INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml
@@ -29,7 +30,7 @@ INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/Andro
 		INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml
 	android:versionCode
 		INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-63:12
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:1-64:12
 		INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:1:11-69
@@ -62,97 +63,101 @@ ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidM
 	android:name
 		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:12:21-62
 application
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:16:5-61:19
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:16:5-62:19
 MERGED from [androidx.core:core:1.7.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/a8ae712879ce8c88a52d8e9788344966/transformed/core-1.7.0/AndroidManifest.xml:24:5-89
 MERGED from [androidx.core:core:1.7.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/a8ae712879ce8c88a52d8e9788344966/transformed/core-1.7.0/AndroidManifest.xml:24:5-89
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/01109a31d59d1ef715a0ac57bab61d63/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/01109a31d59d1ef715a0ac57bab61d63/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
 	android:requestLegacyExternalStorage
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:20:9-52
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:21:9-52
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.7.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/a8ae712879ce8c88a52d8e9788344966/transformed/core-1.7.0/AndroidManifest.xml:24:18-86
 	android:label
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:19:9-41
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:20:9-41
+	android:debuggable
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:17:9-34
 	android:resizeableActivity
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:21:9-42
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:22:9-42
 	android:icon
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:18:9-45
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:19:9-45
 	android:allowBackup
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:17:9-35
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:18:9-35
 	android:theme
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:22:9-45
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:23:9-45
 activity#com.xayup.multipad.MainActivity
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:23:9-35:20
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:24:9-36:20
 	android:screenOrientation
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:27:13-56
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:28:13-56
 	android:label
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:26:13-45
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:27:13-45
 	android:exported
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:29:13-36
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:30:13-36
 	android:configChanges
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:25:13-167
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:26:13-167
 	android:theme
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:28:13-49
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:29:13-49
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:24:13-59
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:25:13-59
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:30:13-34:29
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:31:13-35:29
 category#android.intent.category.LAUNCHER
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:33:17-77
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:34:17-77
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:33:27-74
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:34:27-74
 activity#com.xayup.multipad.playPads
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:36:9-42:20
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:37:9-43:20
 	android:screenOrientation
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:40:13-56
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:41:13-56
 	android:label
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:39:13-33
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:40:13-33
 	android:configChanges
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:38:13-167
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:39:13-167
 	android:theme
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:41:13-49
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:42:13-49
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:37:13-55
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:38:13-55
 activity#com.xayup.multipad.crashApp
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:43:9-49:20
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:44:9-50:20
 	android:screenOrientation
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:47:13-56
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:48:13-56
 	android:label
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:46:13-34
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:47:13-34
 	android:configChanges
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:45:13-166
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:46:13-166
 	android:theme
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:48:13-49
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:49:13-49
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:44:13-55
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:45:13-55
 activity#com.xayup.multipad.UsbDeviceActivity
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:50:3-60:14
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:51:3-61:14
 	android:screenOrientation
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:52:4-47
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:53:4-47
 	android:exported
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:54:13-36
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:55:13-36
 	android:theme
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:53:4-40
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:54:4-40
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:51:4-55
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:52:4-55
 intent-filter#action:name:android.hardware.usb.action.USB_DEVICE_ATTACHED
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:55:4-57:20
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:56:4-58:20
 action#android.hardware.usb.action.USB_DEVICE_ATTACHED
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:56:5-77
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:57:5-77
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:56:13-75
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:57:13-75
 meta-data#android.hardware.usb.action.USB_DEVICE_ATTACHED
-ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:58:4-118
+ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:59:4-118
 	android:resource
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:58:78-115
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:59:78-115
 	android:name
-		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:58:15-77
+		ADDED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:59:15-77
 uses-sdk
 INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml
 INJECTED from /storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml
 MERGED from [androidx.databinding:viewbinding:7.2.1] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/addda1b8b83b184c0f696484891374ea/transformed/viewbinding-7.2.1/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.databinding:viewbinding:7.2.1] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/addda1b8b83b184c0f696484891374ea/transformed/viewbinding-7.2.1/AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.oboe:oboe:1.7.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/f5234eb5231242014e66caf2d69db4a4/transformed/oboe-1.7.0/AndroidManifest.xml:2:2-70
+MERGED from [com.google.oboe:oboe:1.7.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/f5234eb5231242014e66caf2d69db4a4/transformed/oboe-1.7.0/AndroidManifest.xml:2:2-70
 MERGED from [com.google.android.exoplayer:exoplayer-core:2.18.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/dfb3d2bb603ffba5d8c466d745921abf/transformed/exoplayer-core-2.18.0/AndroidManifest.xml:20:5-22:41
 MERGED from [com.google.android.exoplayer:exoplayer-core:2.18.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/dfb3d2bb603ffba5d8c466d745921abf/transformed/exoplayer-core-2.18.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.core:core:1.7.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/a8ae712879ce8c88a52d8e9788344966/transformed/core-1.7.0/AndroidManifest.xml:20:5-22:41

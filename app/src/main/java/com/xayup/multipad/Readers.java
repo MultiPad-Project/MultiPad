@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.common.io.Files;
 import java.io.*;
@@ -148,7 +150,7 @@ public class Readers {
 	}
 
 	protected static Map<String /*chain+pad position+repeat*/, List<List<String>> /*led file readed*/> readKeyLEDs(
-			Activity context, File keyLED_Path) {
+		Activity context, File keyLED_Path) {
 		Map<String, List<List<String>>> mapLedLED = new HashMap<String, List<List<String>>>();
 		//ordenar
 		List<File> files = Arrays.asList(keyLED_Path.listFiles());
@@ -159,13 +161,18 @@ public class Readers {
 			}
 		});
 		for (final File ledFile : files) {
+            String fileName = ledFile.getName();
+            //lineIndex é o nome do arquivo. Conta os espaços
 			int lineIndex = 5;
-			if(ledFile.getName().substring(0, 3).matches("[1-2][0-9]\\s"))
+            
+            //Caso haja leds para as chains 10+
+			if(fileName.substring(0, 3).matches("[1-2][0-9]\\s"))
 				lineIndex = 6;
-			if (checkKeyLEDname(ledFile.getName(), lineIndex)) {
+			if (checkKeyLEDname(fileName, lineIndex)) {
 				try {
 					List<String> keys = Files.readLines(ledFile, StandardCharsets.UTF_8);
 					List<String> v_keys = new ArrayList<String>(); //linhas verificadas
+                    v_keys.add(fileName.substring(lineIndex+1, (fileName+" ").indexOf(" ", lineIndex+1)));
 					for (String line : keys) {
 						if (!line.replace(" ", "").isEmpty()) {
 							
@@ -201,7 +208,7 @@ public class Readers {
 	//algoritimo keySound
 	public static boolean checkKeySound(String line) {
 
-		return line.matches("([1-2][0-9]|[1-9])[1-9][0-8][\\w\\W]+.\\w{3}(1[1-9]|1[1-2][0-9])?");
+		return line.matches("([1-2][0-9]|[1-9])[1-9][0-8][\\w\\W]+.\\w{3}([0-9][1-9]|[0-9][1-2][0-9])?");
 	}
 
 	public static Map<String, List<MediaItem>> readKeySounds(Activity context, File keySound, String soundPath) {
@@ -268,22 +275,20 @@ public class Readers {
 							indexPad = 2;
 						}	
 						line = line.replace(" ", "");
-						String toChain = "";
 						String ifToChain = line.substring(line.indexOf(".") + 4);
-						if (ifToChain.matches("1([1-9]|[1-2][0-9])"))
-							toChain = ifToChain.substring(1);
-						//	System.out.println("CMC "+toChain);
-				//		System.out.println(toChain);
 						line = line.substring(0, line.indexOf(".") + 4);
                         String sound = soundPath + "/" + line.substring(indextheSound);
-						if (sounds.get(line.substring(0, indextheSound)) == null) {
+						int soundId = playPads.soundPool.load(sound, 1);
+                        if (sounds.get(line.substring(0, indextheSound)) == null) {
                             List<Integer> soundSec = new ArrayList<Integer>();
-                            soundSec.add(playPads.soundPool.load(sound, 1));
+                            soundSec.add(soundId);
 							sounds.put(line.substring(0, indextheSound), soundSec);
 							playPads.chainClickable.put(line.substring(indexPad, indextheSound), null);
 						} else {
-							sounds.get(line.substring(0, indextheSound)).add(playPads.soundPool.load(sound, 1));
+							sounds.get(line.substring(0, indextheSound)).add(soundId);
 						}
+                        if (ifToChain.matches("1([1-9]|[1-2][0-9])"))
+							playPads.toChainPool.put(soundId, ifToChain.substring(1));
 					//	System.out.println("FNL "+toChain + " "+line);
 					} else {
 						playPads.invalid_formats.add("("+keySound.getName()+")"+context.getString(R.string.invalid_sound) + " " + line);
@@ -317,9 +322,9 @@ public class Readers {
 			BufferedReader autoplayReader = new BufferedReader(new FileReader(autoPlay));
 			String line = autoplayReader.readLine();
 			while (line != null) {
-				if (!line.replace(" ", "").isEmpty()) {
-					line = line.replace("chain", "c").replace(" ", "");
-					if (checkAutoPlayFormat(line.replace(" ", ""))) {
+				if (!line.replaceAll(" ", "").isEmpty()) {
+					line = line.replaceAll("chain", "c").replaceAll(" ", "").replaceAll("delay", "d").replaceAll("off", "f");
+					if (checkAutoPlayFormat(line)) {
 						if (line.replace(" ", "").substring(0, 1).equalsIgnoreCase("c"))
 							chain = VariaveisStaticas.chainsIDlist.get(Integer.parseInt(line.substring(1)));
 						line = chain + line;

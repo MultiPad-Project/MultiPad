@@ -105,6 +105,7 @@ public class GetFilesTask extends AsyncTask<Void, Void, Boolean> {
                 if(playPads.useSoundPool){
                     playPads.soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
                     playPads.streamsPool = new HashMap<String, Integer>();
+                    playPads.toChainPool = new HashMap<Integer, String>();
                     playPads.keySoundPool = Readers.readKeySoundsPool(context, file, file.getParent() + "/sounds");
                 } else {
 					playPads.keySound = Readers.readKeySounds(context, file, file.getParent() + "/sounds");

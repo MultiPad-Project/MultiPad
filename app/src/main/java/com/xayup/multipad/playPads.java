@@ -65,6 +65,7 @@ public class playPads extends Activity {
 
 	public static Map<String, List<MediaItem>> keySound;
     public static Map<String, List<Integer>> keySoundPool;
+    public static Map<Integer, String> toChainPool;
     public static Map<String, Integer> streamsPool;
 	public static Map<String, MediaPlayer> padPlayer;
 	public static Map<Integer, Integer> soundrpt;

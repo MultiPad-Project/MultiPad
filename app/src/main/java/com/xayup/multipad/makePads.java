@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Environment;
 import android.text.Layout;
+import android.util.Log;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
@@ -13,6 +14,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.upstream.PlaceholderDataSource;
+import com.xayup.multipad.ledTask;
 import java.lang.reflect.Parameter;
 import java.util.*;
 import android.app.*;
@@ -495,7 +497,18 @@ public class makePads {
 						if ((playPads.autoPlayThread == null) || !((String) playPads.chainSl + "9" + view.getId())
 								.equals("" + playPads.autoPlayThread.padWaiting))
 							view.findViewById(R.id.press).setAlpha(0.0f);
-						break;
+						//Stop led 0 looper
+                        try {
+                            playPads.threadMap.get(playPads.chainSl+ view.getId()).stopZeroLooper();
+                        } catch (NullPointerException n){
+                            Log.e("Stop zero looper", n.getStackTrace()[0].toString());
+                        }
+                        if(playPads.keySound == null){
+                            
+                        } else {
+                            
+                        }
+                        break;
 					case MotionEvent.ACTION_MOVE:
 						if (playPads.slideMode) {
 							float x = motionEvent.getX();
@@ -582,7 +595,7 @@ public class makePads {
 		int viewId = view.getId();
 		String pad = playPads.chainSl + view.getId();
         playing_exo = pad;
-		System.out.println(view.getId());
+        String toChain = null;
 		//Pad press watermark
 		if (playPads.pressLed)
 			view.findViewById(R.id.press).setAlpha(1.0f);
@@ -591,14 +604,16 @@ public class makePads {
 		if ((playPads.autoPlayThread != null) && playPads.autoPlayThread.isPaused()) {
 			playPads.autoPlayThread.touch(Integer.parseInt(playPads.chainId + "" + view.getId()));
 		}
-
+        
 		if ((playPads.keySound != null) && (playPads.keySound.containsKey(pad)) || (playPads.keySoundPool != null) && (playPads.keySoundPool.containsKey(pad))) {
 		    if(playPads.useSoundPool){
                 //SoundPool
                 try {playPads.soundPool.stop(playPads.streamsPool.get(pad));} catch (NullPointerException n){playPads.soundrpt.put(viewId, 0);}
-                playPads.streamsPool.put(pad, playPads.soundPool.play(playPads.keySoundPool.get(pad).get(playPads.soundrpt.get(viewId)), 1f, 1f, 1, 0, 1f ));
+                int soundId = playPads.keySoundPool.get(pad).get(playPads.soundrpt.get(viewId));
+                playPads.streamsPool.put(pad, playPads.soundPool.play(soundId, 1f, 1f, 1, 0, 1f ));
                 if (playPads.keySoundPool.get(pad).size() == playPads.soundrpt.get(viewId) + 1)
 				playPads.soundrpt.put(viewId, 0); else playPads.soundrpt.put(viewId, playPads.soundrpt.get(viewId) + 1);
+                toChain = playPads.toChainPool.get(soundId);
             } else {
                 //ExoPlayer
         	if (playPads.exoplayers.get(pad) != null) {
@@ -611,7 +626,6 @@ public class makePads {
 				playPads.soundrpt.put(viewId, 0);
 			}
 			ExoPlayer exo = new ExoPlayer.Builder(context).setPauseAtEndOfMediaItems(true).build();
-
 			exo.addMediaItem(playPads.keySound.get(pad).get(playPads.soundrpt.get(viewId)));
 			exo.prepare();
 			playPads.soundrpt.put(viewId, playPads.soundrpt.get(viewId) + 1);
@@ -629,11 +643,14 @@ public class makePads {
 			});
 			playPads.exoplayers.put(pad, exo);
 			exo.play();
-			String mediaId = playPads.exoplayers.get(pad).getCurrentMediaItem().mediaId;
-			if (mediaId != "")
-				XayUpFunctions.touchAndRelease(context, Integer.parseInt(chainsID.get(Integer.parseInt(mediaId))));
-        	}
+            
+			}
         }
+        //Chain automatico
+			if (toChain != null && toChain != "")
+				XayUpFunctions.touchAndRelease(context, Integer.parseInt(chainsID.get(Integer.parseInt(toChain))), XayUpFunctions.TOUCH_AND_RELEASE);
+        toChain = null;
+        //Show leds
 		if (((!playPads.stopAll) && playPads.ledFiles != null) && playPads.ledFiles.get(pad) != null) {
 			if ((playPads.ledrpt.get(view.getId() + "") == null)
 					|| playPads.ledFiles.get(pad).size() == playPads.ledrpt.get(view.getId() + "")) {

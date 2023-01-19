@@ -57,7 +57,8 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//	decorView = getWindow().getDecorView();
+		
+        //	decorView = getWindow().getDecorView();
 		if (logRastreador()) {
 			setContentView(R.layout.crash);
 

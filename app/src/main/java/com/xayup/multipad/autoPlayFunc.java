@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ public class autoPlayFunc {
 	protected final int REQUEST_BTN = 0;
 	protected final int REQUEST_CHAIN = 1;
 	protected final int REQUEST_PRATICLE = 2;
+    protected int touch_type = 0;
 	private boolean request_returnto_chain; //(Pratica) True se a chain requerida ainda nao foi selecionada
 	private boolean chainChanged;
 	private int waitViewId;
@@ -91,7 +93,7 @@ public class autoPlayFunc {
 			touch(0);
 		}
 	}
-	
+    
 	protected void chainChanged(){
 		if(!((String)""+playPads.chainId).equals(chain))
 			if(!request_returnto_chain){
@@ -127,28 +129,26 @@ public class autoPlayFunc {
 					case REQUEST_BTN:
 						((ImageView)touchInView.findViewById(R.id.press)).setAlpha(alpha);
 						((ImageView)touchInView.findViewById(R.id.press)).setImageDrawable(SkinTheme.btn_);
-					//	 if(((String)""+padWaiting).substring(0, 2) != playPads.autoPlay.get(lineInt).substring(0, 2))  context.findViewById(Integer.parseInt(chain)) ;
-						break;
+				        break;
 					default:
 						((ImageView)touchInView.findViewById(R.id.press)).setAlpha(1.0f);
 						((ImageView)touchInView.findViewById(R.id.press)).setImageDrawable(new ColorDrawable(Color.GREEN));
 						break;
 				}
 			}
-			
-		});
+        });
 	}
-	private void runPlay(final int ViewId){
+	private void runPlay(final int ViewId, final int TOUCH){
 		context.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				View touchInView = context.findViewById(ViewId);
-				touchInView.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
-				touchInView.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
-			}
+				View v = context.findViewById(ViewId);
+                            v.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0));
+			            	v.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
+                }
 		});
 	}
-	private void autoplaEvents(final int ViewId, final int request){
+	private void autoplaEvents(final int ViewId, final int request, int TOUCH){
 		if(paused.get()){
 			padWaiting = Integer.parseInt(chain+ViewId);
 			pausedEvents(ViewId, Color.GREEN, 1.0f, REQUEST_PRATICLE);
@@ -160,95 +160,117 @@ public class autoPlayFunc {
 				chainChanged = false;
 				waitViewId = ViewId;
 				waitRequest = request;
-				autoplaEvents(Integer.parseInt(chain), REQUEST_CHAIN);
+				autoplaEvents(Integer.parseInt(chain), REQUEST_CHAIN, TOUCH);
 			}
 			if((chainChanged == false) && (request_returnto_chain == true)){
 				request_returnto_chain = false;
-				autoplaEvents(waitViewId, waitRequest);
+				autoplaEvents(waitViewId, waitRequest, TOUCH);
 			} 
 		} else {
-			runPlay(ViewId);
+            //runPlay(ViewId, TOUCH);
+            XayUpFunctions.touchAndRelease(context, ViewId, TOUCH);
 		}
 	}
     public void play(){
-        final Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
+    final Thread thread =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
                 time = SystemClock.uptimeMillis();
                 int delay = 0;
                 int touchViewId = 3;
                 View touchInView;
-				running.set(true);
-				paused.set(false);
-				String line = null;
-				boolean inDelay = false;
-                for(lineInt = 0; lineInt < autoplaySize; lineInt++) {
-					if(!playPads.progressAutoplay.getStatePressed()){
-						progressUpadate();
-					}
-					line = playPads.autoPlay.get(lineInt);
-                    if (running.get()) {
-                        line = line.replace(" ", "").toLowerCase();
-                        if (!line.isEmpty()) {
-							//System.out.println(line);
-							chain = line.substring(0, 2);
-							int request = REQUEST_BTN;
-                            switch (line.substring(2, 3)) {
-                                case "c":
-                                    touchViewId = Integer.parseInt(VariaveisStaticas.chainsIDlist.get(Integer.parseInt(line.substring(3))));//obtem o id da chain a partir da selecao
-									request = REQUEST_CHAIN;
-								//	autoplaEvents(touchViewId, REQUEST_CHAIN);
-                                	inDelay = false;
-                                    break;
-                                case "d":
-                                    delay = Integer.parseInt(line.substring(line.indexOf("d")+1));
-									inDelay = true;
-                                    break;
-                                case "f":
-                                    break;
-                                default:	
-                                	touchViewId = Integer.parseInt(line.substring(line.length() - 2));
-                                	if(!(((String)""+playPads.chainId).equals(chain) && paused.get()))
-										runPlay(Integer.parseInt(chain));
-								//	autoplaEvents(touchViewId, REQUEST_BTN);
-								    inDelay=false;
-                                    break;
-                            }
-							if(!inDelay){
-								autoplaEvents(touchViewId, request);
-							}
-							time = SystemClock.uptimeMillis();
-							time += delay;
-							delay = 0;
-					
-								while (((running.get()) && !paused.get()) && SystemClock.uptimeMillis() < time && !seekChange) {
-								}
-								seekChange = false;
-										
-                        }
-                    } else {
-                        break;
+                running.set(true);
+                paused.set(false);
+                String line = null;
+                boolean inDelay = false;
+                for (lineInt = 0; lineInt < autoplaySize; lineInt++) {
+                  if (!playPads.progressAutoplay.getStatePressed()) {
+                    progressUpadate();
+                  }
+                  line = playPads.autoPlay.get(lineInt);
+                  if (running.get()) {
+                    line = line.replace(" ", "").toLowerCase();
+                    if (!line.isEmpty()) {
+                      chain = line.substring(0, 2);
+                      int request = REQUEST_BTN;
+                                /*
+                                padEvent e o evento que o autoplay repassa. Exemplo: "o" e "ON" (press), "f" e "OFF" (Release) and "t" e "TOCUH" (Touch and release))
+                                */
+                                String padEvent = line.substring(2, 3);
+                      switch (padEvent) {
+                        case "c":
+                          touchViewId =
+                              Integer.parseInt(
+                                  VariaveisStaticas.chainsIDlist.get(
+                                      Integer.parseInt(line.substring(3))));
+                          request = REQUEST_CHAIN;
+                          inDelay = false;
+                          break;
+                        case "d":
+                          delay = Integer.parseInt(line.substring(line.indexOf("d") + 1));
+                          inDelay = true;
+                          break;
+                        default:
+                          inDelay = false;
+                          touchViewId = Integer.parseInt(line.substring(line.length() - 2));
+                          if (!(((String) "" + playPads.chainId).equals(chain) && paused.get()))
+                            XayUpFunctions.touchAndRelease(context, Integer.parseInt(chain), XayUpFunctions.TOUCH_AND_RELEASE);
+                          Log.e("Default", "default");
+                                    switch(padEvent){
+                                        case "f":
+                              touch_type = XayUpFunctions.RELEASE;
+                              Log.e("Touch", "Release");
+                                        break;
+                            case "t":
+                              touch_type = XayUpFunctions.TOUCH_AND_RELEASE;
+                              Log.e("Touch", "Touch and Release");
+                                        break;
+                            case "o":
+                              touch_type = XayUpFunctions.TOUCH;
+                              Log.e("Touch", "Touch");
+                                        break;
+                                    }
+                          break;
+                      }
+                      Log.e("AAAAAAAAA", "AAAAAAAAA");
+                      if (!inDelay) {
+                        autoplaEvents(touchViewId, request, touch_type);
+                      }
+                      time = SystemClock.uptimeMillis();
+                      time += delay;
+                      delay = 0;
+                      while (((running.get()) && !paused.get())
+                          && SystemClock.uptimeMillis() < time
+                          && !seekChange) {}
+                      seekChange = false;
                     }
-                    
+                  } else {
+                    break;
+                  }
                 }
-				context.runOnUiThread(new Runnable(){
-					@Override
-					public void run(){
-						((ImageView)context.findViewById(3).findViewById(R.id.press)).setAlpha(0.0f);
-						((RelativeLayout)context.findViewById(4)).removeView(context.findViewById(3004));
-						((RelativeLayout)context.findViewById(5)).removeView(context.findViewById(3005));
-						((RelativeLayout)context.findViewById(6)).removeView(context.findViewById(3006));
-						
-						playPads.autoPlayCheck = false;
-						padWaiting = -1;
-						((SeekBar)playPads.progressAutoplay).setVisibility(View.GONE);
-						stop();
-					}
-				});
-            }
-        });
+                context.runOnUiThread(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        ((ImageView) context.findViewById(3).findViewById(R.id.press))
+                            .setAlpha(0.0f);
+                        ((RelativeLayout) context.findViewById(4))
+                            .removeView(context.findViewById(3004));
+                        ((RelativeLayout) context.findViewById(5))
+                            .removeView(context.findViewById(3005));
+                        ((RelativeLayout) context.findViewById(6))
+                            .removeView(context.findViewById(3006));
+
+                        playPads.autoPlayCheck = false;
+                        padWaiting = -1;
+                        ((SeekBar) playPads.progressAutoplay).setVisibility(View.GONE);
+                        stop();
+                      }
+                    });
+              }
+            });
         thread.start();
-
     }
-
 }

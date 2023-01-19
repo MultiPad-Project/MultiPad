@@ -58,13 +58,13 @@ public class keyLedColors {
 
     public void readKeyLed(int rpt, String cpled, Activity context, View root){
 		
-		if((playPads.threadMap.get(cpled.substring(1)) != null) && !playPads.spamLeds && playPads.threadMap.get(cpled.substring(1)).isRunning()){
+		if((playPads.threadMap.get(cpled) != null) && !playPads.spamLeds && playPads.threadMap.get(cpled).isRunning()){
 		//	try{
-				playPads.threadMap.get(cpled.substring(1)).stop();
+				playPads.threadMap.get(cpled).stop();
 		//	} catch (InterruptedException i){}
 		}
-		playPads.threadMap.put(cpled.substring(1), null);
-		playPads.threadMap.put(cpled.substring(1), new ThreadLed(context, cpled, rpt, root));
-		playPads.threadMap.get(cpled.substring(1)).start();
+		playPads.threadMap.put(cpled, null);
+		playPads.threadMap.put(cpled, new ThreadLed(context, cpled, rpt, root));
+		playPads.threadMap.get(cpled).start();
     }
 }

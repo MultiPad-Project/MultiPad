@@ -15,3 +15,6 @@ local.properties
 .androidide
 build/
 */build/
+/app/build
+/app/build/*
+app/build/*
