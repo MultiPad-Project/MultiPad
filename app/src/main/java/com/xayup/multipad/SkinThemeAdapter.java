@@ -14,11 +14,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.List;
 
-public class skinthmeAdapter extends BaseAdapter {
+public class SkinThemeAdapter extends BaseAdapter {
 	List<PackageInfo> packageinfo;
 	Activity context;
 
-	public skinthmeAdapter(Activity context, List<PackageInfo> packageinfo) {
+	public SkinThemeAdapter(Activity context, List<PackageInfo> packageinfo) {
 		this.context = context;
 		this.packageinfo = packageinfo;
 	}

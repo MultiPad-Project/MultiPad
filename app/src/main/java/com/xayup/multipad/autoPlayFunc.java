@@ -14,7 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.IntegerRes;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class autoPlayFunc {
+public class AutoPlayFunc {
     private Activity context;
 	private AtomicBoolean running;
 	private boolean touch;
@@ -33,13 +33,13 @@ public class autoPlayFunc {
 	private boolean chainChanged;
 	private int waitViewId;
 	private int waitRequest;
-    autoPlayFunc(Activity context){
+    AutoPlayFunc(Activity context){
         this.context = context;
 		running = new AtomicBoolean(false);
 		paused = new AtomicBoolean(false);
 		touch = false;
 		lineInt = 0;
-		autoplaySize = playPads.autoPlay.size();
+		autoplaySize = PlayPads.autoPlay.size();
 		time = 0;
 		padWaiting = 0;
 		chain = "19";
@@ -95,7 +95,7 @@ public class autoPlayFunc {
 	}
     
 	protected void chainChanged(){
-		if(!((String)""+playPads.chainId).equals(chain))
+		if(!((String)""+PlayPads.chainId).equals(chain))
 			if(!request_returnto_chain){
 				request_returnto_chain = true;
 				chainChanged = true;
@@ -113,7 +113,7 @@ public class autoPlayFunc {
 	}
 	
 	private void progressUpadate(){
-		playPads.progressAutoplay.setProgress(getProgress());
+		PlayPads.progressAutoplay.setProgress(getProgress());
 	}
 	
 	private void pausedEvents(final int ViewId, int color, float alpha, int request){
@@ -123,7 +123,7 @@ public class autoPlayFunc {
 				View touchInView = context.findViewById(ViewId);
 				switch(request){
 					case REQUEST_CHAIN:
-						((ImageView)touchInView.findViewById(R.id.press)).setAlpha(playPads.watermark);
+						((ImageView)touchInView.findViewById(R.id.press)).setAlpha(PlayPads.watermark);
 						((ImageView)touchInView.findViewById(R.id.press)).setImageDrawable(context.getDrawable(R.drawable.currentchain));
 						break;
 					case REQUEST_BTN:
@@ -153,7 +153,7 @@ public class autoPlayFunc {
 			padWaiting = Integer.parseInt(chain+ViewId);
 			pausedEvents(ViewId, Color.GREEN, 1.0f, REQUEST_PRATICLE);
 			while((isRunning()) && paused.get() && !chainChanged && !touch && !seekChange){}
-			pausedEvents(ViewId, 0, playPads.padPressAlpha, request);
+			pausedEvents(ViewId, 0, PlayPads.padPressAlpha, request);
 			touch = false;
 			seekChange = false;
 			if(chainChanged){
@@ -186,10 +186,10 @@ public class autoPlayFunc {
                 String line = null;
                 boolean inDelay = false;
                 for (lineInt = 0; lineInt < autoplaySize; lineInt++) {
-                  if (!playPads.progressAutoplay.getStatePressed()) {
+                  if (!PlayPads.progressAutoplay.getStatePressed()) {
                     progressUpadate();
                   }
-                  line = playPads.autoPlay.get(lineInt);
+                  line = PlayPads.autoPlay.get(lineInt);
                   if (running.get()) {
                     line = line.replace(" ", "").toLowerCase();
                     if (!line.isEmpty()) {
@@ -215,7 +215,7 @@ public class autoPlayFunc {
                         default:
                           inDelay = false;
                           touchViewId = Integer.parseInt(line.substring(line.length() - 2));
-                          if (!(((String) "" + playPads.chainId).equals(chain) && paused.get()))
+                          if (!(((String) "" + PlayPads.chainId).equals(chain) && paused.get()))
                             XayUpFunctions.touchAndRelease(context, Integer.parseInt(chain), XayUpFunctions.TOUCH_AND_RELEASE);
                           Log.e("Default", "default");
                                     switch(padEvent){
@@ -263,9 +263,9 @@ public class autoPlayFunc {
                         ((RelativeLayout) context.findViewById(6))
                             .removeView(context.findViewById(3006));
 
-                        playPads.autoPlayCheck = false;
+                        PlayPads.autoPlayCheck = false;
                         padWaiting = -1;
-                        ((SeekBar) playPads.progressAutoplay).setVisibility(View.GONE);
+                        ((SeekBar) PlayPads.progressAutoplay).setVisibility(View.GONE);
                         stop();
                       }
                     });

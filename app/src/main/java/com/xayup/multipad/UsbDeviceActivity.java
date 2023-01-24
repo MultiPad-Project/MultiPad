@@ -16,7 +16,7 @@ import android.widget.*;
 import android.view.*;
 import android.content.*;
 import com.xayup.multipad.MidiStaticVars;
-import com.xayup.multipad.playPads;
+import com.xayup.multipad.PlayPads;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class UsbDeviceActivity extends Activity {
 	int activity = 0;
 
 	//Dados para envio
-	public Activity padsActivity = new playPads();
+	public Activity padsActivity = new PlayPads();
 
 	@Override
 	public void onCreate(Bundle instance) {

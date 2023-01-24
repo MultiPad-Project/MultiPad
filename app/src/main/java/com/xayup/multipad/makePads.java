@@ -14,7 +14,6 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.upstream.PlaceholderDataSource;
-import com.xayup.multipad.ledTask;
 import java.lang.reflect.Parameter;
 import java.util.*;
 import android.app.*;
@@ -22,7 +21,7 @@ import android.app.*;
 import android.media.*;
 import java.io.*;
 
-public class makePads {
+public class MakePads {
 	private Activity context;
 	public static ImageView phantom;
 	public static ImageView btn;
@@ -37,8 +36,7 @@ public class makePads {
 	Readers read = new Readers();
 	public static GridLayout layoutpads;
 	private String currentProj;
-	private playPads obt = new playPads();
-	private keyLedColors ledLight;
+	private KeyLedColors ledLight;
 	private int ViewID;
 	private int largura;
 	private int multiplicadorX = 1; //slide
@@ -56,7 +54,7 @@ public class makePads {
 	private final int SLIDE_LIMIT_X = 2;
 	private final int SLIDE_LIMIT_Y = 3;
 
-	public makePads(String currentPath, int ViewID, final int largura, Activity activity) {
+	public MakePads(String currentPath, int ViewID, final int largura, Activity activity) {
 		this.context = activity;
 		this.currentProj = currentPath;
 		this.ViewID = ViewID;
@@ -65,7 +63,7 @@ public class makePads {
 	}
 
 	public void makePadInLayout() {
-		playPads.chainSl = "1";
+		PlayPads.chainSl = "1";
 		chainsID = Arrays.asList(VariaveisStaticas.chainsID);
 		int padWH = largura / 10;
 		layoutpads = (GridLayout)context.findViewById(ViewID);
@@ -81,7 +79,7 @@ public class makePads {
 				vparam.width = 0;
 				
 				RelativeLayout layoutpad = (RelativeLayout)context.getLayoutInflater().inflate(R.layout.pad, null);
-				//playPads.pad = LayoutInflater.from(context).inflate(R.layout.pad, null);
+				//PlayPads.pad = LayoutInflater.from(context).inflate(R.layout.pad, null);
 				RelativeLayout cantov = null;// new RelativeLayout(context); 
 				float alpha = 0;
 				final ImageView chainCurrent = layoutpad.findViewById(R.id.press);
@@ -120,10 +118,10 @@ public class makePads {
 						SkinTheme.chainsled.add(phantom);
 					}
 				} else {
-					//playPads.padPlayer.put(l + "" + c, new MediaPlayer());
-					//	playPads.exoplayers.put(l+""+c, null);
-					playPads.ledrpt.put(l + "" + c, 0);
-					//		playPads.soundrpt.put(l + "" + c, 0);
+					//PlayPads.padPlayer.put(l + "" + c, new MediaPlayer());
+					//	PlayPads.exoplayers.put(l+""+c, null);
+					PlayPads.ledrpt.put(l + "" + c, 0);
+					//		PlayPads.soundrpt.put(l + "" + c, 0);
 					boolean center = true;
 					phantom = layoutpad.findViewById(R.id.phantom);
 					switch (l + "" + c) {
@@ -203,12 +201,12 @@ public class makePads {
 				public boolean onTouch(View arg0, MotionEvent arg1) {
 					if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
 						ImageView state = arg0.findViewById(R.id.press);
-						if (playPads.pressLed) {
-							playPads.pressLed = false;
+						if (PlayPads.pressLed) {
+							PlayPads.pressLed = false;
 							state.setAlpha(0.0f);
 						} else {
-							playPads.pressLed = true;
-							state.setAlpha(playPads.watermark);
+							PlayPads.pressLed = true;
+							state.setAlpha(PlayPads.watermark);
 						}
 						return true;
 					} else {
@@ -224,15 +222,15 @@ public class makePads {
 					if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 						int viewId = view.getId();
 						ImageView press = view.findViewById(R.id.press);
-						if (!playPads.stopAll) {
+						if (!PlayPads.stopAll) {
 							press.setAlpha(0.0f);
-							playPads.stopAll = true;
+							PlayPads.stopAll = true;
 							XayUpFunctions.stopSounds();
 							XayUpFunctions.clearLeds(context, view.getRootView());
 						} else {
 							press.setImageDrawable(context.getDrawable(R.drawable.currentchain));
-							press.setAlpha(playPads.watermark);
-							playPads.stopAll = false;
+							press.setAlpha(PlayPads.watermark);
+							PlayPads.stopAll = false;
 
 						}
 						return true;
@@ -245,47 +243,47 @@ public class makePads {
 			return new OnTouchListener() {
 				@Override
 				public boolean onTouch(View view, MotionEvent motionEvent) {
-					if ((playPads.autoPlay != null) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+					if ((PlayPads.autoPlay != null) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 						int viewId = view.getId();
 						ImageView press = view.findViewById(R.id.press);
 						RelativeLayout prev = view.getRootView().findViewById(4);
 						RelativeLayout pause = view.getRootView().findViewById(5);
 						RelativeLayout next = view.getRootView().findViewById(6);
-						if (playPads.autoPlayCheck) {
+						if (PlayPads.autoPlayCheck) {
 							prev.removeView(context.findViewById(3004));
 							pause.removeView(context.findViewById(3005));
 							next.removeView(context.findViewById(3006));
 							press.setAlpha(0.0f);
-							playPads.autoPlayThread.stop();
-							playPads.autoPlayCheck = false;
-							playPads.progressAutoplay.setVisibility(View.GONE);
-							//		playPads.stopAll = true;
+							PlayPads.autoPlayThread.stop();
+							PlayPads.autoPlayCheck = false;
+							PlayPads.progressAutoplay.setVisibility(View.GONE);
+							//		PlayPads.stopAll = true;
 						} else {
-							playPads.progressAutoplay.setAlpha(playPads.watermark);
-							playPads.progressAutoplay.setVisibility(View.VISIBLE);
-							playPads.progressAutoplay.setProgress(0);
+							PlayPads.progressAutoplay.setAlpha(PlayPads.watermark);
+							PlayPads.progressAutoplay.setVisibility(View.VISIBLE);
+							PlayPads.progressAutoplay.setProgress(0);
 							ImageView prev_img = new ImageView(context);
 							prev_img.setId(3004);
 							prev_img.setImageDrawable(context.getDrawable(R.drawable.play_prev));
-							prev_img.setAlpha(playPads.watermark);
+							prev_img.setAlpha(PlayPads.watermark);
 							ImageView pause_img = new ImageView(context);
 							pause_img.setId(3005);
 							pause_img.setImageDrawable(context.getDrawable(R.drawable.play_pause));
-							pause_img.setAlpha(playPads.watermark);
+							pause_img.setAlpha(PlayPads.watermark);
 							ImageView next_img = new ImageView(context);
 							next_img.setId(3006);
 							next_img.setImageDrawable(context.getDrawable(R.drawable.play_prev));
 							next_img.setRotationY(180.0f);
-							next_img.setAlpha(playPads.watermark);
+							next_img.setAlpha(PlayPads.watermark);
 							prev.addView(prev_img);
 							pause.addView(pause_img);
 							next.addView(next_img);
 							press.setImageDrawable(context.getDrawable(R.drawable.currentchain));
-							press.setAlpha(playPads.watermark);
-							playPads.autoPlayCheck = true;
-							playPads.stopAll = false;
+							press.setAlpha(PlayPads.watermark);
+							PlayPads.autoPlayCheck = true;
+							PlayPads.stopAll = false;
 							//	System.out.println("btn play");
-							playPads.autoPlayThread.play();
+							PlayPads.autoPlayThread.play();
 						}
 						return true;
 					} else {
@@ -299,9 +297,9 @@ public class makePads {
 			return new OnTouchListener() {
 				@Override
 				public boolean onTouch(View view, MotionEvent motionEvent) {
-					if ((playPads.autoPlayCheck) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-						view.findViewById(R.id.press).setAlpha(playPads.watermark);
-						playPads.autoPlayThread.prev();
+					if ((PlayPads.autoPlayCheck) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+						view.findViewById(R.id.press).setAlpha(PlayPads.watermark);
+						PlayPads.autoPlayThread.prev();
 						//Toast.makeText(context, "prev", Toast.LENGTH_SHORT).show();
 						return true;
 					} else {
@@ -315,14 +313,14 @@ public class makePads {
 			return new OnTouchListener() {
 				@Override
 				public boolean onTouch(View view, MotionEvent motionEvent) {
-					if ((playPads.autoPlayCheck) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-						view.findViewById(R.id.press).setAlpha(playPads.watermark);
-						if (playPads.autoPlayThread.isPaused()) {
-							playPads.autoPlayThread.start();
+					if ((PlayPads.autoPlayCheck) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+						view.findViewById(R.id.press).setAlpha(PlayPads.watermark);
+						if (PlayPads.autoPlayThread.isPaused()) {
+							PlayPads.autoPlayThread.start();
 							((ImageView) view.findViewById(3005))
 									.setImageDrawable(context.getDrawable(R.drawable.play_pause));
 						} else {
-							playPads.autoPlayThread.pause();
+							PlayPads.autoPlayThread.pause();
 							((ImageView) view.findViewById(3005))
 									.setImageDrawable(context.getDrawable(R.drawable.play_play));
 						}
@@ -339,9 +337,9 @@ public class makePads {
 			return new OnTouchListener() {
 				@Override
 				public boolean onTouch(View view, MotionEvent motionEvent) {
-					if ((playPads.autoPlayCheck) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-						view.findViewById(R.id.press).setAlpha(playPads.watermark);
-						playPads.autoPlayThread.next();
+					if ((PlayPads.autoPlayCheck) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+						view.findViewById(R.id.press).setAlpha(PlayPads.watermark);
+						PlayPads.autoPlayThread.next();
 						//Toast.makeText(context, "next", Toast.LENGTH_SHORT).show();
 						return true;
 					} else {
@@ -360,18 +358,18 @@ public class makePads {
 						ImageView press = view.findViewById(R.id.press);
 						int visibility;
 						//make MK2 layout
-						if (!playPads.mk2) {
-							playPads.padWH = layoutpads.getLayoutParams().height / 9;
+						if (!PlayPads.mk2) {
+							PlayPads.padWH = layoutpads.getLayoutParams().height / 9;
 							visibility = View.GONE;
-						//	layoutpads.setColumnShrinkable(0, true);// = playPads.padWH;
-							playPads.mk2 = true;
+						//	layoutpads.setColumnShrinkable(0, true);// = PlayPads.padWH;
+							PlayPads.mk2 = true;
 							press.setImageDrawable(context.getDrawable(R.drawable.currentchain));
-							press.setAlpha(playPads.watermark);
+							press.setAlpha(PlayPads.watermark);
 						} else {
-							playPads.padWH = layoutpads.getLayoutParams().height / 10;
+							PlayPads.padWH = layoutpads.getLayoutParams().height / 10;
 							visibility = View.VISIBLE;
-						//	layoutpads.setColumnShrinkable(0, false);// = playPads.padWH;
-							playPads.mk2 = false;
+						//	layoutpads.setColumnShrinkable(0, false);// = PlayPads.padWH;
+							PlayPads.mk2 = false;
 							press.setAlpha(0.0f);
 						}
 						for(int i = 0; i < layoutpads.getRowCount(); i++){
@@ -386,8 +384,8 @@ public class makePads {
 						}
 						layoutpads.setVisibility(View.GONE);
 						layoutpads.setVisibility(View.VISIBLE);
-						if (playPads.glows != null)
-						playPads.glows.mk2Glows(0, playPads.padWH, playPads.mk2);
+						if (PlayPads.glows != null)
+						PlayPads.glows.mk2Glows(0, PlayPads.padWH, PlayPads.mk2);
 
 						return true;
 					} else {
@@ -400,27 +398,27 @@ public class makePads {
 				@Override
 				public boolean onTouch(View arg0, MotionEvent arg1) {
 					if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
-						if (playPads.watermark == 1.0f) {
-							playPads.watermark = 0.0f;
+						if (PlayPads.watermark == 1.0f) {
+							PlayPads.watermark = 0.0f;
 						} else {
-							playPads.watermark = 1.0f;
+							PlayPads.watermark = 1.0f;
 						}
-						if (playPads.autoPlayCheck)
-							arg0.getRootView().findViewById(3).findViewById(R.id.press).setAlpha(playPads.watermark);
-						if (playPads.mk2)
-							arg0.getRootView().findViewById(7).findViewById(R.id.press).setAlpha(playPads.watermark);
-						if (!playPads.stopAll)
-							arg0.getRootView().findViewById(2).findViewById(R.id.press).setAlpha(playPads.watermark);
-						if (playPads.pressLed)
-							arg0.getRootView().findViewById(1).findViewById(R.id.press).setAlpha(playPads.watermark);
-						if (playPads.progressAutoplay != null)
-							playPads.progressAutoplay.setAlpha(playPads.watermark);
-						arg0.getRootView().findViewById(playPads.chainId).findViewById(R.id.press)
-								.setAlpha(playPads.watermark);
+						if (PlayPads.autoPlayCheck)
+							arg0.getRootView().findViewById(3).findViewById(R.id.press).setAlpha(PlayPads.watermark);
+						if (PlayPads.mk2)
+							arg0.getRootView().findViewById(7).findViewById(R.id.press).setAlpha(PlayPads.watermark);
+						if (!PlayPads.stopAll)
+							arg0.getRootView().findViewById(2).findViewById(R.id.press).setAlpha(PlayPads.watermark);
+						if (PlayPads.pressLed)
+							arg0.getRootView().findViewById(1).findViewById(R.id.press).setAlpha(PlayPads.watermark);
+						if (PlayPads.progressAutoplay != null)
+							PlayPads.progressAutoplay.setAlpha(PlayPads.watermark);
+						arg0.getRootView().findViewById(PlayPads.chainId).findViewById(R.id.press)
+								.setAlpha(PlayPads.watermark);
 						if (arg0.getRootView().findViewById(4).findViewById(3004) != null) {
-							arg0.getRootView().findViewById(4).findViewById(3004).setAlpha(playPads.watermark);
-							arg0.getRootView().findViewById(5).findViewById(3005).setAlpha(playPads.watermark);
-							arg0.getRootView().findViewById(6).findViewById(3006).setAlpha(playPads.watermark);
+							arg0.getRootView().findViewById(4).findViewById(3004).setAlpha(PlayPads.watermark);
+							arg0.getRootView().findViewById(5).findViewById(3005).setAlpha(PlayPads.watermark);
+							arg0.getRootView().findViewById(6).findViewById(3006).setAlpha(PlayPads.watermark);
 						}
 						return true;
 					} else {
@@ -436,33 +434,33 @@ public class makePads {
 				public boolean onTouch(View view, MotionEvent motionEvent) {
 					if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 						int viewId = view.getId();
-						playPads.chainId = viewId;
-						if ((playPads.autoPlayThread != null) && playPads.autoPlayThread.isPaused()) {
-							playPads.autoPlayThread.chainChanged();
-							playPads.autoPlayThread.touch(Integer.parseInt(playPads.chainId + "" + view.getId()));
+						PlayPads.chainId = viewId;
+						if ((PlayPads.autoPlayThread != null) && PlayPads.autoPlayThread.isPaused()) {
+							PlayPads.autoPlayThread.chainChanged();
+							PlayPads.autoPlayThread.touch(Integer.parseInt(PlayPads.chainId + "" + view.getId()));
 						}
-						if (viewId != playPads.otherChain) {
-							playPads.chainSl = (String) "" + chainsID.indexOf(viewId + "");
-							//	Toast.makeText(context, playPads.chainSl, Toast.LENGTH_SHORT).show();
-							//	playPads.chainSl = ((viewId - 9) / 10) + "";
+						if (viewId != PlayPads.otherChain) {
+							PlayPads.chainSl = (String) "" + chainsID.indexOf(viewId + "");
+							//	Toast.makeText(context, PlayPads.chainSl, Toast.LENGTH_SHORT).show();
+							//	PlayPads.chainSl = ((viewId - 9) / 10) + "";
 
-							ImageView img = context.findViewById(playPads.otherChain).findViewById(R.id.press);
+							ImageView img = context.findViewById(PlayPads.otherChain).findViewById(R.id.press);
 							img.setAlpha(0.0f);
 							img = view.findViewById(R.id.press);
 							img.setImageDrawable(context.getDrawable(R.drawable.currentchain));
-							img.setAlpha(playPads.watermark);
-							playPads.otherChain = view.getId();
+							img.setAlpha(PlayPads.watermark);
+							PlayPads.otherChain = view.getId();
 
-							//	if ((playPads.autoPlayThread != null) && !playPads.autoPlayThread.isPaused()) {
-							for (String k : playPads.ledrpt.keySet()) {
-								playPads.ledrpt.put(k, 0);
+							//	if ((PlayPads.autoPlayThread != null) && !PlayPads.autoPlayThread.isPaused()) {
+							for (String k : PlayPads.ledrpt.keySet()) {
+								PlayPads.ledrpt.put(k, 0);
 							}
-							for (int pad : playPads.soundrpt.keySet()) {
-								playPads.soundrpt.put(pad, 0);
+							for (int pad : PlayPads.soundrpt.keySet()) {
+								PlayPads.soundrpt.put(pad, 0);
 							}
 							//	}
-							if (playPads.recAutoplay) {
-								AutoplayRecFunc.addChain(playPads.chainSl);
+							if (PlayPads.recAutoplay) {
+								AutoplayRecFunc.addChain(PlayPads.chainSl);
 							}
 						}
 
@@ -479,10 +477,10 @@ public class makePads {
 
 					switch (motionEvent.getAction()) {
 					case MotionEvent.ACTION_DOWN:
-						if (playPads.recAutoplay) {
+						if (PlayPads.recAutoplay) {
 							AutoplayRecFunc.autoPlayRecord(view.getId());
 						}
-						if (playPads.slideMode) {
+						if (PlayPads.slideMode) {
 							slidePad.put(view.getId(), new HashMap<Integer, Integer>());
 							slidePad.get(view.getId()).put(SLIDE_LIMIT_X, 0);
 							slidePad.get(view.getId()).put(SLIDE_LIMIT_Y, 0);
@@ -491,38 +489,38 @@ public class makePads {
 						playSound(view);
 						return true;
 					case MotionEvent.ACTION_UP:
-						playPads.padPressAlpha = 0.0f;
-						if (playPads.slideMode)
+						PlayPads.padPressAlpha = 0.0f;
+						if (PlayPads.slideMode)
 							view = context.findViewById(slidePad.get(view.getId()).get(SLIDE_PAD_ATUAL));
-						if ((playPads.autoPlayThread == null) || !((String) playPads.chainSl + "9" + view.getId())
-								.equals("" + playPads.autoPlayThread.padWaiting))
+						if ((PlayPads.autoPlayThread == null) || !((String) PlayPads.chainSl + "9" + view.getId())
+								.equals("" + PlayPads.autoPlayThread.padWaiting))
 							view.findViewById(R.id.press).setAlpha(0.0f);
 						//Stop led 0 looper
                         try {
-                            playPads.threadMap.get(playPads.chainSl+ view.getId()).stopZeroLooper();
+                            PlayPads.threadMap.get(PlayPads.chainSl+ view.getId()).stopZeroLooper();
                         } catch (NullPointerException n){
                             Log.e("Stop zero looper", n.getStackTrace()[0].toString());
                         }
-                        if(playPads.keySound == null){
+                        if(PlayPads.keySound == null){
                             
                         } else {
                             
                         }
                         break;
 					case MotionEvent.ACTION_MOVE:
-						if (playPads.slideMode) {
+						if (PlayPads.slideMode) {
 							float x = motionEvent.getX();
 							float y = motionEvent.getY();
 							int slidelimit_x = slidePad.get(view.getId()).get(SLIDE_LIMIT_X);
 							int slidelimit_y = slidePad.get(view.getId()).get(SLIDE_LIMIT_Y);
 							int padAtual = slidePad.get(view.getId()).get(SLIDE_PAD_ATUAL);
 							int olderPadAtual = padAtual;
-							int padWH = playPads.padWH;
+							int padWH = PlayPads.padWH;
 							if ((x > slidelimit_x + padWH || x < slidelimit_x)
 									|| (y > slidelimit_y + padWH || y < slidelimit_y)) {
-								if ((playPads.autoPlayThread == null)
-										|| !((String) playPads.chainSl + "9" + view.getId())
-												.equals("" + playPads.autoPlayThread.padWaiting))
+								if ((PlayPads.autoPlayThread == null)
+										|| !((String) PlayPads.chainSl + "9" + view.getId())
+												.equals("" + PlayPads.autoPlayThread.padWaiting))
 									context.findViewById(padAtual).findViewById(R.id.press).setAlpha(0.0f);
 								//if(x > slidelimit_x+padWH || x < slidelimit_x)
 								if (x > slidelimit_x + padWH) {
@@ -564,7 +562,7 @@ public class makePads {
 	}
 
 	public void changeChainPlayable() {
-		for (String chain : playPads.chainClickable.keySet()) {
+		for (String chain : PlayPads.chainClickable.keySet()) {
 			if (VariaveisStaticas.chainsIDlist.contains(chain)) {
 				int chainId = Integer.parseInt(chain);
 				context.findViewById(chainId).setOnTouchListener(new Button.OnTouchListener() {
@@ -572,14 +570,14 @@ public class makePads {
 					public boolean onTouch(View arg0, MotionEvent arg1) {
 						switch (arg1.getAction()) {
 						case MotionEvent.ACTION_DOWN:
-							if (playPads.recAutoplay) {
+							if (PlayPads.recAutoplay) {
 								AutoplayRecFunc.autoPlayRecord(arg0.getId());
 							}
 							playSound(arg0);
 							return true;
 						case MotionEvent.ACTION_UP:
-							if ((playPads.autoPlayThread == null) || !((String) playPads.chainSl + "9" + arg0.getId())
-									.equals("" + playPads.autoPlayThread.padWaiting))
+							if ((PlayPads.autoPlayThread == null) || !((String) PlayPads.chainSl + "9" + arg0.getId())
+									.equals("" + PlayPads.autoPlayThread.padWaiting))
 								arg0.findViewById(R.id.press).setAlpha(0.0f);
 							return true;
 						}
@@ -593,45 +591,45 @@ public class makePads {
     String playing_exo = "";
 	private void playSound(View view) {
 		int viewId = view.getId();
-		String pad = playPads.chainSl + view.getId();
+		String pad = PlayPads.chainSl + view.getId();
         playing_exo = pad;
         String toChain = null;
 		//Pad press watermark
-		if (playPads.pressLed)
+		if (PlayPads.pressLed)
 			view.findViewById(R.id.press).setAlpha(1.0f);
-		playPads.padPressAlpha = 1.0f;
+		PlayPads.padPressAlpha = 1.0f;
 
-		if ((playPads.autoPlayThread != null) && playPads.autoPlayThread.isPaused()) {
-			playPads.autoPlayThread.touch(Integer.parseInt(playPads.chainId + "" + view.getId()));
+		if ((PlayPads.autoPlayThread != null) && PlayPads.autoPlayThread.isPaused()) {
+			PlayPads.autoPlayThread.touch(Integer.parseInt(PlayPads.chainId + "" + view.getId()));
 		}
         
-		if ((playPads.keySound != null) && (playPads.keySound.containsKey(pad)) || (playPads.keySoundPool != null) && (playPads.keySoundPool.containsKey(pad))) {
-		    if(playPads.useSoundPool){
+		if ((PlayPads.keySound != null) && (PlayPads.keySound.containsKey(pad)) || (PlayPads.keySoundPool != null) && (PlayPads.keySoundPool.containsKey(pad))) {
+		    if(PlayPads.useSoundPool){
                 //SoundPool
-                try {playPads.soundPool.stop(playPads.streamsPool.get(pad));} catch (NullPointerException n){playPads.soundrpt.put(viewId, 0);}
-                int soundId = playPads.keySoundPool.get(pad).get(playPads.soundrpt.get(viewId));
-                playPads.streamsPool.put(pad, playPads.soundPool.play(soundId, 1f, 1f, 1, 0, 1f ));
-                if (playPads.keySoundPool.get(pad).size() == playPads.soundrpt.get(viewId) + 1)
-				playPads.soundrpt.put(viewId, 0); else playPads.soundrpt.put(viewId, playPads.soundrpt.get(viewId) + 1);
-                toChain = playPads.toChainPool.get(soundId);
+                try {PlayPads.soundPool.stop(PlayPads.streamsPool.get(pad));} catch (NullPointerException n){PlayPads.soundrpt.put(viewId, 0);}
+                int soundId = PlayPads.keySoundPool.get(pad).get(PlayPads.soundrpt.get(viewId));
+                PlayPads.streamsPool.put(pad, PlayPads.soundPool.play(soundId, 1f, 1f, 1, 0, 1f ));
+                if (PlayPads.keySoundPool.get(pad).size() == PlayPads.soundrpt.get(viewId) + 1)
+				PlayPads.soundrpt.put(viewId, 0); else PlayPads.soundrpt.put(viewId, PlayPads.soundrpt.get(viewId) + 1);
+                toChain = PlayPads.toChainPool.get(soundId);
             } else {
                 //ExoPlayer
-        	if (playPads.exoplayers.get(pad) != null) {
-				if (!playPads.spamSounds && playPads.exoplayers.get(pad).isPlaying()) {
-					//if(!playPads.spamSounds)
-					playPads.exoplayers.get(pad).pause();
-					playPads.exoplayers.get(pad).release();
+        	if (PlayPads.exoplayers.get(pad) != null) {
+				if (!PlayPads.spamSounds && PlayPads.exoplayers.get(pad).isPlaying()) {
+					//if(!PlayPads.spamSounds)
+					PlayPads.exoplayers.get(pad).pause();
+					PlayPads.exoplayers.get(pad).release();
 				}
 			} else {
-				playPads.soundrpt.put(viewId, 0);
+				PlayPads.soundrpt.put(viewId, 0);
 			}
 			ExoPlayer exo = new ExoPlayer.Builder(context).setPauseAtEndOfMediaItems(true).build();
-			exo.addMediaItem(playPads.keySound.get(pad).get(playPads.soundrpt.get(viewId)));
+			exo.addMediaItem(PlayPads.keySound.get(pad).get(PlayPads.soundrpt.get(viewId)));
 			exo.prepare();
-			playPads.soundrpt.put(viewId, playPads.soundrpt.get(viewId) + 1);
-			//	playPads.exoplayers.get(pad).seekTo(playPads.soundrpt.get(view.getId()), C.TIME_UNSET);
-			if (playPads.keySound.get(pad).size() == playPads.soundrpt.get(viewId))
-				playPads.soundrpt.put(viewId, 0);
+			PlayPads.soundrpt.put(viewId, PlayPads.soundrpt.get(viewId) + 1);
+			//	PlayPads.exoplayers.get(pad).seekTo(PlayPads.soundrpt.get(view.getId()), C.TIME_UNSET);
+			if (PlayPads.keySound.get(pad).size() == PlayPads.soundrpt.get(viewId))
+				PlayPads.soundrpt.put(viewId, 0);
 
 			exo.addListener(new ExoPlayer.Listener() {
 				@Override
@@ -641,7 +639,7 @@ public class makePads {
 					}
 				}
 			});
-			playPads.exoplayers.put(pad, exo);
+			PlayPads.exoplayers.put(pad, exo);
 			exo.play();
             
 			}
@@ -651,13 +649,13 @@ public class makePads {
 				XayUpFunctions.touchAndRelease(context, Integer.parseInt(chainsID.get(Integer.parseInt(toChain))), XayUpFunctions.TOUCH_AND_RELEASE);
         toChain = null;
         //Show leds
-		if (((!playPads.stopAll) && playPads.ledFiles != null) && playPads.ledFiles.get(pad) != null) {
-			if ((playPads.ledrpt.get(view.getId() + "") == null)
-					|| playPads.ledFiles.get(pad).size() == playPads.ledrpt.get(view.getId() + "")) {
-				playPads.ledrpt.put(view.getId() + "", 0);
+		if (((!PlayPads.stopAll) && PlayPads.ledFiles != null) && PlayPads.ledFiles.get(pad) != null) {
+			if ((PlayPads.ledrpt.get(view.getId() + "") == null)
+					|| PlayPads.ledFiles.get(pad).size() == PlayPads.ledrpt.get(view.getId() + "")) {
+				PlayPads.ledrpt.put(view.getId() + "", 0);
 			}
-			playPads.ledFunc.readKeyLed(playPads.ledrpt.get(view.getId() + ""), pad, context, view.getRootView());
-			playPads.ledrpt.put(view.getId() + "", playPads.ledrpt.get(view.getId() + "") + 1);
+			PlayPads.ledFunc.readKeyLed(PlayPads.ledrpt.get(view.getId() + ""), pad, context, view.getRootView());
+			PlayPads.ledrpt.put(view.getId() + "", PlayPads.ledrpt.get(view.getId() + "") + 1);
 		}
 	}
 }

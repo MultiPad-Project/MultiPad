@@ -117,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@id/main_floating_item_useunipadfolder_title"
+                android:layout_below="@id/main_floating_item_usesoundpool_title"
                 android:text="@string/use_soundpool_subtitle"
                 android:textColor="@color/secondary_text_material_dark"
                 android:textSize="12dp" />

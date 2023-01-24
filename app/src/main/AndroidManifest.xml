@@ -35,16 +35,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.xayup.multipad.playPads"
+            android:name="com.xayup.multipad.PlayPads"
             android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|    screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize"
             android:label="play"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@style/FullScreenApp" >
-        </activity>
-        <activity
-            android:name="com.xayup.multipad.crashApp"
-            android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|   screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize"
-            android:label="crash"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/FullScreenApp" >
         </activity>

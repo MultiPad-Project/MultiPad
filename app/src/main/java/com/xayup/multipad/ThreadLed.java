@@ -88,18 +88,18 @@ public class ThreadLed implements Runnable {
 						@Override
 						public void run() {
 							ImageView pad = context.findViewById(padid).findViewById(R.id.led);
-							int color = VariaveisStaticas.colorInt(corCode, playPads.custom_color_table, playPads.oldColors);
+							int color = VariaveisStaticas.colorInt(corCode, PlayPads.custom_color_table, PlayPads.oldColors);
 							byte NOTE = MidiStaticVars.NOTE_ON;
 							if(corCode == 0) NOTE = MidiStaticVars.NOTE_OFF;
-							if(playPads.glowEf && padid != 9){
+							if(PlayPads.glowEf && padid != 9){
 									ImageView glowEF = context.findViewById(Integer.parseInt("100"+padid));
 									if(color == 0){
 										glowEF.setAlpha(0.0f);
 									} else {
 										if(MC){
-											glowEF.setAlpha(playPads.glowChainIntensity);
+											glowEF.setAlpha(PlayPads.glowChainIntensity);
 										} else {
-											glowEF.setAlpha(playPads.glowIntensity);
+											glowEF.setAlpha(PlayPads.glowIntensity);
 										}
 										
 										glowEF.setColorFilter(color);
@@ -126,28 +126,28 @@ public class ThreadLed implements Runnable {
     
 	@Override
 	public void run() {
-		if (playPads.ledFiles.get(cpled) != null) {
+		if (PlayPads.ledFiles.get(cpled) != null) {
 			long time = SystemClock.uptimeMillis();
 			boolean nobreak = true;
 			boolean delay = false;
             int indexLoop = 1;
             try {
-                loop = Integer.parseInt(playPads.ledFiles.get(cpled).get(rpt).get(0));
+                loop = Integer.parseInt(PlayPads.ledFiles.get(cpled).get(rpt).get(0));
                 } catch (NumberFormatException n){
                     loop = 1;
                 } catch (IndexOutOfBoundsException i){}
 			String line;
             looper: while(true){
-            for (int i = 1; i < playPads.ledFiles.get(cpled).get(rpt).size(); i++) {
-                line = playPads.ledFiles.get(cpled).get(rpt).get(i);
-				if (!isRunning() || playPads.stopAll) {
+            for (int i = 1; i < PlayPads.ledFiles.get(cpled).get(rpt).size(); i++) {
+                line = PlayPads.ledFiles.get(cpled).get(rpt).get(i);
+				if (!isRunning() || PlayPads.stopAll) {
                     if(loop == 0)
-                        offCurrentLedLoop(playPads.ledFiles.get(cpled).get(rpt));
+                        offCurrentLedLoop(PlayPads.ledFiles.get(cpled).get(rpt));
                     else
 				    	XayUpFunctions.clearLeds(context, root);
 					break looper;
 				}
-				//	String line = playPads.ledFiles.get(cpled).get(rpt).get(i);
+				//	String line = PlayPads.ledFiles.get(cpled).get(rpt).get(i);
 				delay = false;
 				int padId = 0;
 				int corcode = 0;
@@ -163,7 +163,7 @@ public class ThreadLed implements Runnable {
 					} else {
 						padId = Integer.parseInt(line.substring(1, 3));
 					}
-				//	playPads.ledOcuped.add(padId);
+				//	PlayPads.ledOcuped.add(padId);
 					corcode = Integer.parseInt(line.substring(line.indexOf("a") + 1));
 					if (corcode > 127) {
 						corcode = 0;
@@ -187,7 +187,7 @@ public class ThreadLed implements Runnable {
 					delay = true;
 					break;
 				}
-				while ((SystemClock.uptimeMillis() < time) && (!playPads.stopAll) && isRunning()) {
+				while ((SystemClock.uptimeMillis() < time) && (!PlayPads.stopAll) && isRunning()) {
 				}
 
 				if (!delay) {

@@ -14,7 +14,7 @@ import android.widget.ListView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.xayup.multipad.playPads;
+import com.xayup.multipad.PlayPads;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class SkinTheme {
 
 	private static List<PackageInfo> listSkinsPackage;
 
-	skinthmeAdapter skinlistadapter;
+	SkinThemeAdapter skinlistadapter;
 
 	public static Drawable phantomCenter, phantons, chains, btn, btn_, playBg, customLogo;
 
@@ -84,13 +84,9 @@ public class SkinTheme {
 
 	public static void cachedSkinSet(Activity context) {
 		SharedPreferences skinSaved = context.getSharedPreferences("app_configs", context.MODE_PRIVATE);
-		skin = skinSaved.getString("skin", "");
+		skin = skinSaved.getString("skin", "default");
 		SharedPreferences.Editor getSkinSaved = skinSaved.edit();
 		switch (skin) {
-		case "":
-
-			getSkinSaved.putString("skin", "default");
-
 		case "default":
 			setDrawables(context.getDrawable(R.drawable.phantom_), context.getDrawable(R.drawable.phantom),
 					context.getDrawable(R.drawable.chainled), context.getDrawable(R.drawable.btn),
@@ -123,13 +119,8 @@ public class SkinTheme {
 	}
 
 	public void getSkinsTheme() {
-
-		//	if (!listSkins.isEnabled()) {
 		skinlistadapter = getSkins();
 		listSkins.setEnabled(true);
-
-		//	}
-
 		listSkins.setAdapter(skinlistadapter);
 		listSkins.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -170,14 +161,11 @@ public class SkinTheme {
 					logo.setImageDrawable(customLogo);
 					playBgimg.setImageDrawable(playBg);
 				}
-				//makePads.phantom.setImageDrawable(phantons);
-
 			}
-
 		});
 	}
 
-	private skinthmeAdapter getSkins() {
+	private SkinThemeAdapter getSkins() {
 		final List<PackageInfo> packages = context.getPackageManager().getInstalledPackages(0);
 		listSkinsPackage.add(null);
 		for (PackageInfo pi : packages) {
@@ -185,6 +173,6 @@ public class SkinTheme {
 				listSkinsPackage.add(pi);
 			}
 		}
-		return new skinthmeAdapter(context, listSkinsPackage);
+		return new SkinThemeAdapter(context, listSkinsPackage);
 	}
 }

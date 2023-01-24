@@ -22,7 +22,7 @@ import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import com.xayup.multipad.XayUpFunctions;
-import com.xayup.multipad.playPads;
+import com.xayup.multipad.PlayPads;
 
 /**
 * Implementation of an easy vertical SeekBar, based on the normal SeekBar.
@@ -144,13 +144,13 @@ public class VerticalSeekBar extends SeekBar {
 			setProgressInternally(getMax() - (int) (getMax() * (event.getY() - getPaddingBottom()) / (getHeight() - (getPaddingTop() + getPaddingBottom()))), true);
 			
 			if (mOnSeekBarChangeListener != null) {
-				playPads.stopAll = true;
+				PlayPads.stopAll = true;
 				XayUpFunctions.stopSounds();
 				XayUpFunctions.clearLeds(context, this.getRootView());
-				playPads.autoPlayThread.seekBarChanging(STATE_PRESSED);
-				playPads.autoPlayThread.setProgress(getProgress());
+				PlayPads.autoPlayThread.seekBarChanging(STATE_PRESSED);
+				PlayPads.autoPlayThread.setProgress(getProgress());
 				STATE_PRESSED = false;
-				playPads.stopAll = false;
+				PlayPads.stopAll = false;
 				mOnSeekBarChangeListener.onStopTrackingTouch(this);
 			}
 			break;

@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class makeGlows {
+public class MakeGlows {
 	private final List<String> ignore = Arrays.asList(new String[] { "00", "09", "90", "99" });
 	private final String glowInitId = "100";
 	private int posicao_inicial, glowSize, glowPadSize, screenH, screenW, glowChainSize, glowPivotXY, glowChainPivotXY,
@@ -22,7 +22,7 @@ public class makeGlows {
 	private ViewGroup.LayoutParams chainParams;
 	private ViewGroup.LayoutParams padParams;
 
-	public makeGlows(Activity context, int padWH, int glowPadSize, int glowChainSize, int screenW, int screenH) {
+	public MakeGlows(Activity context, int padWH, int glowPadSize, int glowChainSize, int screenW, int screenH) {
 		this.context = context;
 		this.glowPadSize = glowPadSize;
 		this.glowChainSize = glowChainSize;
@@ -32,21 +32,21 @@ public class makeGlows {
 		this.screenW = screenW;
 		this.chainParams = new RelativeLayout.LayoutParams(glowChainSize, glowChainSize);
 		this.padParams = new RelativeLayout.LayoutParams(glowPadSize, glowPadSize);
-		posicao_inicial = ((screenW - screenH) / 2) + ((screenH - playPads.display_height) / 2);
+		posicao_inicial = ((screenW - screenH) / 2) + ((screenH - PlayPads.display_height) / 2);
 
 	}
 
 	//calculos
 	private void calc() {
-		padWH = playPads.padWH;
+		padWH = PlayPads.padWH;
 		centerPad = padWH/2;
-		posicao_inicial = ((screenW - screenH) / 2) + ((screenH - playPads.display_height) / 2);
+		posicao_inicial = ((screenW - screenH) / 2) + ((screenH - PlayPads.display_height) / 2);
 		int pos_init = posicao_inicial;
-		if (playPads.mk2) {
+		if (PlayPads.mk2) {
 			pos_init -= padWH;
 		}
 		inicial_pos_x = pos_init + centerPad;
-		inicial_pos_y = centerPad + ((screenH - playPads.display_height) / 2);
+		inicial_pos_y = centerPad + ((screenH - PlayPads.display_height) / 2);
 	}
 
 	public void resize() {
@@ -101,7 +101,7 @@ public class makeGlows {
 							glowImg.setId(Integer.parseInt(glowInitId + l + c));
 							glows.put(l + "" + c, glowImg);
 						}
-						if (playPads.mk2 && (l == 9 || c == 0)) {
+						if (PlayPads.mk2 && (l == 9 || c == 0)) {
 							glowImg.setVisibility(View.GONE);
 							glowImg.setTag("hide");
 						}
@@ -163,10 +163,10 @@ public class makeGlows {
 
 	public void changeCfg(int radius, float alpha, boolean chain) {
 		if (chain) {
-			playPads.glowChainIntensity = alpha;
+			PlayPads.glowChainIntensity = alpha;
 			glowChainSize = radius;
 		} else {
-			playPads.glowIntensity = alpha;
+			PlayPads.glowIntensity = alpha;
 			glowPadSize = radius;
 		}
 		glowSize = radius;
@@ -192,7 +192,7 @@ public class makeGlows {
 					}
 					System.out.println(skip);
 					if (!skip) {
-						if (!playPads.mk2 && (key == "1" || key == "91"))
+						if (!PlayPads.mk2 && (key == "1" || key == "91"))
 							to_x += padWH;
 						glows.get(key).setVisibility(View.GONE);
 						glows.get(key).getLayoutParams().height = radius;

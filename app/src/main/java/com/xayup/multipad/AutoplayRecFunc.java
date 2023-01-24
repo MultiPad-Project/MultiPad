@@ -17,7 +17,7 @@ public class AutoplayRecFunc {
 	
 	public AutoplayRecFunc(Activity context){
 		autoPlayRecord = new ArrayList<String>();
-		autoPlayRecord.add("c " + playPads.chainSl);
+		autoPlayRecord.add("c " + PlayPads.chainSl);
 		oldTime = SystemClock.uptimeMillis();
 		this.context = context;
 	}
@@ -33,9 +33,9 @@ public class AutoplayRecFunc {
 	}
 	public static void saveAutoplay(){
 		try{
-			final File autoplay_file = new File(playPads.getCurrentPath, "autoplay");
+			final File autoplay_file = new File(PlayPads.getCurrentPath, "autoplay");
 			if(autoplay_file.exists()){
-				new File(playPads.getCurrentPath, "autoplay").renameTo(new File(playPads.getCurrentPath, "autoplay" + SystemClock.uptimeMillis()));
+				new File(PlayPads.getCurrentPath, "autoplay").renameTo(new File(PlayPads.getCurrentPath, "autoplay" + SystemClock.uptimeMillis()));
 			}
 			autoplay_file.createNewFile();
 			FileWriter save_autoplay_file = new  FileWriter(autoplay_file);
@@ -43,13 +43,13 @@ public class AutoplayRecFunc {
 				save_autoplay_file.write(line + "\n");
 			}
 			save_autoplay_file.close();
-			playPads.autoPlay = Readers.readautoPlay(context, autoplay_file);
-			playPads.autoPlayThread = new autoPlayFunc(context);
-			playPads.progressAutoplay = context.findViewById(R.id.seekBarProgressAutoplay);
-			playPads.progressAutoplay.setMin(0);
-			playPads.progressAutoplay.setMax(playPads.autoPlay.size()-1);
-			playPads.progressAutoplay.setContext(context);
-			playPads.progressAutoplay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			PlayPads.autoPlay = Readers.readautoPlay(context, autoplay_file);
+			PlayPads.autoPlayThread = new AutoPlayFunc(context);
+			PlayPads.progressAutoplay = context.findViewById(R.id.seekBarProgressAutoplay);
+			PlayPads.progressAutoplay.setMin(0);
+			PlayPads.progressAutoplay.setMax(PlayPads.autoPlay.size()-1);
+			PlayPads.progressAutoplay.setContext(context);
+			PlayPads.progressAutoplay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 				@Override
 				public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
 				}

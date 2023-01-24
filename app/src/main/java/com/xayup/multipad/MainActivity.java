@@ -95,14 +95,8 @@ public class MainActivity extends Activity {
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 					WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			setContentView(R.layout.main);
-
-			if (Build.VERSION.SDK_INT > 29) {
-				//		android11per = 0;
-			}
-			//	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
-			getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
 					WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-			//	}
 
 			checarPermissao();
 		}
@@ -192,7 +186,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		Readers getInfo = new Readers();
-		customArray arrayCustom = new customArray(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
+		CustomArray arrayCustom = new CustomArray(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
 		listaprojetos = findViewById(R.id.listViewProjects);
 		listaprojetos.setAdapter(arrayCustom);
 
@@ -203,7 +197,7 @@ public class MainActivity extends Activity {
 				View itemStt = view.findViewById(R.id.currentItemState);
 				switch ((Integer) itemStt.getTag()) {
 				case 0:
-					Intent playPads = new Intent(getBaseContext(), playPads.class);
+					Intent playPads = new Intent(getBaseContext(), PlayPads.class);
 					playPads.putExtra("currentPath", pathTextv.getText().toString());
 					playPads.putExtra("height", height);
 					startActivity(playPads);
@@ -425,7 +419,7 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		show.getWindow().setLayout(450, WindowManager.LayoutParams.MATCH_PARENT);
+		show.getWindow().setLayout(height, WindowManager.LayoutParams.MATCH_PARENT);
 		show.getWindow().setGravity(Gravity.RIGHT);
 		show.getWindow().setBackgroundDrawable(getDrawable(R.drawable.inset_floating_menu));
 

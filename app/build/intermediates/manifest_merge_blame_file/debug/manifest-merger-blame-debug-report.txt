@@ -43,7 +43,7 @@
 26-->[com.google.android.exoplayer:exoplayer-core:2.18.0] /data/data/com.itsaky.androidide/files/home/.gradle/caches/transforms-3/dfb3d2bb603ffba5d8c466d745921abf/transformed/exoplayer-core-2.18.0/AndroidManifest.xml:24:22-76
 27
 28    <application
-28-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:16:5-62:19
+28-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:16:5-55:19
 29        android:allowBackup="true"
 29-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:18:9-35
 30        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
@@ -87,7 +87,7 @@
 49        </activity>
 50        <activity
 50-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:37:9-43:20
-51            android:name="com.xayup.multipad.playPads"
+51            android:name="com.xayup.multipad.PlayPads"
 51-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:38:13-55
 52            android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|    screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize"
 52-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:39:13-167
@@ -99,42 +99,29 @@
 55-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:42:13-49
 56        </activity>
 57        <activity
-57-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:44:9-50:20
-58            android:name="com.xayup.multipad.crashApp"
-58-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:45:13-55
-59            android:configChanges="touchscreen|keyboard|keyboardHidden|navigation|   screenLayout|fontScale|uiMode|orientation|density|screenSize|smallestScreenSize"
-59-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:46:13-166
-60            android:label="crash"
-60-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:47:13-34
-61            android:screenOrientation="sensorLandscape"
-61-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:48:13-56
-62            android:theme="@style/FullScreenApp" >
-62-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:49:13-49
-63        </activity>
-64        <activity
-64-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:51:3-61:14
-65            android:name="com.xayup.multipad.UsbDeviceActivity"
-65-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:52:4-55
-66            android:exported="true"
-66-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:55:13-36
-67            android:screenOrientation="sensorLandscape"
-67-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:53:4-47
-68            android:theme="@style/FullScreenApp" >
-68-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:54:4-40
-69            <intent-filter>
-69-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:56:4-58:20
-70                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-70-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:57:5-77
-70-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:57:13-75
-71            </intent-filter>
-72
-73            <meta-data
-73-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:59:4-118
-74                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-74-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:59:15-77
-75                android:resource="@xml/device_filter" />
-75-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:59:78-115
-76        </activity>
-77    </application>
-78
-79</manifest>
+57-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:44:3-54:14
+58            android:name="com.xayup.multipad.UsbDeviceActivity"
+58-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:45:4-55
+59            android:exported="true"
+59-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:48:13-36
+60            android:screenOrientation="sensorLandscape"
+60-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:46:4-47
+61            android:theme="@style/FullScreenApp" >
+61-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:47:4-40
+62            <intent-filter>
+62-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:49:4-51:20
+63                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+63-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:50:5-77
+63-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:50:13-75
+64            </intent-filter>
+65
+66            <meta-data
+66-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:52:4-118
+67                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+67-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:52:15-77
+68                android:resource="@xml/device_filter" />
+68-->/storage/emulated/0/AndroidIDEProjects/MultiPad/app/src/main/AndroidManifest.xml:52:78-115
+69        </activity>
+70    </application>
+71
+72</manifest>

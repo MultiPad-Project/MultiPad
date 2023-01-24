@@ -100,16 +100,16 @@
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/layout/connected_device.xml"
     },
     {
-        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/drawable-xxxhdpi_icon_folder.png.flat",
-        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-pngs-4:/drawable-xxxhdpi/icon_folder.png"
+        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/mipmap-xxhdpi/ic_launcher.webp"
     },
     {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/drawable-xhdpi_play_pause.png.flat",
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-pngs-4:/drawable-xhdpi/play_pause.png"
     },
     {
-        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/mipmap-xxhdpi_ic_launcher.webp.flat",
-        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/mipmap-xxhdpi/ic_launcher.webp"
+        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/drawable-xxxhdpi_icon_folder.png.flat",
+        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-pngs-4:/drawable-xxxhdpi/icon_folder.png"
     },
     {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/drawable-xhdpi_icon_settings.png.flat",
@@ -120,20 +120,20 @@
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-pngs-4:/drawable-xhdpi/icon_folder.png"
     },
     {
-        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/mipmap-anydpi-v26/ic_launcher_round.xml"
-    },
-    {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/drawable-anydpi-v24_rec_circle.xml.flat",
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-pngs-4:/drawable-anydpi-v24/rec_circle.xml"
     },
     {
-        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/drawable_button_import_project.xml.flat",
-        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/drawable/button_import_project.xml"
+        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/drawable-mdpi_icon_plus.png.flat",
         "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-pngs-4:/drawable-mdpi/icon_plus.png"
+    },
+    {
+        "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/drawable_button_import_project.xml.flat",
+        "source": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-main-11:/drawable/button_import_project.xml"
     },
     {
         "merged": "/data/data/com.itsaky.androidide/files/home/.gradle/daemon/7.4.2/com.xayup.multipad.app-merged_res-9:/drawable-hdpi_import_project.png.flat",

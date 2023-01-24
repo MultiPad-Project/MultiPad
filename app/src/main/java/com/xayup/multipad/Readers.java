@@ -16,7 +16,7 @@ import java.util.*;
 import android.app.*;
 
 public class Readers {
-
+    
 	public static FileFilter filterFolder = new FileFilter() {
 		@Override
 		public boolean accept(File file) {
@@ -129,7 +129,7 @@ public class Readers {
 
 			if (ye) { //verificar o codigo de cor
 				if (Integer.parseInt(line.substring(line.indexOf("a") + 1)) > 127) {
-					playPads.invalid_formats.add("(" + fileName + ") " + context.getString(R.string.invalid_led_color)
+					PlayPads.invalid_formats.add("(" + fileName + ") " + context.getString(R.string.invalid_led_color)
 							+ " " + line.substring(line.indexOf("a") + 1));
 				}
 				return true;
@@ -182,7 +182,7 @@ public class Readers {
 							if (checkkeyLED(context, line, ledFile.getName())) {
 								v_keys.add(line);
 							} else {
-								playPads.invalid_formats.add("(" + ledFile.getName() + ") "
+								PlayPads.invalid_formats.add("(" + ledFile.getName() + ") "
 										+ context.getString(R.string.invalid_keyled) + ": " + orLine);
 							}
 						}
@@ -198,7 +198,7 @@ public class Readers {
 				} catch (IOException e) {
 				}
 			} else {
-				playPads.invalid_formats
+				PlayPads.invalid_formats
 						.add("(" + ledFile.getName() + "): " + context.getString(R.string.invalid_led_file));
 			}
 		}
@@ -241,14 +241,14 @@ public class Readers {
 							mediaitem.add(new MediaItem.Builder().setMediaId(toChain)
 									.setUri(soundPath + "/" + line.substring(indextheSound)).build());
 							sounds.put(line.substring(0, indextheSound), mediaitem);
-							playPads.chainClickable.put(line.substring(indexPad, indextheSound), null);
+							PlayPads.chainClickable.put(line.substring(indexPad, indextheSound), null);
 						} else {
 							sounds.get(line.substring(0, indextheSound)).add(new MediaItem.Builder().setMediaId(toChain)
 									.setUri(soundPath + "/" + line.substring(indextheSound)).build());
 						}
 					//	System.out.println("FNL "+toChain + " "+line);
 					} else {
-						playPads.invalid_formats.add("("+keySound.getName()+")"+context.getString(R.string.invalid_sound) + " " + line);
+						PlayPads.invalid_formats.add("("+keySound.getName()+")"+context.getString(R.string.invalid_sound) + " " + line);
 					}
 					
 				}
@@ -278,20 +278,20 @@ public class Readers {
 						String ifToChain = line.substring(line.indexOf(".") + 4);
 						line = line.substring(0, line.indexOf(".") + 4);
                         String sound = soundPath + "/" + line.substring(indextheSound);
-						int soundId = playPads.soundPool.load(sound, 1);
+						int soundId = PlayPads.soundPool.load(sound, 1);
                         if (sounds.get(line.substring(0, indextheSound)) == null) {
                             List<Integer> soundSec = new ArrayList<Integer>();
                             soundSec.add(soundId);
 							sounds.put(line.substring(0, indextheSound), soundSec);
-							playPads.chainClickable.put(line.substring(indexPad, indextheSound), null);
+							PlayPads.chainClickable.put(line.substring(indexPad, indextheSound), null);
 						} else {
 							sounds.get(line.substring(0, indextheSound)).add(soundId);
 						}
                         if (ifToChain.matches("1([1-9]|[1-2][0-9])"))
-							playPads.toChainPool.put(soundId, ifToChain.substring(1));
+							PlayPads.toChainPool.put(soundId, ifToChain.substring(1));
 					//	System.out.println("FNL "+toChain + " "+line);
 					} else {
-						playPads.invalid_formats.add("("+keySound.getName()+")"+context.getString(R.string.invalid_sound) + " " + line);
+						PlayPads.invalid_formats.add("("+keySound.getName()+")"+context.getString(R.string.invalid_sound) + " " + line);
 					}
 					
 				}
@@ -330,7 +330,7 @@ public class Readers {
 						line = chain + line;
 						autoplayLineList.add(line);
 					} else {
-						playPads.invalid_formats.add(context.getString(R.string.invalid_autoplay) + " " + line);
+						PlayPads.invalid_formats.add(context.getString(R.string.invalid_autoplay) + " " + line);
 					}
 				}
 				line = autoplayReader.readLine();

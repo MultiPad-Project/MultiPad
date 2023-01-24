@@ -4,11 +4,11 @@ import android.view.*;
 import android.widget.*;
 import java.util.*;
 
-public class customArray extends BaseAdapter
+public class CustomArray extends BaseAdapter
 {
 	Map<String, Map> thisMap;
 	Context thisContexto;
-	public customArray(Context contexto, Map<String, Map> map){
+	public CustomArray(Context contexto, Map<String, Map> map){
 		this.thisContexto = contexto;
 		this.thisMap = map;
 	}

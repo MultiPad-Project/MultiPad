@@ -12,10 +12,11 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import com.xayup.multipad.playPads;
+import com.xayup.multipad.PlayPads;
 import java.io.IOException;
 
 public class XayUpFunctions {
+    
     public static final int RELEASE = 0;
     public static final int TOUCH = 1;
     public static final int TOUCH_AND_RELEASE = 2;
@@ -71,8 +72,8 @@ public class XayUpFunctions {
 				context.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						if (playPads.glows != null)
-							playPads.glows.offGlows();
+						if (PlayPads.glows != null)
+							PlayPads.glows.offGlows();
 						root.getRootView().findViewById(fi).findViewById(R.id.led).setBackgroundColor(0);
 						try {
 							if (MidiStaticVars.midiInput != null) {
@@ -95,21 +96,21 @@ public class XayUpFunctions {
 
 	//stop sounds
 	public static void stopSounds() {
-		if (playPads.exoplayers != null) {
-			for (String p : playPads.exoplayers.keySet()) {
-				if (playPads.exoplayers.get(p).isPlaying()) {
-					playPads.exoplayers.get(p).pause();
+		if (PlayPads.exoplayers != null) {
+			for (String p : PlayPads.exoplayers.keySet()) {
+				if (PlayPads.exoplayers.get(p).isPlaying()) {
+					PlayPads.exoplayers.get(p).pause();
 				}
-				playPads.exoplayers.get(p).release();
+				PlayPads.exoplayers.get(p).release();
 			}
-            playPads.keySound = null;
-		} else if (playPads.keySoundPool != null) {
-            for(Integer stream : playPads.streamsPool.values()){
-                playPads.soundPool.stop(stream);
+            PlayPads.keySound = null;
+		} else if (PlayPads.keySoundPool != null) {
+            for(Integer stream : PlayPads.streamsPool.values()){
+                PlayPads.soundPool.stop(stream);
             }
-            playPads.soundPool.release();
-            playPads.keySoundPool = null;
-            playPads.toChainPool = null;
+            PlayPads.soundPool.release();
+            PlayPads.keySoundPool = null;
+            PlayPads.toChainPool = null;
         }
 	}
     
