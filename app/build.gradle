@@ -20,20 +20,14 @@ android {
         applicationId "com.xayup.multipad"
         minSdk 21
         targetSdk 32
-        versionCode 22300123
-        versionName "2.2"
+        versionCode 2112122022
+        versionName "2.1"
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
-            multiDexEnabled false
-           if(project.hasProperty('RELEASE_STORE_FILE')){
-                println RELEASE_STORE_FILE
-                signingConfig signingConfigs.release
-            }
         }
         testBuildType "debug"
     }
