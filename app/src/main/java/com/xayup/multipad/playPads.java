@@ -122,6 +122,7 @@ public class PlayPads extends Activity {
 	public static AutoPlayFunc autoPlayThread;
 	public static KeyLedColors ledFunc;
 	public static MakeGlows glows;
+	public static SoundLoader mSoundLoader;
 
 	private static Button stopRecAutoplay;
 
@@ -234,11 +235,11 @@ public class PlayPads extends Activity {
 	public void exitPads() {
 		if ((autoPlayThread != null) && autoPlayThread.isRunning()) {
 			autoPlayCheck = false;
-			autoPlayThread.stop();
+            autoPlayThread.exit();
 		}
 		XayUpFunctions.stopSounds();
+		SkinTheme.inplayPads = false;
 		glows = null;
-		autoPlay = null;
 	}
 	
 	public static void end(Activity context) {

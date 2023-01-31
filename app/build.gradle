@@ -3,6 +3,16 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        if(project.hasProperty('RELEASE_STORE_FILE')) {
+            release {
+                storeFile file(RELEASE_STORE_FILE)
+                storePassword RELEASE_STORE_PASSWORD
+                keyAlias RELEASE_KEY_ALIAS
+                keyPassword RELEASE_KEY_PASSWORD
+            }
+        }
+    }
     compileSdk 32
     buildToolsVersion "33.0.0"
 
@@ -10,14 +20,20 @@ android {
         applicationId "com.xayup.multipad"
         minSdk 21
         targetSdk 32
-        versionCode 2112122022
-        versionName "2.1"
+        versionCode 22300123
+        versionName "2.2"
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+            multiDexEnabled false
+           if(project.hasProperty('RELEASE_STORE_FILE')){
+                println RELEASE_STORE_FILE
+                signingConfig signingConfigs.release
+            }
         }
         testBuildType "debug"
     }

@@ -32,7 +32,7 @@ public class SkinTheme {
 
 	public static ImageView logo;
 
-	private static boolean inplayPads;
+	public static boolean inplayPads;
 
 	private View bg;
 	public static ImageView playBgimg;

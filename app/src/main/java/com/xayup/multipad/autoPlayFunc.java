@@ -33,6 +33,7 @@ public class AutoPlayFunc {
 	private boolean chainChanged;
 	private int waitViewId;
 	private int waitRequest;
+    private boolean to_exit;
     AutoPlayFunc(Activity context){
         this.context = context;
 		running = new AtomicBoolean(false);
@@ -48,6 +49,7 @@ public class AutoPlayFunc {
 		request_returnto_chain = false;
 		waitViewId = 0;
 		waitRequest = 0;
+        to_exit = false;
     }
 	protected boolean isRunning(){
 		return running.get();
@@ -69,6 +71,14 @@ public class AutoPlayFunc {
 	protected void stop(){
 		running.set(false);
 	}
+    /*
+    * Use isto se voce estiver sainda da Unipack e indo para a lista
+    * Isso diz que e hora de liberar o autoPlay
+    */
+    protected void exit(){
+        running.set(false);
+        to_exit = true;
+    }
 	protected void touch(int chpadId){
 		if(chpadId == padWaiting || chpadId == 0){
 			touch = true;
@@ -185,7 +195,7 @@ public class AutoPlayFunc {
                 paused.set(false);
                 String line = null;
                 boolean inDelay = false;
-                for (lineInt = 0; lineInt < autoplaySize; lineInt++) {
+                autoplayLoop: for (lineInt = 0; lineInt < autoplaySize; lineInt++) {
                   if (!PlayPads.progressAutoplay.getStatePressed()) {
                     progressUpadate();
                   }
@@ -196,7 +206,9 @@ public class AutoPlayFunc {
                       chain = line.substring(0, 2);
                       int request = REQUEST_BTN;
                                 /*
-                                padEvent e o evento que o autoplay repassa. Exemplo: "o" e "ON" (press), "f" e "OFF" (Release) and "t" e "TOCUH" (Touch and release))
+                                * padEvent e o evento que o autoplay repassa.
+                                * Exemplo: "o" e "ON" (press), "f" e "OFF" (Release)
+                                * and "t" e "TOCUH" (Touch and release).
                                 */
                                 String padEvent = line.substring(2, 3);
                       switch (padEvent) {
@@ -216,44 +228,65 @@ public class AutoPlayFunc {
                           inDelay = false;
                           touchViewId = Integer.parseInt(line.substring(line.length() - 2));
                           if (!(((String) "" + PlayPads.chainId).equals(chain) && paused.get()))
+                                    /*
+                                    * Caso eu esbarre em outra chain
+                                    * Isso fara o trabalho de retornar
+                                    * a chain correta
+                                    */
                             XayUpFunctions.touchAndRelease(context, Integer.parseInt(chain), XayUpFunctions.TOUCH_AND_RELEASE);
-                          Log.e("Default", "default");
                                     switch(padEvent){
                                         case "f":
+                                        /*
+                                        * A condicao abaixo evitara que o autoplay exija o toque no botao.
+                                        * Caso esta condicao for removida, o autoPlay pedira do usuario dois
+                                        * toques (Um de "o" e outro de "f").
+                                        */
+                                        if(paused.get()) continue autoplayLoop;
                               touch_type = XayUpFunctions.RELEASE;
-                              Log.e("Touch", "Release");
                                         break;
                             case "t":
                               touch_type = XayUpFunctions.TOUCH_AND_RELEASE;
-                              Log.e("Touch", "Touch and Release");
                                         break;
                             case "o":
                               touch_type = XayUpFunctions.TOUCH;
-                              Log.e("Touch", "Touch");
                                         break;
                                     }
                           break;
                       }
-                      Log.e("AAAAAAAAA", "AAAAAAAAA");
                       if (!inDelay) {
                         autoplaEvents(touchViewId, request, touch_type);
+                      } else {
+                                    /*
+                                    * Uma forma de criar o atraso
+                                    * ate que bem funcional
+                                    */
+                          time = SystemClock.uptimeMillis();
+                          time += delay;
+                          delay = 0;
+                          while (((running.get()) && !paused.get())
+                              && SystemClock.uptimeMillis() < time
+                              && !seekChange) {}
                       }
-                      time = SystemClock.uptimeMillis();
-                      time += delay;
-                      delay = 0;
-                      while (((running.get()) && !paused.get())
-                          && SystemClock.uptimeMillis() < time
-                          && !seekChange) {}
                       seekChange = false;
                     }
                   } else {
                     break;
                   }
                 }
+                    if(to_exit){
+                        /*
+                        * Isso so tera efeito se a funca exit() for chamada anteriormente
+                        */ 
+                        PlayPads.autoPlay = null;
+                    }
                 context.runOnUiThread(
                     new Runnable() {
                       @Override
                       public void run() {
+                                /*
+                                * Remove as visualizaces de controle do autoPlay
+                                */
+                        stop();        
                         ((ImageView) context.findViewById(3).findViewById(R.id.press))
                             .setAlpha(0.0f);
                         ((RelativeLayout) context.findViewById(4))
@@ -262,11 +295,9 @@ public class AutoPlayFunc {
                             .removeView(context.findViewById(3005));
                         ((RelativeLayout) context.findViewById(6))
                             .removeView(context.findViewById(3006));
-
                         PlayPads.autoPlayCheck = false;
                         padWaiting = -1;
                         ((SeekBar) PlayPads.progressAutoplay).setVisibility(View.GONE);
-                        stop();
                       }
                     });
               }

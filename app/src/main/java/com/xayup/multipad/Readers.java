@@ -3,8 +3,10 @@ package com.xayup.multipad;
 import android.content.Context;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.util.Log;
+import android.util.TimeUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import com.google.android.exoplayer2.MediaItem;
@@ -205,6 +207,14 @@ public class Readers {
 		return mapLedLED;
 	}
 
+	private static Integer getDuration(File file) {
+		MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+		mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
+		String durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+		/*Retorno em segundos*/
+		return ((int) ((Long.parseLong(durationStr) % (1000 * 60 * 60)) % (1000 * 60) / 1000));
+	}
+
 	//algoritimo keySound
 	public static boolean checkKeySound(String line) {
 
@@ -295,6 +305,40 @@ public class Readers {
 					}
 					
 				}
+				return sounds;
+			} catch (IOException e) {
+			}
+		}
+		return null;
+	}
+    
+    public static Map<String, List<Integer>> readKeySoundsNew(Activity context, File keySound, String soundPath) {
+		if (keySound.exists()) {
+			try {
+				List<String> keys = Files.readLines(keySound, StandardCharsets.UTF_8);
+				Map<String, List<Integer>> sounds = new HashMap<String, List<Integer>>();
+				PlayPads.mSoundLoader = new SoundLoader(context);
+				for (String line : keys) {
+					int indextheSound = 3;
+					int indexPad = 1;
+				if((!line.replaceAll("\\s", "").isEmpty()))
+					if (checkKeySound(line.replaceAll("\\s", ""))) {
+						if (line.substring(0, 2).matches("[1-2][0-9]")){
+							indextheSound = 4;
+							indexPad = 2;
+						}	
+						line = line.replace(" ", "");
+						String ifToChain = line.substring(line.indexOf(".") + 4);
+						if (ifToChain.matches("1([1-9]|[1-2][0-9])")) ifToChain = ifToChain.substring(1); else ifToChain = "";
+						line = line.substring(0, line.indexOf(".") + 4);
+                        String sound = soundPath + "/" + line.substring(indextheSound);
+						int sound_length = getDuration(new File(sound));
+						PlayPads.mSoundLoader.loadSound(sound, sound_length, line.substring(0, indextheSound), ifToChain);
+					} else {
+						PlayPads.invalid_formats.add("(" + keySound.getName() + ")" + context.getString(R.string.invalid_sound) + " " + line);
+					}
+				}
+				PlayPads.mSoundLoader.prepare();
 				return sounds;
 			} catch (IOException e) {
 			}

@@ -59,7 +59,6 @@ public class MakePads {
 		this.currentProj = currentPath;
 		this.ViewID = ViewID;
 		this.largura = largura;
-
 	}
 
 	public void makePadInLayout() {
@@ -471,91 +470,105 @@ public class MakePads {
 				}
 			};
 		} else if (!Arrays.asList(btnsIDs).contains(viewId)) { //Pads
-			return new OnTouchListener() {
-				@Override
-				public boolean onTouch(View view, MotionEvent motionEvent) {
+      return new OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
 
-					switch (motionEvent.getAction()) {
-					case MotionEvent.ACTION_DOWN:
-						if (PlayPads.recAutoplay) {
-							AutoplayRecFunc.autoPlayRecord(view.getId());
-						}
-						if (PlayPads.slideMode) {
-							slidePad.put(view.getId(), new HashMap<Integer, Integer>());
-							slidePad.get(view.getId()).put(SLIDE_LIMIT_X, 0);
-							slidePad.get(view.getId()).put(SLIDE_LIMIT_Y, 0);
-							slidePad.get(view.getId()).put(SLIDE_PAD_ATUAL, view.getId());
-						}
-						playSound(view);
-						return true;
-					case MotionEvent.ACTION_UP:
-						PlayPads.padPressAlpha = 0.0f;
-						if (PlayPads.slideMode)
-							view = context.findViewById(slidePad.get(view.getId()).get(SLIDE_PAD_ATUAL));
-						if ((PlayPads.autoPlayThread == null) || !((String) PlayPads.chainSl + "9" + view.getId())
-								.equals("" + PlayPads.autoPlayThread.padWaiting))
-							view.findViewById(R.id.press).setAlpha(0.0f);
-						//Stop led 0 looper
-                        try {
-                            PlayPads.threadMap.get(PlayPads.chainSl+ view.getId()).stopZeroLooper();
-                        } catch (NullPointerException n){
-                            Log.e("Stop zero looper", n.getStackTrace()[0].toString());
-                        }
-                        if(PlayPads.keySound == null){
-                            
-                        } else {
-                            
-                        }
-                        break;
-					case MotionEvent.ACTION_MOVE:
-						if (PlayPads.slideMode) {
-							float x = motionEvent.getX();
-							float y = motionEvent.getY();
-							int slidelimit_x = slidePad.get(view.getId()).get(SLIDE_LIMIT_X);
-							int slidelimit_y = slidePad.get(view.getId()).get(SLIDE_LIMIT_Y);
-							int padAtual = slidePad.get(view.getId()).get(SLIDE_PAD_ATUAL);
-							int olderPadAtual = padAtual;
-							int padWH = PlayPads.padWH;
-							if ((x > slidelimit_x + padWH || x < slidelimit_x)
-									|| (y > slidelimit_y + padWH || y < slidelimit_y)) {
-								if ((PlayPads.autoPlayThread == null)
-										|| !((String) PlayPads.chainSl + "9" + view.getId())
-												.equals("" + PlayPads.autoPlayThread.padWaiting))
-									context.findViewById(padAtual).findViewById(R.id.press).setAlpha(0.0f);
-								//if(x > slidelimit_x+padWH || x < slidelimit_x)
-								if (x > slidelimit_x + padWH) {
-									padAtual += 1;
-									slidelimit_x += padWH;
-								} else if (x < slidelimit_x) {
-									padAtual -= 1;
-									slidelimit_x -= padWH;
-								}
-								//if(y > slidelimit_y+padWH || y < slidelimit_y)
-								if (y > slidelimit_y + padWH) {
-									padAtual += 10;
-									slidelimit_y += padWH;
-								} else if (y < slidelimit_y) {
-									padAtual -= 10;
-									slidelimit_y -= padWH;
-								}
+          switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+              if (PlayPads.recAutoplay) {
+                AutoplayRecFunc.autoPlayRecord(view.getId());
+              }
+              if (PlayPads.pressLed){
+                  PlayPads.padPressAlpha = 1.0f;
+                  view.findViewById(R.id.press).setAlpha(PlayPads.padPressAlpha);
+              }
+              if ((PlayPads.autoPlayThread != null) && PlayPads.autoPlayThread.isPaused()) {
+                PlayPads.autoPlayThread.touch(
+                    Integer.parseInt(PlayPads.chainId + "" + view.getId()));
+              }
 
-								slidePad.get(view.getId()).put(SLIDE_PAD_ATUAL, padAtual);
-								slidePad.get(view.getId()).put(SLIDE_LIMIT_X, slidelimit_x);
-								slidePad.get(view.getId()).put(SLIDE_LIMIT_Y, slidelimit_y);
+              if (PlayPads.slideMode) {
+                slidePad.put(view.getId(), new HashMap<Integer, Integer>());
+                slidePad.get(view.getId()).put(SLIDE_LIMIT_X, 0);
+                slidePad.get(view.getId()).put(SLIDE_LIMIT_Y, 0);
+                slidePad.get(view.getId()).put(SLIDE_PAD_ATUAL, view.getId());
+              }
+              playSound(view);
+              return true;
+            case MotionEvent.ACTION_UP:
+              if(PlayPads.pressLed){
+                  PlayPads.padPressAlpha = 0.0f;
+                  view.findViewById(R.id.press).setAlpha(PlayPads.padPressAlpha);
+              }
+              if (PlayPads.slideMode)
+                view = context.findViewById(slidePad.get(view.getId()).get(SLIDE_PAD_ATUAL));
+              if ((PlayPads.autoPlayThread == null)
+                  || !((String) PlayPads.chainSl + "9" + view.getId())
+                      .equals("" + PlayPads.autoPlayThread.padWaiting))
+                view.findViewById(R.id.press).setAlpha(0.0f);
+              // Stop led 0 looper
+              try {
+                PlayPads.threadMap.get(PlayPads.chainSl + view.getId()).stopZeroLooper();
+              } catch (NullPointerException n) {
+                Log.e("Stop zero looper", n.getStackTrace()[0].toString());
+              }
+              if (PlayPads.keySound == null) {
 
-								int w = layoutpads.getLayoutParams().width;
-								int ww = (MainActivity.width/2)-(w/2);
-								if(!(motionEvent.getRawX() < ww || motionEvent.getRawX() > ww+w) && !(padAtual == 90 || padAtual == 99 || padAtual == 9 || padAtual == 0)){
-									view = context.findViewById(padAtual);
-									playSound(view);
-								}
-							}
-						}
-						break;
-					}
-					return true;
-				}
-			};
+              } else {
+
+              }
+              break;
+            case MotionEvent.ACTION_MOVE:
+              if (PlayPads.slideMode) {
+                float x = motionEvent.getX();
+                float y = motionEvent.getY();
+                int slidelimit_x = slidePad.get(view.getId()).get(SLIDE_LIMIT_X);
+                int slidelimit_y = slidePad.get(view.getId()).get(SLIDE_LIMIT_Y);
+                int padAtual = slidePad.get(view.getId()).get(SLIDE_PAD_ATUAL);
+                int olderPadAtual = padAtual;
+                int padWH = PlayPads.padWH;
+                if ((x > slidelimit_x + padWH || x < slidelimit_x)
+                    || (y > slidelimit_y + padWH || y < slidelimit_y)) {
+                  if ((PlayPads.autoPlayThread == null)
+                      || !((String) PlayPads.chainSl + "9" + view.getId())
+                          .equals("" + PlayPads.autoPlayThread.padWaiting))
+                    context.findViewById(padAtual).findViewById(R.id.press).setAlpha(0.0f);
+                  // if(x > slidelimit_x+padWH || x < slidelimit_x)
+                  if (x > slidelimit_x + padWH) {
+                    padAtual += 1;
+                    slidelimit_x += padWH;
+                  } else if (x < slidelimit_x) {
+                    padAtual -= 1;
+                    slidelimit_x -= padWH;
+                  }
+                  // if(y > slidelimit_y+padWH || y < slidelimit_y)
+                  if (y > slidelimit_y + padWH) {
+                    padAtual += 10;
+                    slidelimit_y += padWH;
+                  } else if (y < slidelimit_y) {
+                    padAtual -= 10;
+                    slidelimit_y -= padWH;
+                  }
+
+                  slidePad.get(view.getId()).put(SLIDE_PAD_ATUAL, padAtual);
+                  slidePad.get(view.getId()).put(SLIDE_LIMIT_X, slidelimit_x);
+                  slidePad.get(view.getId()).put(SLIDE_LIMIT_Y, slidelimit_y);
+
+                  int w = layoutpads.getLayoutParams().width;
+                  int ww = (MainActivity.width / 2) - (w / 2);
+                  if (!(motionEvent.getRawX() < ww || motionEvent.getRawX() > ww + w)
+                      && !(padAtual == 90 || padAtual == 99 || padAtual == 9 || padAtual == 0)) {
+                    view = context.findViewById(padAtual);
+                    playSound(view);
+                  }
+                }
+              }
+              break;
+          }
+          return true;
+        }
+      };
 		}
 		//Toast.makeText(context, ""+view.getId(), Toast.LENGTH_SHORT).show();
 		return null;
@@ -587,24 +600,15 @@ public class MakePads {
 			}
 		}
 	}
-    
-    String playing_exo = "";
+
 	private void playSound(View view) {
 		int viewId = view.getId();
 		String pad = PlayPads.chainSl + view.getId();
-        playing_exo = pad;
         String toChain = null;
 		//Pad press watermark
-		if (PlayPads.pressLed)
-			view.findViewById(R.id.press).setAlpha(1.0f);
-		PlayPads.padPressAlpha = 1.0f;
-
-		if ((PlayPads.autoPlayThread != null) && PlayPads.autoPlayThread.isPaused()) {
-			PlayPads.autoPlayThread.touch(Integer.parseInt(PlayPads.chainId + "" + view.getId()));
-		}
-        
 		if ((PlayPads.keySound != null) && (PlayPads.keySound.containsKey(pad)) || (PlayPads.keySoundPool != null) && (PlayPads.keySoundPool.containsKey(pad))) {
-		    if(PlayPads.useSoundPool){
+		    /*
+			if(PlayPads.useSoundPool){
                 //SoundPool
                 try {PlayPads.soundPool.stop(PlayPads.streamsPool.get(pad));} catch (NullPointerException n){PlayPads.soundrpt.put(viewId, 0);}
                 int soundId = PlayPads.keySoundPool.get(pad).get(PlayPads.soundrpt.get(viewId));
@@ -643,11 +647,10 @@ public class MakePads {
 			exo.play();
             
 			}
-        }
-        //Chain automatico
-			if (toChain != null && toChain != "")
-				XayUpFunctions.touchAndRelease(context, Integer.parseInt(chainsID.get(Integer.parseInt(toChain))), XayUpFunctions.TOUCH_AND_RELEASE);
-        toChain = null;
+		     */
+		}
+
+		PlayPads.mSoundLoader.playSound(pad);
         //Show leds
 		if (((!PlayPads.stopAll) && PlayPads.ledFiles != null) && PlayPads.ledFiles.get(pad) != null) {
 			if ((PlayPads.ledrpt.get(view.getId() + "") == null)

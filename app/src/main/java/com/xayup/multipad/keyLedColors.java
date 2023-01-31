@@ -17,7 +17,7 @@ public class KeyLedColors {
     private int rpt;
     private int corcode;
     private int padId;
-	
+	/*
 	private void runUithread(Activity context, final int padid, final int corCode){
 		//final int padid = padId;
 		//final int corCode = corcode;
@@ -30,7 +30,7 @@ public class KeyLedColors {
 			}
 		});
 	}
-	
+	*/
     public KeyLedColors(){
 		PlayPads.threadMap = new ArrayMap<String, ThreadLed>();
 	/*	for(int i = 1; i <= 8; i++){
@@ -40,7 +40,7 @@ public class KeyLedColors {
 		}
         */
     }
-
+/*
     private boolean formato(String linha) {
         switch (linha.substring(0, 1).toLowerCase()) {
             case "o":
@@ -55,7 +55,7 @@ public class KeyLedColors {
         }
         return false;
     }
-
+*/
     public void readKeyLed(int rpt, String cpled, Activity context, View root){
 		
 		if((PlayPads.threadMap.get(cpled) != null) && !PlayPads.spamLeds && PlayPads.threadMap.get(cpled).isRunning()){
