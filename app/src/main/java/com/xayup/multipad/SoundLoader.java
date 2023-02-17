@@ -27,6 +27,7 @@ public class SoundLoader {
     ExoPlayer mExoPlayer;
     SoundPool mSoundPool;
     Map<String, Integer> sound_rpt;
+    
     public SoundLoader(Activity context){
         this.context = context;
         this.sounds = new HashMap<String, List<Map<String, Object>>>();
@@ -93,23 +94,23 @@ public class SoundLoader {
             });
         }
     }
+    
+    public void resetRpt(){
+        for(String key : sound_rpt.keySet()){
+            sound_rpt.put(key, 0);
+        }
+    }
+    
     /*
     * @Param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId())
     * @Param rpt quantos click já foi dada na mesma pad sequencialmente
      */
     public void playSound(String chain_and_pad){
         try {
-            int rpt;
-            if(sound_rpt.get(chain_and_pad) == null){
+            if(sound_rpt.get(chain_and_pad) == null || sound_rpt.get(chain_and_pad) >= sounds.get(chain_and_pad).size()){
                 sound_rpt.put(chain_and_pad, 0);
-                rpt = 0;
-            } else {
-                rpt = sound_rpt.get(chain_and_pad)+1;
-                if(rpt >= sounds.get(chain_and_pad).size()){
-                    rpt = 0;
-                }
-                sound_rpt.put(chain_and_pad, rpt);
             }
+            int rpt = sound_rpt.get(chain_and_pad);
             switch((String) sounds.get(chain_and_pad).get(rpt).get(TYPE)){
                 case EXOPLAYER:
                     Log.e("Play with", "ExoPlayer");
@@ -121,6 +122,7 @@ public class SoundLoader {
                     mSoundPool.play((Integer) sounds.get(chain_and_pad).get(rpt).get(SOUND), 1, 1, 1, 0, 1);
                     break;
             }
+            sound_rpt.put(chain_and_pad, sound_rpt.get(chain_and_pad)+1);
             String to_chain = (String) sounds.get(chain_and_pad).get(rpt).get(TO_CHAIN);
             if(to_chain != ""){
                 XayUpFunctions.touchAndRelease(context, Integer.parseInt(VariaveisStaticas.chainsID[Integer.parseInt(to_chain)]) ,XayUpFunctions.TOUCH_AND_RELEASE);
@@ -128,5 +130,16 @@ public class SoundLoader {
         } catch (NullPointerException e){
             Log.e("PlaySound() error", e.getMessage());
         }
+    }
+    
+    public void release(){
+        if(mSoundPool != null){
+            mSoundPool.release();
+            mSoundPool = null;
+        }
+        if(mExoPlayer !=  null){
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }  
     }
 }

@@ -454,6 +454,9 @@ public class Readers {
 			    return (name.substring(name.indexOf(".")).equals(FILE_EXTENSION));
 			}
 		});
+        if(file_ct_name == null){
+            return null;
+        }
 		return new ArrayAdapter<String>(context, R.layout.simple_list_item, file_ct_name);
 	}
 }

@@ -257,7 +257,6 @@ public class MainActivity extends Activity {
 		//View..
 		View item_skins = menu.findViewById(R.id.main_floating_item_skins);
 		View item_useUnipadFolder = menu.findViewById(R.id.main_floating_item_useunipadfolder);
-        View item_useSoundPool = menu.findViewById(R.id.main_floating_item_usesoundpool);
 		//View item_customHeight = menu.findViewById(R.id.main_floating_item_customHeight);
 		View item_sourceCode = menu.findViewById(R.id.main_floating_item_sourcecode);
 		View item_myChannel = menu.findViewById(R.id.main_floating_item_mychannel);
@@ -266,8 +265,6 @@ public class MainActivity extends Activity {
 
 		CheckBox unipadfolder = menu.findViewById(R.id.main_floating_menu_useunipadfolder_check);
 		unipadfolder.setChecked(useUnipadFolderConfig);
-        CheckBox useSoundPoolBox = menu.findViewById(R.id.main_floating_menu_usesoundpool_check);
-        useSoundPoolBox.setChecked(useSoundPool);
 
 		floating_menu.setView(menu);
 		Button floating_button_exit = (Button) menu.findViewById(R.id.main_floating_menu_button_exit);
@@ -366,23 +363,6 @@ public class MainActivity extends Activity {
 				MainActivity.this.recreate();
 			}
 		});
-        
-        item_useSoundPool.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				SharedPreferences app_configs = getSharedPreferences("app_configs", MODE_PRIVATE);
-				SharedPreferences.Editor editConfigs = app_configs.edit();
-				if (app_configs.getBoolean("use_soundpool", false)) {
-					useSoundPoolBox.setChecked(false);
-					editConfigs.putBoolean("use_soundpool", false);
-				} else {
-					useSoundPoolBox.setChecked(true);
-					editConfigs.putBoolean("use_soundpool", true);
-				}
-				editConfigs.commit();
-			}
-		});
-
         
 		item_sourceCode.setOnClickListener(new View.OnClickListener() {
 			@Override

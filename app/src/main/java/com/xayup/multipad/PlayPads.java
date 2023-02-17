@@ -239,6 +239,7 @@ public class PlayPads extends Activity {
 		}
 		XayUpFunctions.stopSounds();
 		SkinTheme.inplayPads = false;
+        mSoundLoader.release();
 		glows = null;
 	}
 	
@@ -1036,7 +1037,7 @@ public class PlayPads extends Activity {
 		alertExit.setView(onExitDialog);
 		AlertDialog alertDialog = alertExit.create();
 		XayUpFunctions.showDiagInFullscreen(alertDialog);
-		alertDialog.getWindow().setLayout(500, WindowManager.LayoutParams.MATCH_PARENT);
+		alertDialog.getWindow().setLayout(MainActivity.height, WindowManager.LayoutParams.MATCH_PARENT);
 		alertDialog.getWindow().setGravity(Gravity.RIGHT);
 	}
 }

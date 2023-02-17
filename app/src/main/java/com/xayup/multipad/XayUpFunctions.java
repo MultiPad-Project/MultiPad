@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import com.xayup.multipad.PlayPads;
+import com.xayup.multipad.SkinTheme;
 import java.io.IOException;
 
 public class XayUpFunctions {
@@ -148,5 +149,6 @@ public class XayUpFunctions {
 		for (int i = 0; i < SkinTheme.chainsled.size(); i++) {
 			SkinTheme.chainsled.get(i).setVisibility(visibility);
 		}
+        SkinTheme.logo.setVisibility(visibility);
 	}
 }

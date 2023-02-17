@@ -454,9 +454,7 @@ public class MakePads {
 							for (String k : PlayPads.ledrpt.keySet()) {
 								PlayPads.ledrpt.put(k, 0);
 							}
-							for (int pad : PlayPads.soundrpt.keySet()) {
-								PlayPads.soundrpt.put(pad, 0);
-							}
+							PlayPads.mSoundLoader.resetRpt();
 							//	}
 							if (PlayPads.recAutoplay) {
 								AutoplayRecFunc.addChain(PlayPads.chainSl);
@@ -605,51 +603,8 @@ public class MakePads {
 		int viewId = view.getId();
 		String pad = PlayPads.chainSl + view.getId();
         String toChain = null;
+        
 		//Pad press watermark
-		if ((PlayPads.keySound != null) && (PlayPads.keySound.containsKey(pad)) || (PlayPads.keySoundPool != null) && (PlayPads.keySoundPool.containsKey(pad))) {
-		    /*
-			if(PlayPads.useSoundPool){
-                //SoundPool
-                try {PlayPads.soundPool.stop(PlayPads.streamsPool.get(pad));} catch (NullPointerException n){PlayPads.soundrpt.put(viewId, 0);}
-                int soundId = PlayPads.keySoundPool.get(pad).get(PlayPads.soundrpt.get(viewId));
-                PlayPads.streamsPool.put(pad, PlayPads.soundPool.play(soundId, 1f, 1f, 1, 0, 1f ));
-                if (PlayPads.keySoundPool.get(pad).size() == PlayPads.soundrpt.get(viewId) + 1)
-				PlayPads.soundrpt.put(viewId, 0); else PlayPads.soundrpt.put(viewId, PlayPads.soundrpt.get(viewId) + 1);
-                toChain = PlayPads.toChainPool.get(soundId);
-            } else {
-                //ExoPlayer
-        	if (PlayPads.exoplayers.get(pad) != null) {
-				if (!PlayPads.spamSounds && PlayPads.exoplayers.get(pad).isPlaying()) {
-					//if(!PlayPads.spamSounds)
-					PlayPads.exoplayers.get(pad).pause();
-					PlayPads.exoplayers.get(pad).release();
-				}
-			} else {
-				PlayPads.soundrpt.put(viewId, 0);
-			}
-			ExoPlayer exo = new ExoPlayer.Builder(context).setPauseAtEndOfMediaItems(true).build();
-			exo.addMediaItem(PlayPads.keySound.get(pad).get(PlayPads.soundrpt.get(viewId)));
-			exo.prepare();
-			PlayPads.soundrpt.put(viewId, PlayPads.soundrpt.get(viewId) + 1);
-			//	PlayPads.exoplayers.get(pad).seekTo(PlayPads.soundrpt.get(view.getId()), C.TIME_UNSET);
-			if (PlayPads.keySound.get(pad).size() == PlayPads.soundrpt.get(viewId))
-				PlayPads.soundrpt.put(viewId, 0);
-
-			exo.addListener(new ExoPlayer.Listener() {
-				@Override
-				public void onPlaybackStateChanged(int state) {
-					if (state == ExoPlayer.STATE_ENDED) {
-						exo.release();
-					}
-				}
-			});
-			PlayPads.exoplayers.put(pad, exo);
-			exo.play();
-            
-			}
-		     */
-		}
-
 		PlayPads.mSoundLoader.playSound(pad);
         //Show leds
 		if (((!PlayPads.stopAll) && PlayPads.ledFiles != null) && PlayPads.ledFiles.get(pad) != null) {

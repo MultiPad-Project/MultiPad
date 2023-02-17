@@ -15,7 +15,7 @@
     <string name="skins">Skins</string>
     <string name="skins_subtitle">Select your favorite skins</string>
     <string name="default_skin">Default Skin</string>
-    <string name="app_version">2.0</string>
+    <string name="app_version">2.2</string>
     <string name="use_unipad_folder">Use Unipad folder</string>
     <string name="use_unipad_folder_subtitle">Read unipack in Unipad folder</string>
     <string name="use_soundpool_title">Samples without delay</string>

@@ -178,11 +178,11 @@ public class UsbDeviceActivity extends Activity {
                                             outPort = 1;
                                             MidiStaticVars.midiInput.onSend(
                                                     bytes, offset, numBytes, 0);
-                                            break;
+                                            break;/*
                                         case LP_PRO_MK3:
                                             break;
                                         case LP_MK2:
-                                            break;
+                                            break;*/
                                         default:
                                             if (midiDevice.getInfo().getInputPortCount() > 0)
                                                 MidiStaticVars.midiInput =
