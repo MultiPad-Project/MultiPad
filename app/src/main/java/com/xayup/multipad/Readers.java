@@ -127,7 +127,7 @@ public class Readers {
 			boolean ye;
 			//ye = line.matches("[on]{1,2}mc[0-3]?[0-9]a\\d{1,3}");
 
-			ye = line.matches("[on]{1,2}(mc[0-3]?[0-9]|[1-8]{2}|l)a\\d{1,3}");
+			ye = line.matches("[on]{1,2}(mc([0-2]?[0-9]|3[0-3])|[1-8]{2}|l)a\\d{1,3}");
 
 			if (ye) { //verificar o codigo de cor
 				if (Integer.parseInt(line.substring(line.indexOf("a") + 1)) > 127) {
