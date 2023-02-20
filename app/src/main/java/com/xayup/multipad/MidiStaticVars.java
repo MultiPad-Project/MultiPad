@@ -15,8 +15,8 @@ public class MidiStaticVars {
 	public static MidiDeviceInfo midiDevice = null;
     public static MidiInputPort midiInput = null;
     public static MidiOutputPort midiOutput = null;
-	public static byte NOTE_ON = (byte) 0x90;
-	public static byte NOTE_OFF = (byte) 0x80;
+	public static final byte NOTE_ON = (byte) 0x90;
+	public static final byte NOTE_OFF = (byte) 0x80;
 
 	//Dados para envio
 	public static int CHANNEL = 1;
