@@ -25,11 +25,11 @@ public class UsbDeviceActivity extends Activity {
     public static final int CONNECTED_USB = 1;
     public static final int DEVICES_USB = 2;
 
-    public final String LP_X = "Launchpad X";
-    public final String LP_OPEN = "Launchpad Open";
-    public final String LP_PRO = "Launchpad Pro";
-    public final String LP_PRO_MK3 = "Launchpad Pro Mk3";
-    public final String LP_MK2 = "Launchpad Mk2";
+    public static final String LP_X = "Launchpad X";
+    public static final String LP_OPEN = "Launchpad Open";
+    public static final String LP_PRO = "Launchpad Pro";
+    public static final String LP_PRO_MK3 = "Launchpad Pro Mk3";
+    public static final String LP_MK2 = "Launchpad Mk2";
 
     int activity = 0;
 
@@ -103,7 +103,7 @@ public class UsbDeviceActivity extends Activity {
         }
     }
 
-    public void openMidiDevice(Context context, MidiDeviceInfo midi) {
+    public void openMidiDevice(Context context, final MidiDeviceInfo midi) {
         if (MidiStaticVars.midiDevice == midi) {
             Toast.makeText(
                             context,
@@ -120,7 +120,7 @@ public class UsbDeviceActivity extends Activity {
                         @Override
                         public void onDeviceOpened(MidiDevice midiDevice) {
                             if (midiDevice != null) {
-                                String propertie =
+                                MidiStaticVars.midiDevicePropertie =
                                         midiDevice
                                                 .getInfo()
                                                 .getProperties()
@@ -130,91 +130,130 @@ public class UsbDeviceActivity extends Activity {
                                     int numBytes = 0;
                                     byte[] bytes = new byte[32];
                                     int outPort = 0;
-                                    switch (propertie) {
+                                    int inPort = 0;
+                                    switch (MidiStaticVars.midiDevicePropertie) {
                                         case LP_X:
                                             {
-                                                    /*
-                                                    // 240 0 32 41 2 12 0 127 247
-                                                    bytes[numBytes++] = (byte) 240;
-                                                    bytes[numBytes++] = (byte) 0;
-                                                    bytes[numBytes++] = (byte) 32;
-                                                    bytes[numBytes++] = (byte) 41;
-                                                    bytes[numBytes++] = (byte) 2;
-                                                    bytes[numBytes++] = (byte) 12;
-                                                    bytes[numBytes++] = (byte) 0;
-                                                    bytes[numBytes++] = (byte) 127;
-                                                    bytes[numBytes++] = (byte) 247;*/
-                                                MidiInputPort midiInput =
-                                                        midiDevice.openInputPort(0);
-                                                MidiStaticVars.midiInput = midiInput;
+                                                // 240 0 32 41 2 12 0 127 247
+                                                bytes[numBytes++] = (byte) 240;
+                                                bytes[numBytes++] = (byte) 0;
+                                                bytes[numBytes++] = (byte) 32;
+                                                bytes[numBytes++] = (byte) 41;
+                                                bytes[numBytes++] = (byte) 2;
+                                                bytes[numBytes++] = (byte) 12;
+                                                bytes[numBytes++] = (byte) 0;
+                                                bytes[numBytes++] = (byte) 127;
+                                                bytes[numBytes++] = (byte) 247;
+                                                inPort = 0;
                                                 outPort = 0;
-                                                MidiStaticVars.midiInput.onSend(
-                                                        bytes, offset, numBytes, 0);
                                                 break;
                                             }
                                         case LP_PRO:
-                                            bytes[numBytes++] = (byte) 240;
-                                            bytes[numBytes++] = (byte) 0;
-                                            bytes[numBytes++] = (byte) 32;
-                                            bytes[numBytes++] = (byte) 41;
-                                            bytes[numBytes++] = (byte) 2;
-                                            bytes[numBytes++] = (byte) 16;
-                                            bytes[numBytes++] = (byte) 44;
-                                            bytes[numBytes++] = (byte) 0x03;
-                                            bytes[numBytes++] = (byte) 247;
-                                            Toast.makeText(
-                                                            context,
-                                                            context.getString(
-                                                                    R.string.midi_lp_pro_live),
-                                                            Toast.LENGTH_LONG)
-                                                    .show();
-                                            MidiStaticVars.midiInput = midiDevice.openInputPort(1);
-                                            outPort = 1;
-                                            MidiStaticVars.midiInput.onSend(
-                                                    bytes, offset, numBytes, 0);
-                                            break;
+                                            {
+                                                bytes[numBytes++] = (byte) 240;
+                                                bytes[numBytes++] = (byte) 0;
+                                                bytes[numBytes++] = (byte) 32;
+                                                bytes[numBytes++] = (byte) 41;
+                                                bytes[numBytes++] = (byte) 2;
+                                                bytes[numBytes++] = (byte) 16;
+                                                bytes[numBytes++] = (byte) 44;
+                                                bytes[numBytes++] = (byte) 0x03; // Layout
+                                                bytes[numBytes++] = (byte) 247;
+                                                inPort = 0;
+                                                outPort = 0;
+                                                break;
+                                            }
                                         case LP_OPEN:
-                                            bytes[numBytes++] = (byte) 240;
-                                            bytes[numBytes++] = (byte) 0;
-                                            bytes[numBytes++] = (byte) 32;
-                                            bytes[numBytes++] = (byte) 41;
-                                            bytes[numBytes++] = (byte) 2;
-                                            bytes[numBytes++] = (byte) 16;
-                                            bytes[numBytes++] = (byte) 44;
-                                            bytes[numBytes++] = (byte) 0x03;
-                                            bytes[numBytes++] = (byte) 247;
-                                            MidiStaticVars.midiInput = midiDevice.openInputPort(1);
-                                            outPort = 1;
+                                            {
+                                                bytes[numBytes++] = (byte) 240;
+                                                bytes[numBytes++] = (byte) 0;
+                                                bytes[numBytes++] = (byte) 32;
+                                                bytes[numBytes++] = (byte) 41;
+                                                bytes[numBytes++] = (byte) 2;
+                                                bytes[numBytes++] = (byte) 16;
+                                                bytes[numBytes++] = (byte) 44;
+                                                bytes[numBytes++] = (byte) 0x03; // Layout
+                                                bytes[numBytes++] = (byte) 247;
+                                                inPort = 0;
+                                                outPort = 0;
+                                                break;
+                                            }
+                                        case LP_PRO_MK3:
+                                            {
+                                                bytes[numBytes++] = (byte) 240;
+                                                bytes[numBytes++] = (byte) 0;
+                                                bytes[numBytes++] = (byte) 32;
+                                                bytes[numBytes++] = (byte) 41;
+                                                bytes[numBytes++] = (byte) 2;
+                                                bytes[numBytes++] = (byte) 14;
+                                                bytes[numBytes++] = (byte) 0;
+                                                bytes[numBytes++] = (byte) 17; // Layout
+                                                bytes[numBytes++] = (byte) 0; // Page
+                                                bytes[numBytes++] = (byte) 0;
+                                                bytes[numBytes++] = (byte) 247;
+                                                inPort = 0;
+                                                outPort = 0;
+                                                break;
+                                            }
+                                        case LP_MK2:
+                                            {
+                                                bytes[numBytes++] = (byte) 240;
+                                                bytes[numBytes++] = (byte) 0;
+                                                bytes[numBytes++] = (byte) 32;
+                                                bytes[numBytes++] = (byte) 41;
+                                                bytes[numBytes++] = (byte) 2;
+                                                bytes[numBytes++] = (byte) 24;
+                                                bytes[numBytes++] = (byte) 34;
+                                                bytes[numBytes++] = (byte) 0; // Layout
+                                                bytes[numBytes++] = (byte) 247;
+                                                inPort = 0;
+                                                outPort = 0;
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                inPort =
+                                                        midiDevice.getInfo().getInputPortCount()
+                                                                - 1;
+                                                outPort =
+                                                        midiDevice.getInfo().getOutputPortCount()
+                                                                - 1;
+                                                break;
+                                            }
+                                    }
+                                    if (midiDevice.getInfo().getInputPortCount() > 0) {
+                                        MidiStaticVars.midiInput = midiDevice.openInputPort(inPort);
+                                        if (MidiStaticVars.midiInput == null) {
+                                            MidiStaticVars.midiInput =
+                                                    midiDevice.openInputPort(
+                                                            midiDevice.getInfo().getInputPortCount()
+                                                                    - 1);
+                                        }
+                                        if (MidiStaticVars.midiInput != null) {
                                             MidiStaticVars.midiInput.onSend(
                                                     bytes, offset, numBytes, 0);
-                                            break; /*
-                                                   case LP_PRO_MK3:
-                                                       break;
-                                                   case LP_MK2:
-                                                       break;*/
-                                        default:
-                                            if (midiDevice.getInfo().getInputPortCount() > 0)
-                                                MidiStaticVars.midiInput =
-                                                        midiDevice.openInputPort(
-                                                                midiDevice
-                                                                                .getInfo()
-                                                                                .getInputPortCount()
-                                                                        - 1);
-                                            outPort = midiDevice.getInfo().getOutputPortCount() - 1;
-                                            break;
+                                        } 
                                     }
-
                                     if (midiDevice.getInfo().getOutputPortCount() > 0) {
                                         MidiStaticVars.midiOutput =
                                                 midiDevice.openOutputPort(outPort);
+                                        if (MidiStaticVars.midiOutput == null) {
+                                            MidiStaticVars.midiOutput =
+                                                    midiDevice.openOutputPort(
+                                                            midiDevice
+                                                                            .getInfo()
+                                                                            .getOutputPortCount()
+                                                                    - 1);
+                                        }
                                         MidiStaticVars.midiOutput.connect(
                                                 new MidiOutputReceiver(context));
                                     }
-                                Toast.makeText(
-                                                context,
-                                                "Opened MIDI device: " + propertie,
-                                                Toast.LENGTH_SHORT)
-                                        .show();
+                                    Toast.makeText(
+                                                    context,
+                                                    "Opened MIDI device: "
+                                                            + MidiStaticVars.midiDevicePropertie,
+                                                    Toast.LENGTH_SHORT)
+                                            .show();
                                 } catch (IOException e) {
                                 } catch (NullPointerException n) {
                                     Toast.makeText(context, n.toString(), Toast.LENGTH_SHORT)
@@ -226,17 +265,34 @@ public class UsbDeviceActivity extends Activity {
                     new Handler(Looper.getMainLooper()));
         }
     }
-
+    
     public static int rowProgramMode(int padid) {
-        int d = Integer.parseInt((padid + "").substring(0, 1));
-        int u;
+        int x = Integer.parseInt((padid + "").substring(0, 1));
+        int y;
         try {
-            u = Integer.parseInt((padid + "").substring(1, 2));
+            y = Integer.parseInt((padid + "").substring(1, 2));
         } catch (StringIndexOutOfBoundsException e) {
-            u = d;
-            d = 0;
+            y = x;
+            x = 0;
         }
-        return ((8 + (d * (-1) + 1)) * 10) + u;
+        switch (MidiStaticVars.midiDevicePropertie) { // Cada launchpad tem um layout diferente entao o tratamento e
+                // diferente
+            case LP_PRO_MK3:
+            case LP_X:
+                {
+                    return ((8 + (x * (-1) + 1)) * 10) + y;
+                }
+            case LP_PRO:
+            case LP_OPEN:
+            case LP_MK2:
+                {
+                    return (16 * (y - 1)) + x - 1;
+                }
+            default:
+                {
+                    return 1;
+                }
+        }
     }
 
     class MidiOutputReceiver extends MidiReceiver {
@@ -255,10 +311,11 @@ public class UsbDeviceActivity extends Activity {
                         @Override
                         public void run() {
                             try {
+                                final int id = rowProgramMode(buttom);
                                 if (((Note > 128 && Note <= 144) | (Note >= 176 & Note <= 178))
                                         && (data[3] & 0xFF) > 0) {
                                     padsActivity
-                                            .findViewById(rowProgramMode(buttom))
+                                            .findViewById(id)
                                             .dispatchTouchEvent(
                                                     MotionEvent.obtain(
                                                             0,
@@ -267,16 +324,22 @@ public class UsbDeviceActivity extends Activity {
                                                             0,
                                                             0,
                                                             0));
-                                     Toast.makeText(padsActivity, "Note On: " +
-                                     rowProgramMode(buttom), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(
+                                                    padsActivity,
+                                                    "Note On: " + id,
+                                                    Toast.LENGTH_SHORT)
+                                            .show();
                                 } else {
                                     padsActivity
-                                            .findViewById(rowProgramMode(buttom))
+                                            .findViewById(id)
                                             .dispatchTouchEvent(
                                                     MotionEvent.obtain(
                                                             0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
-                                    	Toast.makeText(padsActivity, "Note Off: " +
-                                     rowProgramMode(buttom), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(
+                                                    padsActivity,
+                                                    "Note Off: " + id,
+                                                    Toast.LENGTH_SHORT)
+                                            .show();
                                 }
                             } catch (NullPointerException n) {
                             }

@@ -54,16 +54,6 @@ public class GetFilesTask extends AsyncTask<Void, Void, Boolean> {
 			switch (file.getName().toLowerCase()){
 				case "keysound":
 					bar.setMessage("Reading keySound");
-					/*
-                if(PlayPads.useSoundPool){
-                    PlayPads.soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-                    PlayPads.streamsPool = new HashMap<String, Integer>();
-                    PlayPads.toChainPool = new HashMap<Integer, String>();
-                    PlayPads.keySoundPool = Readers.readKeySoundsPool(context, file, file.getParent() + "/sounds");
-                } else {
-					PlayPads.keySound = Readers.readKeySounds(context, file, file.getParent() + "/sounds");
-				}
-				*/
 					Readers.readKeySoundsNew(context, file, file.getParent() + File.separator + "sounds");
                 	break;
 				case "autoplay":

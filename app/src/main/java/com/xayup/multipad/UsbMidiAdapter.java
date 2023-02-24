@@ -2,6 +2,7 @@ package com.xayup.multipad;
 
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.media.midi.MidiDeviceInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ public class UsbMidiAdapter extends BaseAdapter {
 	public UsbMidiAdapter(Context context, boolean MIDIs){
 		this.MIDIs = MIDIs;
 		this.context = context;
+        MidiStaticVars.manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
 		usbDeviceActivity = new UsbDeviceActivity();
 		usbDeviceActivity.getMidiListDevices(context); //else usbDeviceActivity.getUsbListDevices(context);
 	}

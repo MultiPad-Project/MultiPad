@@ -1,10 +1,12 @@
 package com.xayup.multipad;
 
 import android.app.*;
+import android.graphics.Color;
 import android.media.midi.MidiInputPort;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.*;
+import com.xayup.multipad.MidiStaticVars;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +83,7 @@ public class ThreadLed implements Runnable {
                         continue read;
                     } else {
                         haveOff.add(padId);
-                        showLed(padId, corcode, mc);
+                        showLed(padId, corcode, mc, false);
                     }
                     break;
             }
@@ -89,17 +91,14 @@ public class ThreadLed implements Runnable {
         haveOff = null;
     }
 
-    private void showLed(final int padid, final int corCode, final boolean MC) {
+    private void showLed(final int padid, final int color, final boolean MC, final boolean hex) {
         context.runOnUiThread(
                 new Runnable() {
                     @Override
                     public void run() {
                         ImageView pad = context.findViewById(padid).findViewById(R.id.led);
-                        int color =
-                                VariaveisStaticas.colorInt(
-                                        corCode, PlayPads.custom_color_table, PlayPads.oldColors);
                         byte NOTE = MidiStaticVars.NOTE_ON;
-                        if (corCode == 0) NOTE = MidiStaticVars.NOTE_OFF;
+                        if (color == 0) NOTE = MidiStaticVars.NOTE_OFF;
                         if (PlayPads.glowEf && padid != 9) {
                             ImageView glowEF =
                                     context.findViewById(Integer.parseInt("100" + padid));
@@ -116,7 +115,7 @@ public class ThreadLed implements Runnable {
                             }
                         }
                         pad.setBackgroundColor(color);
-                        if (MidiStaticVars.midiInput != null) {
+                        if (!hex && MidiStaticVars.midiInput != null) {
                             try {
                                 int offset = 0;
                                 int channel = 1;
@@ -125,7 +124,7 @@ public class ThreadLed implements Runnable {
                                 bytes[numBytes++] = (byte) (NOTE + (channel - 1));
                                 bytes[numBytes++] =
                                         (byte) (UsbDeviceActivity.rowProgramMode(padid));
-                                bytes[numBytes++] = (byte) corCode;
+                                bytes[numBytes++] = (byte) color;
                                 MidiStaticVars.midiInput.send(bytes, offset, numBytes);
                             } catch (IOException e) {
                                 Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
@@ -142,6 +141,11 @@ public class ThreadLed implements Runnable {
             boolean nobreak = true;
             boolean delay = false;
             int indexLoop = 1;
+            int padId;
+            int corcode;
+            int substring_index;
+            boolean hex;
+            boolean mc;
             try {
                 loop = Integer.parseInt(PlayPads.ledFiles.get(cpled).get(rpt).get(0));
             } catch (NumberFormatException n) {
@@ -160,30 +164,44 @@ public class ThreadLed implements Runnable {
                     }
                     //	String line = PlayPads.ledFiles.get(cpled).get(rpt).get(i);
                     delay = false;
-                    int padId = 0;
-                    int corcode = 0;
-                    boolean mc = false;
+                    padId = 0;
+                    corcode = 0;
+                    mc = false;
+                    hex = false;
                     switch (line.substring(0, 1)) {
                         case "o":
                             if (line.contains("mc")) {
                                 mc = true;
-                                    padId =
-                                            VariaveisStaticas.chainCode[
-                                                    Integer.parseInt(
-                                                            line.substring(3, line.indexOf("a")))];
+                                substring_index = line.indexOf("a");
+                                if (substring_index == -1) {
+                                    substring_index = line.length() - 6;
+                                }
+                                padId =
+                                        VariaveisStaticas.chainCode[
+                                                Integer.parseInt(
+                                                        line.substring(3, substring_index))];
                             } else if (line.toLowerCase().contains("l")) {
-                                System.out.println(line);
                                 padId = 9;
                             } else {
                                 padId = Integer.parseInt(line.substring(1, 3));
                             }
-                            corcode = Integer.parseInt(line.substring(line.indexOf("a") + 1));
-                            if (corcode > 127) {
-                                corcode = 0;
+                            corcode = line.indexOf("a");
+                            if (corcode == -1) {
+                                corcode =
+                                        (line.substring(line.length() - 6).equals("000000"))
+                                                ? 0
+                                                : Color.parseColor(
+                                                        "#" + line.substring(line.length() - 6));
+                                hex = true;
+                            } else {
+                                corcode =
+                                        VariaveisStaticas.colorInt(
+                                                Integer.parseInt(line.substring(corcode + 1)),
+                                                PlayPads.custom_color_table,
+                                                PlayPads.oldColors);
                             }
                             break;
                         case "f":
-                            corcode = 0;
                             if (line.contains("mc")) {
                                 mc = true;
                                 //	System.out.println(line);
@@ -207,7 +225,7 @@ public class ThreadLed implements Runnable {
                             && isRunning()) {}
 
                     if (!delay) {
-                        showLed(padId, corcode, mc);
+                        showLed(padId, corcode, mc, hex);
                     }
                 }
                 if (loop != 0) {
