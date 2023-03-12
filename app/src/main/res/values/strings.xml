@@ -90,9 +90,11 @@
     <string name="layer_cfg_size">Layer width/height</string>
     <string name="color_table_title">Color Table</string>
     <string name="default_color_table">Using the standard color table</string>
+  
     <string name="usb_midi">USBs/MIDIs</string>
 	<string name="midi_aready_connected">MIDI aready connected!</string>
     <string name="midi_lp_pro_live">Set your launchpad to "Live" mode manually, please.</string>
+    <string name="danied_midi_permission">Permission to access %m was denied</string>
 
     <string name="progress_extract">Extracting:</string>
     <string name="dialog_replace_title">Existing file</string>

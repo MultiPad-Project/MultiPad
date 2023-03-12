@@ -1,6 +1,7 @@
 package com.xayup.multipad;
 
 import android.os.Environment;
+import com.google.common.primitives.Ints;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class VariaveisStaticas {
 			-8114, -5243061, -8868352, -12631731, -131159, -5505112, -5254928, -3029778, -10000284, -5590103, -3677239,
 			-3670016, -8585216, -16730112, -16740864, -4212224, -7044608, -5078528, -8436736 };
 			
-	final static int[] launchpad_pads_map_to_multipad = {
+	final static int[] launchpad_pads_map_to_multipad = { /*Subtraia o dado Velocidade por 28*/
 		/*Chain Top*/
 		1, 2, 3, 4, 5, 6, 7, 8,
 		
@@ -48,7 +49,7 @@ public class VariaveisStaticas {
 		81, 82, 83, 84, 71, 72, 73, 74, 61, 62, 63, 64, 51, 52, 53, 54, 41, 42, 43, 44, 31, 32, 33, 34, 21, 22, 23,
 		24, 11, 12, 13, 14,
 		
-		85, 87, 88, 84, 75, 77, 73, 74, 65, 67, 63, 64, 55, 57, 53, 54, 45, 46, 47, 48, 35, 36, 37, 38, 25, 26, 27,
+		85, 86, 87, 88, 75, 76, 77, 78, 65, 66, 67, 68, 55, 56, 57, 58, 45, 46, 47, 48, 35, 36, 37, 38, 25, 26, 27,
 		28, 15, 16, 17, 18,
 		
 		/*Chain Right*/
@@ -58,7 +59,19 @@ public class VariaveisStaticas {
 		10, 20, 30, 40, 50, 60, 70, 80,
 		
 		/*Chain Bottom*/
-	91, 92, 93, 94, 95, 96, 97, 98 };
+    	91, 92, 93, 94, 95, 96, 97, 98
+        };
+    public static int getDrumFromVelocity(int velocity, boolean from_midi){
+        if(from_midi){
+            velocity -= 28;
+            if(velocity >= 0 && velocity < launchpad_pads_map_to_multipad.length){
+                return launchpad_pads_map_to_multipad[velocity];
+            }
+        } else {
+            return Ints.asList(launchpad_pads_map_to_multipad).indexOf(velocity)+28;
+        }
+        return 0;
+    }
 			
 	public static Map<Integer, Integer> customColorInt = new HashMap<Integer, Integer>();
 

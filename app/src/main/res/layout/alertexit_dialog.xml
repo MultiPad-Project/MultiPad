@@ -81,7 +81,15 @@
         android:background="@drawable/refresh"
         android:padding="20dp"
         android:visibility="gone" />
-
+    <Button
+        android:id="@+id/alert_exit_pad_grids"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="6dp"
+        android:background="@drawable/pad_grids"
+        android:padding="20dp" />
     <ViewFlipper
         android:id="@+id/exitMenuSwitcher"
         android:layout_width="match_parent"
@@ -102,6 +110,11 @@
             android:id="@+id/alertExit_list_color_table"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+        <ListView
+            android:id="@+id/alert_exit_pad_grids_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        
     </ViewFlipper>
 
     <View

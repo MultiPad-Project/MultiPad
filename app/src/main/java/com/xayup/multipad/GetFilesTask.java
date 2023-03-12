@@ -1,76 +1,149 @@
 package com.xayup.multipad;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.media.AudioManager;
-import android.media.SoundPool;
-import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
+import javax.xml.namespace.QName;
 
-public class GetFilesTask extends AsyncTask<Void, Void, Boolean> {
-	private Activity context;
-	private ProgressDialog bar;
+public class GetFilesTask implements Runnable {
+    private Activity context;
+    private AlertDialog bar;
+    private int started_led_thread;
+    private int ended_led_thread;
+    private long started_time;
+    private View dialog_loading;
 
-	public GetFilesTask(Activity context) {
-		this.context = context;
-	}
+    public GetFilesTask(Activity context) {
+        this.context = context;
+    }
 
-	@Override
-	protected void onPreExecute() {
-		bar = new ProgressDialog(context);
-		bar.setCancelable(false);
-		XayUpFunctions.showDiagInFullscreen(bar);
-		super.onPreExecute();
-	}
+    protected void onPreExecute() {
+        started_led_thread = 0;
+        ended_led_thread = -1;
+        dialog_loading =
+                context.getLayoutInflater().inflate(R.layout.playpads_alert_loading_project, null);
+        bar = new AlertDialog.Builder(context).setView(dialog_loading).create();
+        bar.setCancelable(false);
+        XayUpFunctions.showDiagInFullscreen(bar);
+    }
 
-	@Override
-	protected Boolean doInBackground(Void[] arg0) {
+    protected void onPostExecute() {
+        context.runOnUiThread(
+                () -> {
+                    PlayPads.end(context, SystemClock.uptimeMillis() - started_time);
+                });
+        bar.dismiss();
+    }
 
-		getFiles();
-		return true;
-	}
+    public void getFiles() {
+        onPreExecute();
+        new Thread(this).start();
+    }
+    /*
+     * op - 0 = setText, 1 = setVisibility
+     * view - view onde sera feita mudancas
+     * value - dependendo da operacao, aqui devera ter uma string especifica
+     */
+    protected void changeView(final int op, final View view, final String value) {
+        switch (op) {
+            case 0:
+                {
+                    context.runOnUiThread(
+                            () -> {
+                                ((TextView) view).setText(value);
+                            });
+                    break;
+                }
+            case 1:
+                {
+                    final int state = (value.equals("VISIBLE")) ? View.VISIBLE : View.GONE;
+                    context.runOnUiThread(
+                            () -> {
+                                view.setVisibility(state);
+                            });
+                    break;
+                }
+        }
+    }
 
-	@Override
-	protected void onPostExecute(Boolean arg0) {
-		PlayPads.end(context);
-		bar.dismiss();
-		super.onPostExecute(arg0);
-	}
-
-	public void getFiles() {
-		for(File file : new File(PlayPads.getCurrentPath).listFiles(Readers.projectFiles)){
-			switch (file.getName().toLowerCase()){
-				case "keysound":
-					bar.setMessage("Reading keySound");
-					Readers.readKeySoundsNew(context, file, file.getParent() + File.separator + "sounds");
-                	break;
-				case "autoplay":
-					bar.setMessage("Reading autoPlay");
-					PlayPads.autoPlay = Readers.readautoPlay(context, file);
-					PlayPads.autoPlayThread = new AutoPlayFunc(context);
-					PlayPads.progressAutoplay = context.findViewById(R.id.seekBarProgressAutoplay);
-					PlayPads.progressAutoplay.setMin(0);
-					PlayPads.progressAutoplay.setMax(PlayPads.autoPlay.size()-1);
-					PlayPads.progressAutoplay.setContext(context);
-					break;
-				case "keyled":
-					bar.setMessage("Reading keyLEDs");
-					PlayPads.ledFiles = Readers.readKeyLEDs(context, file);
-					break;
-			}
-		}
-	}
-
+    public void run() {
+        started_time = SystemClock.uptimeMillis();
+        File file_keysound = null;
+        File file_autoplay = null;
+        View text_keyled = null;
+        View text_keysound;
+        View text_autoplay;
+        File[] root_project = new File(PlayPads.getCurrentPath).listFiles(Readers.projectFiles);
+        for (File file : root_project) {
+            switch (file.getName().toLowerCase()) {
+                case "keysound":
+                    file_keysound = file;
+                    break;
+                case "autoplay":
+                    file_autoplay = file;
+                    break;
+                case "keyled":
+                    text_keyled =
+                            dialog_loading.findViewById(
+                                    R.id.playpads_alert_loading_project_keyleds);
+                    changeView(0, text_keyled, "keyLeds: Reading...");
+                    changeView(1, text_keyled, "VISIBLE");
+                    PlayPads.ledFiles = new HashMap<>();
+                    int end_index = Math.round(file.listFiles().length / 2);
+                    started_led_thread = 2;
+                    ended_led_thread = 0;
+                    new Thread(
+                                    () -> {
+                                        PlayPads.ledFiles.putAll(
+                                                Readers.readKeyLEDs(context, file, 0, end_index));
+                                        ended_led_thread++;
+                                    })
+                            .start();
+                    new Thread(
+                                    () -> {
+                                        PlayPads.ledFiles.putAll(
+                                                Readers.readKeyLEDs(
+                                                        context,
+                                                        file,
+                                                        end_index,
+                                                        file.listFiles().length));
+                                        ended_led_thread++;
+                                    })
+                            .start();
+                    break;
+            }
+        }
+        if (file_keysound != null) {
+            text_keysound =
+                    dialog_loading.findViewById(R.id.playpads_alert_loading_project_keysounds);
+            changeView(0, text_keysound, "keySounds: Reading...");
+            changeView(1, text_keysound, "VISIBLE");
+            Readers.readKeySoundsNew(
+                    context, file_keysound, file_keysound.getParent() + File.separator + "sounds");
+            changeView(0, text_keysound, "keySounds: Done!");
+        }
+        if (file_autoplay != null) {
+            text_autoplay =
+                    dialog_loading.findViewById(R.id.playpads_alert_loading_project_autoplay);
+            changeView(0, text_autoplay, "AutoPlay: Reading...");
+            changeView(1, text_autoplay, "VISIBLE");
+            PlayPads.autoPlay = Readers.readautoPlay(context, file_autoplay);
+            PlayPads.autoPlayThread = new AutoPlayFunc(context);
+            PlayPads.progressAutoplay = context.findViewById(R.id.seekBarProgressAutoplay);
+            PlayPads.progressAutoplay.setMin(0);
+            PlayPads.progressAutoplay.setMax(PlayPads.autoPlay.size() - 1);
+            PlayPads.progressAutoplay.setContext(context);
+            changeView(0, text_autoplay, "AutoPlay: Done!");
+        }
+        if (ended_led_thread != -1) {
+            while (ended_led_thread < started_led_thread) {}
+        }
+        if (text_keyled != null) changeView(0, text_keyled, "keyLeds: Done!");
+        onPostExecute();
+    }
 }

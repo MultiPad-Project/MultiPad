@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.xayup.filesexplorer.FilesAdapter;
 import java.io.File;
+import java.util.Arrays;
 
 public class FilesAdapter extends BaseAdapter {
     File[] files;
@@ -17,6 +18,8 @@ public class FilesAdapter extends BaseAdapter {
     public FilesAdapter(Context context, File[] files){
         this.files = files;
         this.context = context;
+        Arrays.sort(this.files);
+        Arrays.sort(this.files, (a,b)-> Boolean.compare(b.isDirectory(), a.isDirectory()));
     }
     
   @Override

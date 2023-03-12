@@ -5,6 +5,8 @@ import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiInputPort;
 import android.media.midi.MidiManager;
 import android.media.midi.MidiOutputPort;
+import android.media.midi.MidiReceiver;
+import com.xayup.multipad.MidiMessage;
 
 public class MidiStaticVars {
     
@@ -15,11 +17,16 @@ public class MidiStaticVars {
 	public static MidiDeviceInfo midiDevice = null;
     public static MidiInputPort midiInput = null;
     public static MidiOutputPort midiOutput = null;
+    public static MidiReceiver midiOutputReceiver = null;
+    public static MidiMessage midiMessage = null;
+    public static int input_type = 1;
     public static String midiDevicePropertie = null;
+    
+    //Finais
 	public static final byte NOTE_ON = (byte) 0x90;
 	public static final byte NOTE_OFF = (byte) 0x80;
-
-	//Dados para envio
-	public static int CHANNEL = 1;
+    public static final int MIDI_INPUT = 0;
+    public static final int MIDI_RECEIVER = 1;
     
+    public static int CHANNEL = 1;
 }

@@ -161,7 +161,7 @@ public class Readers {
                     return false;
                 }
             case "f":
-                return line.matches("[off]{1,3}\\s(l|[1-8]\\s[1-8]|mc\\s([1-9]|[1-2][0-9]|3[0-2]))");
+                return line.matches("f\\s(l|[1-8]\\s[1-8]|mc\\s([1-9]|[1-2][0-9]|3[0-2]))");
             case "d":
                 return line.matches("d\\s\\d+");
             default:
@@ -175,7 +175,7 @@ public class Readers {
 
     protected static Map<
                     String /*chain+pad position+repeat*/, List<List<String>> /*led file readed*/>
-            readKeyLEDs(Activity context, File keyLED_Path) {
+            readKeyLEDs(Activity context, File keyLED_Path, int start_index, int end_index) {
         Map<String, List<List<String>>> mapLedLED = new HashMap<String, List<List<String>>>();
         // ordenar
         List<File> files = Arrays.asList(keyLED_Path.listFiles());
@@ -187,7 +187,9 @@ public class Readers {
                         return f1.getName().compareTo(f2.getName());
                     }
                 });
-        for (final File ledFile : files) {
+        File ledFile;
+        for (; start_index < end_index; start_index++) {
+            ledFile = files.get(start_index);
             String fileName = ledFile.getName();
             // lineIndex é o nome do arquivo. Conta os espaços
             int lineIndex = 5;
@@ -207,7 +209,7 @@ public class Readers {
                             //	if (line.contains("*"))
                             String orLine = line;
                             line =
-                                    line.replace("*", "mc")
+                                    line.trim().replace("*", "mc")
                                             .replace("off", "f")
                                             .replace("on", "o")
                                             .replace("auto", "a")
@@ -264,126 +266,6 @@ public class Readers {
                 "([1-2][0-9]|[1-9])[1-9][0-8][\\w\\W]+.\\w{3}([0-9][1-9]|[0-9][1-2][0-9])?");
     }
 
-    public static Map<String, List<MediaItem>> readKeySounds(
-            Activity context, File keySound, String soundPath) {
-        if (keySound.exists()) {
-            //	System.out.println()
-            try {
-                List<String> keys = Files.readLines(keySound, StandardCharsets.UTF_8);
-                Map<String, List<MediaItem>> sounds = new HashMap<String, List<MediaItem>>();
-                for (String line : keys) {
-                    int indextheSound = 3;
-                    int indexPad = 1;
-                    if ((!line.replaceAll("\\s", "").isEmpty()))
-                        if (checkKeySound(line.replaceAll("\\s", ""))) {
-                            if (line.substring(0, 2).matches("[1-2][0-9]")) {
-                                indextheSound = 4;
-                                indexPad = 2;
-                            }
-                            line = line.replace(" ", "");
-                            String toChain = "";
-                            String ifToChain = line.substring(line.indexOf(".") + 4);
-                            if (ifToChain.matches("1([1-9]|[1-2][0-9])"))
-                                toChain = ifToChain.substring(1);
-                            //	System.out.println("CMC "+toChain);
-                            //		System.out.println(toChain);
-                            line = line.substring(0, line.indexOf(".") + 4);
-                            if (sounds.get(line.substring(0, indextheSound)) == null) {
-                                List<MediaItem> mediaitem = new ArrayList<MediaItem>();
-                                //	MediaItem item = new
-                                // MediaItem.Builder().setMediaId(line.substring(3)).setUri(soundPath + "/" + line.substring(3)).build();
-                                //	MediaItem.fromUri(soundPath + "/" + line.substring(3));
-                                mediaitem.add(
-                                        new MediaItem.Builder()
-                                                .setMediaId(toChain)
-                                                .setUri(
-                                                        soundPath
-                                                                + "/"
-                                                                + line.substring(indextheSound))
-                                                .build());
-                                sounds.put(line.substring(0, indextheSound), mediaitem);
-                                PlayPads.chainClickable.put(
-                                        line.substring(indexPad, indextheSound), null);
-                            } else {
-                                sounds.get(line.substring(0, indextheSound))
-                                        .add(
-                                                new MediaItem.Builder()
-                                                        .setMediaId(toChain)
-                                                        .setUri(
-                                                                soundPath
-                                                                        + "/"
-                                                                        + line.substring(
-                                                                                indextheSound))
-                                                        .build());
-                            }
-                            //	System.out.println("FNL "+toChain + " "+line);
-                        } else {
-                            PlayPads.invalid_formats.add(
-                                    "("
-                                            + keySound.getName()
-                                            + ")"
-                                            + context.getString(R.string.invalid_sound)
-                                            + " "
-                                            + line);
-                        }
-                }
-                return sounds;
-            } catch (IOException e) {
-            }
-        }
-        return null;
-    }
-
-    public static Map<String, List<Integer>> readKeySoundsPool(
-            Activity context, File keySound, String soundPath) {
-        if (keySound.exists()) {
-            //	System.out.println()
-            try {
-                List<String> keys = Files.readLines(keySound, StandardCharsets.UTF_8);
-                Map<String, List<Integer>> sounds = new HashMap<String, List<Integer>>();
-                for (String line : keys) {
-                    int indextheSound = 3;
-                    int indexPad = 1;
-                    if ((!line.replaceAll("\\s", "").isEmpty()))
-                        if (checkKeySound(line.replaceAll("\\s", ""))) {
-                            if (line.substring(0, 2).matches("[1-2][0-9]")) {
-                                indextheSound = 4;
-                                indexPad = 2;
-                            }
-                            line = line.replace(" ", "");
-                            String ifToChain = line.substring(line.indexOf(".") + 4);
-                            line = line.substring(0, line.indexOf(".") + 4);
-                            String sound = soundPath + "/" + line.substring(indextheSound);
-                            int soundId = PlayPads.soundPool.load(sound, 1);
-                            if (sounds.get(line.substring(0, indextheSound)) == null) {
-                                List<Integer> soundSec = new ArrayList<Integer>();
-                                soundSec.add(soundId);
-                                sounds.put(line.substring(0, indextheSound), soundSec);
-                                PlayPads.chainClickable.put(
-                                        line.substring(indexPad, indextheSound), null);
-                            } else {
-                                sounds.get(line.substring(0, indextheSound)).add(soundId);
-                            }
-                            if (ifToChain.matches("1([1-9]|[1-2][0-9])"))
-                                PlayPads.toChainPool.put(soundId, ifToChain.substring(1));
-                            //	System.out.println("FNL "+toChain + " "+line);
-                        } else {
-                            PlayPads.invalid_formats.add(
-                                    "("
-                                            + keySound.getName()
-                                            + ")"
-                                            + context.getString(R.string.invalid_sound)
-                                            + " "
-                                            + line);
-                        }
-                }
-                return sounds;
-            } catch (IOException e) {
-            }
-        }
-        return null;
-    }
-
     public static Map<String, List<Integer>> readKeySoundsNew(
             Activity context, File keySound, String soundPath) {
         if (keySound.exists()) {
@@ -402,18 +284,28 @@ public class Readers {
                                 indexPad = 2;
                             }
                             line = line.replace(" ", "");
-                            String ifToChain = line.substring(line.indexOf(".") + 4);
+                            String ifToChain = line.substring(line.lastIndexOf(".") + 4);
                             if (ifToChain.matches("1([1-9]|[1-2][0-9])"))
                                 ifToChain = ifToChain.substring(1);
                             else ifToChain = "";
-                            line = line.substring(0, line.indexOf(".") + 4);
+                            line = line.substring(0, line.lastIndexOf(".") + 4);
                             String sound = soundPath + "/" + line.substring(indextheSound);
+                            try{
                             int sound_length = getDuration(new File(sound));
                             PlayPads.mSoundLoader.loadSound(
                                     sound,
                                     sound_length,
                                     line.substring(0, indextheSound),
                                     ifToChain);
+                            } catch (IllegalArgumentException i){
+                                PlayPads.invalid_formats.add(
+                                    "("
+                                            + keySound.getName()
+                                            + ")"
+                                            + context.getString(R.string.invalid_sound)
+                                            + " "
+                                            + line);
+                            }
                         } else {
                             PlayPads.invalid_formats.add(
                                     "("

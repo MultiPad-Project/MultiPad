@@ -26,6 +26,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.xayup.filesexplorer.FileExplorerDialog;
 import com.xayup.multipad.MidiStaticVars;
+import com.xayup.multipad.UsbDeviceActivity;
 import java.io.*;
 import java.net.URL;
 
@@ -177,8 +178,6 @@ public class MainActivity extends Activity {
         useUnipadFolderConfig = app_config.getBoolean("useUnipadFolder", false);
         useSoundPool = app_config.getBoolean("use_soundpool", false);
         Display.Mode display = getDisplay().getMode();
-        permissionIntent =
-                PendingIntent.getBroadcast(this, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE);
         registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
         // Display.Mode mode = Display.
         if (display.getPhysicalHeight() < display.getPhysicalWidth()) {
@@ -326,14 +325,35 @@ public class MainActivity extends Activity {
                                             AdapterView<?> adapter, View v, int pos, long id) {
                                         MidiDeviceInfo usb_midi =
                                                 (MidiDeviceInfo) adapter.getItemAtPosition(pos);
-                                        Toast.makeText(context, usb_midi.getProperties().getString(MidiDeviceInfo.PROPERTY_USB_DEVICE), 0).show();
-                                        MidiStaticVars.manager.requestPermission(
-                                                MidiStaticVars.manager
-                                                        .getDeviceList()
-                                                        .get(
-                                                               ((UsbDevice) usb_midi.getProperties().getParcelable(MidiDeviceInfo.PROPERTY_USB_DEVICE)).getDeviceName()),
-                                                permissionIntent);
-                                        MidiStaticVars.midiDevice = usb_midi;
+                                        if (MidiStaticVars.midiDevice == usb_midi) {
+                                            Toast.makeText(
+                                                            context,
+                                                            context.getString(
+                                                                    R.string.midi_aready_connected),
+                                                            0)
+                                                    .show();
+                                            return;
+                                        }
+                                        MidiStaticVars.device =
+                                                (UsbDevice)
+                                                        usb_midi.getProperties()
+                                                                .getParcelable(
+                                                                        MidiDeviceInfo
+                                                                                .PROPERTY_USB_DEVICE);
+                                        if (MidiStaticVars.device != null) {
+                                            MidiStaticVars.midiDevice = usb_midi;
+                                            permissionIntent =
+                                                    PendingIntent.getBroadcast(
+                                                            context,
+                                                            0,
+                                                            new Intent(ACTION_USB_PERMISSION),
+                                                            PendingIntent.FLAG_MUTABLE);
+                                            MidiStaticVars.manager.requestPermission(
+                                                    MidiStaticVars.device, permissionIntent);
+                                        } else {
+                                            new UsbDeviceActivity()
+                                                    .openMidiDevice(context, usb_midi);
+                                        }
                                     }
                                 });
                     }
@@ -460,19 +480,30 @@ public class MainActivity extends Activity {
     private final BroadcastReceiver usbReceiver =
             new BroadcastReceiver() {
                 public void onReceive(Context context, Intent intent) {
+                    Toast.makeText(context, "onReceive", 0).show();
                     String action = intent.getAction();
                     if (ACTION_USB_PERMISSION.equals(action)) {
                         synchronized (this) {
-                            UsbDevice device =
-                                    (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-
+                            Toast.makeText(context, "equal", 0).show();
                             if (intent.getBooleanExtra(
                                     UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                                if (device != null) {
-                                    MidiStaticVars.device = device;
-                                    new UsbDeviceActivity()
-                                            .openMidiDevice(context, MidiStaticVars.midiDevice);
-                                }
+                                Toast.makeText(context, "granted", 0).show();
+                                new UsbDeviceActivity()
+                                        .openMidiDevice(context, MidiStaticVars.midiDevice);
+                            } else {
+                                Toast.makeText(
+                                                context,
+                                                context.getString(R.string.danied_midi_permission)
+                                                        .replace(
+                                                                "%m",
+                                                                MidiStaticVars.midiDevice
+                                                                        .getProperties()
+                                                                        .getString(
+                                                                                MidiDeviceInfo
+                                                                                        .PROPERTY_PRODUCT)),
+                                                0)
+                                        .show();
+                                MidiStaticVars.midiDevice = null;
                             }
                         }
                     }

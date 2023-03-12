@@ -7,6 +7,7 @@ import android.hardware.usb.*;
 import android.media.Image;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
+import android.media.midi.MidiDeviceService;
 import android.media.midi.MidiInputPort;
 import android.media.midi.MidiManager;
 import android.media.midi.MidiOutputPort;
@@ -17,9 +18,16 @@ import android.view.*;
 import android.content.*;
 import com.xayup.multipad.MidiStaticVars;
 import com.xayup.multipad.PlayPads;
+import com.xayup.multipad.VariaveisStaticas;
+import com.xayup.multipad.MidiMessage;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UsbDeviceActivity extends Activity {
     public static final int CONNECTED_USB = 1;
@@ -31,10 +39,12 @@ public class UsbDeviceActivity extends Activity {
     public static final String LP_PRO_MK3 = "Launchpad Pro Mk3";
     public static final String LP_MK2 = "Launchpad Mk2";
 
-    int activity = 0;
-
     // Dados para envio
     public Activity padsActivity = new PlayPads();
+
+    // Dados recebidos
+    public List<int[]> received;
+    private MidiToLed receiver_thread;
 
     @Override
     public void onCreate(Bundle instance) {
@@ -104,169 +114,148 @@ public class UsbDeviceActivity extends Activity {
     }
 
     public void openMidiDevice(Context context, final MidiDeviceInfo midi) {
-        if (MidiStaticVars.midiDevice == midi) {
-            Toast.makeText(
-                            context,
-                            midi.getProperties().getString(MidiDeviceInfo.PROPERTY_PRODUCT)
-                                    + ": "
-                                    + context.getString(R.string.midi_aready_connected),
-                            Toast.LENGTH_SHORT)
-                    .show();
-        } else {
-            MidiStaticVars.midiDevice = midi;
-            MidiStaticVars.midiManager.openDevice(
-                    midi,
-                    new MidiManager.OnDeviceOpenedListener() {
-                        @Override
-                        public void onDeviceOpened(MidiDevice midiDevice) {
-                            if (midiDevice != null) {
-                                MidiStaticVars.midiDevicePropertie =
-                                        midiDevice
-                                                .getInfo()
-                                                .getProperties()
-                                                .getString(MidiDeviceInfo.PROPERTY_PRODUCT);
-                                try {
-                                    int offset = 0;
-                                    int numBytes = 0;
-                                    byte[] bytes = new byte[32];
-                                    int outPort = 0;
-                                    int inPort = 0;
-                                    switch (MidiStaticVars.midiDevicePropertie) {
-                                        case LP_X:
-                                            {
-                                                // 240 0 32 41 2 12 0 127 247
-                                                bytes[numBytes++] = (byte) 240;
-                                                bytes[numBytes++] = (byte) 0;
-                                                bytes[numBytes++] = (byte) 32;
-                                                bytes[numBytes++] = (byte) 41;
-                                                bytes[numBytes++] = (byte) 2;
-                                                bytes[numBytes++] = (byte) 12;
-                                                bytes[numBytes++] = (byte) 0;
-                                                bytes[numBytes++] = (byte) 127;
-                                                bytes[numBytes++] = (byte) 247;
-                                                inPort = 0;
-                                                outPort = 0;
-                                                break;
-                                            }
-                                        case LP_PRO:
-                                            {
-                                                bytes[numBytes++] = (byte) 240;
-                                                bytes[numBytes++] = (byte) 0;
-                                                bytes[numBytes++] = (byte) 32;
-                                                bytes[numBytes++] = (byte) 41;
-                                                bytes[numBytes++] = (byte) 2;
-                                                bytes[numBytes++] = (byte) 16;
-                                                bytes[numBytes++] = (byte) 44;
-                                                bytes[numBytes++] = (byte) 0x03; // Layout
-                                                bytes[numBytes++] = (byte) 247;
-                                                inPort = 0;
-                                                outPort = 0;
-                                                break;
-                                            }
-                                        case LP_OPEN:
-                                            {
-                                                bytes[numBytes++] = (byte) 240;
-                                                bytes[numBytes++] = (byte) 0;
-                                                bytes[numBytes++] = (byte) 32;
-                                                bytes[numBytes++] = (byte) 41;
-                                                bytes[numBytes++] = (byte) 2;
-                                                bytes[numBytes++] = (byte) 16;
-                                                bytes[numBytes++] = (byte) 44;
-                                                bytes[numBytes++] = (byte) 0x03; // Layout
-                                                bytes[numBytes++] = (byte) 247;
-                                                inPort = 0;
-                                                outPort = 0;
-                                                break;
-                                            }
-                                        case LP_PRO_MK3:
-                                            {
-                                                bytes[numBytes++] = (byte) 240;
-                                                bytes[numBytes++] = (byte) 0;
-                                                bytes[numBytes++] = (byte) 32;
-                                                bytes[numBytes++] = (byte) 41;
-                                                bytes[numBytes++] = (byte) 2;
-                                                bytes[numBytes++] = (byte) 14;
-                                                bytes[numBytes++] = (byte) 0;
-                                                bytes[numBytes++] = (byte) 17; // Layout
-                                                bytes[numBytes++] = (byte) 0; // Page
-                                                bytes[numBytes++] = (byte) 0;
-                                                bytes[numBytes++] = (byte) 247;
-                                                inPort = 0;
-                                                outPort = 0;
-                                                break;
-                                            }
-                                        case LP_MK2:
-                                            {
-                                                bytes[numBytes++] = (byte) 240;
-                                                bytes[numBytes++] = (byte) 0;
-                                                bytes[numBytes++] = (byte) 32;
-                                                bytes[numBytes++] = (byte) 41;
-                                                bytes[numBytes++] = (byte) 2;
-                                                bytes[numBytes++] = (byte) 24;
-                                                bytes[numBytes++] = (byte) 34;
-                                                bytes[numBytes++] = (byte) 0; // Layout
-                                                bytes[numBytes++] = (byte) 247;
-                                                inPort = 0;
-                                                outPort = 0;
-                                                break;
-                                            }
-                                        default:
-                                            {
-                                                inPort =
-                                                        midiDevice.getInfo().getInputPortCount()
-                                                                - 1;
-                                                outPort =
-                                                        midiDevice.getInfo().getOutputPortCount()
-                                                                - 1;
-                                                break;
-                                            }
-                                    }
-                                    if (midiDevice.getInfo().getInputPortCount() > 0) {
-                                        MidiStaticVars.midiInput = midiDevice.openInputPort(inPort);
-                                        if (MidiStaticVars.midiInput == null) {
-                                            MidiStaticVars.midiInput =
-                                                    midiDevice.openInputPort(
-                                                            midiDevice.getInfo().getInputPortCount()
-                                                                    - 1);
+        MidiStaticVars.midiDevice = midi;
+        MidiStaticVars.midiManager.openDevice(
+                midi,
+                new MidiManager.OnDeviceOpenedListener() {
+                    @Override
+                    public void onDeviceOpened(MidiDevice midiDevice) {
+                        if (midiDevice != null) {
+                            MidiStaticVars.midiDevicePropertie =
+                                    midiDevice
+                                            .getInfo()
+                                            .getProperties()
+                                            .getString(MidiDeviceInfo.PROPERTY_PRODUCT);
+                            try {
+                                int offset = 0;
+                                int numBytes = 0;
+                                byte[] bytes = new byte[32];
+                                int outPort = 0;
+                                int inPort = 0;
+                                switch (MidiStaticVars.midiDevicePropertie) {
+                                    case LP_X:
+                                        {
+                                            // 240 0 32 41 2 12 0 127 247
+                                            bytes[numBytes++] = (byte) 240;
+                                            bytes[numBytes++] = (byte) 0;
+                                            bytes[numBytes++] = (byte) 32;
+                                            bytes[numBytes++] = (byte) 41;
+                                            bytes[numBytes++] = (byte) 2;
+                                            bytes[numBytes++] = (byte) 12;
+                                            bytes[numBytes++] = (byte) 0;
+                                            bytes[numBytes++] = (byte) 127;
+                                            bytes[numBytes++] = (byte) 247;
+                                            inPort = 0;
+                                            outPort = 0;
+                                            break;
                                         }
-                                        if (MidiStaticVars.midiInput != null) {
-                                            MidiStaticVars.midiInput.onSend(
-                                                    bytes, offset, numBytes, 0);
-                                        } 
-                                    }
-                                    if (midiDevice.getInfo().getOutputPortCount() > 0) {
-                                        MidiStaticVars.midiOutput =
-                                                midiDevice.openOutputPort(outPort);
-                                        if (MidiStaticVars.midiOutput == null) {
-                                            MidiStaticVars.midiOutput =
-                                                    midiDevice.openOutputPort(
-                                                            midiDevice
-                                                                            .getInfo()
-                                                                            .getOutputPortCount()
-                                                                    - 1);
+                                    case LP_PRO:
+                                        {
+                                            bytes[numBytes++] = (byte) 240;
+                                            bytes[numBytes++] = (byte) 0;
+                                            bytes[numBytes++] = (byte) 32;
+                                            bytes[numBytes++] = (byte) 41;
+                                            bytes[numBytes++] = (byte) 2;
+                                            bytes[numBytes++] = (byte) 16;
+                                            bytes[numBytes++] = (byte) 44;
+                                            bytes[numBytes++] = (byte) 0x03; // Layout
+                                            bytes[numBytes++] = (byte) 247;
+                                            inPort = 0;
+                                            outPort = 0;
+                                            break;
                                         }
-                                        MidiStaticVars.midiOutput.connect(
-                                                new MidiOutputReceiver(context));
-                                    }
-                                    Toast.makeText(
-                                                    context,
-                                                    "Opened MIDI device: "
-                                                            + MidiStaticVars.midiDevicePropertie,
-                                                    Toast.LENGTH_SHORT)
-                                            .show();
-                                } catch (IOException e) {
-                                } catch (NullPointerException n) {
-                                    Toast.makeText(context, n.toString(), Toast.LENGTH_SHORT)
-                                            .show();
+                                    case LP_OPEN:
+                                        {
+                                            bytes[numBytes++] = (byte) 240;
+                                            bytes[numBytes++] = (byte) 0;
+                                            bytes[numBytes++] = (byte) 32;
+                                            bytes[numBytes++] = (byte) 41;
+                                            bytes[numBytes++] = (byte) 2;
+                                            bytes[numBytes++] = (byte) 16;
+                                            bytes[numBytes++] = (byte) 44;
+                                            bytes[numBytes++] = (byte) 0x03; // Layout
+                                            bytes[numBytes++] = (byte) 247;
+                                            inPort = 0;
+                                            outPort = 0;
+                                            break;
+                                        }
+                                    case LP_PRO_MK3:
+                                        {
+                                            bytes[numBytes++] = (byte) 240;
+                                            bytes[numBytes++] = (byte) 0;
+                                            bytes[numBytes++] = (byte) 32;
+                                            bytes[numBytes++] = (byte) 41;
+                                            bytes[numBytes++] = (byte) 2;
+                                            bytes[numBytes++] = (byte) 14;
+                                            bytes[numBytes++] = (byte) 0;
+                                            bytes[numBytes++] = (byte) 17; // Layout
+                                            bytes[numBytes++] = (byte) 0; // Page
+                                            bytes[numBytes++] = (byte) 0;
+                                            bytes[numBytes++] = (byte) 247;
+                                            inPort = 0;
+                                            outPort = 0;
+                                            break;
+                                        }
+                                    case LP_MK2:
+                                        {
+                                            bytes[numBytes++] = (byte) 240;
+                                            bytes[numBytes++] = (byte) 0;
+                                            bytes[numBytes++] = (byte) 32;
+                                            bytes[numBytes++] = (byte) 41;
+                                            bytes[numBytes++] = (byte) 2;
+                                            bytes[numBytes++] = (byte) 24;
+                                            bytes[numBytes++] = (byte) 34;
+                                            bytes[numBytes++] = (byte) 0; // Layout
+                                            bytes[numBytes++] = (byte) 247;
+                                            inPort = 0;
+                                            outPort = 0;
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            inPort = midiDevice.getInfo().getInputPortCount() - 1;
+                                            outPort = midiDevice.getInfo().getOutputPortCount() - 1;
+                                            break;
+                                        }
                                 }
+
+                                if (midi.getInputPortCount() > 0) {
+                                    MidiStaticVars.midiInput = midiDevice.openInputPort(inPort);
+                                    if (MidiStaticVars.midiInput != null) {
+                                        MidiStaticVars.midiMessage = new MidiMessage();
+                                        if (MidiStaticVars.device == null) {
+                                            MidiStaticVars.midiOutputReceiver =
+                                                    new MidiControlerMode(context);
+                                            receiver_thread = new MidiToLed(context);
+                                        } else {
+                                            MidiStaticVars.midiOutputReceiver =
+                                                    new MidiOutputReceiver(context);
+                                        }
+                                    }
+                                }
+                                if (midi.getOutputPortCount() > 0) {
+                                    MidiStaticVars.midiOutput = midiDevice.openOutputPort(outPort);
+                                    if (MidiStaticVars.midiOutput != null) {
+
+                                        MidiStaticVars.midiOutput.onConnect(
+                                                MidiStaticVars.midiOutputReceiver);
+                                    }
+                                }
+                                Toast.makeText(
+                                                context,
+                                                "Opened MIDI device: "
+                                                        + MidiStaticVars.midiDevicePropertie,
+                                                Toast.LENGTH_SHORT)
+                                        .show();
+                            } catch (NullPointerException n) {
                             }
                         }
-                    },
-                    new Handler(Looper.getMainLooper()));
-        }
+                    }
+                },
+                new Handler(Looper.getMainLooper()));
     }
-    
-    public static int rowProgramMode(int padid) {
+
+    public static int rowProgramMode(final int padid, boolean from_midi) {
         int x = Integer.parseInt((padid + "").substring(0, 1));
         int y;
         try {
@@ -275,23 +264,132 @@ public class UsbDeviceActivity extends Activity {
             y = x;
             x = 0;
         }
-        switch (MidiStaticVars.midiDevicePropertie) { // Cada launchpad tem um layout diferente entao o tratamento e
+        switch (MidiStaticVars
+                .midiDevicePropertie) { // Cada launchpad tem um layout diferente entao o tratamento
+                // e
                 // diferente
             case LP_PRO_MK3:
+            case LP_OPEN:
+            case LP_PRO:
             case LP_X:
                 {
                     return ((8 + (x * (-1) + 1)) * 10) + y;
                 }
-            case LP_PRO:
-            case LP_OPEN:
             case LP_MK2:
                 {
                     return (16 * (y - 1)) + x - 1;
                 }
             default:
                 {
-                    return 1;
+                    return VariaveisStaticas.getDrumFromVelocity(padid, from_midi);
                 }
+        }
+    }
+
+    class MidiToLed implements Runnable {
+        protected AtomicBoolean running;
+        Activity context;
+
+        public MidiToLed(Context context) {
+            this.context = (Activity) context;
+            running = new AtomicBoolean(false);
+        }
+
+        public void start() {
+            new Thread(this).start();
+        }
+
+        public boolean isStoped() {
+            return !running.get();
+        }
+
+        @Override
+        public void run() {
+            running.set(true);
+            /* int[] data:
+             * 0 - Channel
+             * 1 - Note
+             * 2 - Velocity
+             * 3 - View root (grid id)
+             */
+            int[] data;
+            long null_time;
+            while (running.get()) {
+                while (received.size() != 0) {
+                    null_time = SystemClock.uptimeMillis() + 10; // 50 milisegundos
+                    while (SystemClock.uptimeMillis() < null_time) {}
+                    data = received.get(0);
+                    received.remove(0);
+                    if (data != null) {
+                        final ImageView led =
+                                PlayPads.grids
+                                        .get("grid_1")
+                                        .findViewById(rowProgramMode(data[1], true))
+                                        .findViewById(R.id.led);
+                        final int color =
+                                VariaveisStaticas.colorInt(
+                                        data[2], PlayPads.custom_color_table, PlayPads.oldColors);
+                        runOnUiThread(
+                                () -> {
+                                    try {
+                                        led.setBackgroundColor(color);
+                                    } catch (NullPointerException n) {
+                                        Toast.makeText(
+                                                        context,
+                                                        "Controller mode: " + n.toString(),
+                                                        0)
+                                                .show();
+                                    }
+                                });
+                    }
+                }
+                null_time = SystemClock.uptimeMillis() + 5000; // 5 segundos
+                while (SystemClock.uptimeMillis() < null_time && received.size() == 0) {}
+                if (received.size() == 0) {
+                    running.set(false);
+                }
+            }
+        }
+    }
+
+    class MidiControlerMode extends MidiReceiver {
+        Activity context;
+
+        public MidiControlerMode(Context context) {
+            this.context = (Activity) context;
+            received = new ArrayList<>();
+        }
+
+        @Override
+        public void onSend(byte[] data, int arg1, int arg2, long arg3) throws IOException {
+            final int CHANNEL = data[1] & 0x0F;
+            final int NOTE = data[2] & 0xFF;
+            final int VELOCITY = data[3] & 0xFF;
+            if (NOTE >= 0 && NOTE < 128 && VELOCITY >= 0 && VELOCITY < 128) {
+                // received.add(
+                //        new int[] {CHANNEL, NOTE, VELOCITY,
+                // PlayPads.grids.get("grid_1").getId()});
+                // if (receiver_thread.isStoped()) receiver_thread.start();
+                runOnUiThread(
+                        () -> {
+                            try {
+                                final ImageView led =
+                                        PlayPads.grids
+                                                .get("grid_1")
+                                                .findViewById(rowProgramMode(NOTE, true))
+                                                .findViewById(R.id.led);
+                                final int color =
+                                        VariaveisStaticas.colorInt(
+                                                VELOCITY,
+                                                PlayPads.custom_color_table,
+                                                PlayPads.oldColors);
+                                led.setBackgroundColor(color);
+                            } catch (NullPointerException n) {
+                                Toast.makeText(context, "Controller mode: " + CHANNEL +" "+rowProgramMode(NOTE, true)+" "+VELOCITY, 0)
+                                        .show();
+                            }
+                        });
+            }
         }
     }
 
@@ -306,45 +404,30 @@ public class UsbDeviceActivity extends Activity {
             final int channel = (data[0] & 0xFF);
             final int Note = (data[1] & 0xFF);
             final int buttom = (data[2] & 0xFF);
-            runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                final int id = rowProgramMode(buttom);
-                                if (((Note > 128 && Note <= 144) | (Note >= 176 & Note <= 178))
-                                        && (data[3] & 0xFF) > 0) {
-                                    padsActivity
-                                            .findViewById(id)
-                                            .dispatchTouchEvent(
-                                                    MotionEvent.obtain(
-                                                            0,
-                                                            0,
-                                                            MotionEvent.ACTION_DOWN,
-                                                            0,
-                                                            0,
-                                                            0));
-                                    Toast.makeText(
-                                                    padsActivity,
-                                                    "Note On: " + id,
-                                                    Toast.LENGTH_SHORT)
-                                            .show();
-                                } else {
-                                    padsActivity
-                                            .findViewById(id)
-                                            .dispatchTouchEvent(
-                                                    MotionEvent.obtain(
-                                                            0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
-                                    Toast.makeText(
-                                                    padsActivity,
-                                                    "Note Off: " + id,
-                                                    Toast.LENGTH_SHORT)
-                                            .show();
-                                }
-                            } catch (NullPointerException n) {
-                            }
-                        }
-                    });
+            if (data[1] == (byte) 0x80 + (channel - 1) || data[1] == (byte) 0x90 + (channel - 1)) {
+                final int ACTION =
+                        (data[1] == 0x80 + (channel - 1))
+                                ? MotionEvent.ACTION_UP
+                                : MotionEvent.ACTION_DOWN;
+                if (MidiStaticVars.device != null) {
+                    if (((Note > 128 && Note <= 144) | (Note >= 176 & Note <= 178))
+                            && (data[3] & 0xFF) > 0) {
+                        runOnUiThread(
+                                () -> {
+                                    Toast.makeText(context, "buttom" + buttom, 0).show();
+                                    try {
+                                        PlayPads.grids
+                                                .get("grid_1")
+                                                .findViewById(rowProgramMode(buttom, true))
+                                                .dispatchTouchEvent(
+                                                        MotionEvent.obtain(0, 0, ACTION, 0, 0, 0));
+                                    } catch (NullPointerException n) {
+                                        Toast.makeText(context, n.toString(), 0).show();
+                                    }
+                                });
+                    }
+                }
+            }
         }
     }
 }

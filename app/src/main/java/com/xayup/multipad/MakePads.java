@@ -65,6 +65,7 @@ public class MakePads {
         this.currentProj = currentPath;
         this.ViewID = ViewID;
         this.largura = largura;
+        PlayPads.grids = new HashMap<String, View>();
     }
 
     public void makePadInLayout() {
@@ -192,13 +193,13 @@ public class MakePads {
 
                     layoutpad.setId(Integer.parseInt(l + "" + c));
                     chainCurrent.setAlpha(alpha);
-
                     layoutpads.addView(layoutpad, vparam);
-
                     layoutpad.setOnTouchListener(onTouch(Integer.parseInt(l + "" + c)));
                 }
             }
         }
+        layoutpads.setId(1);
+        PlayPads.grids.put("grid_1", layoutpads);
     }
 
     public OnTouchListener onTouch(int viewId) {
@@ -232,7 +233,6 @@ public class MakePads {
                         if (!PlayPads.stopAll) {
                             press.setAlpha(0.0f);
                             PlayPads.stopAll = true;
-                            XayUpFunctions.stopSounds();
                             XayUpFunctions.clearLeds(context, view.getRootView());
                         } else {
                             press.setImageDrawable(context.getDrawable(R.drawable.currentchain));
@@ -489,7 +489,7 @@ public class MakePads {
                             for (String k : PlayPads.ledrpt.keySet()) {
                                 PlayPads.ledrpt.put(k, 0);
                             }
-                            PlayPads.mSoundLoader.resetRpt();
+                            if(PlayPads.mSoundLoader != null) PlayPads.mSoundLoader.resetRpt();
                             //	}
                             if (PlayPads.recAutoplay) {
                                 AutoplayRecFunc.addChain(PlayPads.chainSl);

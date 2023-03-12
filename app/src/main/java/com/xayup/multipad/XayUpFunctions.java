@@ -83,7 +83,7 @@ public class XayUpFunctions {
 								byte[] bytes = new byte[32];
 								bytes[numBytes++] = (byte) ((MidiStaticVars.NOTE_OFF & 0xFF)
 										+ (MidiStaticVars.CHANNEL - 1));
-								bytes[numBytes++] = (byte) (UsbDeviceActivity.rowProgramMode(fi));
+								bytes[numBytes++] = (byte) (UsbDeviceActivity.rowProgramMode(fi, false));
 								bytes[numBytes++] = (byte) 0;
 								MidiStaticVars.midiInput.send(bytes, numBytes, offset);
 							}
@@ -96,6 +96,7 @@ public class XayUpFunctions {
 	}
 
 	//stop sounds
+    /*
 	public static void stopSounds() {
 		if (PlayPads.exoplayers != null) {
 			for (String p : PlayPads.exoplayers.keySet()) {
@@ -114,7 +115,7 @@ public class XayUpFunctions {
             PlayPads.toChainPool = null;
         }
 	}
-    
+    */
 	//Toque na visualizacao
 	public static void touchAndRelease(final Activity context, final int ViewId, final int type) {
 		context.runOnUiThread(new Runnable() {

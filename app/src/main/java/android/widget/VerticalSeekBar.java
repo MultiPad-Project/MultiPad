@@ -145,7 +145,6 @@ public class VerticalSeekBar extends SeekBar {
 			
 			if (mOnSeekBarChangeListener != null) {
 				PlayPads.stopAll = true;
-				XayUpFunctions.stopSounds();
 				XayUpFunctions.clearLeds(context, this.getRootView());
 				PlayPads.autoPlayThread.seekBarChanging(STATE_PRESSED);
 				PlayPads.autoPlayThread.setProgress(getProgress());

@@ -1,5 +1,6 @@
 package com.xayup.filesexplorer;
 
+import com.xayup.debug.XLog;
 import com.xayup.multipad.R;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,7 +38,7 @@ import java.util.zip.ZipFile;
 public class FileExplorerDialog {
   private Activity context;
   private View explorer;
-  
+
   File current_file = Environment.getExternalStorageDirectory();
   File[] files_directory;
   ListView list_files;
@@ -62,38 +63,39 @@ public class FileExplorerDialog {
   final String PRODUCER = "producer";
   final String TITLE = "title";
   final String ENTRY = "entry";
-  
+
   ViewFlipper project_infos;
   Map<String, Map<String, String>> project_in_zip;
   List<String> zip_entries_list;
-  
-  public FileExplorerDialog(Context context){
+
+  public FileExplorerDialog(Context context) {
     this.context = (Activity) context;
   }
-  
-  public View getExplorer(){
+
+  public View getExplorer() {
     prepare();
-    return explorer ;
+    return explorer;
   }
-  
-    public void getExplorerDialog(){
-        final AlertDialog.Builder import_dialog = new AlertDialog.Builder(context);
-        import_dialog.setView(getExplorer());
-        import_dialog.setCancelable(true);
-        Button close = explorer.findViewById(R.id.fv_close);
-        AlertDialog import_dialog_show = import_dialog.create();
-        close.setOnClickListener(new Button.OnClickListener(){
-            @Override
-                public void onClick(View v){
-                    import_dialog_show.dismiss();
-                }
+
+  public void getExplorerDialog() {
+    final AlertDialog.Builder import_dialog = new AlertDialog.Builder(context);
+    import_dialog.setView(getExplorer());
+    import_dialog.setCancelable(true);
+    Button close = explorer.findViewById(R.id.fv_close);
+    AlertDialog import_dialog_show = import_dialog.create();
+    close.setOnClickListener(
+        new Button.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            import_dialog_show.dismiss();
+          }
         });
-        import_dialog_show.show();
-    }
-    
-  private void prepare(){
+    import_dialog_show.show();
+  }
+
+  private void prepare() {
     explorer = LayoutInflater.from(context).inflate(R.layout.file_explorer, null);
-    
+
     list_files = explorer.findViewById(R.id.fv_list_files);
     fv_prev = explorer.findViewById(R.id.fv_prev);
     fv_close = explorer.findViewById(R.id.fv_close);
@@ -135,7 +137,8 @@ public class FileExplorerDialog {
                               readFilesByZipEntry(zipFile);
                               if (zip_entries_list.size() > 0) {
                                 int project_counts = 0;
-                                show_info: for (String key : project_in_zip.keySet()) {
+                                show_info:
+                                for (String key : project_in_zip.keySet()) {
                                   leds_count = getValueFromMap(key, KEYLED);
                                   sounds_count = getValueFromMap(key, SOUNDS);
                                   title = getValueFromMap(key, TITLE);
@@ -143,7 +146,8 @@ public class FileExplorerDialog {
 
                                   if (!title.equals("") || !producer.equals("")) {
                                     View v =
-                                        LayoutInflater.from(context).inflate(R.layout.project_infos, null);
+                                        LayoutInflater.from(context)
+                                            .inflate(R.layout.project_infos, null);
                                     ((TextView) v.findViewById(R.id.fv_project_name))
                                         .setText(title);
                                     ((TextView) v.findViewById(R.id.fv_project_author))
@@ -174,20 +178,24 @@ public class FileExplorerDialog {
                                                 CheckBox replace_all =
                                                     replace_layout.findViewById(
                                                         R.id.override_all_check);
-                                                Button replace_yes = replace_layout.findViewById(R.id.override_yes);    
-                                                Button replace_no = replace_layout.findViewById(R.id.override_no);  
-                                                TextView replace_title = replace_layout.findViewById(R.id.override_title);
-                                                //Fliper
+                                                Button replace_yes =
+                                                    replace_layout.findViewById(R.id.override_yes);
+                                                Button replace_no =
+                                                    replace_layout.findViewById(R.id.override_no);
+                                                TextView replace_title =
+                                                    replace_layout.findViewById(
+                                                        R.id.override_title);
+                                                // Fliper
                                                 ViewFlipper flipper = new ViewFlipper(context);
                                                 flipper.addView(layout, EXTRACT);
                                                 flipper.addView(replace_layout, REPLACE);
-                                                
-                                                //Progresso layout
+
+                                                // Progresso layout
                                                 extract_progress.setMax(
                                                     Integer.parseInt(
                                                         project_in_zip.get(key).get(ENTRY)));
-                                                
-                                                //Propriedades AlertDialog        
+
+                                                // Propriedades AlertDialog
                                                 progress_dialog.setView(flipper);
                                                 progress_dialog.setCancelable(false);
                                                 final AlertDialog progress_dialog_show =
@@ -211,8 +219,10 @@ public class FileExplorerDialog {
                                                             }
                                                             String mensage = "";
                                                             File file_out;
-                                                            AtomicBoolean replace_all_checked = new AtomicBoolean(false);
-                                                            extract: for (final String entry :
+                                                            AtomicBoolean replace_all_checked =
+                                                                new AtomicBoolean(false);
+                                                            extract:
+                                                            for (final String entry :
                                                                 zip_entries_list) {
                                                               try {
                                                                 if (entry.contains(
@@ -225,8 +235,11 @@ public class FileExplorerDialog {
                                                                   ZipEntry zipEntry =
                                                                       zipFile.getEntry(entry);
                                                                   final String project_file =
-                                                                      entry.substring(
-                                                                          entry.lastIndexOf(key));
+                                                                      (entry.lastIndexOf(key) == -1)
+                                                                          ? entry.substring(0)
+                                                                          : entry.substring(
+                                                                              entry.lastIndexOf(
+                                                                                  key));
                                                                   context.runOnUiThread(
                                                                       new Runnable() {
                                                                         @Override
@@ -253,48 +266,85 @@ public class FileExplorerDialog {
                                                                     if (!file_out.exists())
                                                                       file_out.mkdirs();
                                                                   } else {
-                                                                    if (!replace_all_checked.get() && file_out.exists()) {
+                                                                    if (!replace_all_checked.get()
+                                                                        && file_out.exists()) {
                                                                       // Substituir?
-                                                                      AtomicBoolean Break = new AtomicBoolean(true);
-                                                                      AtomicBoolean replace_file = new AtomicBoolean(false);                                                                      
-                                                                      replace_all.setOnClickListener(new CheckBox.OnClickListener(){
-                                                                        @Override
-                                                                        public void onClick(View v){
-                                                                          replace_all_checked.set(replace_all.isChecked());
-                                                                        }
-                                                                      });
-                                                                      replace_yes.setOnClickListener(new View.OnClickListener(){
-                                                                        @Override
-                                                                        public void onClick(View v){
-                                                                          replace_file.set(true);
-                                                                          Break.set(false);
-                                                                        }
-                                                                      });
-                                                                      replace_no.setOnClickListener(new View.OnClickListener(){
-                                                                        public void onClick(View v){
-                                                                        Break.set(false);
-                                                                        }
-                                                                      });
-                                                                      context.runOnUiThread(new Runnable(){
-                                                                        @Override
-                                                                        public void run(){
-                                                                          replace_title.setText(context.getString(R.string.dialog_replace_title) + ": " + entry.substring(entry.lastIndexOf("/")+1));
-                                                                          flipper.setDisplayedChild(REPLACE);
-                                                                        }
-                                                                      });
-                                                                      while(Break.get()){/*Wait*/}
-                                                                      if(!replace_file.get()){
-                                                                        if(replace_all.isChecked()){
+                                                                      AtomicBoolean Break =
+                                                                          new AtomicBoolean(true);
+                                                                      AtomicBoolean replace_file =
+                                                                          new AtomicBoolean(false);
+                                                                      replace_all
+                                                                          .setOnClickListener(
+                                                                              new CheckBox
+                                                                                  .OnClickListener() {
+                                                                                @Override
+                                                                                public void onClick(
+                                                                                    View v) {
+                                                                                  replace_all_checked
+                                                                                      .set(
+                                                                                          replace_all
+                                                                                              .isChecked());
+                                                                                }
+                                                                              });
+                                                                      replace_yes
+                                                                          .setOnClickListener(
+                                                                              new View
+                                                                                  .OnClickListener() {
+                                                                                @Override
+                                                                                public void onClick(
+                                                                                    View v) {
+                                                                                  replace_file.set(
+                                                                                      true);
+                                                                                  Break.set(false);
+                                                                                }
+                                                                              });
+                                                                      replace_no.setOnClickListener(
+                                                                          new View
+                                                                              .OnClickListener() {
+                                                                            public void onClick(
+                                                                                View v) {
+                                                                              Break.set(false);
+                                                                            }
+                                                                          });
+                                                                      context.runOnUiThread(
+                                                                          new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                              replace_title.setText(
+                                                                                  context.getString(
+                                                                                          R.string
+                                                                                              .dialog_replace_title)
+                                                                                      + ": "
+                                                                                      + entry
+                                                                                          .substring(
+                                                                                              entry
+                                                                                                      .lastIndexOf(
+                                                                                                          "/")
+                                                                                                  + 1));
+                                                                              flipper
+                                                                                  .setDisplayedChild(
+                                                                                      REPLACE);
+                                                                            }
+                                                                          });
+                                                                      while (Break.get()) {
+                                                                        /*Wait*/
+                                                                      }
+                                                                      if (!replace_file.get()) {
+                                                                        if (replace_all
+                                                                            .isChecked()) {
                                                                           break extract;
                                                                         }
                                                                         continue extract;
                                                                       }
-                                                                      context.runOnUiThread(new Runnable(){
-                                                                        @Override
-                                                                        public void run(){
-                                                                          flipper.setDisplayedChild(EXTRACT);
-                                                                        }
-                                                                      });
+                                                                      context.runOnUiThread(
+                                                                          new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                              flipper
+                                                                                  .setDisplayedChild(
+                                                                                      EXTRACT);
+                                                                            }
+                                                                          });
                                                                     }
                                                                     Log.v(
                                                                         "EXTRACT",
@@ -466,76 +516,88 @@ public class FileExplorerDialog {
   public void readFilesByZipEntry(final ZipFile zipFile) {
     final Enumeration<? extends ZipEntry> fileEnum = zipFile.entries();
     int entries_count = 0;
+    Map<String, String> map = new HashMap<String, String>();
+    ZipEntry file_in_zip;
+    File file;
+    String file_name;
+    String project_name = null;
+    String parent_folder;
     while (fileEnum.hasMoreElements()) {
-      ZipEntry file_in_zip = fileEnum.nextElement();
-      File file = new File(file_in_zip.getName());
-      String file_name = file.getName();
-      String folder_parent_name;
-      try {
-        folder_parent_name = file.getParentFile().getName();
-      } catch (NullPointerException n) {
-        folder_parent_name = zipFile.getName();
+      file_in_zip = fileEnum.nextElement();
+      file = new File(file_in_zip.getName());
+      file_name = file.getName();
+      try{
+        parent_folder = file.getParentFile().getName();
+      } catch (NullPointerException n){
+        parent_folder = new File(zipFile.getName()).getName();
+        parent_folder = parent_folder.substring(0, parent_folder.lastIndexOf("."));
       }
+       XLog.v("XayUp", parent_folder);
       if (file_in_zip.isDirectory()) {
-        Map<String, String> map = new HashMap<String, String>();
         if (file_name.equalsIgnoreCase("keyled") || file_name.equalsIgnoreCase("sounds")) {
-          if (project_in_zip.get(folder_parent_name) == null) {
-            map.put(file_name.toLowerCase(), null);
-            project_in_zip.put(folder_parent_name, map);
-          } else {
-            project_in_zip.get(folder_parent_name).put(file_name.toLowerCase(), null);
-          }
+          project_in_zip.get(project_name).put(file_name.toLowerCase(), null);
           zip_entries_list.add(file_in_zip.getName());
           entries_count++;
-          project_in_zip.get(folder_parent_name).put(ENTRY, "" + entries_count);
+          project_in_zip.get(project_name).put(ENTRY, "" + entries_count);
+          XLog.v("XayUp", "keyled");
         } else if (zipFile.getEntry(file_in_zip.getName() + "info") != null) {
+          /*
+           * Se esta arvore contém o arquivo 'info' então ele é um progeto
+           * Pegue o nome da pasta pai e use-o para o nome do pasta na extração
+           */
+          project_name = parent_folder;
+          if (project_in_zip.get(project_name) == null) project_in_zip.put(project_name, map);
           entries_count = 0;
-          project_in_zip.put(file_name, map);
+          XLog.v("XayUp", "have info");
         }
       } else if (file_name.equalsIgnoreCase("info")) {
         try {
+          /*
+           * Isso irá ler o arquivo info para exibição
+           */
           InputStream input = zipFile.getInputStream(file_in_zip);
           InputStreamReader reader = new InputStreamReader(input, "UTF-8");
           Scanner file_ready = new Scanner(reader);
           while (file_ready.hasNext()) {
             String line = file_ready.nextLine();
             if (line.toLowerCase().contains("producername=")) {
-              project_in_zip
-                  .get(folder_parent_name)
-                  .put(PRODUCER, line.substring(line.indexOf("=") + 1));
+              project_in_zip.get(project_name).put(PRODUCER, line.substring(line.indexOf("=") + 1));
             } else if (line.toLowerCase().contains("title=")) {
-              project_in_zip
-                  .get(folder_parent_name)
-                  .put(TITLE, line.substring(line.indexOf("=") + 1));
+              project_in_zip.get(project_name).put(TITLE, line.substring(line.indexOf("=") + 1));
             }
           }
           input.close();
           reader.close();
           zip_entries_list.add(file_in_zip.getName());
           entries_count++;
-          project_in_zip.get(folder_parent_name).put(ENTRY, "" + entries_count);
+          project_in_zip.get(project_name).put(ENTRY, "" + entries_count);
         } catch (IOException u) {
         }
+        /*
+        * Verifique os arquivos do projeto e adicione-a ao mapa
+        * junto com a posicao na lista para solicitar os arquivos 
+        * especificos caso haja multiplos projetos
+        */
       } else if (file_name.equalsIgnoreCase("keysound")) {
         zip_entries_list.add(file_in_zip.getName());
         entries_count++;
-        project_in_zip.get(folder_parent_name).put(ENTRY, "" + entries_count);
+        project_in_zip.get(project_name).put(ENTRY, "" + entries_count);
       } else if (file_name.equalsIgnoreCase("autoplay")) {
         zip_entries_list.add(file_in_zip.getName());
         entries_count++;
-        project_in_zip.get(folder_parent_name).put(ENTRY, "" + entries_count);
-      } else if (folder_parent_name.equalsIgnoreCase("keyled")) {
+        project_in_zip.get(project_name).put(ENTRY, "" + entries_count);
+      } else if (file_name.equalsIgnoreCase("keyled")) {
         leds += 1;
-        project_in_zip.get(putTo(file, zipFile)).put(KEYLED, "" + leds);
+        project_in_zip.get(project_name).put(KEYLED, "" + leds);
         zip_entries_list.add(file_in_zip.getName());
         entries_count++;
-        project_in_zip.get(putTo(file, zipFile)).put(ENTRY, "" + entries_count);
-      } else if (folder_parent_name.equalsIgnoreCase("sounds")) {
+        project_in_zip.get(project_name).put(ENTRY, "" + entries_count);
+      } else if (file_name.equalsIgnoreCase("sounds")) {
         sounds += 1;
-        project_in_zip.get(putTo(file, zipFile)).put(SOUNDS, "" + sounds);
+        project_in_zip.get(project_name).put(SOUNDS, "" + sounds);
         zip_entries_list.add(file_in_zip.getName());
         entries_count++;
-        project_in_zip.get(putTo(file, zipFile)).put(ENTRY, "" + entries_count);
+        project_in_zip.get(project_name).put(ENTRY, "" + entries_count);
       }
     }
   }
@@ -548,12 +610,10 @@ public class FileExplorerDialog {
   }
 
   public String putTo(File file, ZipFile zipFile) {
-    String put_to;
     try {
-      put_to = file.getParentFile().getParentFile().getName();
+      return file.getParentFile().getParentFile().getName();
     } catch (NullPointerException n) {
-      put_to = zipFile.getName();
+      return new File(zipFile.getName()).getName();
     }
-    return put_to;
   }
 }

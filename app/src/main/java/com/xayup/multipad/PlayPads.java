@@ -52,6 +52,7 @@ import com.xayup.multipad.ThreadLed;
 import java.io.*;
 import java.security.spec.MGF1ParameterSpec;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 public class PlayPads extends Activity {
@@ -75,6 +76,7 @@ public class PlayPads extends Activity {
     public static Map<String, ThreadLed> threadMap;
     public static Map<String, ExoPlayer> exoplayers;
     public static Map<String, Integer> chainClickable;
+    public static Map<String, View> grids;
 
     public static int glowPadRadius, glowChainRadius;
 
@@ -84,8 +86,8 @@ public class PlayPads extends Activity {
     public static int chainId;
     public static int padWH;
     public static int
-            display_height; // MainActivity.height;//Default MainActivity.height, ou ponha um valro
-                            // estatico, quanto menor que a altura de sua tela, menor os botoes
+            display_height; // MainActivity.height;//Default MainActivity.height, ou ponha um valor
+    // estatico, quanto menor que a altura de sua tela, menor os botoes
 
     private final int PICK_PHANTOM_IMG = 0;
     private final int PICK_PHANTOMC_IMG = 1;
@@ -99,6 +101,7 @@ public class PlayPads extends Activity {
     private final int EXIT_PAGE_CONFIGS = 1;
     private final int EXIT_PAGE_UI_IMG_SELECTOR = 2;
     private final int EXIT_PAGE_LIST_COLOR_TABLE = 3;
+    private final int EXIT_PAGE_PAD_GRIDS = 4;
 
     public static float watermark, padPressAlpha, glowIntensity, glowChainIntensity;
 
@@ -117,10 +120,8 @@ public class PlayPads extends Activity {
     public static List<String> invalid_formats;
     //	public static List<Integer> ledOcuped;
 
-    public static SoundPool soundPool;
-
+    // public static SoundPool soundPool;
     public static MakePads makepad;
-
     public static Thread ledOn;
     public static Runnable runLed;
     public static AutoPlayFunc autoPlayThread;
@@ -151,7 +152,7 @@ public class PlayPads extends Activity {
         varInstance();
         SkinTheme.varInstance(true);
         getCurrentPath = getIntent().getExtras().getString("currentPath");
-        new GetFilesTask(this).execute();
+        new GetFilesTask(this).getFiles();
     }
 
     public void varInstance() {
@@ -160,14 +161,11 @@ public class PlayPads extends Activity {
         soundrpt = new HashMap<Integer, Integer>();
         ledrpt = new HashMap<String, Integer>();
         fileProj = new HashMap<String, File>();
-        //	ledFiles = new HashMap<String, List<List<String>>>();
         exoplayers = new HashMap<String, ExoPlayer>();
         chainClickable = new HashMap<String, Integer>();
 
         ledFiles = null;
         invalid_formats = new ArrayList<String>();
-        // ledOcuped = new ArrayList<Integer>();
-        // autoPlay = new ArrayList<String>();
 
         // Get app data
         SharedPreferences app_config = getSharedPreferences("app_configs", MODE_PRIVATE);
@@ -180,10 +178,8 @@ public class PlayPads extends Activity {
         glowEf = app_config.getBoolean("glowEf", false);
         ifglow_cfg_show = false;
         slideMode = app_config.getBoolean("slideMode", false);
-        ;
         recAutoplay = false;
         oldColors = app_config.getBoolean("oldColors", false);
-        ;
         changeChainGlows = false;
         custom_color_table = app_config.getBoolean("custom_color_table", false);
         useSoundPool = app_config.getBoolean("use_soundpool", false);
@@ -250,23 +246,27 @@ public class PlayPads extends Activity {
             autoPlayCheck = false;
             autoPlayThread.exit();
         }
-        XayUpFunctions.stopSounds();
         SkinTheme.inplayPads = false;
         if (have_sounds) mSoundLoader.release();
         glows = null;
     }
 
-    public static void end(Activity context) {
+    public static void end(Activity context, long time_duration) {
+        int min = (int)TimeUnit.MILLISECONDS.toMinutes(time_duration);
+        int sec = (int)TimeUnit.MILLISECONDS.toSeconds(time_duration);
+        AlertDialog.Builder alertInvalidFiles = new AlertDialog.Builder(context);
         if (!invalid_formats.isEmpty()) {
-            AlertDialog.Builder alertInvalidFiles = new AlertDialog.Builder(context);
-            View alertDiagView = context.getLayoutInflater().inflate(R.layout.alert_dialog, null);
-            ListView listInvalids = alertDiagView.findViewById(R.id.listWarnings);
-            listInvalids.setAdapter(
-                    new ArrayAdapter(
-                            context, android.R.layout.simple_list_item_1, invalid_formats));
+            View alertDiagView = context.getLayoutInflater().inflate(R.layout.project_warnings, null);
+            ((ListView) alertDiagView.findViewById(R.id.warning_list))
+                    .setAdapter(
+                            new ArrayAdapter(
+                                    context, android.R.layout.simple_list_item_1, invalid_formats));
+            ((TextView)alertDiagView.findViewById(R.id.warning_time)).setText("Time: "+min+"m "+sec+"s");
             alertInvalidFiles.setView(alertDiagView);
-            XayUpFunctions.showDiagInFullscreen(alertInvalidFiles.create());
+        } else {
+            alertInvalidFiles.setMessage("Time: "+min+"m "+sec+"s");
         }
+        XayUpFunctions.showDiagInFullscreen(alertInvalidFiles.create());
         if (ledFiles != null) {
             ledFunc = new KeyLedColors();
         }
@@ -385,7 +385,7 @@ public class PlayPads extends Activity {
         swit.showNext();
     }
 
-    public void switShowbyIndex(ViewFlipper swit, boolean Previous, int index) {
+    public void switShowbyIndex(ViewFlipper swit, boolean Previous, int page) {
         if (Previous) {
             swit.setInAnimation(PlayPads.this, R.anim.move_in_to_right);
             swit.setOutAnimation(PlayPads.this, R.anim.move_out_to_right);
@@ -393,7 +393,7 @@ public class PlayPads extends Activity {
             swit.setInAnimation(PlayPads.this, R.anim.move_in_to_left);
             swit.setOutAnimation(PlayPads.this, R.anim.move_out_to_left);
         }
-        swit.setDisplayedChild(index);
+        swit.setDisplayedChild(page);
     }
 
     @Override
@@ -405,6 +405,7 @@ public class PlayPads extends Activity {
         Button exit_config = onExitDialog.findViewById(R.id.alert_configs_buttom);
         Button prev = onExitDialog.findViewById(R.id.alertExit_prev);
         Button color_table = onExitDialog.findViewById(R.id.alert_color_table_buttom);
+        Button pad_grids = onExitDialog.findViewById(R.id.alert_exit_pad_grids);
         // Select Skin page
         ListView listSkins = onExitDialog.findViewById(R.id.alertExitListSkins);
         TextView barTitle = onExitDialog.findViewById(R.id.alertExitTitle);
@@ -414,6 +415,9 @@ public class PlayPads extends Activity {
         ListView color_table_files = onExitDialog.findViewById(R.id.alertExit_list_color_table);
         Button default_color_table =
                 onExitDialog.findViewById(R.id.alert_default_color_table_buttom);
+
+        // Grid pads page
+        ListView pad_grids_list = onExitDialog.findViewById(R.id.alert_exit_pad_grids_list);
 
         // Option page
         View sound_spam_item = onExitDialog.findViewById(R.id.alertExit_spam_sound_item);
@@ -448,7 +452,7 @@ public class PlayPads extends Activity {
 
         View item_customHeight = onExitDialog.findViewById(R.id.alertExit_item_layer_cfg);
 
-        // set functions
+        // Restore saved from app configs
         if (glowEf) glow_cfg_show.setAlpha(1.0f);
         glow_cfg_check.setChecked(ifglow_cfg_show);
         glow_check.setChecked(glowEf);
@@ -463,11 +467,9 @@ public class PlayPads extends Activity {
 
         if (layer_decoration) alertExit_layout_decoration_item.setAlpha(1.0f);
         item_customHeight.setAlpha(1.0f);
-
-        // Ir para a pagina de configuraçoes
         SharedPreferences.Editor save_cfg =
                 getSharedPreferences("app_configs", MODE_PRIVATE).edit();
-        ;
+        // Ir para a pagina de configuraçoes
         exit_config.setOnClickListener(
                 new Button.OnClickListener() {
                     @Override
@@ -496,9 +498,16 @@ public class PlayPads extends Activity {
                                 break;
                             case EXIT_PAGE_LIST_COLOR_TABLE:
                                 switShowbyIndex(swit, true, EXIT_PAGE_LISTSKIN);
-                                barTitle.setText(getString(R.string.color_table_title));
+                                barTitle.setText(getString(R.string.alert_exit_title));
                                 color_table.setVisibility(View.VISIBLE);
                                 default_color_table.setVisibility(View.GONE);
+                                exit_config.setVisibility(View.VISIBLE);
+                                break;
+                            case EXIT_PAGE_PAD_GRIDS:
+                                switShowbyIndex(swit, true, EXIT_PAGE_LISTSKIN);
+                                barTitle.setText(getString(R.string.alert_exit_title));
+                                color_table.setVisibility(View.VISIBLE);
+                                exit_config.setVisibility(View.VISIBLE);
                                 break;
                         }
                     }
@@ -525,6 +534,15 @@ public class PlayPads extends Activity {
                     public void onClick(View v) {
                         exitPads();
                         PlayPads.super.onBackPressed();
+                    }
+                });
+        // Ver a lista de pad grids
+        pad_grids.setOnClickListener(
+                new Button.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        exit_config.setVisibility(View.GONE);
+                        color_table.setVisibility(View.GONE);
                     }
                 });
 
