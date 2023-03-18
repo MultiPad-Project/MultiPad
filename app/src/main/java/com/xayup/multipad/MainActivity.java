@@ -27,6 +27,7 @@ import android.widget.*;
 import com.xayup.filesexplorer.FileExplorerDialog;
 import com.xayup.multipad.MidiStaticVars;
 import com.xayup.multipad.UsbDeviceActivity;
+import com.xayup.multipad.VariaveisStaticas;
 import java.io.*;
 import java.net.URL;
 
@@ -191,6 +192,7 @@ public class MainActivity extends Activity {
 
         if (useUnipadFolderConfig) {
             rootFolder = new File(Environment.getExternalStorageDirectory() + "/Unipad");
+            VariaveisStaticas.use_unipad_folder = true;
         }
         if (granted) {
             if (!rootFolder.exists()) {

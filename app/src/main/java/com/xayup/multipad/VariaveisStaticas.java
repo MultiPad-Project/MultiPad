@@ -98,6 +98,10 @@ public class VariaveisStaticas {
 	public final static List<String> chainsIDlist = Arrays.asList(chainsID);
 
 	//Diretorios
-	public static final String MULTIPAD_PATCH = Environment.getExternalStorageDirectory() + "/MultiPad";
-	public static final String COLOR_TABLE_PATCH = MULTIPAD_PATCH + "/LCT";
+	public static final String MULTIPAD_PATH = Environment.getExternalStorageDirectory() + "/MultiPad";
+	public static final String COLOR_TABLE_PATH = MULTIPAD_PATH + "/LCT";
+  public static final String PROJECTS_PATH = MULTIPAD_PATH + "/Projects";
+  
+  //Configuraçoes
+  public static boolean use_unipad_folder = false;
 }
