@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/playpads_alert_loading_project_title"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textSize="30dp"/>
+
+    <TextView
+        android:id="@+id/playpads_alert_loading_project_keyleds"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/playpads_alert_loading_project_title"/>
+
+    <TextView
+        android:id="@+id/playpads_alert_loading_project_keysounds"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/playpads_alert_loading_project_keyleds"/>
+
+    <TextView
+        android:id="@+id/playpads_alert_loading_project_autoplay"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/playpads_alert_loading_project_keysounds"/>
+
+</RelativeLayout>

@@ -1003,49 +1003,31 @@ public class PlayPads extends Activity {
 
               View window = findViewById(R.id.layer_cfg_window);
 
-              int layer_h = layer.getLayoutParams().height;
-              int layer_w = layer.getLayoutParams().width;
+              float layer_h = layer.getScaleX();
               int pads_hw = MakePads.layoutpads.getLayoutParams().height;
 
-              layer_size_w.setText("" + layer_w);
               layer_size_h.setText("" + layer_h);
               pads_size.setText("" + pads_hw);
 
+              layer_size_w.setVisibility(View.GONE);
+
               layer_size_plus.setOnClickListener(
                   new View.OnClickListener() {
-
                     @Override
                     public void onClick(View arg0) {
-                      int layer_h = layer.getLayoutParams().height + 10;
-                      int layer_w = layer.getLayoutParams().width + 10;
-                      layer.getLayoutParams().height = layer_h;
-                      layer.getLayoutParams().width = layer_w;
-                      layer_size_w.setText("" + layer_w);
-                      layer_size_h.setText("" + layer_h);
-                      layer.setVisibility(View.GONE);
-                      layer.setVisibility(View.VISIBLE);
-                      if (glows != null) glows.resize();
+                      layer_size_h.setText(resizeLayer(layer, 0.01));
                     }
                   });
               layer_size_minus.setOnClickListener(
                   new View.OnClickListener() {
-
                     @Override
                     public void onClick(View arg0) {
-                      int layer_h = layer.getLayoutParams().height - 10;
-                      int layer_w = layer.getLayoutParams().width - 10;
-                      layer.getLayoutParams().height = layer_h;
-                      layer.getLayoutParams().width = layer_w;
-                      layer_size_w.setText("" + layer_w);
-                      layer_size_h.setText("" + layer_h);
-                      layer.setVisibility(View.GONE);
-                      layer.setVisibility(View.VISIBLE);
-                      if (glows != null) glows.resize();
+                      layer_size_h.setText(resizeLayer(layer, -0.01));
                     }
                   });
+
               pads_size_plus.setOnClickListener(
                   new View.OnClickListener() {
-
                     @Override
                     public void onClick(View arg0) {
                       int pads_hw = MakePads.layoutpads.getLayoutParams().height + 10;
@@ -1065,7 +1047,6 @@ public class PlayPads extends Activity {
                   });
               pads_size_minus.setOnClickListener(
                   new View.OnClickListener() {
-
                     @Override
                     public void onClick(View arg0) {
                       int pads_hw = MakePads.layoutpads.getLayoutParams().height - 10;
@@ -1112,8 +1093,8 @@ public class PlayPads extends Activity {
                       int layer_h = Integer.parseInt(lh);
                       int layer_w = Integer.parseInt(lw);
                       int pads_hw = Integer.parseInt(phw);
-                      layer.getLayoutParams().height = layer_h;
-                      layer.getLayoutParams().width = layer_w;
+                      layer.setScaleX(layer_h);
+                      layer.setScaleY(layer_w);
                       MakePads.layoutpads.getLayoutParams().height = pads_hw;
                       MakePads.layoutpads.getLayoutParams().width = pads_hw;
                       pads_size.setText("" + pads_hw);
@@ -1177,5 +1158,15 @@ public class PlayPads extends Activity {
     XayUpFunctions.showDiagInFullscreen(alertDialog);
     alertDialog.getWindow().setLayout(MainActivity.height, WindowManager.LayoutParams.MATCH_PARENT);
     alertDialog.getWindow().setGravity(Gravity.RIGHT);
+  }
+
+  private String resizeLayer(final View layer, Double increment) {
+    float new_size = BigDecimal.valueOf(layer.getScaleY()).add(BigDecimal.valueOf(increment)).floatValue();
+    layer.setScaleY(new_size);
+    layer.setScaleX(new_size);
+    layer.setVisibility(View.GONE);
+    layer.setVisibility(View.VISIBLE);
+    if (glows != null) glows.resize();
+    return "" + new_size;
   }
 }

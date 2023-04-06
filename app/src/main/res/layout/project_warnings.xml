@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_height="wrap_content"
+     android:layout_width="wrap_content"
+     android:background="@color/material_green_300"
+     android:padding="12dp"
+     android:orientation="vertical"
+     android:id="@+id/alertdiagLayout">
+
+    <TextView
+         android:layout_height="wrap_content"
+         android:layout_width="wrap_content"
+         android:layout_marginBottom="12dp"
+         android:gravity="center_vertical|left"
+         android:textSize="20sp"
+         android:layout_marginLeft="14dp"
+         android:id="@+id/warning_title"
+         android:text="@string/warning"
+         android:textStyle="bold"/>
+
+    <TextView
+         android:layout_height="wrap_content"
+         android:layout_width="wrap_content"
+         android:layout_marginBottom="12dp"
+         android:gravity="center_vertical|right"
+         android:textSize="18sp"
+         android:layout_marginRight="14dp"
+         android:layout_alignParentRight="true"
+         android:id="@+id/warning_time"/>
+
+    <ListView
+         android:layout_height="wrap_content"
+         android:layout_width="wrap_content"
+         android:layout_below="@id/warning_title"
+         android:id="@+id/warning_list">
+
+    </ListView>
+
+</RelativeLayout>
