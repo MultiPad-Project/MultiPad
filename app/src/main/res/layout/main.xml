@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical|center|center_horizontal"
     android:background="@drawable/bgactivity"
-    android:scaleType="centerCrop"
-     >
-
+    android:scaleType="centerCrop" >
+    
+    <!--Barra superior-->
     <ImageView
         android:id="@+id/maintopbar"
         android:layout_width="match_parent"
@@ -16,7 +16,8 @@
         android:layout_centerHorizontal="true"
         android:scaleType="fitXY"
         android:src="@drawable/topbar" />
-
+    
+    <!--Barra inferior-->
     <ImageView
         android:id="@+id/mainbottombar"
         android:layout_width="match_parent"
@@ -26,6 +27,7 @@
         android:scaleType="fitXY"
         android:src="@drawable/topbar" />
 
+    <!--Lista de Unipacks-->
     <ListView
         android:id="@+id/listViewProjects"
         android:layout_width="match_parent"
@@ -38,6 +40,7 @@
 		android:layout_marginLeft="8dp"
 		android:layout_marginRight="8dp" />
 
+    <!--Botão flutuante (FAB)-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -54,8 +57,9 @@
             android:background="@drawable/inter_floating_button" />
     </RelativeLayout>
 
+    <!--Spash Screen-->
     <include layout="@layout/splash_screen" />
-    
+    <!--
     <android.widget.RelativeLayout
         android:id="@+id/float_project_info_background"
         android:layout_width="match_parent"
@@ -70,5 +74,5 @@
         <include layout="@layout/float_project_info_layout" />
         
     </android.widget.RelativeLayout>
-
+    -->
 </RelativeLayout>

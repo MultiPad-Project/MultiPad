@@ -5,7 +5,7 @@
 		}
 	],
 	"settings": {
-		"workbench.colorTheme": "Darcula (Android Studio)",
+		"workbench.colorTheme": "IntelliJ-ish Darcula",
 		"java.configuration.updateBuildConfiguration": "interactive",
 		
 	},
@@ -64,10 +64,10 @@
 			"dotjoshjohnson.xml",
 			"totalcross.android-xml-editor",
 			"flimberger.android-system-tools",
-			"shayanahmedkhan.android-studio-color-theme",
 			"eugeniobuffo.android-manifest-snippets",
 			"antonydalmiere.android-support",
-			"adelphes.android-dev-ext"
+			"adelphes.android-dev-ext",
+			"csantiago132.intellij-ish-darcula-theme"
 		]
 	},
 }
