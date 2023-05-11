@@ -5,8 +5,9 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical|center|center_horizontal"
     android:background="@drawable/bgactivity"
-    android:scaleType="centerCrop" >
-
+    android:scaleType="centerCrop"
+     >
+''
     <ImageView
         android:id="@+id/maintopbar"
         android:layout_width="match_parent"
