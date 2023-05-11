@@ -7,7 +7,7 @@
     android:background="@drawable/bgactivity"
     android:scaleType="centerCrop"
      >
-''
+
     <ImageView
         android:id="@+id/maintopbar"
         android:layout_width="match_parent"
