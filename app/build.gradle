@@ -22,7 +22,7 @@ android {
         applicationId "com.xayup.multipad"
         minSdk 21
         targetSdk 32
-        versionCode 2112122022
+        versionCode 21230511        //Versão, ano, mês, dia
         versionName "2.2"
     }
 

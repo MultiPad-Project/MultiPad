@@ -1,0 +1,71 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"workbench.colorTheme": "Darcula (Android Studio)",		
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"type": "gradle",
+				"id": "${workspaceRoot}app:assembleapp",
+				"script": "app:assemble",
+				"description": "Assemble main outputs for all the variants.",
+				"group": "build",
+				"project": "app",
+				"buildFile": "${workspaceRoot}\\app\\build.gradle",
+				"rootProject": "${workspaceFolderBasename}",
+				"projectFolder": "${workspaceRoot}",
+				"workspaceFolder": "${workspaceRoot}",
+				"args": "",
+				"javaDebug": false,
+				"problemMatcher": [
+					"$gradle"
+				],
+				"label": "gradle: app:assemble"
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"console": "internalConsole",
+				"internalConsoleOptions": "openOnSessionStart",
+				"preLaunchTask": "gradle: app:assemble",
+				"type": "android",
+				"request": "launch",
+				"name": "Android launch",
+				"appSrcRoot": "${workspaceRoot}/app/src/main",
+				"apkFile": "${workspaceRoot}/app/build/outputs/apk/debug/app-debug.apk",
+				"adbPort": 5037
+			},
+			{
+				"type": "android",
+				"request": "attach",
+				"name": "Android attach",
+				"appSrcRoot": "${workspaceRoot}/app/src/main",
+				"adbPort": 5037,
+				"processId": "${command:PickAndroidProcess}"
+			}
+		]
+	},
+	"extensions": {
+		"recommendations": [
+			"vscjava.vscode-java-pack",
+			"naco-siren.gradle-language",
+			"vscjava.vscode-gradle",
+			"dotjoshjohnson.xml",
+			"totalcross.android-xml-editor",
+			"flimberger.android-system-tools",
+			"shayanahmedkhan.android-studio-color-theme",
+			"eugeniobuffo.android-manifest-snippets",
+			"antonydalmiere.android-support",
+			"adelphes.android-dev-ext"
+		]
+	},
+}
