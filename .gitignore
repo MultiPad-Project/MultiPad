@@ -18,3 +18,4 @@ build/
 /app/build
 /app/build/*
 app/build/*
+.vscode

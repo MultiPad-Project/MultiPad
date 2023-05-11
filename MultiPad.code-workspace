@@ -5,7 +5,9 @@
 		}
 	],
 	"settings": {
-		"workbench.colorTheme": "Darcula (Android Studio)",		
+		"workbench.colorTheme": "Darcula (Android Studio)",
+		"java.configuration.updateBuildConfiguration": "interactive",
+		
 	},
 	"tasks": {
 		"version": "2.0.0",
