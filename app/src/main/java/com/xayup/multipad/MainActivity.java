@@ -31,6 +31,8 @@ import com.xayup.multipad.VariaveisStaticas;
 import java.io.*;
 import java.net.URL;
 
+import javax.swing.text.View;
+
 public class MainActivity extends Activity {
     String[] pastadeprojetos;
     ListView listaprojetos;
@@ -50,12 +52,11 @@ public class MainActivity extends Activity {
     private Context context = this;
 
     File rootFolder = new File(Environment.getExternalStorageDirectory() + "/MultiPad/Projects");
-    final String[] per =
-            new String[] {
-                "android.permission.MANAGER_EXTERNAL_STORAGE",
-                "android.permission.WRITE_EXTERNAL_STORAGE",
-                "android.permission.READ_EXTERNAL_STORAGE"
-            };
+    final String[] per = new String[] {
+            "android.permission.MANAGER_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.READ_EXTERNAL_STORAGE"
+    };
 
     private final String ACTION_USB_PERMISSION = "com.xayup.multipad.USB_PERMISSION";
     final int STORAGE_PERMISSION = 1000;
@@ -69,7 +70,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //	decorView = getWindow().getDecorView();
+        // decorView = getWindow().getDecorView();
         if (logRastreador()) {
             setContentView(R.layout.crash);
 
@@ -84,13 +85,12 @@ public class MainActivity extends Activity {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ClipboardManager clipboard =
-                                    (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                             clipboard.setText(traceLog);
                             Toast.makeText(
-                                            getApplicationContext(),
-                                            R.string.cop,
-                                            Toast.LENGTH_SHORT)
+                                    getApplicationContext(),
+                                    R.string.cop,
+                                    Toast.LENGTH_SHORT)
                                     .show();
                         }
                     });
@@ -114,7 +114,10 @@ public class MainActivity extends Activity {
                     .setFlags(
                             WindowManager.LayoutParams.FLAG_FULLSCREEN,
                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            setContentView(R.layout.main);
+            // New Layout
+            setContentView(R.layout.new_main);
+            // Old Layout
+            // setContentView(R.layout.main);
             getWindow()
                     .setFlags(
                             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -152,9 +155,8 @@ public class MainActivity extends Activity {
         if (this.getFileStreamPath("stack.trace").exists()) {
             traceLog = null;
             try {
-                BufferedReader reader =
-                        new BufferedReader(
-                                new InputStreamReader(this.openFileInput("stack.trace")));
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(this.openFileInput("stack.trace")));
                 String line = null;
                 while ((line = reader.readLine()) != null) {
                     traceLog += line + "\n";
@@ -200,44 +202,94 @@ public class MainActivity extends Activity {
             }
         }
 
-        button_floating_menu = findViewById(R.id.main_floating_menu_button);
-        button_floating_menu.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View arg0) {
-
-                        setMenuFunctions();
-                    }
-                });
-        Readers getInfo = new Readers();
-        CustomArray arrayCustom =
-                new CustomArray(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
-        listaprojetos = findViewById(R.id.listViewProjects);
-        listaprojetos.setAdapter(arrayCustom);
-
-        listaprojetos.setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(
-                            AdapterView<?> adapterView, View view, int Int, long Long) {
-                        TextView pathTextv = view.findViewById(R.id.pathText);
-                        View itemStt = view.findViewById(R.id.currentItemState);
-                        switch ((Integer) itemStt.getTag()) {
-                            case 0:
-                                Intent playPads = new Intent(getBaseContext(), PlayPads.class);
-                                playPads.putExtra("currentPath", pathTextv.getText().toString());
-                                playPads.putExtra("height", height);
-                                startActivity(playPads);
-                                break;
-                            case 2:
-                                checarPermissao();
-                                break;
-                        }
-                    }
-                });
+        boolean use_old_main_layout = false;
         View splash_screen = findViewById(R.id.splash);
+        CustomArray arrayCustom = new CustomArray(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
+
+        if (use_old_main_layout) {
+            button_floating_menu = findViewById(R.id.main_floating_menu_button);
+            button_floating_menu.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View arg0) {
+                            setMenuFunctions();
+                        }
+                    });
+            Readers getInfo = new Readers();
+            listaprojetos = findViewById(R.id.listViewProjects);
+            listaprojetos.setAdapter(arrayCustom);
+            listaprojetos.setOnItemClickListener(
+                    new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(
+                                AdapterView<?> adapterView, View view, int Int, long Long) {
+                            projectItem(view);
+                        }
+                    });
+        } else {
+            // Botões
+            Button unipack_preview = findViewById(R.id.main_right_bar_unipack_preview);
+            Button unipack_info = findViewById(R.id.main_right_bar_unipack_info);
+            Button menu = findViewById(R.id.main_right_bar_menu);
+
+            unipck_preview.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public onClick(View view) {
+
+                }
+            });
+            unipck_info.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public onClick(View view) {
+
+                }
+            });
+            menu.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public onClick(View view) {
+
+                }
+            });
+
+            // Lista (Grade)
+            GridLayout grid = findViewById(R.id.main_scroll_gridlayout);
+            colums = 2;
+            grid_colum_index = 0;
+            grid_row_index = 0;
+            for (int index : arrayCustom.getCount()) {
+                View item = arrayCustom.getView(index, null, null);
+                item.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        projectItem(view);
+                    }
+                })
+                grid.addView(item, new GridLayout(GridLayout.spec(grid_row_index, GridLayout.FILL, 1), GridLayout.spec(grid_colum_index, GridLayout.FILL, 1)));
+                grid_colum_index++;
+                if (grid_colum_index >= colums){
+                    grind_row_index++;
+                    grid_colum_index = 0;
+                }
+            }
+        }
         splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
         splash_screen.setVisibility(View.GONE);
+    }
+
+    public void projectItem(View view){
+        TextView pathTextv = view.findViewById(R.id.pathText);
+            View itemStt = view.findViewById(R.id.currentItemState);
+            switch ((Integer) itemStt.getTag()) {
+                case 0:
+                    Intent playPads = new Intent(getBaseContext(), PlayPads.class);
+                    playPads.putExtra("currentPath", pathTextv.getText().toString());
+                    playPads.putExtra("height", height);
+                    startActivity(playPads);
+                    break;
+                case 2:
+                    checarPermissao();
+                    break;
+            }
     }
 
     public void checarPermissao() {
@@ -252,8 +304,7 @@ public class MainActivity extends Activity {
             }
         } else {
             if ((checkCallingPermission(per[0 + android11per])
-                            & checkCallingPermission(per[1 + android11per]))
-                    != PackageManager.PERMISSION_GRANTED)
+                    & checkCallingPermission(per[1 + android11per])) != PackageManager.PERMISSION_GRANTED)
                 requestPermissions(per, STORAGE_PERMISSION);
         }
     }
@@ -285,7 +336,8 @@ public class MainActivity extends Activity {
         // View..
         View item_skins = menu.findViewById(R.id.main_floating_item_skins);
         View item_useUnipadFolder = menu.findViewById(R.id.main_floating_item_useunipadfolder);
-        // View item_customHeight = menu.findViewById(R.id.main_floating_item_customHeight);
+        // View item_customHeight =
+        // menu.findViewById(R.id.main_floating_item_customHeight);
         View item_sourceCode = menu.findViewById(R.id.main_floating_item_sourcecode);
         View item_myChannel = menu.findViewById(R.id.main_floating_item_mychannel);
         View item_manual = menu.findViewById(R.id.main_floating_item_manual);
@@ -295,8 +347,7 @@ public class MainActivity extends Activity {
         unipadfolder.setChecked(useUnipadFolderConfig);
 
         floating_menu.setView(menu);
-        Button floating_button_exit =
-                (Button) menu.findViewById(R.id.main_floating_menu_button_exit);
+        Button floating_button_exit = (Button) menu.findViewById(R.id.main_floating_menu_button_exit);
         AlertDialog show = floating_menu.create();
         XayUpFunctions.showDiagInFullscreen(show);
 
@@ -325,31 +376,26 @@ public class MainActivity extends Activity {
                                     @Override
                                     public void onItemClick(
                                             AdapterView<?> adapter, View v, int pos, long id) {
-                                        MidiDeviceInfo usb_midi =
-                                                (MidiDeviceInfo) adapter.getItemAtPosition(pos);
+                                        MidiDeviceInfo usb_midi = (MidiDeviceInfo) adapter.getItemAtPosition(pos);
                                         if (MidiStaticVars.midiDevice == usb_midi) {
                                             Toast.makeText(
-                                                            context,
-                                                            context.getString(
-                                                                    R.string.midi_aready_connected),
-                                                            0)
+                                                    context,
+                                                    context.getString(
+                                                            R.string.midi_aready_connected),
+                                                    0)
                                                     .show();
                                             return;
                                         }
-                                        MidiStaticVars.device =
-                                                (UsbDevice)
-                                                        usb_midi.getProperties()
-                                                                .getParcelable(
-                                                                        MidiDeviceInfo
-                                                                                .PROPERTY_USB_DEVICE);
+                                        MidiStaticVars.device = (UsbDevice) usb_midi.getProperties()
+                                                .getParcelable(
+                                                        MidiDeviceInfo.PROPERTY_USB_DEVICE);
                                         if (MidiStaticVars.device != null) {
                                             MidiStaticVars.midiDevice = usb_midi;
-                                            permissionIntent =
-                                                    PendingIntent.getBroadcast(
-                                                            context,
-                                                            0,
-                                                            new Intent(ACTION_USB_PERMISSION),
-                                                            PendingIntent.FLAG_MUTABLE);
+                                            permissionIntent = PendingIntent.getBroadcast(
+                                                    context,
+                                                    0,
+                                                    new Intent(ACTION_USB_PERMISSION),
+                                                    PendingIntent.FLAG_MUTABLE);
                                             MidiStaticVars.manager.requestPermission(
                                                     MidiStaticVars.device, permissionIntent);
                                         } else {
@@ -402,11 +448,10 @@ public class MainActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                        SkinTheme getThemes =
-                                new SkinTheme(
-                                        MainActivity.this,
-                                        (ListView) swit.getChildAt(SKINS),
-                                        false);
+                        SkinTheme getThemes = new SkinTheme(
+                                MainActivity.this,
+                                (ListView) swit.getChildAt(SKINS),
+                                false);
                         getThemes.getSkinsTheme();
                         barTitle.setText(getString(R.string.skins));
                         swit.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
@@ -418,8 +463,7 @@ public class MainActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                        SharedPreferences app_configs =
-                                getSharedPreferences("app_configs", MODE_PRIVATE);
+                        SharedPreferences app_configs = getSharedPreferences("app_configs", MODE_PRIVATE);
                         SharedPreferences.Editor editConfigs = app_configs.edit();
                         if (app_configs.getBoolean("useUnipadFolder", false)) {
                             unipadfolder.setChecked(false);
@@ -456,9 +500,8 @@ public class MainActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                        AlertDialog.Builder manual =
-                                new AlertDialog.Builder(
-                                        MainActivity.this, R.style.alertdialog_transparent);
+                        AlertDialog.Builder manual = new AlertDialog.Builder(
+                                MainActivity.this, R.style.alertdialog_transparent);
                         ImageView manualImg = new ImageView(MainActivity.this);
                         manualImg.setImageDrawable(getDrawable(R.drawable.manual));
                         manual.setView(manualImg);
@@ -479,38 +522,36 @@ public class MainActivity extends Activity {
         show.getWindow().setBackgroundDrawable(getDrawable(R.drawable.inset_floating_menu));
     }
 
-    private final BroadcastReceiver usbReceiver =
-            new BroadcastReceiver() {
-                public void onReceive(Context context, Intent intent) {
-                    Toast.makeText(context, "onReceive", 0).show();
-                    String action = intent.getAction();
-                    if (ACTION_USB_PERMISSION.equals(action)) {
-                        synchronized (this) {
-                            Toast.makeText(context, "equal", 0).show();
-                            if (intent.getBooleanExtra(
-                                    UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                                Toast.makeText(context, "granted", 0).show();
-                                new UsbDeviceActivity()
-                                        .openMidiDevice(context, MidiStaticVars.midiDevice);
-                            } else {
-                                Toast.makeText(
-                                                context,
-                                                context.getString(R.string.danied_midi_permission)
-                                                        .replace(
-                                                                "%m",
-                                                                MidiStaticVars.midiDevice
-                                                                        .getProperties()
-                                                                        .getString(
-                                                                                MidiDeviceInfo
-                                                                                        .PROPERTY_PRODUCT)),
-                                                0)
-                                        .show();
-                                MidiStaticVars.midiDevice = null;
-                            }
-                        }
+    private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "onReceive", 0).show();
+            String action = intent.getAction();
+            if (ACTION_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
+                    Toast.makeText(context, "equal", 0).show();
+                    if (intent.getBooleanExtra(
+                            UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        Toast.makeText(context, "granted", 0).show();
+                        new UsbDeviceActivity()
+                                .openMidiDevice(context, MidiStaticVars.midiDevice);
+                    } else {
+                        Toast.makeText(
+                                context,
+                                context.getString(R.string.danied_midi_permission)
+                                        .replace(
+                                                "%m",
+                                                MidiStaticVars.midiDevice
+                                                        .getProperties()
+                                                        .getString(
+                                                                MidiDeviceInfo.PROPERTY_PRODUCT)),
+                                0)
+                                .show();
+                        MidiStaticVars.midiDevice = null;
                     }
                 }
-            };
+            }
+        }
+    };
 
     @Override
     public void onWindowFocusChanged(boolean bool) {

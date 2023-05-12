@@ -7,6 +7,7 @@
 	"settings": {
 		"workbench.colorTheme": "IntelliJ-ish Darcula",
 		"java.configuration.updateBuildConfiguration": "interactive",
+		"java.autobuild.enabled": false,
 		
 	},
 	"tasks": {
@@ -29,6 +30,32 @@
 					"$gradle"
 				],
 				"label": "gradle: app:assemble"
+			},
+			{
+				"type": "shell",
+				"label": "gradle: assembleDebug",
+				"command": "@${workspaceRoot}\\.\\gradlew",
+				"args": ["assembleDebug"]
+			},
+			{
+				"type": "shell",
+				"label": "gradle: assembleRelease",
+				"command": "${workspaceRoot}\\.\\gradlew",
+				"args": ["assembleRelease"]
+			},
+			{
+				"type": "shell",
+				"label": "gradle: assemble",
+				"command": "${workspaceRoot}\\gradlew",
+				"args": ["assemble"],
+				"presentation": {
+					"echo": false,
+					"reveal": "always",
+					"focus": true,
+					"panel": "shared",
+					"showReuseMessage": false,
+					"clear": true
+				}
 			}
 		]
 	},
@@ -36,9 +63,9 @@
 		"version": "0.2.0",
 		"configurations": [
 			{
-				"console": "internalConsole",
+				//"console": "internalConsole",
 				"internalConsoleOptions": "openOnSessionStart",
-				"preLaunchTask": "gradle: app:assemble",
+				"preLaunchTask": "gradle: assemble",
 				"type": "android",
 				"request": "launch",
 				"name": "Android launch",
@@ -61,13 +88,13 @@
 			"vscjava.vscode-java-pack",
 			"naco-siren.gradle-language",
 			"vscjava.vscode-gradle",
-			"dotjoshjohnson.xml",
 			"totalcross.android-xml-editor",
-			"flimberger.android-system-tools",
 			"eugeniobuffo.android-manifest-snippets",
 			"antonydalmiere.android-support",
 			"adelphes.android-dev-ext",
-			"csantiago132.intellij-ish-darcula-theme"
+			"csantiago132.intellij-ish-darcula-theme",
+			"totalcross.vscode-totalcross",
+			"redhat.vscode-xml"
 		]
 	},
 }

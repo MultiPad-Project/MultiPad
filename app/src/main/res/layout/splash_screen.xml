@@ -21,13 +21,21 @@
         android:src="@drawable/splash_img" />
 
     <TextView
+        android:id="@+id/splash_file_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@id/splash_title"
+        android:layout_margin="15dp"
+        android:text="@string/splash_title"
+        android:textSize="14dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginRight="150dp"
-        android:text="by XayUp"
-        android:textSize="14dp"
-        android:translationY="35.0dp" />
+        android:layout_alignParentBottom="true"
+        android:textStyle="bold"
+        android:layout_margin="15dp"
+        android:text="@string/splash_title"
+        android:textSize="14dp" />
 
 </RelativeLayout>
