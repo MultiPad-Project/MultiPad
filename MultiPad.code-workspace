@@ -14,40 +14,50 @@
 		"version": "2.0.0",
 		"tasks": [
 			{
-				"type": "gradle",
-				"id": "${workspaceRoot}app:assembleapp",
-				"script": "app:assemble",
-				"description": "Assemble main outputs for all the variants.",
-				"group": "build",
-				"project": "app",
-				"buildFile": "${workspaceRoot}\\app\\build.gradle",
-				"rootProject": "${workspaceFolderBasename}",
-				"projectFolder": "${workspaceRoot}",
-				"workspaceFolder": "${workspaceRoot}",
-				"args": "",
-				"javaDebug": false,
-				"problemMatcher": [
-					"$gradle"
-				],
-				"label": "gradle: app:assemble"
-			},
-			{
 				"type": "shell",
 				"label": "gradle: assembleDebug",
 				"command": "@${workspaceRoot}\\.\\gradlew",
-				"args": ["assembleDebug"]
+				"args": ["assembleDebug"],
+				"windows":{
+					"command": "${workspaceRoot}\\gradlew",
+					"args": ["assembleDebug"]
+				},
+				"presentation": {
+					"echo": false,
+					"reveal": "always",
+					"focus": true,
+					"panel": "shared",
+					"showReuseMessage": false,
+					"clear": true
+				}
 			},
 			{
 				"type": "shell",
 				"label": "gradle: assembleRelease",
 				"command": "${workspaceRoot}\\.\\gradlew",
-				"args": ["assembleRelease"]
+				"args": ["assembleRelease"],
+				"windows":{
+					"command": "${workspaceRoot}\\gradlew",
+					"args": ["assembleRelease"]
+				},
+				"presentation": {
+					"echo": false,
+					"reveal": "always",
+					"focus": true,
+					"panel": "shared",
+					"showReuseMessage": false,
+					"clear": true
+				}
 			},
 			{
 				"type": "shell",
 				"label": "gradle: assemble",
 				"command": "${workspaceRoot}\\gradlew",
 				"args": ["assemble"],
+				"windows":{
+					"command": "${workspaceRoot}\\gradlew",
+					"args": ["assemble"]
+				},
 				"presentation": {
 					"echo": false,
 					"reveal": "always",
