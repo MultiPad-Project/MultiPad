@@ -78,12 +78,20 @@
     <ScrollView
         android:id="@+id/main_scroll"
         android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_toLeftOf="@id/main_right_bar"
+        android:layout_above="@id/main_bottom_bar">
 
-        <GridLayout
-            android:id="@+id/main_scroll_gridlayout"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent" />
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent" >
+
+            <GridLayout
+                android:id="@+id/main_scroll_gridlayout"
+                android:layout_height="2000px"
+                android:layout_width="1100px" />
+
+        </LinearLayout>
 
     </ScrollView>
 

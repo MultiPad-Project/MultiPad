@@ -31,8 +31,6 @@ import com.xayup.multipad.VariaveisStaticas;
 import java.io.*;
 import java.net.URL;
 
-import javax.swing.text.View;
-
 public class MainActivity extends Activity {
     String[] pastadeprojetos;
     ListView listaprojetos;
@@ -204,7 +202,8 @@ public class MainActivity extends Activity {
 
         boolean use_old_main_layout = false;
         View splash_screen = findViewById(R.id.splash);
-        CustomArray arrayCustom = new CustomArray(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
+        Readers getInfo = new Readers();
+        final CustomArray arrayCustom = new CustomArray(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
 
         if (use_old_main_layout) {
             button_floating_menu = findViewById(R.id.main_floating_menu_button);
@@ -215,7 +214,6 @@ public class MainActivity extends Activity {
                             setMenuFunctions();
                         }
                     });
-            Readers getInfo = new Readers();
             listaprojetos = findViewById(R.id.listViewProjects);
             listaprojetos.setAdapter(arrayCustom);
             listaprojetos.setOnItemClickListener(
@@ -232,45 +230,54 @@ public class MainActivity extends Activity {
             Button unipack_info = findViewById(R.id.main_right_bar_unipack_info);
             Button menu = findViewById(R.id.main_right_bar_menu);
 
-            unipck_preview.setOnClickListener(new Button.OnClickListener() {
+            unipack_preview.setOnClickListener(new Button.OnClickListener() {
                 @Override
-                public onClick(View view) {
+                public void onClick(View view) {
 
                 }
             });
-            unipck_info.setOnClickListener(new Button.OnClickListener() {
+            unipack_info.setOnClickListener(new Button.OnClickListener() {
                 @Override
-                public onClick(View view) {
+                public void onClick(View view) {
 
                 }
             });
             menu.setOnClickListener(new Button.OnClickListener() {
                 @Override
-                public onClick(View view) {
+                public void onClick(View view) {
 
                 }
             });
 
             // Lista (Grade)
             GridLayout grid = findViewById(R.id.main_scroll_gridlayout);
-            colums = 2;
-            grid_colum_index = 0;
-            grid_row_index = 0;
-            for (int index : arrayCustom.getCount()) {
-                View item = arrayCustom.getView(index, null, null);
+            grid.post(() -> {
+            int colums = 2;
+            int grid_colum_index = 0;
+            int grid_row_index = 0;
+            for (int index = 0; index < arrayCustom.getCount(); index++) {
+                View item = arrayCustom.getView(index, null, null);           
                 item.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view){
                         projectItem(view);
                     }
-                })
-                grid.addView(item, new GridLayout(GridLayout.spec(grid_row_index, GridLayout.FILL, 1), GridLayout.spec(grid_colum_index, GridLayout.FILL, 1)));
+                });
+                GridLayout.LayoutParams vparam =
+                        new GridLayout.LayoutParams(
+                                GridLayout.spec(grid_row_index, GridLayout.FILL, 1.0f),
+                                GridLayout.spec(grid_colum_index, GridLayout.FILL, 1.0f));
+                vparam.height = 0;
+                vparam.width = 0;
+                grid.addView(item, vparam);
                 grid_colum_index++;
                 if (grid_colum_index >= colums){
-                    grind_row_index++;
+                    grid_row_index++;
                     grid_colum_index = 0;
                 }
             }
+            grid.setLayoutParams(new LinearLayout.LayoutParams(1200, 1200));
+            });
         }
         splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
         splash_screen.setVisibility(View.GONE);
@@ -291,7 +298,7 @@ public class MainActivity extends Activity {
                     break;
             }
     }
-
+    
     public void checarPermissao() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {

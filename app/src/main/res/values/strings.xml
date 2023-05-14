@@ -3,9 +3,9 @@
     <!--Main-->
     <string name="splash_title">Powered by XayUp, inspired by Unipad by Kimjisub.</string>
 
-    <string name="main_bottom_bar_erro">Erro:</string>
-    <string name="main_bottom_bar_broken">Broken:</string>
-    <string name="main_bottom_bar_total">Total:</string>
+    <string name="main_bottom_bar_text_erro">Erro:</string>
+    <string name="main_bottom_bar_text_broken">Broken:</string>
+    <string name="main_bottom_bar_text_total">Total:</string>
 
     <string name="app_name">MultiPad</string>
     <string name="permission_storage_necessary">Permission to storage needed!</string>

@@ -6,9 +6,16 @@
 	],
 	"settings": {
 		"workbench.colorTheme": "IntelliJ-ish Darcula",
-		"java.configuration.updateBuildConfiguration": "interactive",
-		"java.autobuild.enabled": false,
-		
+	},
+	"extensions": {
+		"recommendations": [
+			"naco-siren.gradle-language",
+			"eugeniobuffo.android-manifest-snippets",
+			"csantiago132.intellij-ish-darcula-theme",
+			"redhat.vscode-xml",
+			"adelphes.android-dev-ext",
+			"vscjava.vscode-java-dependency"
+		]
 	},
 	"tasks": {
 		"version": "2.0.0",
@@ -17,10 +24,14 @@
 				"type": "shell",
 				"label": "gradle: assembleDebug",
 				"command": "@${workspaceRoot}\\.\\gradlew",
-				"args": ["assembleDebug"],
-				"windows":{
+				"args": [
+					"app:assembleDebug"
+				],
+				"windows": {
 					"command": "${workspaceRoot}\\gradlew",
-					"args": ["assembleDebug"]
+					"args": [
+						"app:assembleDebug"
+					]
 				},
 				"presentation": {
 					"echo": false,
@@ -35,10 +46,14 @@
 				"type": "shell",
 				"label": "gradle: assembleRelease",
 				"command": "${workspaceRoot}\\.\\gradlew",
-				"args": ["assembleRelease"],
-				"windows":{
+				"args": [
+					"assembleRelease"
+				],
+				"windows": {
 					"command": "${workspaceRoot}\\gradlew",
-					"args": ["assembleRelease"]
+					"args": [
+						"assembleRelease"
+					]
 				},
 				"presentation": {
 					"echo": false,
@@ -52,11 +67,15 @@
 			{
 				"type": "shell",
 				"label": "gradle: assemble",
-				"command": "${workspaceRoot}\\gradlew",
-				"args": ["assemble"],
-				"windows":{
+				"command": "${c}\\gradlew",
+				"args": [
+					"assemble"
+				],
+				"windows": {
 					"command": "${workspaceRoot}\\gradlew",
-					"args": ["assemble"]
+					"args": [
+						"assemble"
+					]
 				},
 				"presentation": {
 					"echo": false,
@@ -66,6 +85,85 @@
 					"showReuseMessage": false,
 					"clear": true
 				}
+			},
+			{
+				"type": "shell",
+				"label": "Start ADB",
+				"windows": {
+					"command": [
+						"adb reconnect"
+					]
+				},
+				"presentation": {
+					"echo": false,
+					"reveal": "always",
+					"focus": true,
+					"panel": "shared",
+					"showReuseMessage": false,
+					"clear": true
+				}
+			},
+			{
+				"type": "shell",
+				"label": "Install APK",
+				"windows": {
+					"command": [
+						"adb install -r ${workspaceRoot}/app/build/outputs/apk/debug/app-debug.apk",
+					]
+				},
+				"presentation": {
+					"echo": false,
+					"reveal": "always",
+					"focus": true,
+					"panel": "shared",
+					"showReuseMessage": false,
+					"clear": true
+				}
+			},
+			{
+				"type": "shell",
+				"label": "Start App",
+				"windows": {
+					"command": [
+						"adb shell \"am start -a android.intent.action.MAIN -n com.xayup.multipad/.MainActivity\"",
+					]
+				},
+				"presentation": {
+					"echo": false,
+					"reveal": "always",
+					"focus": true,
+					"panel": "shared",
+					"showReuseMessage": false,
+					"clear": true
+				}
+			},
+			{
+				"type": "shell",
+				"label": "Start Logcat",
+				"windows": {
+					"command": [
+						"for /f \"tokens=*\" %a in ('adb shell pidof -s com.xayup.multipad') do adb logcat -C --pid=%a",
+					]
+				},
+				"presentation": {
+					"echo": false,
+					"reveal": "always",
+					"focus": true,
+					"panel": "shared",
+					"showReuseMessage": false,
+					"clear": true
+				}
+			},
+			{
+				"label": "Build and Debug Android App",
+				"dependsOrder": "sequence",
+				"dependsOn": [
+					"gradle: assemble",
+					"Start ADB",
+					"Install APK",
+					"Start App",
+					"Start Logcat"
+				]
 			}
 		]
 	},
@@ -73,38 +171,10 @@
 		"version": "0.2.0",
 		"configurations": [
 			{
-				//"console": "internalConsole",
-				"internalConsoleOptions": "openOnSessionStart",
-				"preLaunchTask": "gradle: assemble",
-				"type": "android",
-				"request": "launch",
-				"name": "Android launch",
-				"appSrcRoot": "${workspaceRoot}/app/src/main",
-				"apkFile": "${workspaceRoot}/app/build/outputs/apk/debug/app-debug.apk",
-				"adbPort": 5037
+				"preLaunchTask": "Build and Debug Android App",
+				"name": "Build and Debug Android App",
+				"type": "node-terminal",
 			},
-			{
-				"type": "android",
-				"request": "attach",
-				"name": "Android attach",
-				"appSrcRoot": "${workspaceRoot}/app/src/main",
-				"adbPort": 5037,
-				"processId": "${command:PickAndroidProcess}"
-			}
 		]
-	},
-	"extensions": {
-		"recommendations": [
-			"vscjava.vscode-java-pack",
-			"naco-siren.gradle-language",
-			"vscjava.vscode-gradle",
-			"totalcross.android-xml-editor",
-			"eugeniobuffo.android-manifest-snippets",
-			"antonydalmiere.android-support",
-			"adelphes.android-dev-ext",
-			"csantiago132.intellij-ish-darcula-theme",
-			"totalcross.vscode-totalcross",
-			"redhat.vscode-xml"
-		]
-	},
+	}
 }
