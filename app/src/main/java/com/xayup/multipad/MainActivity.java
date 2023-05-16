@@ -28,10 +28,14 @@ import com.xayup.filesexplorer.FileExplorerDialog;
 import com.xayup.multipad.MidiStaticVars;
 import com.xayup.multipad.UsbDeviceActivity;
 import com.xayup.multipad.VariaveisStaticas;
+
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends Activity {
+
     String[] pastadeprojetos;
     ListView listaprojetos;
     Button button_floating_menu;
@@ -47,10 +51,10 @@ public class MainActivity extends Activity {
     public static int width;
     public static int heightCustom;
 
-    private Context context = this;
+    private final Context context = this;
 
     File rootFolder = new File(Environment.getExternalStorageDirectory() + "/MultiPad/Projects");
-    final String[] per = new String[] {
+    final String[] per = new String[]{
             "android.permission.MANAGER_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.READ_EXTERNAL_STORAGE"
@@ -86,9 +90,9 @@ public class MainActivity extends Activity {
                             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                             clipboard.setText(traceLog);
                             Toast.makeText(
-                                    getApplicationContext(),
-                                    R.string.cop,
-                                    Toast.LENGTH_SHORT)
+                                            getApplicationContext(),
+                                            R.string.cop,
+                                            Toast.LENGTH_SHORT)
                                     .show();
                         }
                     });
@@ -248,57 +252,116 @@ public class MainActivity extends Activity {
 
                 }
             });
-
-            // Lista (Grade)
-            GridLayout grid = findViewById(R.id.main_scroll_gridlayout);
-            grid.post(() -> {
-            int colums = 2;
-            int grid_colum_index = 0;
-            int grid_row_index = 0;
-            for (int index = 0; index < arrayCustom.getCount(); index++) {
-                View item = arrayCustom.getView(index, null, null);           
-                item.setOnClickListener(new View.OnClickListener(){
-                    @Override
-                    public void onClick(View view){
-                        projectItem(view);
-                    }
-                });
-                GridLayout.LayoutParams vparam =
-                        new GridLayout.LayoutParams(
-                                GridLayout.spec(grid_row_index, GridLayout.FILL, 1.0f),
-                                GridLayout.spec(grid_colum_index, GridLayout.FILL, 1.0f));
-                vparam.height = 0;
-                vparam.width = 0;
-                grid.addView(item, vparam);
-                grid_colum_index++;
-                if (grid_colum_index >= colums){
-                    grid_row_index++;
-                    grid_colum_index = 0;
-                }
-            }
-            grid.setLayoutParams(new LinearLayout.LayoutParams(1200, 1200));
+            final ScrollView project_list_scroll = findViewById(R.id.main_scroll);
+            project_list_scroll.post(() -> {
+                // Lista (Grade)
+                // gridList(project_list_scroll, arrayCustom);
+                gridListTwo((LinearLayout) findViewById(R.id.main_scroll_layout), arrayCustom);
             });
         }
         splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
         splash_screen.setVisibility(View.GONE);
     }
 
-    public void projectItem(View view){
+    public void projectItem(View view) {
         TextView pathTextv = view.findViewById(R.id.pathText);
-            View itemStt = view.findViewById(R.id.currentItemState);
-            switch ((Integer) itemStt.getTag()) {
-                case 0:
-                    Intent playPads = new Intent(getBaseContext(), PlayPads.class);
-                    playPads.putExtra("currentPath", pathTextv.getText().toString());
-                    playPads.putExtra("height", height);
-                    startActivity(playPads);
-                    break;
-                case 2:
-                    checarPermissao();
-                    break;
-            }
+        View itemStt = view.findViewById(R.id.currentItemState);
+        switch ((Integer) itemStt.getTag()) {
+            case 0:
+                Intent playPads = new Intent(getBaseContext(), PlayPads.class);
+                playPads.putExtra("currentPath", pathTextv.getText().toString());
+                playPads.putExtra("height", height);
+                startActivity(playPads);
+                break;
+            case 2:
+                checarPermissao();
+                break;
+        }
     }
-    
+
+    protected void gridListTwo(ViewGroup viewRoot, BaseAdapter arrayCustom) {
+        LinearLayout[] columns = new LinearLayout[2];
+        final int w = viewRoot.getRootView().getMeasuredWidth();
+        final int h = viewRoot.getRootView().getMeasuredHeight();
+        LinearLayout.LayoutParams item_params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        item_params.setMargins(5, 5, 5, 5);
+        int colum = 0;
+        final Int item_height = new Int(0);
+        for (int i = 0; i < columns.length; i++) {
+            LinearLayout layout_colum = new LinearLayout(context);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    w/2,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.weight = 1f;
+            layout_colum.setOrientation(LinearLayout.VERTICAL);
+            viewRoot.addView(layout_colum, params);
+            columns[i] = layout_colum;
+        }
+        for (int index = 0; index < arrayCustom.getCount(); index++) {
+            View item = arrayCustom.getView(index, null, viewRoot);
+            columns[colum].addView(item, item_params);
+            item.post(()->{item_height.set(item.getMeasuredHeight());});
+            colum = (colum + 1 >= columns.length) ? 0 : colum + 1;
+        }
+        item_params.height = item_height.get();
+    }
+
+    static class Int {
+        int number;
+        public Int (int number){
+            this.number = number;
+        }
+
+        protected void set(int value){
+            this.number = value;
+        }
+
+        protected int get(){
+            return this.number;
+        }
+    }
+
+    protected void gridList(ViewGroup viewRoot, CustomArray arrayCustom) {
+        GridLayout grid = new GridLayout(context);
+        ScrollView grid_background = (ScrollView) viewRoot.getRootView();
+        int colums = 2;
+        int grid_colum_index = 0;
+        int grid_row_index = 0;
+        int h = 0;
+        int grid_height = 0;
+        for (int index = 0; index < arrayCustom.getCount(); index++) {
+            View item = arrayCustom.getView(index, null, (ViewGroup) grid);
+            h = item.getLayoutParams().height;
+            item = new View(context);
+
+            item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    projectItem(view);
+                }
+            });
+            GridLayout.LayoutParams vparam = new GridLayout.LayoutParams(
+                    GridLayout.spec(grid_row_index, GridLayout.FILL, 1.0f),
+                    GridLayout.spec(grid_colum_index, GridLayout.FILL, 1.0f));
+            vparam.height = 0;
+            vparam.width = 0;
+            grid.addView(item, vparam);
+            grid_colum_index++;
+            if (grid_colum_index >= colums) {
+                grid_height += h;
+                grid_row_index++;
+                grid_colum_index = 0;
+            }
+        }
+        Log.v("Grid Size", "" + grid_height);
+        grid.setLayoutParams(
+                new LinearLayout.LayoutParams(grid_background.getMeasuredWidth(), grid_height + grid_height));
+        Log.v("Grid size", grid.getLayoutParams().height + " " + grid.getLayoutParams().width);
+    }
+
     public void checarPermissao() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
@@ -311,8 +374,9 @@ public class MainActivity extends Activity {
             }
         } else {
             if ((checkCallingPermission(per[0 + android11per])
-                    & checkCallingPermission(per[1 + android11per])) != PackageManager.PERMISSION_GRANTED)
+                    & checkCallingPermission(per[1 + android11per])) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(per, STORAGE_PERMISSION);
+            }
         }
     }
 
@@ -386,10 +450,10 @@ public class MainActivity extends Activity {
                                         MidiDeviceInfo usb_midi = (MidiDeviceInfo) adapter.getItemAtPosition(pos);
                                         if (MidiStaticVars.midiDevice == usb_midi) {
                                             Toast.makeText(
-                                                    context,
-                                                    context.getString(
-                                                            R.string.midi_aready_connected),
-                                                    0)
+                                                            context,
+                                                            context.getString(
+                                                                    R.string.midi_aready_connected),
+                                                            0)
                                                     .show();
                                             return;
                                         }
@@ -543,15 +607,15 @@ public class MainActivity extends Activity {
                                 .openMidiDevice(context, MidiStaticVars.midiDevice);
                     } else {
                         Toast.makeText(
-                                context,
-                                context.getString(R.string.danied_midi_permission)
-                                        .replace(
-                                                "%m",
-                                                MidiStaticVars.midiDevice
-                                                        .getProperties()
-                                                        .getString(
-                                                                MidiDeviceInfo.PROPERTY_PRODUCT)),
-                                0)
+                                        context,
+                                        context.getString(R.string.danied_midi_permission)
+                                                .replace(
+                                                        "%m",
+                                                        MidiStaticVars.midiDevice
+                                                                .getProperties()
+                                                                .getString(
+                                                                        MidiDeviceInfo.PROPERTY_PRODUCT)),
+                                        0)
                                 .show();
                         MidiStaticVars.midiDevice = null;
                     }

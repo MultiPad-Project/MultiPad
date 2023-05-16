@@ -90,9 +90,7 @@
 				"type": "shell",
 				"label": "Start ADB",
 				"windows": {
-					"command": [
-						"adb reconnect"
-					]
+					"command": "adb reconnect"
 				},
 				"presentation": {
 					"echo": false,
@@ -107,9 +105,7 @@
 				"type": "shell",
 				"label": "Install APK",
 				"windows": {
-					"command": [
-						"adb install -r ${workspaceRoot}/app/build/outputs/apk/debug/app-debug.apk",
-					]
+					"command": "adb install -r ${workspaceRoot}/app/build/outputs/apk/debug/app-debug.apk"
 				},
 				"presentation": {
 					"echo": false,
@@ -124,9 +120,7 @@
 				"type": "shell",
 				"label": "Start App",
 				"windows": {
-					"command": [
-						"adb shell \"am start -a android.intent.action.MAIN -n com.xayup.multipad/.MainActivity\"",
-					]
+					"command": "adb shell \"am start -a android.intent.action.MAIN -n com.xayup.multipad/.MainActivity\""
 				},
 				"presentation": {
 					"echo": false,
@@ -141,9 +135,7 @@
 				"type": "shell",
 				"label": "Start Logcat",
 				"windows": {
-					"command": [
-						"for /f \"tokens=*\" %a in ('adb shell pidof -s com.xayup.multipad') do adb logcat -C --pid=%a",
-					]
+					"command": "for /f \"tokens=*\" %a in ('adb shell pidof -s com.xayup.multipad') do adb logcat -C --pid=%a"
 				},
 				"presentation": {
 					"echo": false,
@@ -164,6 +156,21 @@
 					"Start App",
 					"Start Logcat"
 				]
+			},
+			{
+				"label": "Build and Debug Android App (Batch)",
+				"type": "shell",
+				"windows": {
+					"command": ".\\BuildAndDebug"
+				},
+				"presentation": {
+					"echo": false,
+					"reveal": "always",
+					"focus": true,
+					"panel": "shared",
+					"showReuseMessage": false,
+					"clear": true
+				}
 			}
 		]
 	},
@@ -174,6 +181,13 @@
 				"preLaunchTask": "Build and Debug Android App",
 				"name": "Build and Debug Android App",
 				"type": "node-terminal",
+				"request": "launch",
+			},
+			{
+				"preLaunchTask": "Build and Debug Android App (Batch)",
+				"name": "Build and Debug Android App (Batch)",
+				"type": "node",
+				"request": "launch"
 			},
 		]
 	}

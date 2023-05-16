@@ -1,119 +1,118 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/new_main_activity"
-    style="@style/FullScreenApp"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center_vertical|center|center_horizontal"
-    android:background="@drawable/bgactivity"
-    android:scaleType="centerCrop" >
-    
+                android:id="@+id/new_main_activity"
+                style="@style/FullScreenApp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical|center|center_horizontal"
+                android:background="@drawable/bgactivity"
+                android:scaleType="centerCrop">
+
     <!--Barra inferior-->
     <RelativeLayout
-        android:id="@+id/main_right_bar"
-        android:layout_height="match_parent"
-        android:layout_width="40dp"
-        android:orientation="vertical"
-        android:layout_alignParentRight="True">
-        
-        <LinearLayout
-            android:id="@+id/main_right_bar_unipack_buttons"
+            android:id="@+id/main_right_bar"
             android:layout_height="match_parent"
-            android:layout_width="match_parent"
+            android:layout_width="60dp"
             android:orientation="vertical"
-            android:layout_alignParentRight="True">
+            android:layout_alignParentEnd="true"
+            android:layout_above="@+id/main_bottom_bar">
+
+        <LinearLayout
+                android:id="@+id/main_right_bar_unipack_buttons"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_alignParentEnd="true">
 
             <Button
-                android:layout_height="40dp"
-                android:layout_width="match_parent"
-                android:id="@+id/main_right_bar_unipack_preview"
-                android:background="@drawable/play_play" />
-            
+                    android:layout_height="60dp"
+                    android:layout_width="match_parent"
+                    android:id="@+id/main_right_bar_unipack_preview"
+                    android:background="@drawable/play_play"/>
+
             <Button
-                android:layout_height="40dp"
-                android:layout_width="match_parent"
-                android:id="@+id/main_right_bar_unipack_info"
-                android:background="@drawable/play_play" />
+                    android:layout_height="60dp"
+                    android:layout_width="match_parent"
+                    android:id="@+id/main_right_bar_unipack_info"
+                    android:background="@drawable/play_play"/>
 
         </LinearLayout>
         <Button
-            android:layout_height="40dp"
-            android:layout_width="match_parent"
-            android:id="@+id/main_right_bar_menu"
-            android:background="@drawable/play_play"
-            android:layout_alignParentBottom="true" />
+                android:layout_height="60dp"
+                android:layout_width="match_parent"
+                android:id="@+id/main_right_bar_menu"
+                android:background="@drawable/play_play"
+                android:layout_alignParentBottom="true"/>
 
     </RelativeLayout>
-    
+
     <LinearLayout
-        android:id="@+id/main_bottom_bar"
-        android:layout_height="match_parent"
-        android:layout_width="40dp"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="True">
+            android:id="@+id/main_bottom_bar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true">
 
         <TextView
-            android:id="@+id/main_bottom_bar_text_erro"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/main_bottom_bar_text_erro"
-            android:layout_weight="1" />
+                android:id="@+id/main_bottom_bar_text_erro"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/main_bottom_bar_text_erro"
+                android:gravity="center"
+                android:layout_weight="1"/>
 
         <TextView
-            android:id="@+id/main_bottom_bar_text_broken"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/main_bottom_bar_text_broken"
-            android:layout_weight="1" />
+                android:id="@+id/main_bottom_bar_text_broken"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/main_bottom_bar_text_broken"
+                android:gravity="center"
+                android:layout_weight="1"/>
 
         <TextView
-            android:id="@+id/main_bottom_bar_text_total"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/main_bottom_bar_text_total"
-            android:layout_weight="1" />
+                android:id="@+id/main_bottom_bar_text_total"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/main_bottom_bar_text_total"
+                android:gravity="center"
+                android:layout_weight="1"/>
 
     </LinearLayout>
 
     <!--Lista de Unipacks-->
     <ScrollView
-        android:id="@+id/main_scroll"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:layout_toLeftOf="@id/main_right_bar"
-        android:layout_above="@id/main_bottom_bar">
+            android:id="@+id/main_scroll"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_toStartOf="@id/main_right_bar"
+            android:layout_above="@id/main_bottom_bar">
 
         <LinearLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent" >
-
-            <GridLayout
-                android:id="@+id/main_scroll_gridlayout"
-                android:layout_height="2000px"
-                android:layout_width="1100px" />
-
-        </LinearLayout>
+                android:id="@+id/main_scroll_layout"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:orientation="horizontal" />
 
     </ScrollView>
 
     <!--Botão flutuante (FAB)-->
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/transparent" >
-		
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent">
+
         <Button
-            android:id="@+id/main_floating_menu_button"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="14dp"
-            android:layout_marginRight="14dp"
-            android:background="@drawable/inter_floating_button" />
+                android:id="@+id/main_floating_menu_button"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="14dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/inter_floating_button"/>
 
     </RelativeLayout>
 
     <!--Spash Screen-->
-    <include layout="@layout/splash_screen" />
+    <include layout="@layout/splash_screen"/>
 
 </RelativeLayout>
