@@ -32,7 +32,10 @@ import com.xayup.multipad.VariaveisStaticas;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends Activity {
 
@@ -117,9 +120,11 @@ public class MainActivity extends Activity {
                             WindowManager.LayoutParams.FLAG_FULLSCREEN,
                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
             // New Layout
-            setContentView(R.layout.new_main);
+            // setContentView(R.layout.new_main);
             // Old Layout
             // setContentView(R.layout.main);
+            // Cover Layout
+            setContentView(R.layout.main_cover);
             getWindow()
                     .setFlags(
                             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -204,63 +209,76 @@ public class MainActivity extends Activity {
             }
         }
 
-        boolean use_old_main_layout = false;
-        View splash_screen = findViewById(R.id.splash);
+        int main_layout_style = 2;
         Readers getInfo = new Readers();
         final CustomArray arrayCustom = new CustomArray(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
 
-        if (use_old_main_layout) {
-            button_floating_menu = findViewById(R.id.main_floating_menu_button);
-            button_floating_menu.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View arg0) {
-                            setMenuFunctions();
-                        }
-                    });
-            listaprojetos = findViewById(R.id.listViewProjects);
-            listaprojetos.setAdapter(arrayCustom);
-            listaprojetos.setOnItemClickListener(
-                    new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(
-                                AdapterView<?> adapterView, View view, int Int, long Long) {
-                            projectItem(view);
-                        }
-                    });
-        } else {
-            // Botões
-            Button unipack_preview = findViewById(R.id.main_right_bar_unipack_preview);
-            Button unipack_info = findViewById(R.id.main_right_bar_unipack_info);
-            Button menu = findViewById(R.id.main_right_bar_menu);
+        switch (main_layout_style) {
+            case 0: {
+                button_floating_menu = findViewById(R.id.main_floating_menu_button);
+                button_floating_menu.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View arg0) {
+                                setMenuFunctions();
+                            }
+                        });
+                listaprojetos = findViewById(R.id.listViewProjects);
+                listaprojetos.setAdapter(arrayCustom);
+                listaprojetos.setOnItemClickListener(
+                        new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(
+                                    AdapterView<?> adapterView, View view, int Int, long Long) {
+                                projectItem(view);
+                            }
+                        });
+                hideSplash();
+                break;
+            }
+            case 1: {
+                // Botões
+                Button unipack_preview = findViewById(R.id.main_right_bar_unipack_preview);
+                Button unipack_info = findViewById(R.id.main_right_bar_unipack_info);
+                Button menu = findViewById(R.id.main_right_bar_menu);
 
-            unipack_preview.setOnClickListener(new Button.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+                unipack_preview.setOnClickListener(new Button.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                }
-            });
-            unipack_info.setOnClickListener(new Button.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+                    }
+                });
+                unipack_info.setOnClickListener(new Button.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                }
-            });
-            menu.setOnClickListener(new Button.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+                    }
+                });
+                menu.setOnClickListener(new Button.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                }
-            });
-            final ScrollView project_list_scroll = findViewById(R.id.main_scroll);
-            project_list_scroll.post(() -> {
-                // Lista (Grade)
-                // gridList(project_list_scroll, arrayCustom);
-                gridListTwo((LinearLayout) findViewById(R.id.main_scroll_layout), arrayCustom);
-            });
+                    }
+                });
+                final ScrollView project_list_scroll = findViewById(R.id.main_scroll);
+                project_list_scroll.post(() -> {
+                    gridListTwo((LinearLayout) findViewById(R.id.main_scroll_layout), arrayCustom);
+                });
+                break;
+            }
+
+            case 2: {
+                final ScrollView project_list_scroll = findViewById(R.id.main_scroll);
+                project_list_scroll.post(() -> {
+                    coverList((LinearLayout) findViewById(R.id.main_scroll_layout), arrayCustom);
+                });
+                break;
+            }
+            default:{
+                break;
+            }
         }
-        splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
-        splash_screen.setVisibility(View.GONE);
+
     }
 
     public void projectItem(View view) {
@@ -279,22 +297,29 @@ public class MainActivity extends Activity {
         }
     }
 
+    protected void hideSplash(){
+        View splash_screen = findViewById(R.id.splash);
+        splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
+        splash_screen.setVisibility(View.GONE);
+    }
     protected void gridListTwo(ViewGroup viewRoot, BaseAdapter arrayCustom) {
         LinearLayout[] columns = new LinearLayout[2];
         final int w = viewRoot.getRootView().getMeasuredWidth();
-        final int h = viewRoot.getRootView().getMeasuredHeight();
+        int colum = 0;
+        final AtomicInteger item_height = new AtomicInteger(0);
+        final AtomicInteger posted = new AtomicInteger(0);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                w/2,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 0, 0, 0);
         LinearLayout.LayoutParams item_params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        item_params.setMargins(5, 5, 5, 5);
-        int colum = 0;
-        final Int item_height = new Int(0);
+        item_params.setMargins(8, 8, 8, 8);
         for (int i = 0; i < columns.length; i++) {
             LinearLayout layout_colum = new LinearLayout(context);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    w/2,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
             params.weight = 1f;
             layout_colum.setOrientation(LinearLayout.VERTICAL);
             viewRoot.addView(layout_colum, params);
@@ -303,25 +328,39 @@ public class MainActivity extends Activity {
         for (int index = 0; index < arrayCustom.getCount(); index++) {
             View item = arrayCustom.getView(index, null, viewRoot);
             columns[colum].addView(item, item_params);
-            item.post(()->{item_height.set(item.getMeasuredHeight());});
+            item.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    projectItem(v);
+                }
+            });
+            item.post(()->{
+                posted.incrementAndGet();
+                item_params.height = 20 + Math.max(item_height.get(), item.getMeasuredHeight());
+                if (posted.get() == arrayCustom.getCount()){
+                    for(LinearLayout layout : columns){
+                        for (int i = 0; i < layout.getChildCount(); i++){
+                            layout.getChildAt(i).setLayoutParams(item_params);
+                            hideSplash();
+                        }
+                    }
+                }
+            });
             colum = (colum + 1 >= columns.length) ? 0 : colum + 1;
         }
-        item_params.height = item_height.get();
     }
 
-    static class Int {
-        int number;
-        public Int (int number){
-            this.number = number;
+    protected void coverList(LinearLayout viewRoot, CustomArray arrayCustom){
+        final Map<ImageView, List<String>> covers = new HashMap<>();
+        LinearLayout.LayoutParams cover_params = new LinearLayout.LayoutParams(300, 300);
+        cover_params.setMargins(8, 8, 8, 8);
+        for (int i = 0; i < arrayCustom.getCount(); i++){
+            View view = arrayCustom.getView(i, null, null);
+            ImageView cover = new ImageView(context);
+            cover.setImageDrawable(getDrawable(R.drawable.unknown_music));
+            viewRoot.addView(cover, cover_params);
         }
-
-        protected void set(int value){
-            this.number = value;
-        }
-
-        protected int get(){
-            return this.number;
-        }
+        hideSplash();
     }
 
     protected void gridList(ViewGroup viewRoot, CustomArray arrayCustom) {

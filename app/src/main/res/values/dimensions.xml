@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="new_main_right_bar_width">80dp</dimen>
+    <dimen name="new_main_bottom_bar_text_size">20sp</dimen>
+    <dimen name="main_cover_right_bar_width">400dp</dimen>
+</resources>
