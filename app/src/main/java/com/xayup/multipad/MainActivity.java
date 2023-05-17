@@ -3,35 +3,21 @@ package com.xayup.multipad;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.InsetDrawable;
-import android.hardware.display.DisplayManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
-import android.media.midi.MidiInputPort;
-import android.media.midi.MidiManager;
 import android.net.Uri;
 import android.os.*;
 import android.provider.Settings;
 import android.text.ClipboardManager;
-import android.text.Layout;
 import android.util.*;
 import android.view.*;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.xayup.filesexplorer.FileExplorerDialog;
-import com.xayup.multipad.MidiStaticVars;
-import com.xayup.multipad.UsbDeviceActivity;
-import com.xayup.multipad.VariaveisStaticas;
+import com.xayup.net.ReadCovers;
 
 import java.io.*;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -211,7 +197,7 @@ public class MainActivity extends Activity {
 
         int main_layout_style = 2;
         Readers getInfo = new Readers();
-        final CustomArray arrayCustom = new CustomArray(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
+        final ProjectsAdapter arrayCustom = new ProjectsAdapter(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
 
         switch (main_layout_style) {
             case 0: {
@@ -274,7 +260,7 @@ public class MainActivity extends Activity {
                 });
                 break;
             }
-            default:{
+            default: {
                 break;
             }
         }
@@ -297,11 +283,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    protected void hideSplash(){
+    protected void hideSplash() {
         View splash_screen = findViewById(R.id.splash);
         splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
         splash_screen.setVisibility(View.GONE);
     }
+
     protected void gridListTwo(ViewGroup viewRoot, BaseAdapter arrayCustom) {
         LinearLayout[] columns = new LinearLayout[2];
         final int w = viewRoot.getRootView().getMeasuredWidth();
@@ -309,7 +296,7 @@ public class MainActivity extends Activity {
         final AtomicInteger item_height = new AtomicInteger(0);
         final AtomicInteger posted = new AtomicInteger(0);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                w/2,
+                w / 2,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         params.setMargins(0, 0, 0, 0);
@@ -328,18 +315,18 @@ public class MainActivity extends Activity {
         for (int index = 0; index < arrayCustom.getCount(); index++) {
             View item = arrayCustom.getView(index, null, viewRoot);
             columns[colum].addView(item, item_params);
-            item.setOnClickListener(new View.OnClickListener(){
+            item.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v){
+                public void onClick(View v) {
                     projectItem(v);
                 }
             });
-            item.post(()->{
+            item.post(() -> {
                 posted.incrementAndGet();
                 item_params.height = 20 + Math.max(item_height.get(), item.getMeasuredHeight());
-                if (posted.get() == arrayCustom.getCount()){
-                    for(LinearLayout layout : columns){
-                        for (int i = 0; i < layout.getChildCount(); i++){
+                if (posted.get() == arrayCustom.getCount()) {
+                    for (LinearLayout layout : columns) {
+                        for (int i = 0; i < layout.getChildCount(); i++) {
                             layout.getChildAt(i).setLayoutParams(item_params);
                             hideSplash();
                         }
@@ -350,20 +337,37 @@ public class MainActivity extends Activity {
         }
     }
 
-    protected void coverList(LinearLayout viewRoot, CustomArray arrayCustom){
-        final Map<ImageView, List<String>> covers = new HashMap<>();
-        LinearLayout.LayoutParams cover_params = new LinearLayout.LayoutParams(300, 300);
+    protected void coverList(LinearLayout viewRoot, ProjectsAdapter arrayCustom) {
+        LinearLayout.LayoutParams cover_params = new LinearLayout.LayoutParams(400, 400);
+        ReadCovers covers = new ReadCovers(context);
         cover_params.setMargins(8, 8, 8, 8);
-        for (int i = 0; i < arrayCustom.getCount(); i++){
+        for (int i = 0; i < arrayCustom.getCount(); i++) {
             View view = arrayCustom.getView(i, null, null);
             ImageView cover = new ImageView(context);
             cover.setImageDrawable(getDrawable(R.drawable.unknown_music));
             viewRoot.addView(cover, cover_params);
+            covers.findAndSetLocalCover(cover, arrayCustom, i);
         }
+        ScrollView scroll = (ScrollView) viewRoot.getParent();
+        scroll.setOnTouchListener(new ScrollView.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event){
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN: {
+                        break;
+                    }
+                    case MotionEvent.ACTION_MOVE: {
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
+
         hideSplash();
     }
 
-    protected void gridList(ViewGroup viewRoot, CustomArray arrayCustom) {
+    protected void gridList(ViewGroup viewRoot, ProjectsAdapter arrayCustom) {
         GridLayout grid = new GridLayout(context);
         ScrollView grid_background = (ScrollView) viewRoot.getRootView();
         int colums = 2;
