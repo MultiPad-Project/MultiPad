@@ -10,6 +10,7 @@ import com.xayup.multipad.ProjectsAdapter;
 import java.io.*;
 import java.net.URL;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ReadCovers implements Runnable {
@@ -19,6 +20,7 @@ public class ReadCovers implements Runnable {
 
     public ReadCovers(Context context) {
         this.context = context;
+        try_download_covers = new HashMap<>();
         running = new AtomicBoolean(false);
     }
 
