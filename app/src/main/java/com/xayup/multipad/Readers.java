@@ -52,59 +52,55 @@ public class Readers {
             };
 
     // Algoritimo info
-    public Map<String, Map> readInfo(Activity context, File projectDir, boolean granted) {
+    public Map<Object, Map> readInfo(Activity context, File projectDir, boolean granted) {
         Map<String, String> infoInfo;
-        Map<String, Map> mapFolder = new HashMap<>();
-        if (!granted) {
-            mapFolder.put("pr", null);
-            return mapFolder;
+        Map<Object, Map> mapFolder;
+        File[] folders = projectDir.listFiles(filterFolder);
+        if (folders == null || folders.length == 0) {
+            return null;
         } else {
-            File[] folders = projectDir.listFiles(filterFolder);
-            if (folders == null || folders.length == 0) {
-                mapFolder.put("Empty", infoInfo = null);
-            } else {
-                for (final File projectFolder : folders) {
-                    File info = new File(projectFolder.getPath() + "/info");
-                    infoInfo = new HashMap<String, String>();
-                    if (info.exists()) {
-                        String producerName = "?";
-                        String title = "?";
-                        infoInfo.put("bad", "False");
+            mapFolder = new HashMap<>();
+            for (final File projectFolder : folders) {
+                File info = new File(projectFolder.getPath() + "/info");
+                infoInfo = new HashMap<>();
+                if (info.exists()) {
+                    String producerName = "?";
+                    String title = "?";
+                    infoInfo.put("bad", "False");
 
-                        try {
-                            BufferedReader bufferInfo = new BufferedReader(new FileReader(info));
-                            String line = bufferInfo.readLine();
-                            while (line != null) {
-                                if (line.toLowerCase().replaceAll("\\s+", "").contains("producername=")) {
-                                    producerName = line;
-                                }
-                                if (line.toLowerCase().replaceAll("\\s+", "").contains("title=")) {
-                                    title = line;
-                                }
-                                line = bufferInfo.readLine();
+                    try {
+                        BufferedReader bufferInfo = new BufferedReader(new FileReader(info));
+                        String line = bufferInfo.readLine();
+                        while (line != null) {
+                            if (line.toLowerCase().replaceAll("\\s+", "").contains("producername=")) {
+                                producerName = line;
                             }
-                            bufferInfo.close();
-                        } catch (IOException e) {
-                            Log.e("Readers", "Try read '" + info.getPath() + "'");
+                            if (line.toLowerCase().replaceAll("\\s+", "").contains("title=")) {
+                                title = line;
+                            }
+                            line = bufferInfo.readLine();
                         }
-                        infoInfo.put(
-                                "title", title.replaceFirst(title.substring(0, title.indexOf("=") + 1), "").trim());
-                        infoInfo.put(
-                                "producerName",
-                                producerName
-                                        .replaceFirst(producerName.substring(0, producerName.indexOf("=") + 1), "")
-                                        .trim());
-                    } else {
-                        infoInfo.put("title", context.getString(R.string.without_info));
-                        infoInfo.put("producerName", context.getString(R.string.incomplet_project));
-                        infoInfo.put("bad", "True");
+                        bufferInfo.close();
+                    } catch (IOException e) {
+                        Log.e("Readers", "Try read '" + info.getPath() + "'");
                     }
-                    infoInfo.put("local", projectFolder.getPath());
-                    mapFolder.put(projectFolder.getName(), infoInfo);
+                    infoInfo.put(
+                            "title", title.replaceFirst(title.substring(0, title.indexOf("=") + 1), "").trim());
+                    infoInfo.put(
+                            "producerName",
+                            producerName
+                                    .replaceFirst(producerName.substring(0, producerName.indexOf("=") + 1), "")
+                                    .trim());
+                } else {
+                    infoInfo.put("title", context.getString(R.string.without_info));
+                    infoInfo.put("producerName", context.getString(R.string.incomplet_project));
+                    infoInfo.put("bad", "True");
                 }
+                infoInfo.put("local", projectFolder.getPath());
+                mapFolder.put(projectFolder.getName(), infoInfo);
             }
-            return mapFolder;
         }
+        return mapFolder;
     }
 
     // Algoritimo keyLED
