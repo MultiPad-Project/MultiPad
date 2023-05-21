@@ -1,0 +1,4 @@
+<resources>
+	<item name="cover_layout_project_info_title" type="id"/>
+	<item name="cover_layout_project_info_producerName" type="id"/>
+</resources>

@@ -336,6 +336,15 @@ public class MainActivity extends Activity {
             colum = (colum + 1 >= columns.length) ? 0 : colum + 1;
         }
     }
+	
+	protected View.OnClickListener coverOnClickListener(){
+		return new View.OnClickListener(){
+			@Override
+			public void onClick(View v){
+				
+			}
+		};
+	}
 
     protected void coverList(LinearLayout viewRoot, ProjectsAdapter arrayCustom) {
         LinearLayout.LayoutParams cover_params = new LinearLayout.LayoutParams(400, 400);
@@ -345,8 +354,10 @@ public class MainActivity extends Activity {
             View view = arrayCustom.getView(i, null, null);
             ImageView cover = new ImageView(context);
             cover.setImageDrawable(getDrawable(R.drawable.unknown_music));
+			cover.setId(i);
             viewRoot.addView(cover, cover_params);
             covers.findAndSetLocalCover(cover, arrayCustom, i);
+			cover.setOnClickListener(null);
         }
         ScrollView scroll = (ScrollView) viewRoot.getParent();
         scroll.setOnTouchListener(new ScrollView.OnTouchListener() {
