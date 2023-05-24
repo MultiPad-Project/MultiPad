@@ -28,12 +28,12 @@ public class ReadCovers implements Runnable {
         return try_download_covers.get(project_name);
     }
 
-    public void findAndSetLocalCover(ImageView img, ProjectsAdapter projects_adapter, int adapter_index){
-        File cover = new File(projects_adapter.getPath(adapter_index), "cover.png");
+    public void findAndSetLocalCover(ImageView img, String project_path){
+        File cover = new File(project_path, "cover.png");
         if(cover.exists()){
             img.setImageURI(Uri.fromFile(cover));
         } else {
-            try_download_covers.put(projects_adapter.getPath(adapter_index), null);
+            try_download_covers.put(cover.getParentFile().getName(), null);
         }
     }
 

@@ -44,7 +44,7 @@ public class GetFilesTask implements Runnable {
     onPreExecute();
     new Thread(this).start();
   }
-  /*
+  /**
    * op - 0 = setText, 1 = setVisibility
    * view - view onde sera feita mudancas
    * value - dependendo da operacao, aqui devera ter uma string especifica

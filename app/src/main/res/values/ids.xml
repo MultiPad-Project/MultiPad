@@ -1,4 +1,5 @@
 <resources>
-	<item name="cover_layout_project_info_title" type="id"/>
-	<item name="cover_layout_project_info_producerName" type="id"/>
+	<item type="id" name="cover_layout_project_info_title" />
+	<item type="id" name="cover_layout_project_info_producerName" />
+    <item type="id" name="cover_layout_project_list" />
 </resources>

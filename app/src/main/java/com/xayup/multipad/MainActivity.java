@@ -110,7 +110,8 @@ public class MainActivity extends Activity {
             // Old Layout
             // setContentView(R.layout.main);
             // Cover Layout
-            setContentView(R.layout.main_cover);
+            //setContentView(R.layout.main_cover);
+            setContentView(R.layout.activity_main);
             getWindow()
                     .setFlags(
                             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
