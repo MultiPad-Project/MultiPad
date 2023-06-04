@@ -1,5 +1,18 @@
 <resources>
-	<item type="id" name="cover_layout_project_info_title" />
-	<item type="id" name="cover_layout_project_info_producerName" />
-    <item type="id" name="cover_layout_project_list" />
+	<item type="id" name="layout_project_info_title" />
+    <item type="id" name="layout_project_info_play" />
+    <item type="id" name="layout_project_info_delete" />
+    <item type="id" name="layout_project_info_remap_autoplay" />
+	<item type="id" name="layout_project_info_producerName" />
+    <item type="id" name="layout_project_list" />
+    <item type="id" name="layout_project_list_item" />
+    <item type="id" name="layout_project_list_item_title" />
+    <item type="id" name="layout_project_list_item_producerName" />
+    <item type="id" name="layout_project_list_item_dificulty" />
+    <item type="id" name="layout_project_list_item_leds_count" />
+    <item type="id" name="layout_project_list_item_samples_count" />
+    <item type="id" name="layout_project_list_item_click_info" />
+    <item type="id" name="layout_project_list_item_click_play" />
+    <item type="id" name="layout_project_style_list_normal" />
+    <item type="id" name="layout_project_style_list_scroll_item" />
 </resources>

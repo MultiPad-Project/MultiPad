@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.common.io.Files;
 
+import com.xayup.multipad.load.Project;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -19,6 +20,12 @@ import java.util.*;
 import android.app.*;
 
 public class Readers {
+
+    protected Activity context;
+
+    public Readers(Context context) {
+        this.context = (Activity) context;
+    }
 
     public static FileFilter filterFolder =
             new FileFilter() {
@@ -52,7 +59,7 @@ public class Readers {
             };
 
     // Algoritimo info
-    public Map<Object, Map> readInfo(Activity context, File projectDir, boolean granted) {
+    public Map<Object, Map> readInfo(File projectDir) {
         Map<Object, String> infoInfo;
         Map<Object, Map> mapFolder;
         File[] folders = projectDir.listFiles(filterFolder);
@@ -163,7 +170,6 @@ public class Readers {
     public static Map<String /*chain+pad position+repeat*/, List<List<String>> /*led file readed*/>
             readKeyLEDs(Context context, List<File> keyleds) {
         Map<String, List<List<String>>> mapLedLED = new HashMap<String, List<List<String>>>();
-        File ledFile;
         for (File ledFile : keyleds) {
             String fileName = ledFile.getName();
             // lineIndex é o nome do arquivo. Conta os espaços
@@ -241,64 +247,6 @@ public class Readers {
                 "([1-2][0-9]|[1-9])[1-9][0-8][\\w\\W]+.\\w{3}([0-9][1-9]|[0-9][1-2][0-9])?");
     }
 
-    public static Map<String, List<Integer>> readKeySoundsNew(
-            Activity context, File keySound, String soundPath) {
-        if (keySound.exists()) {
-            try {
-                List<String> keys = Files.readLines(keySound, StandardCharsets.UTF_8);
-                Map<String, List<Integer>> sounds = new HashMap<String, List<Integer>>();
-                PlayPads.mSoundLoader = new SoundLoader(context);
-                PlayPads.have_sounds = true;
-                for (String line : keys) {
-                    int indextheSound = 3;
-                    int indexPad = 1;
-                    if ((!line.replaceAll("\\s", "").isEmpty()))
-                        if (checkKeySound(line.replaceAll("\\s", ""))) {
-                            if (line.substring(0, 2).matches("[1-2][0-9]")) {
-                                indextheSound = 4;
-                                indexPad = 2;
-                            }
-                            line = line.replace(" ", "");
-                            String ifToChain = line.substring(line.lastIndexOf(".") + 4);
-                            if (ifToChain.matches("1([1-9]|[1-2][0-9])"))
-                                ifToChain = ifToChain.substring(1);
-                            else ifToChain = "";
-                            line = line.substring(0, line.lastIndexOf(".") + 4);
-                            String sound = soundPath + "/" + line.substring(indextheSound);
-                            try {
-                                int sound_length = getDuration(new File(sound));
-                                PlayPads.mSoundLoader.loadSound(
-                                        sound,
-                                        sound_length,
-                                        line.substring(0, indextheSound),
-                                        ifToChain);
-                            } catch (IllegalArgumentException i) {
-                                PlayPads.invalid_formats.add(
-                                        "("
-                                                + keySound.getName()
-                                                + ")"
-                                                + context.getString(R.string.invalid_sound)
-                                                + " "
-                                                + line);
-                            }
-                        } else {
-                            PlayPads.invalid_formats.add(
-                                    "("
-                                            + keySound.getName()
-                                            + ")"
-                                            + context.getString(R.string.invalid_sound)
-                                            + " "
-                                            + line);
-                        }
-                }
-                PlayPads.mSoundLoader.prepare();
-                return sounds;
-            } catch (IOException e) {
-            }
-        }
-        return null;
-    }
-
     // Algoritimo autoPlay
     private static boolean checkAutoPlayFormat(String line) {
         switch (line.toLowerCase().substring(0, 1)) {
@@ -311,7 +259,7 @@ public class Readers {
         }
     }
 
-    public static List<String> readautoPlay(Activity context, File autoPlay) {
+    public static List<String> readAutoPlay(Activity context, File autoPlay) {
         List<String> autoplayLineList = new ArrayList<String>();
         // List<String> invalid_format = new ArrayList<String>();
         String chain = "19";

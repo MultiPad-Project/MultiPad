@@ -1,0 +1,26 @@
+<resources>
+    <integer name="ITEM_CLICK_INFO">1</integer>
+    <integer name="ITEM_CLICK_PLAY">2</integer>
+    <integer name="ITEM_COVER">3</integer>
+    <integer name="ITEM_TITLE">4</integer>
+    <integer name="ITEM_PRODUCER">5</integer>
+    <integer name="ITEM_STATE_VIEW">6</integer>
+    <integer name="ITEM_DIFICULT">7</integer>
+    <integer name="ITEM_LEDS_COUNT">8</integer>
+    <integer name="ITEM_SAMPLES_COUNT">9</integer>
+    <integer name="INFO_TITLE">10</integer>
+    <integer name="INFO_PRODUCER">11</integer>
+    <integer name="INFO_STATE_VIEW">12</integer>    
+    <integer name="INFO_STATE_TEXT">13</integer>   
+    <integer name="INFO_DIFICULT">14</integer>
+    <integer name="INFO_LEDS_COUNT">15</integer>
+    <integer name="INFO_SAMPLES_COUNT">16</integer>
+    <integer name="BUTTON_INFO_PLAY">17</integer>
+    <integer name="BUTTON_INFO_DELETE">18</integer>
+    <integer name="BUTTON_INFO_REMAP">19</integer>
+    <integer name="BUTTON_OPTIONS">20</integer>
+    <integer name="INFO_COVER">21</integer>
+    <integer name="PROJECTS_LIST">22</integer>
+    <integer name="PROJECTS_ERRO">23</integer>
+    <integer name="PROJETCS_BROKEN">24</integer>   
+</resources>

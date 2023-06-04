@@ -1,0 +1,13 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:padding="16dp"
+        android:gravity="center"
+        android:tag="layout_projects_list_item_click_info">
+        <ImageView
+            android:layout_height="200dp"
+            android:layout_width="200dp"
+            android:background="@drawable/unknown_music"
+            android:tag="layout_projects_list_item_cover"/>
+    
+    </RelativeLayout>

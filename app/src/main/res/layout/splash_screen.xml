@@ -24,16 +24,20 @@
         android:id="@+id/splash_file_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:alpha="0.5"
         android:layout_margin="15dp"
-        android:text="@string/splash_title"
+        android:layout_alignParentTop="true"
+        android:text="Loading Project: ..."
         android:textSize="14dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:alpha="0.5"
         android:layout_margin="15dp"
         android:text="@string/splash_title"
         android:textSize="14dp" />

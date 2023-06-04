@@ -177,14 +177,11 @@ public class FileExplorerDialog {
                                                               .setAdapter(
                                                                   new ProjectsAdapter(
                                                                       context,
-                                                                      new Readers()
+                                                                      new Readers(context.getApplicationContext())
                                                                           .readInfo(
-                                                                              context,
                                                                               new File(
                                                                                   VariaveisStaticas
-                                                                                      .PROJECTS_PATH),
-                                                                              Environment
-                                                                                  .isExternalStorageManager())));
+                                                                                      .PROJECTS_PATH))));
                                                       });
                                                 })
                                             .start();

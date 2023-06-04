@@ -37,8 +37,8 @@ public class MakeGlows {
 	}
 
 	//calculos
-	private void calc() {
-		padWH = PlayPads.padWH;
+	private void calc(int grid_size) {
+		padWH = grid_size;
 		centerPad = padWH/2;
 		posicao_inicial = ((screenW - screenH) / 2) + ((screenH - PlayPads.display_height) / 2);
 		int pos_init = posicao_inicial;
@@ -49,8 +49,8 @@ public class MakeGlows {
 		inicial_pos_y = centerPad + ((screenH - PlayPads.display_height) / 2);
 	}
 
-	public void resize() {
-		calc();
+	public void resize(int grid_size) {
+		calc(grid_size);
 		int to_y = inicial_pos_y;
 		int to_x = inicial_pos_x;
 		for (int l = 0; l <= 9; l++) {
@@ -73,11 +73,11 @@ public class MakeGlows {
 		}
 	}
 
-	public void setOnGlows() {
-		calc();
+	public void setOnGlows(int grid_size) {
+		calc(grid_size);
 
 		if (glows != null) {
-			resize();
+			resize(grid_size);
 		} else {
 			int to_y = inicial_pos_y;
 			int to_x = inicial_pos_x;
@@ -135,7 +135,7 @@ public class MakeGlows {
 	public void mk2Glows(int newSize, int padSize, boolean mk2) {
 		centerPad = padSize / 2;
 		padWH = padSize;
-		calc();
+		calc(padSize);
 		int to_x = inicial_pos_x;
 		int to_y = inicial_pos_y;
 		for (int l = 0; l <= 9; l++) {
@@ -170,7 +170,7 @@ public class MakeGlows {
 			glowPadSize = radius;
 		}
 		glowSize = radius;
-		calc();
+		calc(padWH);
 
 		int to_x = inicial_pos_x;
 		int to_y = inicial_pos_y;

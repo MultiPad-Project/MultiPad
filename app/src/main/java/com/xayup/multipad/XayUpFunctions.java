@@ -5,15 +5,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.view.MotionEvent;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import com.xayup.multipad.PlayPads;
-import com.xayup.multipad.SkinTheme;
+
 import java.io.IOException;
 
 public class XayUpFunctions {
@@ -141,15 +136,6 @@ public class XayUpFunctions {
 
 	//hide pad/chains overlay
 	protected static void hidePC(int visibility) {
-		for (int i = 0; i < SkinTheme.pads.size(); i++) {
-			SkinTheme.pads.get(i).setVisibility(visibility);
-		}
-		for (int i = 0; i < SkinTheme.padsCenter.size(); i++) {
-			SkinTheme.padsCenter.get(i).setVisibility(visibility);
-		}
-		for (int i = 0; i < SkinTheme.chainsled.size(); i++) {
-			SkinTheme.chainsled.get(i).setVisibility(visibility);
-		}
-        SkinTheme.logo.setVisibility(visibility);
+		
 	}
 }

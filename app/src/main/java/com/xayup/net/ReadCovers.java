@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.widget.ImageView;
+import android.widget.Toast;
 import com.xayup.multipad.ProjectsAdapter;
 
 import java.io.*;
@@ -28,12 +29,12 @@ public class ReadCovers implements Runnable {
         return try_download_covers.get(project_name);
     }
 
-    public void findAndSetLocalCover(ImageView img, String project_path){
-        File cover = new File(project_path, "cover.png");
+    public void findAndSetCover(ImageView img, String project_path, String project_info_name){
+        File cover = new File(project_path, ".caches" + File.separator + "cover.png");
         if(cover.exists()){
             img.setImageURI(Uri.fromFile(cover));
         } else {
-            try_download_covers.put(cover.getParentFile().getName(), null);
+            try_download_covers.put(project_info_name, null);
         }
     }
 

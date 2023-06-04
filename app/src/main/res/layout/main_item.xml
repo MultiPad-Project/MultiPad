@@ -1,8 +1,10 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/itemInfoList"
-    android:layout_width="match_parent"
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="70dp"
-    android:background="@drawable/item_list_background" >
+    android:layout_margin="2dp"
+    android:background="@drawable/item_list_background"
+    android:tag="@integer/ITEM_CLICK_PLAY">
 
     <TextView
         android:id="@+id/projectTitle"
@@ -12,7 +14,8 @@
         android:layout_marginTop="5dp"
         android:text="Text"
         android:textColor="#ff1d1c1c"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:tag="@integer/ITEM_TITLE" />
 
     <TextView
         android:id="@+id/projectAutor"
@@ -23,7 +26,8 @@
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#ff717171"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:tag="@integer/ITEM_PRODUCER" />
 
     <View
         android:id="@+id/currentItemState"
@@ -31,13 +35,7 @@
         android:layout_height="8dp"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom|center_vertical"
-        android:background="@drawable/project_file_state" />
-
-    <TextView
-        android:id="@+id/pathText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:background="@drawable/project_file_state"
+        android:tag="@integer/ITEM_STATE_VIEW" />
 
 </RelativeLayout>

@@ -144,12 +144,6 @@ public class VerticalSeekBar extends SeekBar {
 			setProgressInternally(getMax() - (int) (getMax() * (event.getY() - getPaddingBottom()) / (getHeight() - (getPaddingTop() + getPaddingBottom()))), true);
 			
 			if (mOnSeekBarChangeListener != null) {
-				PlayPads.stopAll = true;
-				XayUpFunctions.clearLeds(context, this.getRootView());
-				PlayPads.autoPlayThread.seekBarChanging(STATE_PRESSED);
-				PlayPads.autoPlayThread.setProgress(getProgress());
-				STATE_PRESSED = false;
-				PlayPads.stopAll = false;
 				mOnSeekBarChangeListener.onStopTrackingTouch(this);
 			}
 			break;

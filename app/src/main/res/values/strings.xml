@@ -1,5 +1,7 @@
 <resources>
-
+    <!--Theme info-->
+    <string name="theme_name">MultiPad Theme</string>
+    <string name="theme_author">XayUp</string>
     <!--Main-->
     <string name="splash_title">Powered by XayUp, inspired by Unipad by Kimjisub.</string>
 

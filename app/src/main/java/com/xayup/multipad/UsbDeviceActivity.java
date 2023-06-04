@@ -321,26 +321,7 @@ public class UsbDeviceActivity extends Activity {
                     data = received.get(0);
                     received.remove(0);
                     if (data != null) {
-                        final ImageView led =
-                                PlayPads.grids
-                                        .get("grid_1")
-                                        .findViewById(rowProgramMode(data[1], true))
-                                        .findViewById(R.id.led);
-                        final int color =
-                                VariaveisStaticas.colorInt(
-                                        data[2], PlayPads.custom_color_table, PlayPads.oldColors);
-                        runOnUiThread(
-                                () -> {
-                                    try {
-                                        led.setBackgroundColor(color);
-                                    } catch (NullPointerException n) {
-                                        Toast.makeText(
-                                                        context,
-                                                        "Controller mode: " + n.toString(),
-                                                        0)
-                                                .show();
-                                    }
-                                });
+                        
                     }
                 }
                 null_time = SystemClock.uptimeMillis() + 5000; // 5 segundos
@@ -366,29 +347,7 @@ public class UsbDeviceActivity extends Activity {
             final int NOTE = data[2] & 0xFF;
             final int VELOCITY = data[3] & 0xFF;
             if (NOTE >= 0 && NOTE < 128 && VELOCITY >= 0 && VELOCITY < 128) {
-                // received.add(
-                //        new int[] {CHANNEL, NOTE, VELOCITY,
-                // PlayPads.grids.get("grid_1").getId()});
-                // if (receiver_thread.isStoped()) receiver_thread.start();
-                runOnUiThread(
-                        () -> {
-                            try {
-                                final ImageView led =
-                                        PlayPads.grids
-                                                .get("grid_1")
-                                                .findViewById(rowProgramMode(NOTE, true))
-                                                .findViewById(R.id.led);
-                                final int color =
-                                        VariaveisStaticas.colorInt(
-                                                VELOCITY,
-                                                PlayPads.custom_color_table,
-                                                PlayPads.oldColors);
-                                led.setBackgroundColor(color);
-                            } catch (NullPointerException n) {
-                                Toast.makeText(context, "Controller mode: " + CHANNEL +" "+rowProgramMode(NOTE, true)+" "+VELOCITY, 0)
-                                        .show();
-                            }
-                        });
+                
             }
         }
     }
@@ -412,19 +371,7 @@ public class UsbDeviceActivity extends Activity {
                 if (MidiStaticVars.device != null) {
                     if (((Note > 128 && Note <= 144) | (Note >= 176 & Note <= 178))
                             && (data[3] & 0xFF) > 0) {
-                        runOnUiThread(
-                                () -> {
-                                    Toast.makeText(context, "buttom" + buttom, 0).show();
-                                    try {
-                                        PlayPads.grids
-                                                .get("grid_1")
-                                                .findViewById(rowProgramMode(buttom, true))
-                                                .dispatchTouchEvent(
-                                                        MotionEvent.obtain(0, 0, ACTION, 0, 0, 0));
-                                    } catch (NullPointerException n) {
-                                        Toast.makeText(context, n.toString(), 0).show();
-                                    }
-                                });
+                        
                     }
                 }
             }

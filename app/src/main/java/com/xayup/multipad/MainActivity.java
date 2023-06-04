@@ -3,6 +3,7 @@ package com.xayup.multipad;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
+import android.graphics.drawable.AnimationDrawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.media.midi.MidiDeviceInfo;
@@ -12,16 +13,15 @@ import android.provider.Settings;
 import android.text.ClipboardManager;
 import android.util.*;
 import android.view.*;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.xayup.filesexplorer.FileExplorerDialog;
-import com.xayup.net.ReadCovers;
+import com.xayup.multipad.layouts.PlayProject;
+import com.xayup.multipad.layouts.ProjectsBase;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends Activity {
 
@@ -43,11 +43,12 @@ public class MainActivity extends Activity {
     private final Context context = this;
 
     File rootFolder = new File(Environment.getExternalStorageDirectory() + "/MultiPad/Projects");
-    final String[] per = new String[]{
-            "android.permission.MANAGER_EXTERNAL_STORAGE",
-            "android.permission.WRITE_EXTERNAL_STORAGE",
-            "android.permission.READ_EXTERNAL_STORAGE"
-    };
+    final String[] per =
+            new String[] {
+                "android.permission.MANAGER_EXTERNAL_STORAGE",
+                "android.permission.WRITE_EXTERNAL_STORAGE",
+                "android.permission.READ_EXTERNAL_STORAGE"
+            };
 
     private final String ACTION_USB_PERMISSION = "com.xayup.multipad.USB_PERMISSION";
     final int STORAGE_PERMISSION = 1000;
@@ -76,7 +77,8 @@ public class MainActivity extends Activity {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipboardManager clipboard =
+                                    (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                             clipboard.setText(traceLog);
                             Toast.makeText(
                                             getApplicationContext(),
@@ -105,13 +107,7 @@ public class MainActivity extends Activity {
                     .setFlags(
                             WindowManager.LayoutParams.FLAG_FULLSCREEN,
                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            // New Layout
-            // setContentView(R.layout.new_main);
-            // Old Layout
-            // setContentView(R.layout.main);
-            // Cover Layout
-            //setContentView(R.layout.main_cover);
-            setContentView(R.layout.activity_main);
+            setContentView(R.layout.main_activity);
             getWindow()
                     .setFlags(
                             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -149,8 +145,9 @@ public class MainActivity extends Activity {
         if (this.getFileStreamPath("stack.trace").exists()) {
             traceLog = null;
             try {
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(this.openFileInput("stack.trace")));
+                BufferedReader reader =
+                        new BufferedReader(
+                                new InputStreamReader(this.openFileInput("stack.trace")));
                 String line = null;
                 while ((line = reader.readLine()) != null) {
                     traceLog += line + "\n";
@@ -169,7 +166,6 @@ public class MainActivity extends Activity {
 
     public void makeActivity(boolean granted) {
         XayUpFunctions.hideSystemBars(getWindow());
-        SkinTheme.cachedSkinSet(this);
         SharedPreferences app_config = getSharedPreferences("app_configs", MODE_PRIVATE);
         skinConfig = app_config.getString("skin", "default");
         useUnipadFolderConfig = app_config.getBoolean("useUnipadFolder", false);
@@ -196,225 +192,44 @@ public class MainActivity extends Activity {
             }
         }
 
-        int main_layout_style = 2;
-        Readers getInfo = new Readers();
-        final ProjectsAdapter arrayCustom = new ProjectsAdapter(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
-
-        switch (main_layout_style) {
-            case 0: {
-                button_floating_menu = findViewById(R.id.main_floating_menu_button);
-                button_floating_menu.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View arg0) {
-                                setMenuFunctions();
-                            }
-                        });
-                listaprojetos = findViewById(R.id.listViewProjects);
-                listaprojetos.setAdapter(arrayCustom);
-                listaprojetos.setOnItemClickListener(
-                        new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(
-                                    AdapterView<?> adapterView, View view, int Int, long Long) {
-                                projectItem(view);
-                            }
-                        });
-                hideSplash();
-                break;
-            }
-            case 1: {
-                // Botões
-                Button unipack_preview = findViewById(R.id.main_right_bar_unipack_preview);
-                Button unipack_info = findViewById(R.id.main_right_bar_unipack_info);
-                Button menu = findViewById(R.id.main_right_bar_menu);
-
-                unipack_preview.setOnClickListener(new Button.OnClickListener() {
+        ViewGroup rootView = findViewById(R.id.main_activity);
+        new ProjectsBase(
+                this,
+                rootFolder,
+                rootView,
+                getPackageName(),
+                "main",
+                new PlayProject() {
                     @Override
-                    public void onClick(View view) {
-
+                    public void onPreStartIntent() {
+                        View loading_screen = ((Activity) context).getLayoutInflater().inflate(R.layout.loading_screen, rootView, true).findViewById(R.id.loading_screen);
+                        Animation anim = AnimationUtils.loadAnimation(context, R.anim.fade_in_splash);
+                        loading_screen.startAnimation(anim);
+                        ((AnimationDrawable) ((ImageView)loading_screen.findViewById(R.id.loading_logo_image)).getBackground()).start();
+                    }
+                    @Override
+                    public void startIntent(Map<Byte, Object> project_properties) {
+                        context.startActivity(new Intent(context, PlayPads.class));
+                    }
+                    @Override
+                    public void onLoadedProject(Map<Byte, Object> project_properties){
+                        View loading_screen = ((Activity) context).getLayoutInflater().inflate(R.layout.loading_screen, rootView, true).findViewById(R.id.loading_screen);
+                        Animation anim = AnimationUtils.loadAnimation(context, R.anim.fade_out_splash);
+                        loading_screen.startAnimation(anim);
+                        ((AnimationDrawable) ((ImageView)loading_screen.findViewById(R.id.loading_logo_image)).getBackground()).stop();
+                        loading_screen.setVisibility(View.GONE);
                     }
                 });
-                unipack_info.setOnClickListener(new Button.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                    }
+        rootView.post(
+                () -> {
+                    hideSplash();
                 });
-                menu.setOnClickListener(new Button.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                    }
-                });
-                final ScrollView project_list_scroll = findViewById(R.id.main_scroll);
-                project_list_scroll.post(() -> {
-                    gridListTwo((LinearLayout) findViewById(R.id.main_scroll_layout), arrayCustom);
-                });
-                break;
-            }
-
-            case 2: {
-                final ScrollView project_list_scroll = findViewById(R.id.main_scroll);
-                project_list_scroll.post(() -> {
-                    coverList((LinearLayout) findViewById(R.id.main_scroll_layout), arrayCustom);
-                });
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-
-    }
-
-    public void projectItem(View view) {
-        TextView pathTextv = view.findViewById(R.id.pathText);
-        View itemStt = view.findViewById(R.id.currentItemState);
-        switch ((Integer) itemStt.getTag()) {
-            case 0:
-                Intent playPads = new Intent(getBaseContext(), PlayPads.class);
-                playPads.putExtra("currentPath", pathTextv.getText().toString());
-                playPads.putExtra("height", height);
-                startActivity(playPads);
-                break;
-            case 2:
-                checarPermissao();
-                break;
-        }
     }
 
     protected void hideSplash() {
         View splash_screen = findViewById(R.id.splash);
         splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
         splash_screen.setVisibility(View.GONE);
-    }
-
-    protected void gridListTwo(ViewGroup viewRoot, BaseAdapter arrayCustom) {
-        LinearLayout[] columns = new LinearLayout[2];
-        final int w = viewRoot.getRootView().getMeasuredWidth();
-        int colum = 0;
-        final AtomicInteger item_height = new AtomicInteger(0);
-        final AtomicInteger posted = new AtomicInteger(0);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                w / 2,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        params.setMargins(0, 0, 0, 0);
-        LinearLayout.LayoutParams item_params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        item_params.setMargins(8, 8, 8, 8);
-        for (int i = 0; i < columns.length; i++) {
-            LinearLayout layout_colum = new LinearLayout(context);
-            params.weight = 1f;
-            layout_colum.setOrientation(LinearLayout.VERTICAL);
-            viewRoot.addView(layout_colum, params);
-            columns[i] = layout_colum;
-        }
-        for (int index = 0; index < arrayCustom.getCount(); index++) {
-            View item = arrayCustom.getView(index, null, viewRoot);
-            columns[colum].addView(item, item_params);
-            item.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    projectItem(v);
-                }
-            });
-            item.post(() -> {
-                posted.incrementAndGet();
-                item_params.height = 20 + Math.max(item_height.get(), item.getMeasuredHeight());
-                if (posted.get() == arrayCustom.getCount()) {
-                    for (LinearLayout layout : columns) {
-                        for (int i = 0; i < layout.getChildCount(); i++) {
-                            layout.getChildAt(i).setLayoutParams(item_params);
-                            hideSplash();
-                        }
-                    }
-                }
-            });
-            colum = (colum + 1 >= columns.length) ? 0 : colum + 1;
-        }
-    }
-	
-	protected View.OnClickListener coverOnClickListener(){
-		return new View.OnClickListener(){
-			@Override
-			public void onClick(View v){
-				
-			}
-		};
-	}
-
-    protected void coverList(LinearLayout viewRoot, ProjectsAdapter arrayCustom) {
-        LinearLayout.LayoutParams cover_params = new LinearLayout.LayoutParams(400, 400);
-        ReadCovers covers = new ReadCovers(context);
-        cover_params.setMargins(8, 8, 8, 8);
-        for (int i = 0; i < arrayCustom.getCount(); i++) {
-            View view = arrayCustom.getView(i, null, null);
-            ImageView cover = new ImageView(context);
-            cover.setImageDrawable(getDrawable(R.drawable.unknown_music));
-			cover.setId(i);
-            viewRoot.addView(cover, cover_params);
-            covers.findAndSetLocalCover(cover, arrayCustom, i);
-			cover.setOnClickListener(null);
-        }
-        ScrollView scroll = (ScrollView) viewRoot.getParent();
-        scroll.setOnTouchListener(new ScrollView.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event){
-                switch (event.getAction()){
-                    case MotionEvent.ACTION_DOWN: {
-                        break;
-                    }
-                    case MotionEvent.ACTION_MOVE: {
-                        break;
-                    }
-                }
-                return false;
-            }
-        });
-
-        hideSplash();
-    }
-
-    protected void gridList(ViewGroup viewRoot, ProjectsAdapter arrayCustom) {
-        GridLayout grid = new GridLayout(context);
-        ScrollView grid_background = (ScrollView) viewRoot.getRootView();
-        int colums = 2;
-        int grid_colum_index = 0;
-        int grid_row_index = 0;
-        int h = 0;
-        int grid_height = 0;
-        for (int index = 0; index < arrayCustom.getCount(); index++) {
-            View item = arrayCustom.getView(index, null, (ViewGroup) grid);
-            h = item.getLayoutParams().height;
-            item = new View(context);
-
-            item.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    projectItem(view);
-                }
-            });
-            GridLayout.LayoutParams vparam = new GridLayout.LayoutParams(
-                    GridLayout.spec(grid_row_index, GridLayout.FILL, 1.0f),
-                    GridLayout.spec(grid_colum_index, GridLayout.FILL, 1.0f));
-            vparam.height = 0;
-            vparam.width = 0;
-            grid.addView(item, vparam);
-            grid_colum_index++;
-            if (grid_colum_index >= colums) {
-                grid_height += h;
-                grid_row_index++;
-                grid_colum_index = 0;
-            }
-        }
-        Log.v("Grid Size", "" + grid_height);
-        grid.setLayoutParams(
-                new LinearLayout.LayoutParams(grid_background.getMeasuredWidth(), grid_height + grid_height));
-        Log.v("Grid size", grid.getLayoutParams().height + " " + grid.getLayoutParams().width);
     }
 
     public void checarPermissao() {
@@ -429,7 +244,8 @@ public class MainActivity extends Activity {
             }
         } else {
             if ((checkCallingPermission(per[0 + android11per])
-                    & checkCallingPermission(per[1 + android11per])) != PackageManager.PERMISSION_GRANTED) {
+                            & checkCallingPermission(per[1 + android11per]))
+                    != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(per, STORAGE_PERMISSION);
             }
         }
@@ -473,7 +289,8 @@ public class MainActivity extends Activity {
         unipadfolder.setChecked(useUnipadFolderConfig);
 
         floating_menu.setView(menu);
-        Button floating_button_exit = (Button) menu.findViewById(R.id.main_floating_menu_button_exit);
+        Button floating_button_exit =
+                (Button) menu.findViewById(R.id.main_floating_menu_button_exit);
         AlertDialog show = floating_menu.create();
         XayUpFunctions.showDiagInFullscreen(show);
 
@@ -502,7 +319,8 @@ public class MainActivity extends Activity {
                                     @Override
                                     public void onItemClick(
                                             AdapterView<?> adapter, View v, int pos, long id) {
-                                        MidiDeviceInfo usb_midi = (MidiDeviceInfo) adapter.getItemAtPosition(pos);
+                                        MidiDeviceInfo usb_midi =
+                                                (MidiDeviceInfo) adapter.getItemAtPosition(pos);
                                         if (MidiStaticVars.midiDevice == usb_midi) {
                                             Toast.makeText(
                                                             context,
@@ -512,16 +330,20 @@ public class MainActivity extends Activity {
                                                     .show();
                                             return;
                                         }
-                                        MidiStaticVars.device = (UsbDevice) usb_midi.getProperties()
-                                                .getParcelable(
-                                                        MidiDeviceInfo.PROPERTY_USB_DEVICE);
+                                        MidiStaticVars.device =
+                                                (UsbDevice)
+                                                        usb_midi.getProperties()
+                                                                .getParcelable(
+                                                                        MidiDeviceInfo
+                                                                                .PROPERTY_USB_DEVICE);
                                         if (MidiStaticVars.device != null) {
                                             MidiStaticVars.midiDevice = usb_midi;
-                                            permissionIntent = PendingIntent.getBroadcast(
-                                                    context,
-                                                    0,
-                                                    new Intent(ACTION_USB_PERMISSION),
-                                                    PendingIntent.FLAG_MUTABLE);
+                                            permissionIntent =
+                                                    PendingIntent.getBroadcast(
+                                                            context,
+                                                            0,
+                                                            new Intent(ACTION_USB_PERMISSION),
+                                                            PendingIntent.FLAG_MUTABLE);
                                             MidiStaticVars.manager.requestPermission(
                                                     MidiStaticVars.device, permissionIntent);
                                         } else {
@@ -574,11 +396,7 @@ public class MainActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                        SkinTheme getThemes = new SkinTheme(
-                                MainActivity.this,
-                                (ListView) swit.getChildAt(SKINS),
-                                false);
-                        getThemes.getSkinsTheme();
+                        
                         barTitle.setText(getString(R.string.skins));
                         swit.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
                         swit.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
@@ -589,7 +407,8 @@ public class MainActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                        SharedPreferences app_configs = getSharedPreferences("app_configs", MODE_PRIVATE);
+                        SharedPreferences app_configs =
+                                getSharedPreferences("app_configs", MODE_PRIVATE);
                         SharedPreferences.Editor editConfigs = app_configs.edit();
                         if (app_configs.getBoolean("useUnipadFolder", false)) {
                             unipadfolder.setChecked(false);
@@ -626,8 +445,9 @@ public class MainActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                        AlertDialog.Builder manual = new AlertDialog.Builder(
-                                MainActivity.this, R.style.alertdialog_transparent);
+                        AlertDialog.Builder manual =
+                                new AlertDialog.Builder(
+                                        MainActivity.this, R.style.alertdialog_transparent);
                         ImageView manualImg = new ImageView(MainActivity.this);
                         manualImg.setImageDrawable(getDrawable(R.drawable.manual));
                         manual.setView(manualImg);
@@ -648,36 +468,38 @@ public class MainActivity extends Activity {
         show.getWindow().setBackgroundDrawable(getDrawable(R.drawable.inset_floating_menu));
     }
 
-    private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "onReceive", 0).show();
-            String action = intent.getAction();
-            if (ACTION_USB_PERMISSION.equals(action)) {
-                synchronized (this) {
-                    Toast.makeText(context, "equal", 0).show();
-                    if (intent.getBooleanExtra(
-                            UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        Toast.makeText(context, "granted", 0).show();
-                        new UsbDeviceActivity()
-                                .openMidiDevice(context, MidiStaticVars.midiDevice);
-                    } else {
-                        Toast.makeText(
-                                        context,
-                                        context.getString(R.string.danied_midi_permission)
-                                                .replace(
-                                                        "%m",
-                                                        MidiStaticVars.midiDevice
-                                                                .getProperties()
-                                                                .getString(
-                                                                        MidiDeviceInfo.PROPERTY_PRODUCT)),
-                                        0)
-                                .show();
-                        MidiStaticVars.midiDevice = null;
+    private final BroadcastReceiver usbReceiver =
+            new BroadcastReceiver() {
+                public void onReceive(Context context, Intent intent) {
+                    Toast.makeText(context, "onReceive", 0).show();
+                    String action = intent.getAction();
+                    if (ACTION_USB_PERMISSION.equals(action)) {
+                        synchronized (this) {
+                            Toast.makeText(context, "equal", 0).show();
+                            if (intent.getBooleanExtra(
+                                    UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                                Toast.makeText(context, "granted", 0).show();
+                                new UsbDeviceActivity()
+                                        .openMidiDevice(context, MidiStaticVars.midiDevice);
+                            } else {
+                                Toast.makeText(
+                                                context,
+                                                context.getString(R.string.danied_midi_permission)
+                                                        .replace(
+                                                                "%m",
+                                                                MidiStaticVars.midiDevice
+                                                                        .getProperties()
+                                                                        .getString(
+                                                                                MidiDeviceInfo
+                                                                                        .PROPERTY_PRODUCT)),
+                                                0)
+                                        .show();
+                                MidiStaticVars.midiDevice = null;
+                            }
+                        }
                     }
                 }
-            }
-        }
-    };
+            };
 
     @Override
     public void onWindowFocusChanged(boolean bool) {

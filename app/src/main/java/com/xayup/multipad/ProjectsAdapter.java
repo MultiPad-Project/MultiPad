@@ -76,7 +76,7 @@ public class ProjectsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int p1, View p2, ViewGroup p3) {
-        p2 = LayoutInflater.from(context).inflate(R.layout.custom_list_projects, p3, false);
+        p2 = LayoutInflater.from(context).inflate(R.layout.main_item, p3, false);
 
         TextView producerName = p2.findViewById(R.id.projectAutor);
         TextView title = p2.findViewById(R.id.projectTitle);

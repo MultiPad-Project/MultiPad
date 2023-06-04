@@ -17,7 +17,7 @@ public class AutoplayRecFunc {
 	
 	public AutoplayRecFunc(Activity context){
 		autoPlayRecord = new ArrayList<String>();
-		autoPlayRecord.add("c " + PlayPads.chainSl);
+		autoPlayRecord.add("c " + 1/*GET CURRENT CHAIIN*/);
 		oldTime = SystemClock.uptimeMillis();
 		this.context = context;
 	}
@@ -33,9 +33,9 @@ public class AutoplayRecFunc {
 	}
 	public static void saveAutoplay(){
 		try{
-			final File autoplay_file = new File(PlayPads.getCurrentPath, "autoplay");
+			final File autoplay_file = new File("PROJECT CURRENT PATH", "autoplay");
 			if(autoplay_file.exists()){
-				new File(PlayPads.getCurrentPath, "autoplay").renameTo(new File(PlayPads.getCurrentPath, "autoplay" + SystemClock.uptimeMillis()));
+				new File("PROJECT CURRENT PATH", "autoplay").renameTo(new File("project current path", "autoplay" + SystemClock.uptimeMillis()));
 			}
 			autoplay_file.createNewFile();
 			FileWriter save_autoplay_file = new  FileWriter(autoplay_file);
@@ -43,8 +43,8 @@ public class AutoplayRecFunc {
 				save_autoplay_file.write(line + "\n");
 			}
 			save_autoplay_file.close();
-			PlayPads.autoPlay = Readers.readautoPlay(context, autoplay_file);
-			PlayPads.autoPlayThread = new AutoPlayFunc(context);
+			PlayPads.autoPlay = Readers.readAutoPlay(context, autoplay_file);
+			//PlayPads.autoPlayThread = new AutoPlayFunc(context);
 			PlayPads.progressAutoplay = context.findViewById(R.id.seekBarProgressAutoplay);
 			PlayPads.progressAutoplay.setMin(0);
 			PlayPads.progressAutoplay.setMax(PlayPads.autoPlay.size()-1);
