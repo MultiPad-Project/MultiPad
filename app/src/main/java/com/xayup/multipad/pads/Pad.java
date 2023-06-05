@@ -29,8 +29,8 @@ public class Pad {
         mGridViews = new ArrayList<>();
     }
 
-    public Pads newPads(String skin_package) {
-        Pads pads = new Pads(mSkinManager.getPropertiesFromPackage(skin_package, true));
+    public Pads newPads(String skin_package, int rows, int colums) {
+        Pads pads = new Pads(mSkinManager.getPropertiesFromPackage(skin_package, true), rows, colums);
         mGridViews.add(pads);
         return pads;
     }
@@ -41,11 +41,11 @@ public class Pad {
         ViewGroup mRootPads;
         GridLayout mGrid;
 
-        public Pads(SkinProperties skin) {
+        public Pads(SkinProperties skin, int rows, int colums) {
             this.mSkinProperties = mSkinProperties;
             this.mSkinData = new PadSkinData();
             mSkinManager.loadSkin(skin, mSkinData, null);
-            this.mRootPads = new MakePads(context).make(mSkinData);
+            this.mRootPads = new MakePads(context, rows, colums).make(mSkinData);
             this.mGrid = (GridLayout) mRootPads.getChildAt(1);
             
             setPadsFunctions();

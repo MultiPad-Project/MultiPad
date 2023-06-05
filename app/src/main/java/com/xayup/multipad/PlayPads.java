@@ -146,16 +146,16 @@ public class PlayPads extends Activity {
             varInstance();
             loadProject(this.context);
             Pad pads = new Pad(context, padInteraction());
-            last_pads_grid = pads.newPads(skin_package);
-            ViewGroup virtual_launchpad = last_pads_grid.getRootPads();
-            GridLayout launchpad_grid = last_pads_grid.getGridPads();
+
             root_pads.post(
                     () -> {
-                    int h = root_pads.getMeasuredHeight();
-                    int w = root_pads.getMeasuredWidth();
-                        root_pads.addView(virtual_launchpad, new RelativeLayout.LayoutParams(1280, 720));
-                    launchpad_grid.getLayoutParams().height = 720;
-                    launchpad_grid.getLayoutParams().width = 720;                     
+                        int h = root_pads.getMeasuredHeight();
+                        int w = root_pads.getMeasuredWidth();
+                        last_pads_grid = pads.newPads(skin_package, 10, 10);
+                        ViewGroup virtual_launchpad = last_pads_grid.getRootPads();
+                        GridLayout launchpad_grid = last_pads_grid.getGridPads();
+                        root_pads.addView(virtual_launchpad, new RelativeLayout.LayoutParams(w, h));
+                        launchpad_grid.setLayoutParams(new RelativeLayout.LayoutParams(h-2, h-2));
                     });
         }
 
@@ -202,47 +202,74 @@ public class PlayPads extends Activity {
             return new PadInteraction() {
                 @Override
                 public OnClickListener onPadClick(View view) {
-                    String tag = (String) view.getTag();
-                    if (tag.equals("01_chain")) {
-                        return new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {}
-                        };
-                    } else if (tag.equals("02_chain")) {
-                        return new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {}
-                        };
-                    } else if (tag.equals("03_chain")) {
-                        return new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {}
-                        };
-                    } else if (tag.equals("04_chain")) {
-                        return new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {}
-                        };
-                    } else if (tag.equals("05_chain")) {
-                        return new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {}
-                        };
-                    } else if (tag.equals("06_chain")) {
-                        return new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {}
-                        };
-                    } else if (tag.equals("06_chain")) {
-                        return new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {}
-                        };
-                    } else if (tag.equals("08_chain")) {
-                        return new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {}
-                        };
+                    MakePads.PadInfo mPadInfo = (MakePads.PadInfo) view.getTag();
+                    if (mPadInfo.row == 0) {
+                        switch (mPadInfo.colum) {
+                            case 1: {
+                                return new OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(context, "row: " + mPadInfo.row + " colum: " + mPadInfo.colum, Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+                            }
+                            case 2: {
+                                return new OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(context, "row: " + mPadInfo.row + " colum: " + mPadInfo.colum, Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+                            }
+                            case 3: {
+                                return new OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(context, "row: " + mPadInfo.row + " colum: " + mPadInfo.colum, Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+                            }
+                            case 4: {
+                                return new OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(context, "row: " + mPadInfo.row + " colum: " + mPadInfo.colum, Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+                            }
+                            case 5: {
+                                return new OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(context, "row: " + mPadInfo.row + " colum: " + mPadInfo.colum, Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+                            }
+                            case 6: {
+                                return new OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(context, "row: " + mPadInfo.row + " colum: " + mPadInfo.colum, Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+                            }
+                            case 7: {
+                                return new OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(context, "row: " + mPadInfo.row + " colum: " + mPadInfo.colum, Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+                            }
+                            case 8: {
+                                return new OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(context, "row: " + mPadInfo.row + " colum: " + mPadInfo.colum, Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+                            }
+                        }
                     }
                     return null;
                 }

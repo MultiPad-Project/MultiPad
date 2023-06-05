@@ -298,6 +298,7 @@ public class ProjectsBase extends Projects implements ProjectsBaseInterface {
         Log.v("Properties", project_properties+"");
         mPlayProject.onPreStartIntent();
         mPlayProject.startIntent(project_properties);
+        mPlayProject.onLoadedProject(project_properties);
     }
 
     protected OnClickListener itemClick(boolean click_and_play) {
