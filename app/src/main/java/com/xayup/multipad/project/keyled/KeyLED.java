@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.view.View;
 import android.widget.*;
 
+import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.project.keyled.KeyLEDReader;
 import com.xayup.multipad.load.Project;
 import com.xayup.multipad.load.ProjectMapData;
@@ -25,18 +26,18 @@ public class KeyLED extends Project implements Project.KeyLEDInterface {
         mLedLoader = new LedMap();
     }
     
-    public List<String[]> parse(File keyled_file){
-        return new KeyLEDReader().read(keyled_file, mLedLoader);
+    public void parse(File keyled_file, LoadProject.LoadingProject mLoadingProject){
+        new KeyLEDReader().read(keyled_file, mLedLoader, mLoadingProject);
     }
 
     @Override
-    public boolean showLed(Activity context, int chain, int pad) {
+    public boolean showLed(Activity context, int chain, int x, int y) {
         
         return false;
     }
 
     @Override
-    public boolean breakLed(Activity context, int chain, int pad) {
+    public boolean breakLed(Activity context, int chain, int x, int y) {
         return false;
     }
 

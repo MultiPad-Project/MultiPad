@@ -11,7 +11,7 @@
 
     <string name="app_name">MultiPad</string>
     <string name="permission_storage_necessary">Permission to storage needed!</string>
-    <string name="diag_invalidfiles_title">Erros...</string>
+    <string name="diag_invalidfiles_title">Invalid formats</string>
     <string name="copy_log">Copy Log</string>
     <string name="cop">Copied to the clipboard!</string>
     <string name="exitcrash">Close app</string>
@@ -110,5 +110,6 @@
     <string name="dialog_replace_mensage">Do you want to replace?</string>
     <string name="dialog_replace_check">Apply for next items</string>
     <string name="replace">Replace</string>
+    <string name="reading">Reading</string>
     
 </resources>

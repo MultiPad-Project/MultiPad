@@ -27,6 +27,7 @@ import java.util.Objects;
 public class ProjectsBase extends Projects implements ProjectsBaseInterface {
     protected final String default_layout_name = "main";
     protected Activity context;
+    protected PlayProject mPlayProject;
     protected File projects_folder;
     protected ViewGroup list, rootGroup;
     protected String item_layout_resource_name, package_name;
@@ -296,24 +297,23 @@ public class ProjectsBase extends Projects implements ProjectsBaseInterface {
 
     protected void loadProject() {
         Log.v("Properties", project_properties+"");
-        mPlayProject.onPreStartIntent();
-        mPlayProject.startIntent(project_properties);
-        mPlayProject.onLoadedProject(project_properties);
+        mPlayProject.onPreLoadProject();
+        mPlayProject.loadProject(path);
     }
 
     protected OnClickListener itemClick(boolean click_and_play) {
         return new OnClickListener() {
             @Override
             public void onClick(View view) {
-                readInProject(flags);
                 project_properties = (Map<Byte, Object>) projects.get(view.getId());
-                title = (String) project_properties.get(PROJECT_TITLE);
-                producerName = (String) project_properties.get(PROJECT_PRODUCER_NAME);
                 path = (String) project_properties.get(PROJECT_PATH);
                 if (click_and_play) {
                     if (project_properties != null) loadProject();
                     return;
                 }
+                title = (String) project_properties.get(PROJECT_TITLE);
+                producerName = (String) project_properties.get(PROJECT_PRODUCER_NAME);
+                readInProject(flags);
                 if (flags[FLAG_TITLE]) {
                     text_title.setText(title);
                     Toast.makeText(context, title, 0).show();

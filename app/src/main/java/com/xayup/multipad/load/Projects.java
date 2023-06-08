@@ -15,7 +15,7 @@ import java.util.Map;
 public class Projects extends Project {
     
     public boolean[] flags;
-    
+    /*
     public final byte TYPE_KEYLED_FOLDERS = 0;
     public final byte TYPE_SAMPLE_FOLDER = 1;
     public final byte TYPE_AUTOPLAY_FILE = 2;
@@ -40,29 +40,6 @@ public class Projects extends Project {
     public final byte FLAG_SIZE = 19; /* Array flag size */
 
     public Map<Integer, Object> projects = null;
-
-    public void onProjectClicked(Map<Byte, Object> project_properties) {
-        String[] tmp =
-                new String[] {
-                    (String) this.project_properties.get(PROJECT_PATH), // 0
-                    (String) this.project_properties.get(PROJECT_SAMPLES_PATH), // 1
-                    (String) this.project_properties.get(PROJECT_KEYSOUND_PATH), // 2
-                    (String) this.project_properties.get(PROJECT_KEYLEDS_PATHS) // 3
-                };
-        this.project_properties = project_properties;
-        this.title = (String) this.project_properties.get(PROJECT_TITLE);
-        this.producerName = (String) this.project_properties.get(PROJECT_PRODUCER_NAME);
-        this.state = (String) this.project_properties.get(PROJECT_STATE);
-        this.path = (!tmp[0].equals("")) ? tmp[0] : "";
-        this.sample_path = (!tmp[1].equals("")) ? new File(tmp[1]) : null;
-        this.keysound_path = (!tmp[2].equals("")) ? new File(tmp[2]) : null;
-        if (!tmp[3].equals("")) {
-            keyleds_paths = new ArrayList<>();
-            for (String leds_path : tmp[3].split(";")) {
-                keyleds_paths.add(new File(leds_path));
-            }
-        }
-    }
 
     /*
      * Change vars from Project class
@@ -114,7 +91,7 @@ public class Projects extends Project {
         project_properties = null;
     }
 
-    public void readInProject(boolean[] flags) {        
+    public void readInProjecttt(boolean[] flags) {        
         /* KeyLED op */
         if (flags[TYPE_KEYLED_FOLDERS] || flags[FLAG_KEYLED_COUNT]) {
             keyleds_paths = new ArrayList<>();
@@ -130,11 +107,13 @@ public class Projects extends Project {
             if (!flags[TYPE_KEYLED_FOLDERS]) {
                 keyleds_paths = null;
             }
+            if (!(keyleds_paths.size() > 0)) keyleds_paths = null;
         }
         
         /* Autoplay op */
         if (flags[TYPE_SAMPLE_FOLDER] || flags[FLAG_SAMPLE_COUNT]) {
             sample_path = new File(path, "sounds");
+            keysound_path = new File(path, "keysound");
             if (sample_path.exists()) {
                 if (flags[FLAG_SAMPLE_COUNT]) {
                     sample_count += sample_path.list().length;
@@ -143,7 +122,10 @@ public class Projects extends Project {
                 if (!flags[TYPE_SAMPLE_FOLDER]) {
                     sample_path = null;
                 }
+            } else {
+                sample_path = null;
             }
+            if (!keysound_path.exists()) keysound_path = null;
         }
         
         /* Dificulty op */
@@ -157,6 +139,8 @@ public class Projects extends Project {
                 if (!flags[TYPE_AUTOPLAY_FILE]) {
                     autoplay_path = null;
                 }
+            } else {
+                autoplay_path = null;
             }
         }
     }

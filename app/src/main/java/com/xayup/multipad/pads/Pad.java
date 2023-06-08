@@ -21,6 +21,13 @@ public class Pad {
     public List<Pads> mGridViews;
     public SkinManager mSkinManager;
     public PadInteraction mPadInteraction;
+    
+    public interface PadLayoutMode {
+        public int LAYOUT_PRO_MODE = 0;
+        public int LAYOUT_MK2_MODE = 1;
+        public int LAYOUT_UNIPAD_MODE = 2;
+        public int LAYOUT_MATRIX_MODE = 3;
+    }
 
     public Pad(Context context, PadInteraction mPadInteraction) {
         this.context = (Activity) context;
@@ -36,10 +43,12 @@ public class Pad {
     }
     
     public class Pads implements PadsLayoutInterface, SkinSupport {
-        SkinProperties mSkinProperties;
-        PadSkinData mSkinData;
-        ViewGroup mRootPads;
-        GridLayout mGrid;
+        public int layout_mode;
+        public boolean press_watermark, led, watermark;
+        protected SkinProperties mSkinProperties;
+        protected PadSkinData mSkinData;
+        protected ViewGroup mRootPads;
+        protected GridLayout mGrid;
 
         public Pads(SkinProperties skin, int rows, int colums) {
             this.mSkinProperties = mSkinProperties;

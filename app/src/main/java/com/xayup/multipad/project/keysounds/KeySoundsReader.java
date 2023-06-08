@@ -2,6 +2,7 @@ package com.xayup.multipad.project.keysounds;
 
 import android.media.MediaMetadataRetriever;
 import com.google.common.io.Files;
+import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.project.keysounds.SoundLoader;
 import java.io.File;
 import java.io.IOException;
@@ -31,11 +32,15 @@ public class KeySoundsReader {
      * @param mSoundLoader Class for load samples
      * @return List of possible errors
      */
-    public List<String[]> read(File key_sounds, File sample_path, SoundLoader mSoundLoader) {
-        List<String[]> problems = new ArrayList<>();
+    public void read(
+            File key_sounds,
+            File sample_path,
+            SoundLoader mSoundLoader,
+            LoadProject.LoadingProject mLoadingProject) {
         if (key_sounds.exists()) {
             try {
                 List<String> keys = Files.readLines(key_sounds, StandardCharsets.UTF_8);
+                mLoadingProject.onStartReadFile(key_sounds.getName());
                 int line_number = 0;
                 for (String line : keys) {
                     line_number++;
@@ -62,28 +67,21 @@ public class KeySoundsReader {
                                         line.substring(0, indextheSound),
                                         ifToChain);
                             } catch (IllegalArgumentException i) {
-                                problems.add(
-                                        new String[] {
-                                            "KeySounds",
-                                            key_sounds.getName(),
-                                            String.valueOf(line_number),
-                                            keys.get(line_number - 1)
-                                        });
+                                mLoadingProject.onFileError(
+                                        key_sounds.getName(),
+                                        line_number,
+                                        keys.get(line_number - 1));
                             }
                         } else {
-                            problems.add(
-                                    new String[] {
-                                        "KeySounds",
-                                        key_sounds.getName(),
-                                        String.valueOf(line_number),
-                                        keys.get(line_number - 1)
-                                    });
+                            mLoadingProject.onFileError(
+                                    key_sounds.getName(),
+                                    line_number,
+                                    keys.get(line_number - 1));
                         }
                 }
             } catch (IOException e) {
-                problems.add(new String[] {"KeySounds", key_sounds.getName(), "", "File error"});
+                mLoadingProject.onFileError(key_sounds.getName(), 0, "Corrupted");
             }
         }
-        return problems;
     }
 }

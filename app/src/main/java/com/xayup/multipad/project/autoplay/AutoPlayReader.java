@@ -3,6 +3,7 @@ package com.xayup.multipad.project.autoplay;
 import android.app.Activity;
 import com.google.common.io.Files;
 import com.xayup.multipad.load.ProjectMapData;
+import com.xayup.multipad.load.thread.LoadProject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,11 +29,10 @@ public class AutoPlayReader extends ProjectMapData {
      * @param aut_play_map List to be interacted
      * @return List of possible errors
      */
-    public List<String[]> read(File autoPlay, List<int[]> auto_play_map) {
-        List<String[]> problems = new ArrayList<>();
+    public void read(File autoPlay, List<int[]> auto_play_map, LoadProject.LoadingProject mLoadingProject) {
         try {
             List<String> keys = Files.readLines(autoPlay, StandardCharsets.UTF_8);
-            // mAutoPlay = new AutoPlay(context);
+            mLoadingProject.onStartReadFile(autoPlay.getName());
             String value;
             int index = 0;
             int[] autoplay_map;
@@ -100,13 +100,7 @@ public class AutoPlayReader extends ProjectMapData {
                                                 Integer.parseInt(value);
                                         auto_play_map.add(autoplay_map);
                                     } catch (NumberFormatException n) {
-                                        problems.add(
-                                                new String[] {
-                                                    "AutoPay",
-                                                    autoPlay.getName(),
-                                                    String.valueOf(line_number),
-                                                    keys.get(line_number - 1)
-                                                });
+                                        mLoadingProject.onFileError(autoPlay.getName(), line_number, keys.get(line_number-1));
                                         continue next_frame;
                                     }
                                 }
@@ -118,14 +112,7 @@ public class AutoPlayReader extends ProjectMapData {
                 }
             }
         } catch (IOException e) {
-            problems.add(
-                    new String[] {
-                        "AutoPay",
-                        autoPlay.getName(),
-                        "",
-                        "File error"
-                    });
+            mLoadingProject.onFileError(autoPlay.getName(), 0, "Corrupted");
         }
-        return problems;
     }
 }

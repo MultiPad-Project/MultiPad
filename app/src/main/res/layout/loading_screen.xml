@@ -1,30 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<ViewFlipper
      xmlns:android="http://schemas.android.com/apk/res/android"
      android:layout_height="match_parent"
      android:layout_width="match_parent"
      android:background="#FF0C1721"
      android:clickable="true"
-     android:id="@+id/loading_screen">
+     android:id="@+id/loading_screen_flipper">
 
-    <ImageView
-         android:layout_height="90dp"
-         android:layout_width="90dp"
-         android:layout_centerInParent="true"
-         android:background="@drawable/loading_logo"
-         android:id="@+id/loading_logo_image" />
+    <RelativeLayout
+         android:layout_height="match_parent"
+         android:layout_width="match_parent"
+         android:id="@+id/loading_screen">
 
-    <TextView
-         android:layout_height="wrap_content"
-         android:layout_width="wrap_content"
-         android:layout_marginBottom="22dp"
-         android:layout_alignParentEnd="true"
-         android:textSize="22sp"
-         android:layout_marginRight="32dp"
-         android:textColor="@android:color/white"
-         android:layout_alignParentBottom="true"
-         android:id="@+id/loading_text"
-         android:textStyle="bold"
-         android:text="LOADING..." />
+        <ImageView
+             android:layout_height="90dp"
+             android:layout_width="90dp"
+             android:layout_centerInParent="true"
+             android:background="@drawable/loading_logo"
+             android:id="@+id/loading_logo_image" />
 
-</RelativeLayout>
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:layout_below="@id/loading_logo_image"
+             android:layout_margin="8dp"
+             android:layout_centerHorizontal="true"
+             android:textSize="16sp"
+             android:textColor="@android:color/white"
+             android:id="@+id/loading_text_state"
+             android:text="" />
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:layout_marginBottom="22dp"
+             android:layout_alignParentEnd="true"
+             android:textSize="22sp"
+             android:layout_marginRight="32dp"
+             android:textColor="@android:color/white"
+             android:layout_alignParentBottom="true"
+             android:id="@+id/loading_text"
+             android:textStyle="bold"
+             android:text="LOADING..." />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+         android:layout_height="match_parent"
+         android:layout_width="match_parent"
+         android:id="@+id/loading_screen_error">
+        
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:textSize="22sp"
+             android:layout_margin="32dp"
+             android:textColor="@android:color/white"
+             android:id="@+id/loading_screen_error_title"
+             android:textStyle="bold"
+             android:text="@string/diag_invalidfiles_title" />
+
+        <ListView
+             android:layout_height="match_parent"
+             android:layout_width="wrap_content"
+             android:layout_centerInParent="true"
+             android:layout_above="@+id/loading_screen_error_button_ok"
+             android:layout_below="@+id/loading_screen_error_title"
+             android:layout_margin="50dp"
+             android:id="@+id/loading_screen_error_list">
+
+        </ListView>
+
+        <Button
+             android:layout_height="wrap_content"
+             android:layout_width="match_parent"
+             android:id="@+id/loading_screen_error_button_ok"
+            android:layout_alignParentBottom="true"
+            android:textSize="14sp"
+             android:text="@android:string/ok" />
+
+    </RelativeLayout>
+
+</ViewFlipper>

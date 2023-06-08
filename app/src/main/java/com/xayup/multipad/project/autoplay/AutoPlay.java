@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 import androidx.annotation.IntegerRes;
+import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.project.autoplay.AutoPlayReader;
 import com.xayup.multipad.load.Project;
 import java.io.File;
@@ -25,8 +26,8 @@ public class AutoPlay implements Project.AutoPlayInterface {
     public AutoPlay(){
     }
     
-    public List<String[]> parse(File autoplay_file){
-        return new AutoPlayReader().read(autoplay_file, auto_play_map);
+    public void parse(File autoplay_file, LoadProject.LoadingProject mLoadingProject){
+        new AutoPlayReader().read(autoplay_file, auto_play_map, mLoadingProject);
     }
     
     @Override

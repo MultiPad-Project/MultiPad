@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import com.xayup.multipad.configs.GlobalConfigs;
+import com.xayup.multipad.pads.Pad;
+import com.xayup.multipad.pads.Render.MakePads;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,6 +20,7 @@ public class MakeGlows {
 	private final String glowInitId = "100";
 	private int posicao_inicial, glowSize, glowPadSize, screenH, screenW, glowChainSize, glowPivotXY, glowChainPivotXY,
 			padWH, centerPad, inicial_pos_y, inicial_pos_x;
+    public float glowIntensity, glowChainIntensity;
 	private Map<String, ImageView> glows;
 	private Activity context;
 	private ViewGroup.LayoutParams chainParams;
@@ -24,6 +28,8 @@ public class MakeGlows {
 
 	public MakeGlows(Activity context, int padWH, int glowPadSize, int glowChainSize, int screenW, int screenH) {
 		this.context = context;
+        this.glowIntensity = 180;
+        this.glowChainIntensity = 180;
 		this.glowPadSize = glowPadSize;
 		this.glowChainSize = glowChainSize;
 		this.padWH = padWH;
@@ -32,25 +38,25 @@ public class MakeGlows {
 		this.screenW = screenW;
 		this.chainParams = new RelativeLayout.LayoutParams(glowChainSize, glowChainSize);
 		this.padParams = new RelativeLayout.LayoutParams(glowPadSize, glowPadSize);
-		posicao_inicial = ((screenW - screenH) / 2) + ((screenH - PlayPads.display_height) / 2);
+		posicao_inicial = ((screenW - screenH) / 2) + ((screenH - GlobalConfigs.display_height) / 2);
 
 	}
 
 	//calculos
-	private void calc(int grid_size) {
+	private void calc(int grid_size, int layout_mode) {
 		padWH = grid_size;
 		centerPad = padWH/2;
-		posicao_inicial = ((screenW - screenH) / 2) + ((screenH - PlayPads.display_height) / 2);
+		posicao_inicial = ((screenW - screenH) / 2) + ((screenH - GlobalConfigs.display_height) / 2);
 		int pos_init = posicao_inicial;
-		if (PlayPads.mk2) {
+		if (layout_mode == Pad.PadLayoutMode.LAYOUT_MK2_MODE) {
 			pos_init -= padWH;
 		}
 		inicial_pos_x = pos_init + centerPad;
-		inicial_pos_y = centerPad + ((screenH - PlayPads.display_height) / 2);
+		inicial_pos_y = centerPad + ((screenH - GlobalConfigs.display_height) / 2);
 	}
 
 	public void resize(int grid_size) {
-		calc(grid_size);
+		// calc(grid_size);
 		int to_y = inicial_pos_y;
 		int to_x = inicial_pos_x;
 		for (int l = 0; l <= 9; l++) {
@@ -73,8 +79,8 @@ public class MakeGlows {
 		}
 	}
 
-	public void setOnGlows(int grid_size) {
-		calc(grid_size);
+	public void setOnGlows(int grid_size, int mode) {
+		calc(grid_size, mode);
 
 		if (glows != null) {
 			resize(grid_size);
@@ -101,7 +107,7 @@ public class MakeGlows {
 							glowImg.setId(Integer.parseInt(glowInitId + l + c));
 							glows.put(l + "" + c, glowImg);
 						}
-						if (PlayPads.mk2 && (l == 9 || c == 0)) {
+						if (true/*MK2 MODE*/ && (l == 9 || c == 0)) {
 							glowImg.setVisibility(View.GONE);
 							glowImg.setTag("hide");
 						}
@@ -135,7 +141,7 @@ public class MakeGlows {
 	public void mk2Glows(int newSize, int padSize, boolean mk2) {
 		centerPad = padSize / 2;
 		padWH = padSize;
-		calc(padSize);
+		//calc(padSize);
 		int to_x = inicial_pos_x;
 		int to_y = inicial_pos_y;
 		for (int l = 0; l <= 9; l++) {
@@ -161,16 +167,16 @@ public class MakeGlows {
 		}
 	}
 
-	public void changeCfg(int radius, float alpha, boolean chain) {
+	public void changeCfg(int radius, float alpha, boolean chain, int layout_mode) {
 		if (chain) {
-			PlayPads.glowChainIntensity = alpha;
+			glowChainIntensity = alpha;
 			glowChainSize = radius;
 		} else {
-			PlayPads.glowIntensity = alpha;
+			glowIntensity = alpha;
 			glowPadSize = radius;
 		}
 		glowSize = radius;
-		calc(padWH);
+		calc(padWH, layout_mode);
 
 		int to_x = inicial_pos_x;
 		int to_y = inicial_pos_y;
@@ -192,7 +198,7 @@ public class MakeGlows {
 					}
 					System.out.println(skip);
 					if (!skip) {
-						if (!PlayPads.mk2 && (key == "1" || key == "91"))
+						if (layout_mode != Pad.PadLayoutMode.LAYOUT_MK2_MODE && (key == "1" || key == "91"))
 							to_x += padWH;
 						glows.get(key).setVisibility(View.GONE);
 						glows.get(key).getLayoutParams().height = radius;

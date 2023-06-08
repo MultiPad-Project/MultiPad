@@ -27,15 +27,15 @@ public class AutoplayRecFunc {
 	public static void autoPlayRecord(int button_id){
 		String add = "d "+(SystemClock.uptimeMillis()-oldTime);
 		autoPlayRecord.add(add);		
-		final String[] button = ((String)""+button_id).split("");
+		final String[] button = (String.valueOf(button_id)).split("");
 		autoPlayRecord.add("t " + button[0] + " " + button[1]);		
 		oldTime = SystemClock.uptimeMillis();
 	}
-	public static void saveAutoplay(){
+	public static void saveAutoplay(String path){
 		try{
-			final File autoplay_file = new File("PROJECT CURRENT PATH", "autoplay");
+			final File autoplay_file = new File(path, "autoplay");
 			if(autoplay_file.exists()){
-				new File("PROJECT CURRENT PATH", "autoplay").renameTo(new File("project current path", "autoplay" + SystemClock.uptimeMillis()));
+				new File(path, "autoplay").renameTo(new File(path, "autoplay" + SystemClock.uptimeMillis()));
 			}
 			autoplay_file.createNewFile();
 			FileWriter save_autoplay_file = new  FileWriter(autoplay_file);
@@ -43,23 +43,6 @@ public class AutoplayRecFunc {
 				save_autoplay_file.write(line + "\n");
 			}
 			save_autoplay_file.close();
-			PlayPads.autoPlay = Readers.readAutoPlay(context, autoplay_file);
-			//PlayPads.autoPlayThread = new AutoPlayFunc(context);
-			PlayPads.progressAutoplay = context.findViewById(R.id.seekBarProgressAutoplay);
-			PlayPads.progressAutoplay.setMin(0);
-			PlayPads.progressAutoplay.setMax(PlayPads.autoPlay.size()-1);
-			PlayPads.progressAutoplay.setContext(context);
-			PlayPads.progressAutoplay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-				@Override
-				public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
-				}
-				@Override
-				public void onStartTrackingTouch(SeekBar arg0) {
-				}
-				@Override
-				public void onStopTrackingTouch(SeekBar arg0) {
-				}
-			});
 			} catch (IOException e){
 			Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
 		}

@@ -142,13 +142,6 @@ public class Readers {
                             .matches("([A-F]|[0-9]){6}")) {
                         return true;
                     } else {
-                        PlayPads.invalid_formats.add(
-                                "("
-                                        + fileName
-                                        + ") "
-                                        + context.getString(R.string.invalid_led_color)
-                                        + " "
-                                        + line.substring(line.lastIndexOf(" ") + 1));
                         return false;
                     }
                 } else {
@@ -199,13 +192,7 @@ public class Readers {
                             if (checkkeyLED(context, line, ledFile.getName(), 0)) {
                                 v_keys.add(line.replace(" ", ""));
                             } else {
-                                PlayPads.invalid_formats.add(
-                                        "("
-                                                + ledFile.getName()
-                                                + ") "
-                                                + context.getString(R.string.invalid_keyled)
-                                                + ": "
-                                                + orLine);
+                                
                             }
                         }
                     }
@@ -220,11 +207,6 @@ public class Readers {
                 } catch (IOException e) {
                 }
             } else {
-                PlayPads.invalid_formats.add(
-                        "("
-                                + ledFile.getName()
-                                + "): "
-                                + context.getString(R.string.invalid_led_file));
             }
         }
         return mapLedLED;
@@ -281,8 +263,6 @@ public class Readers {
                         line = chain + line;
                         autoplayLineList.add(line);
                     } else {
-                        PlayPads.invalid_formats.add(
-                                context.getString(R.string.invalid_autoplay) + " " + line);
                     }
                 }
                 line = autoplayReader.readLine();

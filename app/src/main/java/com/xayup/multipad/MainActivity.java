@@ -16,45 +16,52 @@ import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
+import com.xayup.debug.XLog;
 import com.xayup.filesexplorer.FileExplorerDialog;
+import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.layouts.PlayProject;
 import com.xayup.multipad.layouts.ProjectsBase;
 
+import com.xayup.multipad.layouts.loadscreen.LoadScreen;
 import java.io.*;
 import java.util.Map;
 
 public class MainActivity extends Activity {
+    private final Activity context = this;
 
-    String[] pastadeprojetos;
-    ListView listaprojetos;
-    Button button_floating_menu;
-    File info;
+    protected final byte INTENT_PALYPADS = 0;
 
-    public PendingIntent permissionIntent;
+    protected LoadScreen mLoadScreen;
 
-    public static String skinConfig;
-    public static boolean useUnipadFolderConfig;
-    public static boolean useSoundPool;
+    protected String[] pastadeprojetos;
+    protected ListView listaprojetos;
+    protected Button button_floating_menu;
+    protected File info;
 
-    public static int height;
-    public static int width;
-    public static int heightCustom;
+    protected PendingIntent permissionIntent;
 
-    private final Context context = this;
+    protected static String skinConfig;
+    protected static boolean useUnipadFolderConfig;
+    protected static boolean useSoundPool;
 
-    File rootFolder = new File(Environment.getExternalStorageDirectory() + "/MultiPad/Projects");
-    final String[] per =
+    protected static int height;
+    protected static int width;
+    protected static int heightCustom;
+
+    protected File rootFolder =
+            new File(Environment.getExternalStorageDirectory() + "/MultiPad/Projects");
+    protected final String[] per =
             new String[] {
                 "android.permission.MANAGER_EXTERNAL_STORAGE",
                 "android.permission.WRITE_EXTERNAL_STORAGE",
                 "android.permission.READ_EXTERNAL_STORAGE"
             };
 
-    private final String ACTION_USB_PERMISSION = "com.xayup.multipad.USB_PERMISSION";
-    final int STORAGE_PERMISSION = 1000;
-    private final int ANDROID_11_REQUEST_PERMISSION_AMF = 1001;
-    int android11per = 1;
-    String traceLog;
+    protected final String ACTION_USB_PERMISSION = "com.xayup.multipad.USB_PERMISSION";
+    protected final int STORAGE_PERMISSION = 1000;
+    protected final int ANDROID_11_REQUEST_PERMISSION_AMF = 1001;
+    protected int android11per = 1;
+    protected String traceLog;
 
     protected View decorView;
 
@@ -138,6 +145,14 @@ public class MainActivity extends Activity {
                     makeActivity(false);
                 }
                 break;
+            case INTENT_PALYPADS:
+                {
+                    mLoadScreen.getCurrentAnimation().setAnimationListener(null);
+                    mLoadScreen.hide(0);
+                    mLoadScreen.remove();
+                    mLoadScreen = null;
+                    break;
+                }
         }
     }
 
@@ -166,10 +181,9 @@ public class MainActivity extends Activity {
 
     public void makeActivity(boolean granted) {
         XayUpFunctions.hideSystemBars(getWindow());
-        SharedPreferences app_config = getSharedPreferences("app_configs", MODE_PRIVATE);
-        skinConfig = app_config.getString("skin", "default");
-        useUnipadFolderConfig = app_config.getBoolean("useUnipadFolder", false);
-        useSoundPool = app_config.getBoolean("use_soundpool", false);
+        GlobalConfigs.loadSharedPreferences(context);
+        skinConfig = GlobalConfigs.app_configs.getString("skin", context.getPackageName());
+        useUnipadFolderConfig = GlobalConfigs.app_configs.getBoolean("useUnipadFolder", false);
         Display.Mode display = getDisplay().getMode();
         registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
         // Display.Mode mode = Display.
@@ -201,23 +215,34 @@ public class MainActivity extends Activity {
                 "main",
                 new PlayProject() {
                     @Override
-                    public void onPreStartIntent() {
-                        View loading_screen = ((Activity) context).getLayoutInflater().inflate(R.layout.loading_screen, rootView, true).findViewById(R.id.loading_screen);
-                        Animation anim = AnimationUtils.loadAnimation(context, R.anim.fade_in_splash);
-                        loading_screen.startAnimation(anim);
-                        ((AnimationDrawable) ((ImageView)loading_screen.findViewById(R.id.loading_logo_image)).getBackground()).start();
+                    public void onPreLoadProject() {
+                        mLoadScreen = new LoadScreen(context, rootView);
+                        mLoadScreen.show(500);
                     }
+
                     @Override
-                    public void startIntent(Map<Byte, Object> project_properties) {
-                        context.startActivity(new Intent(context, PlayPads.class));
-                    }
-                    @Override
-                    public void onLoadedProject(Map<Byte, Object> project_properties){
-                        View loading_screen = ((Activity) context).getLayoutInflater().inflate(R.layout.loading_screen, rootView, true).findViewById(R.id.loading_screen);
-                        Animation anim = AnimationUtils.loadAnimation(context, R.anim.fade_out_splash);
-                        loading_screen.startAnimation(anim);
-                        ((AnimationDrawable) ((ImageView)loading_screen.findViewById(R.id.loading_logo_image)).getBackground()).stop();
-                        loading_screen.setVisibility(View.GONE);
+                    public void loadProject(String path) {
+                        mLoadScreen
+                                .getCurrentAnimation()
+                                .setAnimationListener(
+                                        new Animation.AnimationListener() {
+
+                                            @Override
+                                            public void onAnimationStart(Animation arg0) {}
+
+                                            @Override
+                                            public void onAnimationRepeat(Animation arg0) {}
+
+                                            @Override
+                                            public void onAnimationEnd(Animation arg0) {
+                                                Intent intent = new Intent(context, PlayPads.class);
+                                                XLog.v("properties", path + "");
+                                                context.startActivityForResult(
+                                                        intent.putExtra("project_path", path),
+                                                        INTENT_PALYPADS);
+                                                context.overridePendingTransition(0, 0);
+                                            }
+                                        });
                     }
                 });
         rootView.post(
@@ -396,7 +421,7 @@ public class MainActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                        
+
                         barTitle.setText(getString(R.string.skins));
                         swit.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
                         swit.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
@@ -508,4 +533,16 @@ public class MainActivity extends Activity {
             XayUpFunctions.hideSystemBars(getWindow());
         }
     }
+    
+    @Override
+    public void onPause(){
+        unregisterReceiver(usbReceiver);
+        super.onPause();
+    }
+    @Override
+    public void onResume(){
+        registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
+        super.onResume();
+    }
+    
 }

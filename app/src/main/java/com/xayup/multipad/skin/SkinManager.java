@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import com.xayup.multipad.pads.Render.SkinManager;
 import com.xayup.multipad.skin.SkinData;
 import com.xayup.multipad.skin.SkinProperties;
 import com.xayup.multipad.skin.SkinVariables;
@@ -23,6 +24,7 @@ public class SkinManager implements SkinVariables {
     public static Object[] getSkinInfo(String package_name, boolean and_resources) {
         setCurrentResource(package_name);
         Object[] skin = new Object[ARRAY_SIZE];
+        try {
         skin[SKIN_PACKAGE] = package_name;
         skin[SKIN_LOGO] =
                 mResources.getDrawable(
@@ -34,6 +36,9 @@ public class SkinManager implements SkinVariables {
                 mResources.getString(
                         mResources.getIdentifier("theme_author", "string", package_name));
         if (and_resources) skin[SKIN_RESOURCES] = mResources;
+            } catch (Resources.NotFoundException n){
+                SkinManager.getSkinInfo(context.getPackageName(), and_resources);
+            }
         return skin;
     }
     

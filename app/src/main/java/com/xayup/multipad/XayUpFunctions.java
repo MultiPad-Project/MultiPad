@@ -17,12 +17,12 @@ public class XayUpFunctions {
     public static final int TOUCH = 1;
     public static final int TOUCH_AND_RELEASE = 2;
     
-	private static int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+	protected static int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 			| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 			| View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
 	//Fullscreen AlertDialog
-	protected static void showDiagInFullscreen(AlertDialog theDialog) {
+	public static void showDiagInFullscreen(AlertDialog theDialog) {
 		theDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 		theDialog.getWindow().getDecorView().setSystemUiVisibility(flags);
@@ -30,7 +30,7 @@ public class XayUpFunctions {
 		theDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 	}
 
-	protected static void showDiagInFullscreen(ProgressDialog theDialog) {
+	public static void showDiagInFullscreen(ProgressDialog theDialog) {
 		theDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 		theDialog.getWindow().getDecorView().setSystemUiVisibility(flags);
@@ -38,7 +38,7 @@ public class XayUpFunctions {
 		theDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 	}
 
-	protected static void showDiagInFullscreen(Dialog theDialog) {
+	public static void showDiagInFullscreen(Dialog theDialog) {
 		theDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 		theDialog.getWindow().getDecorView().setSystemUiVisibility(flags);
@@ -47,7 +47,7 @@ public class XayUpFunctions {
 	}
 
 	//Fullscreen current window
-	protected static void hideSystemBars(Window getWindow) {
+	public static void hideSystemBars(Window getWindow) {
 		getWindow.getDecorView().setSystemUiVisibility(flags);
 		final View decorView = getWindow.getDecorView();
 		decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
@@ -68,8 +68,8 @@ public class XayUpFunctions {
 				context.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						if (PlayPads.glows != null)
-							PlayPads.glows.offGlows();
+						//if (PlayPads.glows != null)
+							//PlayPads.glows.offGlows();
 						root.getRootView().findViewById(fi).findViewById(R.id.led).setBackgroundColor(0);
 						try {
 							if (MidiStaticVars.midiInput != null) {

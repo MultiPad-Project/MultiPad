@@ -3,6 +3,7 @@ package com.xayup.multipad.project.keysounds;
 import android.app.Activity;
 import android.content.Context;
 import com.xayup.multipad.load.Project;
+import com.xayup.multipad.load.thread.LoadProject;
 import java.io.File;
 import java.util.List;
 
@@ -14,20 +15,19 @@ public class KeySounds implements Project.SoundInterface {
         
     }
     
-    public List<String[]> parse(File keysound_path, File sample_path){
-        List<String[]> problems = new KeySoundsReader().read(keysound_path, sample_path, mSoundLoader);
+    public void parse(File keysound_path, File sample_path, LoadProject.LoadingProject mLoadingProject){
+        new KeySoundsReader().read(keysound_path, sample_path, mSoundLoader, mLoadingProject);
         mSoundLoader.prepare();
-        return  problems;
     }
     
     @Override
-    public boolean playSound(Activity context, int chain, int pad) {
-        mSoundLoader.playSound(chain+""+pad);
+    public boolean playSound(Activity context, int chain, int x, int y) {
+        mSoundLoader.playSound(chain+""+((x*10)+y));
         return false;
     }
 
     @Override
-    public boolean stopSound(Activity context, int chain, int p) {
+    public boolean stopSound(Activity context, int chain, int x, int y) {
         mSoundLoader.stopSounds();
         return false;
     }
