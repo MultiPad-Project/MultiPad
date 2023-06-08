@@ -12,7 +12,9 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 import androidx.annotation.IntegerRes;
+import com.xayup.debug.XLog;
 import com.xayup.multipad.load.thread.LoadProject;
+import com.xayup.multipad.pads.PadPressCallInterface;
 import com.xayup.multipad.project.autoplay.AutoPlayReader;
 import com.xayup.multipad.load.Project;
 import java.io.File;
@@ -20,19 +22,35 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoPlay implements Project.AutoPlayInterface {
-    
-    List<int[]> auto_play_map;
-    
-    public AutoPlay(){
+    protected Activity context;
+    protected List<int[]> auto_play_map;
+    protected AtomicBoolean runnig;
+    protected boolean paused;
+    public AutoPlay(Activity context){
+        this.context = context;
+        runnig = new AtomicBoolean(false);
     }
     
     public void parse(File autoplay_file, LoadProject.LoadingProject mLoadingProject){
         new AutoPlayReader().read(autoplay_file, auto_play_map, mLoadingProject);
     }
-    
+
+    @Override
+    public boolean isRunning() {
+        return runnig.get();
+    }
+
     @Override
     public boolean startAutoPlay() {
-        return false;
+        XLog.v("Try start autoplay", "");
+
+        return true;
+    }
+
+    @Override
+    public boolean stopAutoPlay() {
+        runnig.set(false);
+        return true;
     }
 
     @Override
@@ -41,8 +59,13 @@ public class AutoPlay implements Project.AutoPlayInterface {
     }
 
     @Override
+    public boolean inPaused() {
+        return paused;
+    }
+
+    @Override
     public boolean resumeAutoPlay() {
-        return false;
+        return true;
     }
 
     @Override
@@ -54,4 +77,5 @@ public class AutoPlay implements Project.AutoPlayInterface {
     public float regressAutoPlay() {
         return 0;
     }
+
 }

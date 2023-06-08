@@ -69,12 +69,12 @@ public class LoadProject implements Runnable {
         }
         if (mProject.autoplay_path != null) {
             XLog.e("Try read autoplay", "Readings...");
-            mProject.mAutoPlay = new AutoPlay();
+            mProject.mAutoPlay = new AutoPlay(context);
             mProject.mAutoPlay.parse(mProject.autoplay_path, mLoadingProject);
         }
         if (mProject.keyleds_paths != null) {
             XLog.e("Try read keyleds", "Readings...");
-            mProject.mKeyLED = new KeyLED();
+            mProject.mKeyLED = new KeyLED(context);
             ledT1 = new ArrayList<>();
             ledT2 = new ArrayList<>();
             int ident = 0;

@@ -218,7 +218,7 @@ public class MakePads {
                                         (byte) r, (byte) c, PadInfo.PadInfoIdentifier.LED
                                     }));
                     PadID.putId(r, c);
-                    XLog.v("Pad ID", PadID.getId(r, c)+"");
+                    pad.setId(PadID.getId(r, c));
                 }
                 mGrid.addView(pad, mPadParams);
             }

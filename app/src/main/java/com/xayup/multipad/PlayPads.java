@@ -1,5 +1,6 @@
 package com.xayup.multipad;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -58,7 +59,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
     Color cor;
     LoadScreen mLoadScreen;
-    String project_path;
+    PadPress mPadPress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,6 +101,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
         protected boolean show_project_erros = false;
         protected boolean hide_load_screen = false;
+        protected Pad pad;
 
         public CreateUi(Activity context) {
             this.root_pads = context.findViewById(R.id.contAllPads);
@@ -136,6 +138,11 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
                         @Override
                         public void onFinishLoadProject() {
+                            /* Press Pads */
+                            mPadPress = new PadPress();
+                            if(mKeyLED != null) mPadPress.calls.add(mKeyLED);
+                            if(mKeySounds != null) mPadPress.calls.add(mKeySounds);
+                            /* Hide Load Screen */
                             hide_load_screen = true;
                             show_project_erros = (project_loaded_problems.size() > 0);
                             if (show_project_erros) {
@@ -169,17 +176,19 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                             }
                                         });
                             } else {
-                                mLoadScreen.hide(500);
+                                context.runOnUiThread(
+                                        ()->mLoadScreen.hide(500));
+
                             }
                         }
                     });
-            Pad pads = new Pad(context, padInteraction());
+            pad = new Pad(context, padInteraction());
             root_pads.post(
                     () -> {
                         int h = root_pads.getMeasuredHeight();
                         int w = root_pads.getMeasuredWidth();
                         last_pads_grid =
-                                pads.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
+                                pad.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
                         ViewGroup virtual_launchpad = last_pads_grid.getRootPads();
                         GridLayout launchpad_grid = last_pads_grid.getGridPads();
                         root_pads.addView(virtual_launchpad, new RelativeLayout.LayoutParams(w, h));
@@ -203,14 +212,8 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                     return new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Toast.makeText(
-                                                            context,
-                                                            "row: "
-                                                                    + mPadInfo.row
-                                                                    + " colum: "
-                                                                    + mPadInfo.colum,
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
+                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
+                                            pad.watermark_press = !pad.watermark_press;
                                         }
                                     };
                                 }
@@ -219,14 +222,16 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                     return new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Toast.makeText(
-                                                            context,
-                                                            "row: "
-                                                                    + mPadInfo.row
-                                                                    + " colum: "
-                                                                    + mPadInfo.colum,
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
+                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
+                                            if(mKeyLED != null) {
+                                                if (mPadPress.calls.contains(mKeyLED)) {
+                                                    mPadPress.calls.remove(mKeyLED);
+                                                    if (mKeySounds != null)
+                                                        mKeySounds.stopSound(pad.current_chain, mPadInfo.row, mPadInfo.colum);
+                                                } else {
+                                                    mPadPress.calls.add(mKeyLED);
+                                                }
+                                            }
                                         }
                                     };
                                 }
@@ -235,14 +240,14 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                     return new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Toast.makeText(
-                                                            context,
-                                                            "row: "
-                                                                    + mPadInfo.row
-                                                                    + " colum: "
-                                                                    + mPadInfo.colum,
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
+                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
+                                            if (mAutoPlay != null) {
+                                                if(mAutoPlay.isRunning()){
+                                                    mAutoPlay.stopAutoPlay();
+                                                } else {
+                                                    mAutoPlay.startAutoPlay();
+                                                }
+                                            }
                                         }
                                     };
                                 }
@@ -251,14 +256,10 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                     return new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Toast.makeText(
-                                                            context,
-                                                            "row: "
-                                                                    + mPadInfo.row
-                                                                    + " colum: "
-                                                                    + mPadInfo.colum,
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
+                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
+                                            if (mAutoPlay != null && mAutoPlay.isRunning()){
+                                                mAutoPlay.regressAutoPlay();
+                                            }
                                         }
                                     };
                                 }
@@ -267,14 +268,14 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                     return new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Toast.makeText(
-                                                            context,
-                                                            "row: "
-                                                                    + mPadInfo.row
-                                                                    + " colum: "
-                                                                    + mPadInfo.colum,
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
+                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
+                                            if (mAutoPlay != null){
+                                                if (mAutoPlay.inPaused()) {
+                                                    mAutoPlay.pauseAutoPlay();
+                                                } else {
+                                                    mAutoPlay.resumeAutoPlay();
+                                                }
+                                            }
                                         }
                                     };
                                 }
@@ -283,46 +284,29 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                     return new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Toast.makeText(
-                                                            context,
-                                                            "row: "
-                                                                    + mPadInfo.row
-                                                                    + " colum: "
-                                                                    + mPadInfo.colum,
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
+                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
+                                            if (mAutoPlay != null && mAutoPlay.isRunning()){
+                                                mAutoPlay.advanceAutoPlay();
+                                            }
                                         }
                                     };
                                 }
                             case 7:
-                                {
-                                    return new OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Toast.makeText(
-                                                            context,
-                                                            "row: "
-                                                                    + mPadInfo.row
-                                                                    + " colum: "
-                                                                    + mPadInfo.colum,
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
-                                        }
-                                    };
-                                }
+                            {
+                                return new OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
+                                    }
+                                };
+                            }
                             case 8:
                                 {
                                     return new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Toast.makeText(
-                                                            context,
-                                                            "row: "
-                                                                    + mPadInfo.row
-                                                                    + " colum: "
-                                                                    + mPadInfo.colum,
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
+                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
+                                            pad.watermark = !pad.watermark;
                                         }
                                     };
                                 }
@@ -331,14 +315,8 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         return new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            Toast.makeText(
-                                                            context,
-                                                            "row: "
-                                                                    + mPadInfo.row
-                                                                    + " colum: "
-                                                                    + mPadInfo.colum,
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
+                                            XLog.v("Pad press", "X: " + mPadInfo.row + ",Y: " + mPadInfo.colum);
+                                            mPadPress.call(pad.current_chain, mPadInfo.row, mPadInfo.colum);
                                         }
                                     };
                     }
@@ -348,12 +326,15 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
         }
     }
     
-    public class PadPress {
-        List<PadPressCallInterface> calls;
-        public PadPress(){
+    public class PadPress implements PadPressCallInterface {
+        public List<PadPressCallInterface> calls;
+        public PadPress() {
             calls = new ArrayList<>();
         }
-        for(PadPressCallInterface call : )
+        @Override
+        public void call(int chain, int x, int y) {
+            for (PadPressCallInterface mCall : calls) mCall.call(chain, x, y);
+        }
     }
 
     @Override
@@ -390,7 +371,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                     }
                     break;
                 case PICK_LOGO_IMG:
-                    ((ImageView) PlayPads.this.findViewById(9).findViewById(R.id.phantom))
+                    ((ImageView) PlayPads.this.findViewById((int) 9).findViewById(R.id.phantom))
                             .setImageBitmap(imgdata);
                     break;
                 case PICK_BACKGROUND_IMG:
@@ -403,7 +384,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                     }
                     break;
                 case PICK_LOGO_BG_IMG:
-                    ((ImageView) PlayPads.this.findViewById(9).findViewById(R.id.pad))
+                    ((ImageView) PlayPads.this.findViewById((int) 9).findViewById(R.id.pad))
                             .setImageBitmap(imgdata);
                     break;
             }

@@ -66,9 +66,12 @@ public class Project {
     public List<String> project_loaded_problems;
 
     public interface AutoPlayInterface {
+        public boolean isRunning();
         public boolean startAutoPlay();
+        public boolean stopAutoPlay();
 
         public boolean pauseAutoPlay();
+        public boolean inPaused();
 
         public boolean resumeAutoPlay();
 
@@ -83,17 +86,17 @@ public class Project {
     }
 
     public interface KeyLEDInterface {
-        public boolean showLed(Activity context, int chain, int x, int y);
+        public boolean showLed(int chain, int x, int y);
 
-        public boolean breakLed(Activity context, int chain, int x, int y);
+        public boolean breakLed(int chain, int x, int y);
 
-        public boolean breakAll(Activity context);
+        public boolean breakAll();
     }
 
     public interface SoundInterface {
-        public boolean playSound(Activity context, int chain, int x, int y);
+        public boolean playSound(int chain, int x, int y);
 
-        public boolean stopSound(Activity context, int chain, int x, int y);
+        public boolean stopSound(int chain, int x, int y);
     }
     
     public void readInProject(boolean[] flags) {        

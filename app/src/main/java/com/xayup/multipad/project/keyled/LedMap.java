@@ -39,7 +39,7 @@ public class LedMap implements KeyLEDReader.KeyLEDMap {
     }
     @Override
     public int[/*FRAMES*/][/*TYPE, VALUE, PAD_X, PAD_Y*/] getLedData(int chain, int x, int y, int sequence){
-        return led_map[chain][x][y][sequence];
+        return (led_map[chain][x][y].length > 0) ? led_map[chain][x][y][sequence] : null;
     }
     @Override
     public int framesCount(int chain, int x, int y, int sequence){

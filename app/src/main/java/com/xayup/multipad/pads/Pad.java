@@ -21,6 +21,9 @@ public class Pad {
     public List<Pads> mGridViews;
     public SkinManager mSkinManager;
     public PadInteraction mPadInteraction;
+    public int current_chain = 1;
+    public boolean watermark_press = false;
+    public boolean watermark = true;
     
     public interface PadLayoutMode {
         public int LAYOUT_PRO_MODE = 0;
@@ -44,7 +47,6 @@ public class Pad {
     
     public class Pads implements PadsLayoutInterface, SkinSupport {
         public int layout_mode;
-        public boolean press_watermark, led, watermark;
         protected SkinProperties mSkinProperties;
         protected PadSkinData mSkinData;
         protected ViewGroup mRootPads;

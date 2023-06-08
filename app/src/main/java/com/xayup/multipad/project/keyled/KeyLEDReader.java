@@ -103,6 +103,10 @@ public class KeyLEDReader implements MapData {
                         frames[f][FRAME_VALUE] = Integer.valueOf(chars[3]);
                     } else if (chars[1].matches("mc|\\*")) {
                         int mc = Integer.valueOf(chars[2]);
+                        if (mc > 24){
+                            frames[f][FRAME_PAD_X] = 0;
+                            frames[f][FRAME_PAD_Y] = mc - 23;
+                        } else
                         if (mc > 16) {
                             frames[f][FRAME_PAD_X] = 25 - mc;
                             frames[f][FRAME_PAD_Y] = 0;
