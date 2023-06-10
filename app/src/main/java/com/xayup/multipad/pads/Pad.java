@@ -24,7 +24,7 @@ public class Pad {
     public int current_chain = 1;
     public boolean watermark_press = false;
     public boolean watermark = true;
-    
+
     public interface PadLayoutMode {
         public int LAYOUT_PRO_MODE = 0;
         public int LAYOUT_MK2_MODE = 1;
@@ -40,11 +40,12 @@ public class Pad {
     }
 
     public Pads newPads(String skin_package, int rows, int colums) {
-        Pads pads = new Pads(mSkinManager.getPropertiesFromPackage(skin_package, true), rows, colums);
+        Pads pads =
+                new Pads(mSkinManager.getPropertiesFromPackage(skin_package, true), rows, colums);
         mGridViews.add(pads);
         return pads;
     }
-    
+
     public class Pads implements PadsLayoutInterface, SkinSupport {
         public int layout_mode;
         protected SkinProperties mSkinProperties;
@@ -58,17 +59,18 @@ public class Pad {
             mSkinManager.loadSkin(skin, mSkinData, null);
             this.mRootPads = new MakePads(context, rows, colums).make(mSkinData);
             this.mGrid = (GridLayout) mRootPads.getChildAt(1);
-            
+
             setPadsFunctions();
         }
-        
-        protected void setPadsFunctions(){
-            forAllPads(new Operator(){
-                @Override
-                    public void run(ViewGroup pad){
-                        pad.setOnClickListener(mPadInteraction.onPadClick(pad));
-                    }
-            });
+
+        protected void setPadsFunctions() {
+            forAllPads(
+                    new Operator() {
+                        @Override
+                        public void run(ViewGroup pad) {
+                            pad.setOnClickListener(mPadInteraction.onPadClick(pad));
+                        }
+                    });
         }
 
         public void forAllPads(Operator ops) {
@@ -111,34 +113,61 @@ public class Pad {
                                         public void run(ViewGroup pad) {
                                             for (int ii = 0; ii < pad.getChildCount(); ii++) {
                                                 View view = pad.getChildAt(ii);
-                                                String tag = (String) view.getTag();
-                                                if (tag.contains("_btn")) {
-                                                    if (tag.lastIndexOf("_") < tag.length()) {
-                                                        ((ImageView) view)
-                                                                .setImageDrawable(
-                                                                        mSkinData.draw_btn);
-                                                    } else {
-                                                        ((ImageView) view)
-                                                                .setImageDrawable(
-                                                                        mSkinData.draw_btn_);
-                                                    }
-                                                } else if (tag.contains("_phantom")) {
-                                                    if (tag.lastIndexOf("_") < tag.length()) {
-                                                        ((ImageView) view)
-                                                                .setImageDrawable(
-                                                                        mSkinData.draw_phantom);
-                                                    } else {
-                                                        ((ImageView) view)
-                                                                .setImageDrawable(
-                                                                        mSkinData.draw_phantom_);
-                                                    }
-                                                } else if (tag.contains("_chainled")) {
-                                                    ((ImageView) view)
-                                                            .setImageDrawable(
-                                                                    mSkinData.draw_chainled);
-                                                } else if (tag.contains("_logo")) {
-                                                    ((ImageView) view)
-                                                            .setImageDrawable(mSkinData.draw_logo);
+                                                MakePads.PadInfo mPadInfo = (MakePads.PadInfo) view.getTag();
+                                                if (mPadInfo == null)  continue;
+                                                switch (mPadInfo.type) {
+                                                    case MakePads.PadInfo.PadInfoIdentifier.BTN:
+                                                        {
+                                                            ((ImageView) view).setImageDrawable(null);
+                                                            ((ImageView) view)
+                                                                    .setImageDrawable(
+                                                                            mSkinData.draw_btn);
+                                                            break;
+                                                        }
+                                                    case MakePads.PadInfo.PadInfoIdentifier.BTN_:
+                                                        {
+                                                            ((ImageView) view).setImageDrawable(null);
+                                                            ((ImageView) view)
+                                                                    .setImageDrawable(
+                                                                            mSkinData.draw_btn_);
+                                                            break;
+                                                        }
+                                                    case MakePads.PadInfo.PadInfoIdentifier.PHANTOM:
+                                                        {    
+                                                            ((ImageView) view).setImageDrawable(null);
+                                                            ((ImageView) view)
+                                                                    .setImageDrawable(
+                                                                            mSkinData.draw_phantom);
+                                                            break;
+                                                        }
+                                                    case MakePads.PadInfo.PadInfoIdentifier
+                                                            .PHANTOM_:
+                                                        {
+                                                            ((ImageView) view).setImageResource(0);
+                                                            ((ImageView) view)
+                                                                    .setImageDrawable(
+                                                                            mSkinData
+                                                                                    .draw_phantom_);
+                                                            break;
+                                                        }
+                                                    case MakePads.PadInfo.PadInfoIdentifier
+                                                            .CHAIN_LED:
+                                                        {
+                                                            ((ImageView) view).setImageDrawable(null);
+                                                            ((ImageView) view)
+                                                                    .setImageDrawable(
+                                                                            mSkinData
+                                                                                    .draw_chainled);
+                                                            break;
+                                                        }
+                                                    case MakePads.PadInfo.PadInfoIdentifier.LOGO:
+                                                        {
+                                                            ((ImageView) view).setImageDrawable(null);
+                                                            ((ImageView) view)
+                                                                    .setImageDrawable(
+                                                                            mSkinData.draw_logo);
+                                                            break;
+                                                        }
                                                 }
                                             }
                                         }

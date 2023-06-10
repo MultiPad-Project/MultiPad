@@ -31,6 +31,8 @@ public class GlobalConfigs {
     public static boolean use_old_main_layout = false;
     public static int display_height;
     public static int display_width;
+    public static boolean use_unipad_colors = false;
+    public static String color_table_file_dir = "";
 
     /* Persistent */
 
@@ -53,22 +55,19 @@ public class GlobalConfigs {
         public boolean slideMode;
         public boolean hide_buttoms_b;
         public boolean glow_enabled;
-        public static String skin_package;
+        public static String skin_package = "com.xayup.multipad";
+        public static String current_table = "EyeDrop_default.ct";
+        public static String default_table_name = "EyeDrop_default.ct";
+        public String table_path = DefaultConfigs.MULTIPAD_PATH;
         /* Widgets */
         public VerticalSeekBar progressAutoplay;
         public Button stopRecAutoplay;
-        
-        
     }
 
-    Map<String, Object> last_changes = new HashMap<>();
-
-    public void saveAllLAstChanges() {
-        if (last_changes.isEmpty()) return;
-        for (String key : last_changes.keySet()) {
-            if (last_changes.get(key) instanceof String) {}
-            if (last_changes.get(key) instanceof Boolean) {}
-            if (last_changes.get(key) instanceof Integer) {}
-        }
+    public interface DefaultConfigs {
+        public String MULTIPAD_PATH = Environment.getExternalStorageDirectory() + "/MultiPad";
+        public String UNIPAD_PATH = Environment.getExternalStorageDirectory() + "/Unipad"; //Android 10--
+        public String COLOR_TABLE_PATH = MULTIPAD_PATH + "/LCT";
+        public String PROJECTS_PATH = MULTIPAD_PATH + "/Projects";
     }
 }

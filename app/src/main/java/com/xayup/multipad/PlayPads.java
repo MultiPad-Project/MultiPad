@@ -50,6 +50,7 @@ import com.xayup.multipad.pads.PadInteraction;
 import com.xayup.multipad.pads.Pad;
 import com.xayup.multipad.pads.PadPressCallInterface;
 import com.xayup.multipad.pads.Render.MakePads;
+import com.xayup.multipad.project.keyled.Colors;
 import java.io.*;
 import java.util.*;
 
@@ -57,7 +58,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
     public Activity context = this;
 
-    Color cor;
+    Colors colors;
     LoadScreen mLoadScreen;
     PadPress mPadPress;
 
@@ -195,8 +196,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         ViewGroup.LayoutParams rLayout = launchpad_grid.getLayoutParams();
                         rLayout.height = h;
                         rLayout.width = h;
-
-                        //if (!show_project_erros && hide_load_screen) mLoadScreen.hide(500);
+                        last_pads_grid.applySkin(pad.mSkinManager.getPropertiesFromPackage(GlobalConfigs.PlayPadsConfigs.skin_package, true));
                     });
         }
 

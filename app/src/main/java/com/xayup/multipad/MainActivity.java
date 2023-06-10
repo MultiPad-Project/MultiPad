@@ -184,21 +184,22 @@ public class MainActivity extends Activity {
         GlobalConfigs.loadSharedPreferences(context);
         skinConfig = GlobalConfigs.app_configs.getString("skin", context.getPackageName());
         useUnipadFolderConfig = GlobalConfigs.app_configs.getBoolean("useUnipadFolder", false);
+        GlobalConfigs.use_unipad_colors = false;
         Display.Mode display = getDisplay().getMode();
         registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
-        // Display.Mode mode = Display.
         if (display.getPhysicalHeight() < display.getPhysicalWidth()) {
             height = display.getPhysicalHeight();
-            width = display.getPhysicalWidth(); // getWindow().getDecorView().getWidth();
+            width = display.getPhysicalWidth();
         } else {
-            height = display.getPhysicalWidth(); // getWindow().getDecorView().getWidth();
+            height = display.getPhysicalWidth();
             width = display.getPhysicalHeight();
         }
         heightCustom = height;
 
         if (useUnipadFolderConfig) {
-            rootFolder = new File(Environment.getExternalStorageDirectory() + "/Unipad");
-            VariaveisStaticas.use_unipad_folder = true;
+            rootFolder = new File(GlobalConfigs.DefaultConfigs.UNIPAD_PATH);
+        } else {
+            rootFolder = new File(GlobalConfigs.DefaultConfigs.PROJECTS_PATH);
         }
         if (granted) {
             if (!rootFolder.exists()) {
@@ -533,16 +534,16 @@ public class MainActivity extends Activity {
             XayUpFunctions.hideSystemBars(getWindow());
         }
     }
-    
+
     @Override
-    public void onPause(){
+    public void onPause() {
         unregisterReceiver(usbReceiver);
         super.onPause();
     }
+
     @Override
-    public void onResume(){
+    public void onResume() {
         registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
         super.onResume();
     }
-    
 }

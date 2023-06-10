@@ -29,11 +29,13 @@ public class KeyLED extends Project implements MapData, Project.KeyLEDInterface,
     protected AtomicBoolean runnig;
     protected Thread led_thread;
     protected List<List<int[]>> leds_frames;
+    protected Colors colors;
     public KeyLED(Activity context){
         this.context = context;
         this.mLedMap = new LedMap();
         this.runnig = new AtomicBoolean(false);
         this.leds_frames = new ArrayList<>();
+        this.colors = new Colors(context);
     }
     
     public void parse(File keyled_file, LoadProject.LoadingProject mLoadingProject){
@@ -88,11 +90,14 @@ public class KeyLED extends Project implements MapData, Project.KeyLEDInterface,
                         context.runOnUiThread(() -> {
                             try {
                                 Log.v("ID", String.valueOf(MakePads.PadID.getId(led_data[FRAME_PAD_X], led_data[FRAME_PAD_Y])));
-                                context.findViewById(MakePads.PadID.getId(led_data[FRAME_PAD_X], led_data[FRAME_PAD_Y])).findViewById(R.id.led).setBackgroundColor(Color.RED);
+                                context.findViewById(MakePads.PadID.getId(led_data[FRAME_PAD_X], led_data[FRAME_PAD_Y])).findViewById(R.id.led).setBackgroundColor(colors.colorFromVelocity((byte) led_data[FRAME_VALUE]));
                             } catch (NullPointerException n){
                                 Log.e("KeyLED", "Null led frame?");
                             }
                             });
+                    } else {
+                        long time = SystemClock.uptimeMillis() + led_data[FRAME_VALUE];
+                        while(SystemClock.uptimeMillis() < time){}
                     }
                 }
             }

@@ -10,7 +10,6 @@
          android:layout_height="match_parent"
          android:layout_width="match_parent"
          android:scaleType="fitXY"
-         android:src="@drawable/btn"
          android:id="@+id/pad" />
 
     <View
@@ -23,20 +22,18 @@
          android:layout_height="match_parent"
          android:layout_width="match_parent"
          android:scaleType="fitXY"
-         android:src="@drawable/btn_"
          android:id="@+id/press" />
 
     <ImageView
          android:layout_height="match_parent"
          android:layout_width="match_parent"
          android:scaleType="fitXY"
-         android:background="@drawable/phantom"
          android:id="@+id/phantom" />
 
     <TextView
          android:layout_height="match_parent"
          android:layout_width="match_parent"
          android:gravity="center|center_vertical|center_horizontal"
-         android:id="@+id/map" />
+         android:id="@+id/touch_map" />
 
 </RelativeLayout>

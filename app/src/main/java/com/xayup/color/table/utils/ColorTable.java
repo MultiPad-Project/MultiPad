@@ -4,16 +4,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
+import com.xayup.debug.XLog;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +42,9 @@ public class ColorTable extends TableAdapter {
         for (int i = 0; i < color_table.length; i++) {
             if (table[i] != null) {
                 Color.RGBToHSV(table[i][vR], table[i][vG], table[i][vB], hsv);
-                colors[i] = Color.argb((int) hsv[2]*255, table[i][vR], table[i][vG], table[i][vB]);
+                colors[i] =
+                        Color.argb((int) (hsv[2] * 255), table[i][vR], table[i][vG], table[i][vB]);
+                XLog.v("HSV","Result: " + String.valueOf((int) hsv[2] * 255)+" "+ String.valueOf(hsv[0]) +" "+ String.valueOf(hsv[1]) +" "+ String.valueOf(hsv[2]));
             }
         }
         return colors;
@@ -57,17 +63,26 @@ public class ColorTable extends TableAdapter {
 
     public int[][] parse(File table) {
         table_file = table;
-        if (table_file.getName().substring(table_file.getName().length() - 3).equals(".ct")) {
-            return parseCT();
-        } else {
-            return parseAnother();
+        try {
+            FileReader fr = new FileReader(table);
+            BufferedReader br = new BufferedReader(fr);
+            int[][] tmp;
+            if (table_file.getName().substring(table_file.getName().length() - 3).equals(".ct")) {
+                tmp = parseCT(br);
+            } else {
+                tmp = parseAnother(br);
+            }
+            br.close();
+            fr.close();
+            return tmp;
+        } catch (IOException io) {
+            Log.e("Parse file error", io.toString());
+            return null;
         }
     }
 
-    public int[][] parseAnother() {
+    public int[][] parseAnother(BufferedReader bReader) {
         try {
-            FileReader fReader = new FileReader(table_file);
-            BufferedReader bReader = new BufferedReader(fReader);
             String line = bReader.readLine();
             String to_value = "";
             int value = 0;
@@ -95,8 +110,6 @@ public class ColorTable extends TableAdapter {
                 }
                 line = bReader.readLine();
             }
-            bReader.close();
-            fReader.close();
         } catch (IOException f) {
             System.out.println(f);
             return null;
@@ -106,17 +119,15 @@ public class ColorTable extends TableAdapter {
         } catch (NumberFormatException n) {
             System.out.println(n);
             return null;
-        } catch (ArrayIndexOutOfBoundsException a){
+        } catch (ArrayIndexOutOfBoundsException a) {
             System.out.println(a);
             return null;
         }
         return color_table;
     }
 
-    protected int[][] parseCT() {
+    public int[][] parseCT(BufferedReader bReader) {
         try {
-            FileReader fReader = new FileReader(table_file);
-            BufferedReader bReader = new BufferedReader(fReader);
             String line = bReader.readLine();
             int id = 0;
             int[] id_rgb = null;
@@ -137,8 +148,6 @@ public class ColorTable extends TableAdapter {
                 }
                 line = bReader.readLine();
             }
-            bReader.close();
-            fReader.close();
         } catch (IOException f) {
             System.out.println(f);
             return null;
@@ -148,7 +157,7 @@ public class ColorTable extends TableAdapter {
         } catch (NumberFormatException n) {
             System.out.println(n);
             return null;
-        } catch (ArrayIndexOutOfBoundsException a){
+        } catch (ArrayIndexOutOfBoundsException a) {
             System.out.println(a);
             return null;
         }
@@ -207,12 +216,12 @@ public class ColorTable extends TableAdapter {
             if (table_file.delete()) {
                 String new_name = name;
                 if (format == CT_FORMAT) {
-                    if(new_name.lastIndexOf(CT_FILE_FORMAT) == -1){
+                    if (new_name.lastIndexOf(CT_FILE_FORMAT) == -1) {
                         new_name += CT_FILE_FORMAT;
                     }
                 } else if (format == RETINA_FORMAT) {
                     int index = 0;
-                    if((index = new_name.lastIndexOf(".")) != -1){
+                    if ((index = new_name.lastIndexOf(".")) != -1) {
                         new_name = new_name.replace(new_name.substring(index), "");
                     }
                 }

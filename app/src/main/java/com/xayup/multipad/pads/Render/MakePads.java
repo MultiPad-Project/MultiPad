@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.R;
 import com.xayup.multipad.pads.PadInterface;
@@ -20,21 +21,22 @@ public class MakePads {
     protected GridLayout.LayoutParams mPadParams;
     protected Matrix chain_top_matrix, chain_bottom_matrix;
 
-    public class PadInfo {
-        public class PadInfoIdentifier {
-            public static final byte CHAIN_TOP = 0;
-            public static final byte CHAIN_LEFT = 1;
-            public static final byte CHAIN_RIGHT = 2;
-            public static final byte CHAIN_BOTTOM = 3;
-            public static final byte PAD = 4;
-            public static final byte PHANTOM = 5;
-            public static final byte PHANTOM_ = 6;
-            public static final byte BTN = 7;
-            public static final byte BTN_ = 8;
-            public static final byte PAD_LOGO = 9;
-            public static final byte LOGO = 10;
-            public static final byte CHAIN_LED = 11;
-            public static final byte LED = 12;
+    public static class PadInfo {
+        public interface PadInfoIdentifier {
+            public final byte CHAIN_TOP = 0;
+            public final byte CHAIN_LEFT = 1;
+            public final byte CHAIN_RIGHT = 2;
+            public final byte CHAIN_BOTTOM = 3;
+            public final byte PAD = 4;
+            public final byte PHANTOM = 5;
+            public final byte PHANTOM_ = 6;
+            public final byte BTN = 7;
+            public final byte BTN_ = 8;
+            public final byte PAD_LOGO = 9;
+            public final byte LOGO = 10;
+            public final byte CHAIN_LED = 11;
+            public final byte LED = 12;
+            public final byte TOUCH_MAP = 13;
         }
 
         public final byte row;
@@ -74,6 +76,7 @@ public class MakePads {
     public ViewGroup make(PadSkinData mSkinData) {
         View led;
         ImageView btn, btn_, phantom, playbg;
+        TextView touch_map;
         RelativeLayout grid_root = new RelativeLayout(context);
         GridLayout mGrid = new GridLayout(context);
         playbg = new ImageView(context);
@@ -104,11 +107,10 @@ public class MakePads {
                     btn_.setVisibility(View.INVISIBLE);
                     phantom = pad.findViewById(R.id.phantom);
                     led = pad.findViewById(R.id.led);
-                    btn.setImageDrawable(mSkinData.draw_btn);
-                    btn_.setImageDrawable(mSkinData.draw_btn_);
+                    touch_map = pad.findViewById(R.id.touch_map);
+                    touch_map.setTag(new PadInfo(new byte[]{(byte) r, (byte) c, PadInfo.PadInfoIdentifier.TOUCH_MAP}));
                     if (r == 0 || r == 9 || c == 0 || c == 9) {
                         if (r == 0 && c == 9) {
-                            phantom.setImageDrawable(mSkinData.draw_logo);
                             pad.setTag(
                                     new PadInfo(
                                             new byte[] {
@@ -175,7 +177,6 @@ public class MakePads {
                                             (byte) r, (byte) c, PadInfo.PadInfoIdentifier.PAD
                                         }));
                         if ((r == 4 || r == 5) && (c == 4 || c == 5)) {
-                            phantom.setImageDrawable(mSkinData.draw_phantom_);
                             phantom.setTag(
                                     new PadInfo(
                                             new byte[] {
@@ -192,7 +193,6 @@ public class MakePads {
                                 phantom.setScaleY(phantom.getScaleY() * -1);
                             }
                         } else {
-                            phantom.setImageDrawable(mSkinData.draw_phantom);
                             phantom.setTag(
                                     new PadInfo(
                                             new byte[] {

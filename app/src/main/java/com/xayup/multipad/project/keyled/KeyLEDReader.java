@@ -74,8 +74,8 @@ public class KeyLEDReader implements MapData {
                 lines_loop:
                 for (int f = 0; f < led_lines.size(); f++) {
                     String[] chars = led_lines.get(f).split("\\s");
-                    XLog.v("Led Line: ", ">" + led_lines.get(f) + "<");
-                    if (chars.length < 4) break;
+                    //XLog.v("Led Line: ", ">" + led_lines.get(f) + "<");
+                    if (chars.length < 2) continue lines_loop;
                     switch (chars[0]) {
                         case "delay":
                         case "d":
