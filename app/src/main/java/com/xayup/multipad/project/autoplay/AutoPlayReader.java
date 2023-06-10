@@ -4,13 +4,14 @@ import android.app.Activity;
 import com.google.common.io.Files;
 import com.xayup.multipad.load.ProjectMapData;
 import com.xayup.multipad.load.thread.LoadProject;
+import com.xayup.multipad.project.MapData;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AutoPlayReader extends ProjectMapData {
+public class AutoPlayReader implements MapData {
     // Algoritimo autoPlay
     private boolean checkAutoPlayFormat(String line) {
         switch (line.toLowerCase().substring(0, 1)) {
@@ -29,86 +30,54 @@ public class AutoPlayReader extends ProjectMapData {
      * @param aut_play_map List to be interacted
      * @return List of possible errors
      */
-    public void read(File autoPlay, List<int[]> auto_play_map, LoadProject.LoadingProject mLoadingProject) {
+    public void read(
+            File autoPlay, List<int[]> auto_play_map, LoadProject.LoadingProject mLoadingProject) {
         try {
             List<String> keys = Files.readLines(autoPlay, StandardCharsets.UTF_8);
             mLoadingProject.onStartReadFile(autoPlay.getName());
-            String value;
-            int index = 0;
-            int[] autoplay_map;
-            int line_number = 0;
-            next_frame:
-            for (String line : keys) {
-                line_number++;
-                char[] chars = line.toCharArray();
-                autoplay_map = new int[2];
-                value = "";
-                for (int i = 0; i < chars.length; i++) {
-                    char c = chars[i];
-                    if (Character.isDigit(c)) {
-                        value += Character.toString(c);
-                    } else {
-                        if (Character.toString(c).equals(" ")) {
-                            if (index == 0) {
-                                switch (value.toLowerCase()) {
-                                    case "chain":
-                                    case "c":
-                                        {
-                                            autoplay_map[AUTOPLAY_FRAME_TYPE] = AUTOPLAY_TYPE_CHAIN;
-                                            break;
-                                        }
-                                    case "delay":
-                                    case "d":
-                                        {
-                                            autoplay_map[AUTOPLAY_FRAME_TYPE] = AUTOPLAY_TYPE_DELAY;
-                                            break;
-                                        }
-                                    case "on":
-                                    case "o":
-                                        {
-                                            autoplay_map[AUTOPLAY_FRAME_TYPE] = AUTOPLAY_TYPE_ON;
-                                            break;
-                                        }
-                                    case "off":
-                                    case "f":
-                                        {
-                                            autoplay_map[AUTOPLAY_FRAME_TYPE] = AUTOPLAY_TYPE_OFF;
-                                            break;
-                                        }
-                                    case "touch":
-                                    case "t":
-                                        {
-                                            autoplay_map[AUTOPLAY_FRAME_TYPE] = AUTOPLAY_TYPE_TOUCH;
-                                            break;
-                                        }
-                                    case "logo":
-                                    case "l":
-                                        {
-                                            autoplay_map[AUTOPLAY_FRAME_TYPE] = AUTOPLAY_TYPE_LOGO;
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                        }
-                                }
-                                index++;
-                            } else {
-                                value += Character.toString(c);
-                                if (i == chars.length - 1) {
-                                    try {
-                                        autoplay_map[AUTOPLAY_FRAME_VALUE] =
-                                                Integer.parseInt(value);
-                                        auto_play_map.add(autoplay_map);
-                                    } catch (NumberFormatException n) {
-                                        mLoadingProject.onFileError(autoPlay.getName(), line_number, keys.get(line_number-1));
-                                        continue next_frame;
-                                    }
-                                }
+            next_line:
+            while (!keys.isEmpty()) {
+                char[] chars = keys.remove(0).toCharArray();
+                if (chars.length > 1) {
+                    int[] autoplay_map = new int[4];
+                    next_char:
+                    switch (Character.toString(chars[0])) {
+                        case "delay":
+                        case "d":
+                            {
+                                autoplay_map[FRAME_TYPE] = FRAME_TYPE_DELAY;
+                                autoplay_map[FRAME_VALUE] = Character.getNumericValue(chars[1]);
+                                auto_play_map.add(autoplay_map);
+                                continue next_line;
                             }
-                        } else {
-
-                        }
+                        case "chain":
+                        case "c":
+                            {
+                                autoplay_map[FRAME_TYPE] = FRAME_TYPE_CHAIN;
+                                break;
+                            }
+                        case "on":
+                        case "o":
+                            {
+                                autoplay_map[FRAME_TYPE] = FRAME_TYPE_ON;
+                                break;
+                            }
+                        case "off":
+                        case "f":
+                            {
+                                autoplay_map[FRAME_TYPE] = FRAME_TYPE_OFF;
+                                break;
+                            }
+                        case "touch":
+                        case "t":
+                            {
+                                autoplay_map[FRAME_TYPE] = FRAME_TYPE_TOUCH;
+                                break;
+                            }
                     }
+                    autoplay_map[FRAME_PAD_X] = Character.getNumericValue(chars[1]);
+                    autoplay_map[FRAME_PAD_Y] = Character.getNumericValue(chars[2]);
+                    auto_play_map.add(autoplay_map);
                 }
             }
         } catch (IOException e) {

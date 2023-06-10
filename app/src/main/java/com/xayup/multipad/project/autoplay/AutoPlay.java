@@ -15,20 +15,25 @@ import androidx.annotation.IntegerRes;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.pads.PadPressCallInterface;
+import com.xayup.multipad.project.MapData;
 import com.xayup.multipad.project.autoplay.AutoPlayReader;
 import com.xayup.multipad.load.Project;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class AutoPlay implements Project.AutoPlayInterface {
+public abstract class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, PadPressCallInterface {
     protected Activity context;
     protected List<int[]> auto_play_map;
-    protected AtomicBoolean runnig;
+    protected AtomicBoolean running;
     protected boolean paused;
+    protected Thread mThread;
+    protected int autoplay_index;
+    
+    
     public AutoPlay(Activity context){
         this.context = context;
-        runnig = new AtomicBoolean(false);
+        running = new AtomicBoolean(false);
     }
     
     public void parse(File autoplay_file, LoadProject.LoadingProject mLoadingProject){
@@ -37,24 +42,25 @@ public class AutoPlay implements Project.AutoPlayInterface {
 
     @Override
     public boolean isRunning() {
-        return runnig.get();
+        return running.get();
     }
 
     @Override
     public boolean startAutoPlay() {
         XLog.v("Try start autoplay", "");
-
+        (mThread = new Thread(this)).start();
         return true;
     }
 
     @Override
     public boolean stopAutoPlay() {
-        runnig.set(false);
+        running.set(false);
         return true;
     }
 
     @Override
     public boolean pauseAutoPlay() {
+        paused = true;
         return false;
     }
 
@@ -65,6 +71,7 @@ public class AutoPlay implements Project.AutoPlayInterface {
 
     @Override
     public boolean resumeAutoPlay() {
+        paused = false;
         return true;
     }
 
@@ -77,5 +84,38 @@ public class AutoPlay implements Project.AutoPlayInterface {
     public float regressAutoPlay() {
         return 0;
     }
-
+    
+    @Override
+    public void run(){
+        onAutoPlayStarted(auto_play_map.size());
+        next_frame: for(int[] frame: auto_play_map){
+            switch(frame[FRAME_TYPE]){
+                case FRAME_TYPE_DELAY: {
+                    if (!paused){
+                        while(running.get() && !paused){}
+                    }
+                    continue next_frame;
+                }
+                case FRAME_TYPE_ON: {
+                    // ACTION_DOWN
+                    break;
+                }
+                case FRAME_TYPE_OFF: {
+                    // ACTION_UP
+                    break;
+                }
+                case FRAME_TYPE_TOUCH: {
+                    // ACTION_DOWN and ACTION_UP
+                }
+            }
+        }
+    }
+    @Override
+    public void call(int chain, int x, int y){
+        startAutoPlay();
+    }
+    
+    public abstract void onAutoPlayProgress(int percent);
+    public abstract void onAutoPlayStarted(int lenght);
+    public abstract void onAutoPlayStoped();
 }
