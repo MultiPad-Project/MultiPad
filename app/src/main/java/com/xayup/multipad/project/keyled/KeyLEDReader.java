@@ -71,18 +71,16 @@ public class KeyLEDReader implements MapData {
                 sequence = map.sequenceCount(chain, x, y);
                 index = 0;
                 value = null;
-                lines_loop:
                 for (int f = 0; f < led_lines.size(); f++) {
                     String[] chars = led_lines.get(f).split("\\s");
-                    //XLog.v("Led Line: ", ">" + led_lines.get(f) + "<");
-                    if (chars.length < 2) continue lines_loop;
+                    if (chars.length < 2) continue;
                     switch (chars[0]) {
                         case "delay":
                         case "d":
                             {
                                 frames[f][FRAME_TYPE] = FRAME_TYPE_DELAY;
-                                frames[f][FRAME_VALUE] = Integer.valueOf(chars[1]);
-                                continue lines_loop;
+                                frames[f][FRAME_VALUE] = Integer.parseInt(chars[1]);
+                                continue;
                             }
                         case "on":
                         case "o":
@@ -94,34 +92,36 @@ public class KeyLEDReader implements MapData {
                         case "f":
                             {
                                 frames[f][FRAME_TYPE] = FRAME_TYPE_OFF;
-                                break;
+                                frames[f][FRAME_PAD_X] = Integer.parseInt(chars[1]);
+                                frames[f][FRAME_PAD_Y] = Integer.parseInt(chars[2]);
+                                continue;
                             }
                     }
                     if (chars[1].equals("l")) {
                         frames[f][FRAME_PAD_X] = 0;
                         frames[f][FRAME_PAD_Y] = 9;
-                        frames[f][FRAME_VALUE] = Integer.valueOf(chars[3]);
+                        frames[f][FRAME_VALUE] = Integer.parseInt(chars[3]);
                     } else if (chars[1].matches("mc|\\*")) {
-                        int mc = Integer.valueOf(chars[2]);
+                        int mc = Integer.parseInt(chars[2]);
                         if (mc > 24){
-                            frames[f][FRAME_PAD_X] = 0;
-                            frames[f][FRAME_PAD_Y] = mc - 23;
+                            frames[f][FRAME_PAD_X] = 33 - mc;
+                            frames[f][FRAME_PAD_Y] = 0;
                         } else
                         if (mc > 16) {
-                            frames[f][FRAME_PAD_X] = 25 - mc;
-                            frames[f][FRAME_PAD_Y] = 0;
-                        } else if (mc > 8) {
                             frames[f][FRAME_PAD_X] = 9;
-                            frames[f][FRAME_PAD_Y] = 17 - mc;
-                        } else {
-                            frames[f][FRAME_PAD_X] = mc;
+                            frames[f][FRAME_PAD_Y] = 25 - mc;
+                        } else if (mc > 8) {
+                            frames[f][FRAME_PAD_X] = mc - 8;
                             frames[f][FRAME_PAD_Y] = 9;
+                        } else {
+                            frames[f][FRAME_PAD_X] = 0;
+                            frames[f][FRAME_PAD_Y] = mc;
                         }
-                        frames[f][FRAME_VALUE] = Integer.valueOf(chars[4]);
+                        frames[f][FRAME_VALUE] = Integer.parseInt(chars[4]);
                     } else {
-                        frames[f][FRAME_PAD_X] = Integer.valueOf(chars[1]);
-                        frames[f][FRAME_PAD_Y] = Integer.valueOf(chars[2]);
-                        frames[f][FRAME_VALUE] = Integer.valueOf(chars[4]);
+                        frames[f][FRAME_PAD_X] = Integer.parseInt(chars[1]);
+                        frames[f][FRAME_PAD_Y] = Integer.parseInt(chars[2]);
+                        frames[f][FRAME_VALUE] = Integer.parseInt(chars[4]);
                     }
                 }
                 map.putSequence(chain, x, y, frames);
