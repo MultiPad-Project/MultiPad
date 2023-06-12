@@ -30,6 +30,7 @@ public class KeyLED extends Project implements MapData, Project.KeyLEDInterface,
     protected AtomicBoolean running;
     protected Thread led_thread;
     protected List<List<int[]>> leds_standby;
+    protected List<List<int[]>> new_leds_standby;
     protected List<int[]> delays;
     protected final int DELAYS_INDEX = 0;
     protected final int DELAYS_DELAY = 1;
@@ -39,6 +40,7 @@ public class KeyLED extends Project implements MapData, Project.KeyLEDInterface,
         this.mLedMap = new LedMap();
         this.running = new AtomicBoolean(false);
         this.leds_standby = new ArrayList<>();
+        this.new_leds_standby = new ArrayList<>();
         this.delays = new ArrayList<>();
         this.colors = new Colors(context);
         led_thread = new Thread(this);
@@ -54,7 +56,12 @@ public class KeyLED extends Project implements MapData, Project.KeyLEDInterface,
         int[][] frames = mLedMap.getLedData(chain, x, y, 0);
         if(frames != null && frames.length > 0) {
             XLog.v("Led", Arrays.deepToString(frames));
-            leds_standby.add(new ArrayList<>(List.of(frames)));
+            //if(leds_standby.isEmpty()) {
+                leds_standby.add(new ArrayList<>(List.of(frames)));
+            //} else {
+            //    new_leds_standby.add(new ArrayList<>(List.of(frames)));
+            //}
+            delays.add(new int[]{leds_standby.size()-1, 0});
             if(!running.get()) {
                 running.set(true);
                 led_thread.start();
@@ -82,37 +89,53 @@ public class KeyLED extends Project implements MapData, Project.KeyLEDInterface,
     @Override
     public void run() {
         XLog.v("Run thread led", "");
-        int led_index = 0;
         int delay_array_index = 0;
         int delay_array_delay = 0;
+        int old_delay_array_delay = 0;
         int delay_index = 0;
         while(running.get()) {
             leds_standby: while (!leds_standby.isEmpty()) {
-                List<int[]> frames = leds_standby.get(delay_array_index);
-                if (frames.isEmpty()) {
-                    leds_standby.remove(frames);
-                    continue;
-                } else {
-                    int[] frame = null;
-                    while (!frames.isEmpty()) {
-                        frame = frames.remove(0);
-                        if(frame[FRAME_TYPE] == FRAME_TYPE_DELAY) {
-                            delays.add(new int[]{delay_array_index, frame[FRAME_VALUE]});
-                            continue leds_standby;
-                        } else {
-                            onUi(frame[FRAME_PAD_X], frame[FRAME_PAD_Y], (byte) frame[FRAME_VALUE]);
-                        }
-                    }
-                }
                 if(!delays.isEmpty()) {
-                    for (int[] delay_array : delays) {
-                        if (delay_array[DELAYS_DELAY] > delay_array_delay) {
+                    delay_index = 0;
+                    delay_array_index = delays.get(0)[DELAYS_INDEX];
+                    delay_array_delay = delays.get(0)[DELAYS_DELAY];
+                    for (int i = 0; i < delays.size(); i++) {
+                        int[] delay_array = delays.get(i);
+                        if (delay_array[DELAYS_DELAY] < delay_array_delay) {
                             delay_array_index = delay_array[DELAYS_INDEX];
                             delay_array_delay = delay_array[DELAYS_DELAY];
-                            delay_index = delays.indexOf(delay_array);
+                            delay_index = i;
                         }
                     }
                     delays.remove(delay_index);
+                    long delay_time = SystemClock.uptimeMillis() + (delay_array_delay - old_delay_array_delay);
+                    old_delay_array_delay = delay_array_delay;
+                    while(SystemClock.uptimeMillis() < delay_time){}
+                } else {
+                    for (int i = 0; i < leds_standby.size(); i++){
+                        List<int[]> frames = leds_standby.get(i);
+                        if (frames.isEmpty()) {
+                            leds_standby.remove(i);
+                            i--;
+                        } else {
+                            delays.add(new int[]{leds_standby.indexOf(frames), frames.remove(0)[FRAME_VALUE]});
+                        }
+                    }
+                    old_delay_array_delay = 0;
+                    continue;
+                }
+                List<int[]> frames = leds_standby.get(delay_array_index);
+                if (!frames.isEmpty()) {
+                    int[] frame = null;
+                    while (!frames.isEmpty()) {
+                        frame = frames.get(0);
+                        if(frame[FRAME_TYPE] != FRAME_TYPE_DELAY) {
+                            onUi(frame[FRAME_PAD_X], frame[FRAME_PAD_Y], (byte) frame[FRAME_VALUE]);
+                            frames.remove(0);
+                        } else {
+                            break;
+                        }
+                    }
                 }
             }
         }
