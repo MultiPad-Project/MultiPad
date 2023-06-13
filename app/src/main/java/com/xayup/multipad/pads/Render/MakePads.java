@@ -52,8 +52,21 @@ public class MakePads {
     /** Obtenha o id da pad atraves de suas cordenada X e Y */
     public static class PadID {
         public static byte[ /*X*/][ /*Y*/] ids = new byte[10][10];
+
         public static int getId(int x, int y) {
             return ids[x][y];
+        }
+
+        public static int getChainId(int mc) {
+            if (mc > 24) {
+                return getId(33 - mc, 0);
+            } else if (mc > 16) {
+                return getId(9, 25 - mc);
+            } else if (mc > 8) {
+                return getId(mc - 8, 9);
+            } else {
+                return getId(0, mc);
+            }
         }
 
         private static void putId(int x, int y) {
@@ -108,7 +121,11 @@ public class MakePads {
                     phantom = pad.findViewById(R.id.phantom);
                     led = pad.findViewById(R.id.led);
                     touch_map = pad.findViewById(R.id.touch_map);
-                    touch_map.setTag(new PadInfo(new byte[]{(byte) r, (byte) c, PadInfo.PadInfoIdentifier.TOUCH_MAP}));
+                    touch_map.setTag(
+                            new PadInfo(
+                                    new byte[] {
+                                        (byte) r, (byte) c, PadInfo.PadInfoIdentifier.TOUCH_MAP
+                                    }));
                     if (r == 0 || r == 9 || c == 0 || c == 9) {
                         if (r == 0 && c == 9) {
                             pad.setTag(

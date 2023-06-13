@@ -23,6 +23,10 @@ public class LedMap implements KeyLEDReader.KeyLEDMap {
         led_map = new int[24][10][10]/*Dynamic add with put()*/[0][0][0];
     }
     @Override
+    public void clear(){
+        led_map = null;
+    }
+    @Override
     public void putFrame(int chain, int x, int y, int sequence, int[/*TYPE, VALUE, PAD_X, PAD_Y*/] led_frame){
         int[][] tmp = led_map[chain][x][y][sequence];
         tmp = Arrays.copyOf(tmp, tmp.length+1);

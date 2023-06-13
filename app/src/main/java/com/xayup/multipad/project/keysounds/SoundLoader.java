@@ -41,9 +41,15 @@ public class SoundLoader {
         mSoundPool = null;
         sound_rpt = new HashMap<>();
     }
+    public void clear(){
+        sound_rpt.clear();
+        this.release();
+    }
     /**
      * @Param sound_file é o arquivo de sample @Param length é a duração da sample em
-     * segundos @Param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId()) @Param to_chain
+     * segundos.
+     * @Param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId())
+     * @Param to_chain
      * usado para identificar que deve-sse pular automaticamente para determinada chain
      */
     public void loadSound(
@@ -117,7 +123,7 @@ public class SoundLoader {
      * @Param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId())
      * @Param rpt quantos click já foi dada na mesma pad sequencialmente
      */
-    public void playSound(String chain_and_pad) {
+    public boolean playSound(String chain_and_pad) {
         try {
             if (sound_rpt.get(chain_and_pad) == null
                     || sound_rpt.get(chain_and_pad) >= sounds.get(chain_and_pad).size()) {
@@ -146,7 +152,9 @@ public class SoundLoader {
             }
         } catch (NullPointerException e) {
             XLog.v("PlaySound() error", e.getMessage());
+            return false;
         }
+        return true;
     }
     
     public void stopSounds(){

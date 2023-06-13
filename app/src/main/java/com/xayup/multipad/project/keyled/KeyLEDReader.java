@@ -150,5 +150,7 @@ public class KeyLEDReader implements MapData {
         public int sequenceCount(int chain, int x, int y);
 
         public int ledsCount();
+        
+        public void clear();
     }
 }

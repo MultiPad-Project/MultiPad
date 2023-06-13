@@ -54,7 +54,21 @@ public class AutoPlayReader implements MapData {
                         case "c":
                             {
                                 autoplay_map[FRAME_TYPE] = FRAME_TYPE_CHAIN;
-                                break;
+                                int mc = Character.getNumericValue(chars[1]);
+                                if (mc > 24) {
+                                    autoplay_map[FRAME_PAD_X] = 0;
+                                    autoplay_map[FRAME_PAD_Y] = mc - 24;
+                                } else if (mc > 16) {
+                                    autoplay_map[FRAME_PAD_X] = 25 - mc;
+                                    autoplay_map[FRAME_PAD_Y] = 0;
+                                } else if (mc > 8) {
+                                    autoplay_map[FRAME_PAD_X] = 9;
+                                    autoplay_map[FRAME_PAD_Y] = 17 - mc;
+                                } else {
+                                    autoplay_map[FRAME_PAD_X] = mc;
+                                    autoplay_map[FRAME_PAD_Y] = 0;
+                                }
+                                continue next_line;
                             }
                         case "on":
                         case "o":

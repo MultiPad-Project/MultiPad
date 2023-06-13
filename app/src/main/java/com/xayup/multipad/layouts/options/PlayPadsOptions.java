@@ -67,6 +67,7 @@ public abstract class PlayPadsOptions extends GlobalConfigs.PlayPadsConfigs {
     private final int EXIT_PAGE_PAD_GRIDS = 4;
 
     protected Activity context;
+    protected AlertDialog alertDialog;
 
     private String resizeLayer(final View layer, Double increment) {
         float new_size =
@@ -97,7 +98,14 @@ public abstract class PlayPadsOptions extends GlobalConfigs.PlayPadsConfigs {
         swit.setDisplayedChild(page);
     }
 
-    public abstract void onExit();
+    public abstract void onExit();    
+    public void show(){
+        XayUpFunctions.showDiagInFullscreen(alertDialog);
+        alertDialog
+                .getWindow()
+                .setLayout(GlobalConfigs.display_height, WindowManager.LayoutParams.MATCH_PARENT);
+        alertDialog.getWindow().setGravity(Gravity.RIGHT);
+    }
 
     public PlayPadsOptions(Activity context) {
         this.context = context;
@@ -917,11 +925,6 @@ public abstract class PlayPadsOptions extends GlobalConfigs.PlayPadsConfigs {
         // Finalmente criar e mostrar a Janela
         AlertDialog.Builder alertExit = new AlertDialog.Builder(context);
         alertExit.setView(onExitDialog);
-        AlertDialog alertDialog = alertExit.create();
-        XayUpFunctions.showDiagInFullscreen(alertDialog);
-        alertDialog
-                .getWindow()
-                .setLayout(GlobalConfigs.display_height, WindowManager.LayoutParams.MATCH_PARENT);
-        alertDialog.getWindow().setGravity(Gravity.RIGHT);
+        alertDialog = alertExit.create();
     }
 }

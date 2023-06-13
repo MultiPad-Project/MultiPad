@@ -25,6 +25,10 @@ public class KeySounds implements Project.SoundInterface, PadPressCallInterface 
         mSoundLoader.prepare();
     }
     
+    public void clear(){
+        mSoundLoader.clear();
+    }
+    
     @Override
     public boolean playSound(int chain, int x, int y) {
         XLog.v("Try play sound", "");
@@ -39,7 +43,7 @@ public class KeySounds implements Project.SoundInterface, PadPressCallInterface 
     }
 
     @Override
-    public void call(int chain, int x, int y) {
-        playSound(chain, x, y);
+    public boolean call(int chain, int x, int y) {
+        return playSound(chain, x, y);
     }
 }
