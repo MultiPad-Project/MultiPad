@@ -24,4 +24,10 @@ public class Utils {
             super.close();
         }
     }
+    
+    public static class Math {
+        public static int positiveSubtraction(int value1, int value2){
+            return (value1 > value2) ? value1 - value2 : value2 - value1;
+        }
+    }
 }

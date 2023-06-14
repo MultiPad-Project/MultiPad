@@ -77,26 +77,21 @@ public class LoadProject implements Runnable {
             mProject.mKeyLED = new KeyLED(context);
             ledT1 = new ArrayList<>();
             ledT2 = new ArrayList<>();
-            int ident = 0;
+            int leds_count = 0;
             for (File path : mProject.keyleds_paths) { // Order
                 List<File> files = Arrays.asList(path.listFiles());
                 Collections.sort(
                         files,
-                        new Comparator<File>() {
-                            @Override
-                            public int compare(File f1, File f2) {
-                                return f1.getName().compareTo(f2.getName());
-                            }
+                        (File f1, File f2) -> {
+                            return f1.getName().compareTo(f2.getName());
                         });
-                for (File led : files) {
-                    if (ident == 0) {
-                        ledT1.add(led);
-                        ident = 1;
-                    } else {
-                        ledT2.add(led);
-                        ident = 0;
-                    }
+                for(File file : files){
+                    ledT2.add(file);
                 }
+            }
+            leds_count = ledT2.size() / 2;
+            while(ledT2.size() > leds_count){
+                ledT1.add(ledT2.remove(0));
             }
             total_threads = 2;
             ended_threads = 0;
@@ -108,8 +103,12 @@ public class LoadProject implements Runnable {
                     .start();
             ledRead(ledT2);
             ended_threads++;
-            while (ended_threads < total_threads){;}
+            while (ended_threads < total_threads) {
+                ;
+            }
+            ledT1.clear();
             ledT1 = null;
+            ledT2.clear();
             ledT2 = null;
         }
         mLoadingProject.onFinishLoadProject();

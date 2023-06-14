@@ -1,6 +1,7 @@
 package com.xayup.multipad.project.autoplay;
 
 import android.app.Activity;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.GridLayout;
 import com.xayup.debug.XLog;
@@ -124,8 +125,10 @@ public class AutoPlay
         return 0;
     }
 
-    public View getViewFromXY(int x, int y) {
-        return viewRoot.getChildAt((viewRoot.getColumnCount() * x) + (viewRoot.getColumnCount() * y) - 1); 
+    public View getViewFromXY(int row, int colum) {
+        int child_index = (viewRoot.getColumnCount() * row) + colum;
+        XLog.v("Child index", "row - " + row + ", colum - " + colum + " = " + child_index);
+        return viewRoot.getChildAt(child_index); 
     }
 
     @Override
@@ -139,7 +142,8 @@ public class AutoPlay
             switch (frame[FRAME_TYPE]) {
                 case FRAME_TYPE_DELAY:
                     {
-                        while (running.get() && !paused) {}
+                        long delay = SystemClock.uptimeMillis() + frame[FRAME_VALUE];
+                        while (SystemClock.uptimeMillis() < delay && running.get() && !paused) {}
                         continue;
                     }
                 case FRAME_TYPE_ON:
@@ -175,7 +179,7 @@ public class AutoPlay
                     }
             }
         }
-        if (!(autoplay_index < auto_play_map.size())) {
+        if (autoplay_index >= auto_play_map.size()) {
             autoplay_index = 0;
         } else if (paused) {
             nextFramePraticle();

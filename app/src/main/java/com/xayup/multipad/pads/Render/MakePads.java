@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.R;
 import com.xayup.multipad.pads.PadInterface;
+import com.xayup.utils.Utils;
 
 public class MakePads {
     protected Activity context;
@@ -57,16 +58,36 @@ public class MakePads {
             return ids[x][y];
         }
 
-        public static int getChainId(int mc) {
+        public static int getChainId(int mc, int offset) {
+            int[] xy = getChainXY(mc, offset);
+            return getId(xy[0], xy[1]);
+        }
+        /**
+         * A cotagem do Chain comeca do topo
+         *
+         * @param offset altera o inicio na contage (Sentido horario)
+         */
+        public static int[] getChainXY(int mc, int offset) {
+            if (offset > 32)
+                new NumberFormatException(
+                        "The number must be greater than 0 or less than 33. Offset: " + offset);
+            int x, y;
+            mc = mc + offset - 1;
+            if(mc  > 32) mc -= 32;
             if (mc > 24) {
-                return getId(33 - mc, 0);
+                x = 0;
+                y = 33 - mc;
             } else if (mc > 16) {
-                return getId(9, 25 - mc);
+                x = 25 - mc;
+                y = 9;
             } else if (mc > 8) {
-                return getId(mc - 8, 9);
+                x = mc - 8;
+                y = 9;
             } else {
-                return getId(0, mc);
+                x = 0;
+                y = mc;
             }
+            return new int[] {x, y};
         }
 
         private static void putId(int x, int y) {

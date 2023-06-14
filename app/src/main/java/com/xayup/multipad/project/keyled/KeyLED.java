@@ -55,7 +55,7 @@ public class KeyLED extends Project
     @Override
     public boolean showLed(int chain, int x, int y) {
         XLog.v("Try show led", "");
-        int[][] frames = mLedMap.getLedData(chain, x, y, 0);
+        int[][] frames = mLedMap.getLedData(chain, x, y);
         if (frames != null && frames.length > 0) {
             XLog.v("Led", Arrays.deepToString(frames));
             new_leds_standby.add(new ArrayList<>(List.of(frames)));

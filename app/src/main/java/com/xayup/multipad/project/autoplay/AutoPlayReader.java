@@ -2,8 +2,10 @@ package com.xayup.multipad.project.autoplay;
 
 import android.app.Activity;
 import com.google.common.io.Files;
+import com.xayup.debug.XLog;
 import com.xayup.multipad.load.ProjectMapData;
 import com.xayup.multipad.load.thread.LoadProject;
+import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.project.MapData;
 import java.io.File;
 import java.io.IOException;
@@ -37,16 +39,15 @@ public class AutoPlayReader implements MapData {
             mLoadingProject.onStartReadFile(autoPlay.getName());
             next_line:
             while (!keys.isEmpty()) {
-                char[] chars = keys.remove(0).toCharArray();
+                String[] chars = keys.remove(0).split("\\s");
                 if (chars.length > 1) {
                     int[] autoplay_map = new int[4];
-                    next_char:
-                    switch (Character.toString(chars[0])) {
+                    switch (chars[0]) {
                         case "delay":
                         case "d":
                             {
                                 autoplay_map[FRAME_TYPE] = FRAME_TYPE_DELAY;
-                                autoplay_map[FRAME_VALUE] = Character.getNumericValue(chars[1]);
+                                autoplay_map[FRAME_VALUE] = Integer.parseInt(chars[1]);
                                 auto_play_map.add(autoplay_map);
                                 continue next_line;
                             }
@@ -54,20 +55,12 @@ public class AutoPlayReader implements MapData {
                         case "c":
                             {
                                 autoplay_map[FRAME_TYPE] = FRAME_TYPE_CHAIN;
-                                int mc = Character.getNumericValue(chars[1]);
-                                if (mc > 24) {
-                                    autoplay_map[FRAME_PAD_X] = 0;
-                                    autoplay_map[FRAME_PAD_Y] = mc - 24;
-                                } else if (mc > 16) {
-                                    autoplay_map[FRAME_PAD_X] = 25 - mc;
-                                    autoplay_map[FRAME_PAD_Y] = 0;
-                                } else if (mc > 8) {
-                                    autoplay_map[FRAME_PAD_X] = 9;
-                                    autoplay_map[FRAME_PAD_Y] = 17 - mc;
-                                } else {
-                                    autoplay_map[FRAME_PAD_X] = mc;
-                                    autoplay_map[FRAME_PAD_Y] = 0;
-                                }
+                                int[] xy =
+                                        MakePads.PadID.getChainXY(
+                                                Integer.parseInt(chars[1]), 9);
+                                autoplay_map[FRAME_PAD_X] = xy[0];
+                                autoplay_map[FRAME_PAD_Y] = xy[1];
+                                auto_play_map.add(autoplay_map);
                                 continue next_line;
                             }
                         case "on":
@@ -88,9 +81,12 @@ public class AutoPlayReader implements MapData {
                                 autoplay_map[FRAME_TYPE] = FRAME_TYPE_TOUCH;
                                 break;
                             }
+                        default: {
+                            continue next_line;
+                        }
                     }
-                    autoplay_map[FRAME_PAD_X] = Character.getNumericValue(chars[1]);
-                    autoplay_map[FRAME_PAD_Y] = Character.getNumericValue(chars[2]);
+                    autoplay_map[FRAME_PAD_X] = Integer.parseInt(chars[1]);
+                    autoplay_map[FRAME_PAD_Y] = Integer.parseInt(chars[2]);
                     auto_play_map.add(autoplay_map);
                 }
             }

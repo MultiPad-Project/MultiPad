@@ -50,6 +50,14 @@ public class Pad {
         mGridViews.put(active_layout, pads);
         return pads;
     }
+    
+    public Pads getPads(String name){
+        return mGridViews.get(name);
+    }
+    
+    public Pads getActivePads(){
+        return mGridViews.get(active_layout);
+    }
 
     public void setCurrentChain(int x, int y) {
         current_chain_array[0] = x;

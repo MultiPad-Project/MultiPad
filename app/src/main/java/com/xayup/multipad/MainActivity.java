@@ -147,7 +147,7 @@ public class MainActivity extends Activity {
                 break;
             case INTENT_PALYPADS:
                 {
-                    mLoadScreen.getCurrentAnimation().setAnimationListener(null);
+                    mLoadScreen.OnEndAnimation(null);
                     mLoadScreen.hide(0);
                     mLoadScreen.remove();
                     mLoadScreen = null;
@@ -218,32 +218,19 @@ public class MainActivity extends Activity {
                     @Override
                     public void onPreLoadProject() {
                         mLoadScreen = new LoadScreen(context, rootView);
-                        mLoadScreen.show(500);
                     }
 
                     @Override
                     public void loadProject(String path) {
-                        mLoadScreen
-                                .getCurrentAnimation()
-                                .setAnimationListener(
-                                        new Animation.AnimationListener() {
-
-                                            @Override
-                                            public void onAnimationStart(Animation arg0) {}
-
-                                            @Override
-                                            public void onAnimationRepeat(Animation arg0) {}
-
-                                            @Override
-                                            public void onAnimationEnd(Animation arg0) {
-                                                Intent intent = new Intent(context, PlayPads.class);
-                                                XLog.v("properties", path + "");
-                                                context.startActivityForResult(
-                                                        intent.putExtra("project_path", path),
-                                                        INTENT_PALYPADS);
-                                                context.overridePendingTransition(0, 0);
-                                            }
-                                        });
+                        mLoadScreen.OnEndAnimation(
+                                () -> {
+                                    Intent intent = new Intent(context, PlayPads.class);
+                                    XLog.v("properties", path + "");
+                                    context.startActivityForResult(
+                                            intent.putExtra("project_path", path), INTENT_PALYPADS);
+                                    context.overridePendingTransition(0, 0);
+                                });
+                        mLoadScreen.show(500);
                     }
                 });
         rootView.post(

@@ -23,6 +23,11 @@ public class LoadScreen {
     protected Animation anim;
     protected ViewGroup root;
     protected TextView text_state;
+    protected OnEndAnimation end;
+
+    public interface OnEndAnimation {
+        public void onEndAnimation();
+    }
 
     public LoadScreen(Activity context, ViewGroup root) {
         this.context = context;
@@ -39,6 +44,7 @@ public class LoadScreen {
         anim.setDuration(duration);
         anim.setStartTime(0);
         anim.setStartOffset(0);
+        anim.setAnimationListener((end == null) ? null : setAnimationListener());
         flipper.startAnimation(anim);
         ((AnimationDrawable)
                         ((ImageView) flipper.findViewById(R.id.loading_logo_image)).getBackground())
@@ -50,32 +56,54 @@ public class LoadScreen {
         anim.setDuration(duration);
         anim.setStartTime(0);
         anim.setStartOffset(0);
+        anim.setAnimationListener((end == null) ? null : setAnimationListener());
         flipper.startAnimation(anim);
         ((AnimationDrawable)
                         ((ImageView) flipper.findViewById(R.id.loading_logo_image)).getBackground())
                 .stop();
         flipper.setVisibility(View.GONE);
     }
-    
-    public void updatedText(String text){
+
+    public void updatedText(String text) {
         text_state.setText(text);
     }
-    
-    public void remove(){
+
+    public void remove() {
         root.removeView(flipper);
     }
-    
+
     public void showErrorsList(List<String> errors, View.OnClickListener ok_click) {
         flipper.setOutAnimation(context, R.anim.fade_out_splash);
         flipper.getOutAnimation().setDuration(200);
         flipper.setInAnimation(context, R.anim.fade_in_splash);
         flipper.getInAnimation().setDuration(200);
         flipper.showNext();
-        ((ListView) flipper.findViewById(R.id.loading_screen_error_list)).setAdapter(new ArrayAdapter(context, R.layout.simple_list_item, errors));
-        ((Button) flipper.findViewById(R.id.loading_screen_error_button_ok)).setOnClickListener(ok_click);
+        ((ListView) flipper.findViewById(R.id.loading_screen_error_list))
+                .setAdapter(new ArrayAdapter(context, R.layout.simple_list_item, errors));
+        ((Button) flipper.findViewById(R.id.loading_screen_error_button_ok))
+                .setOnClickListener(ok_click);
     }
-    
+
     public Animation getCurrentAnimation() {
         return this.anim;
+    }
+    /** Call after start animation (with show()) */
+    public void OnEndAnimation(OnEndAnimation endAnimation) {
+        this.end = endAnimation;
+    }
+
+    protected Animation.AnimationListener setAnimationListener() {
+        return new Animation.AnimationListener() {
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                end.onEndAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation arg0) {}
+
+            @Override
+            public void onAnimationStart(Animation arg0) {}
+        };
     }
 }

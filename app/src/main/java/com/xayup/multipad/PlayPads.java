@@ -50,6 +50,7 @@ import com.xayup.multipad.load.Project;
 import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.pads.PadInteraction;
 import com.xayup.multipad.pads.Pad;
+import com.xayup.multipad.pads.PadInterface;
 import com.xayup.multipad.pads.PadPressCallInterface;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.project.keyled.Colors;
@@ -65,6 +66,17 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
     PadPress mPadPress;
     PadRelease mPadRelease;
     PlayPadsOptions mPlayPadsOptions;
+
+    protected OnTouchListener onPadTouch,
+            onChainTouch,
+            onPressWatermarkTouch,
+            onLedSwitchTouch,
+            onAutoplaySwitchTouch,
+            onAutoplayPrevTouch,
+            onAutoplayPauseTouch,
+            onAutoplayNextTouch,
+            onLayoutSwitchTouch,
+            onWatermarkTouch;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,11 +111,9 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
         }
     }
 
-    class CreateUi extends Project {
+    class CreateUi extends Project implements PadInterface {
         private Pad.Pads last_pads_grid;
-
         private RelativeLayout root_pads;
-
         protected boolean show_project_erros = false;
         protected boolean hide_load_screen = false;
         protected Pad pad;
@@ -154,32 +164,14 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                             if (show_project_erros) {
                                 mLoadScreen.showErrorsList(
                                         project_loaded_problems,
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                mLoadScreen.hide(300);
-                                                mLoadScreen
-                                                        .getCurrentAnimation()
-                                                        .setAnimationListener(
-                                                                new Animation.AnimationListener() {
-
-                                                                    @Override
-                                                                    public void onAnimationStart(
-                                                                            Animation arg0) {}
-
-                                                                    @Override
-                                                                    public void onAnimationEnd(
-                                                                            Animation arg0) {
-                                                                        mLoadScreen.remove();
-                                                                        mLoadScreen = null;
-                                                                    }
-
-                                                                    @Override
-                                                                    public void onAnimationRepeat(
-                                                                            Animation arg0) {}
-                                                                });
-                                                view.setOnClickListener(null);
-                                            }
+                                        (view) -> {
+                                            mLoadScreen.OnEndAnimation(
+                                                    () -> {
+                                                        mLoadScreen.remove();
+                                                        mLoadScreen = null;
+                                                    });
+                                            mLoadScreen.hide(300);
+                                            view.setOnClickListener(null);
                                         });
                             } else {
                                 context.runOnUiThread(() -> mLoadScreen.hide(500));
@@ -209,6 +201,18 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                     });
                         }
                     });
+
+            onPadTouch = onChainTouch();
+            onChainTouch = onChainTouch();
+            onPressWatermarkTouch = onPressWatermarkTouch();
+            onLedSwitchTouch = onLedSwitchTouch();
+            onAutoplaySwitchTouch = onAutoplaySwitchTouch();
+            onAutoplayPrevTouch = onAutoplayPrevTouch();
+            onAutoplayPauseTouch = onAutoplayPauseTouch();
+            onAutoplayNextTouch = onAutoplayNextTouch();
+            onLayoutSwitchTouch = onLayoutSwitchTouch();
+            onWatermarkTouch = onWatermarkTouch();
+
             pad = new Pad(context, padInteraction());
             root_pads.post(
                     () -> {
@@ -230,247 +234,241 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
         protected PadInteraction padInteraction() {
             XLog.v("PAD INTERACTION", "");
-            OnTouchListener padOnClick =
-                    new OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            MakePads.PadInfo mPadInfo = (MakePads.PadInfo) v.getTag();
-                            XLog.v("Pad press", "X: " + mPadInfo.row + ",Y: " + mPadInfo.colum);
-                            switch (event.getAction()) {
-                                case MotionEvent.ACTION_DOWN:
-                                    {
-                                        mPadPress.call(
-                                                pad.current_chain, mPadInfo.row, mPadInfo.colum);
-                                        return true;
-                                    }
+            return (View view) -> {
+                MakePads.PadInfo mPadInfo = (MakePads.PadInfo) view.getTag();
+                if (mPadInfo.row == 0) {
+                    switch (mPadInfo.colum) {
+                        case 1:
+                            {
+                                return onPressWatermarkTouch;
                             }
-
-                            return false;
-                        }
-                    };
-            OnTouchListener chainOnClick =
-                    new OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            MakePads.PadInfo mPadInfo = (MakePads.PadInfo) v.getTag();
-                            switch (event.getAction()) {
-                                case MotionEvent.ACTION_DOWN:
-                                    {
-                                        mPadPress.call(
-                                                pad.current_chain, mPadInfo.row, mPadInfo.colum);
-                                        if (mPadPress.getLastSucessCount() == 0) {
-                                            int[] current_chain = pad.getCurrentChain();
-                                            v.getRootView()
-                                                    .findViewById(
-                                                            MakePads.PadID.getId(
-                                                                    current_chain[0],
-                                                                    current_chain[1]))
-                                                    .findViewById(R.id.press);
-                                            pad.setCurrentChain(mPadInfo.row, mPadInfo.colum);
-                                        }
-                                        return true;
-                                    }
+                        case 2:
+                            {
+                                return onLedSwitchTouch;
                             }
-
-                            return false;
-                        }
-                    };
-            return new PadInteraction() {
-                @Override
-                public OnTouchListener onPadClick(View view) {
-                    MakePads.PadInfo mPadInfo = (MakePads.PadInfo) view.getTag();
-                    if (mPadInfo.row == 0) {
-                        switch (mPadInfo.colum) {
-                            case 1:
-                                {
-                                    return new OnTouchListener() {
-                                        @Override
-                                        public boolean onTouch(View v, MotionEvent event) {
-                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
-                                            switch (event.getAction()) {
-                                                case MotionEvent.ACTION_DOWN:
-                                                    {
-                                                        pad.watermark_press = !pad.watermark_press;
-                                                        if (pad.watermark_press) {
-                                                            v.findViewById(R.id.press).setAlpha(1f);
-                                                        } else {
-                                                            v.findViewById(R.id.press).setAlpha(0f);
-                                                        }
-                                                        return true;
-                                                    }
-                                            }
-
-                                            return false;
-                                        }
-                                    };
-                                }
-                            case 2:
-                                {
-                                    return new OnTouchListener() {
-                                        @Override
-                                        public boolean onTouch(View v, MotionEvent event) {
-                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
-                                            switch (event.getAction()) {
-                                                case MotionEvent.ACTION_DOWN:
-                                                    {
-                                                        if (mKeyLED != null) {
-                                                            if (mPadPress.calls.contains(mKeyLED)) {
-                                                                mPadPress.calls.remove(mKeyLED);
-                                                                if (mKeySounds != null)
-                                                                    mKeySounds.stopSound(
-                                                                            pad.current_chain,
-                                                                            mPadInfo.row,
-                                                                            mPadInfo.colum);
-                                                            } else {
-                                                                mPadPress.calls.add(mKeyLED);
-                                                            }
-                                                        }
-                                                        return true;
-                                                    }
-                                            }
-
-                                            return true;
-                                        }
-                                    };
-                                }
-                            case 3:
-                                {
-                                    return new OnTouchListener() {
-                                        @Override
-                                        public boolean onTouch(View v, MotionEvent event) {
-                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
-                                            switch (event.getAction()) {
-                                                case MotionEvent.ACTION_DOWN:
-                                                    {
-                                                        if (mAutoPlay != null) {
-                                                            if (mAutoPlay.isRunning()) {
-                                                                mAutoPlay.stopAutoPlay();
-                                                            } else {
-                                                                mAutoPlay.startAutoPlay((GridLayout) v.getRootView());
-                                                            }
-                                                        }
-                                                        return true;
-                                                    }
-                                            }
-
-                                            return false;
-                                        }
-                                    };
-                                }
-                            case 4:
-                                {
-                                    return new OnTouchListener() {
-                                        @Override
-                                        public boolean onTouch(View v, MotionEvent event) {
-                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
-                                            switch (event.getAction()) {
-                                                case MotionEvent.ACTION_DOWN:
-                                                    {
-                                                        if (mAutoPlay != null
-                                                                && mAutoPlay.isRunning()) {
-                                                            mAutoPlay.regressAutoPlay();
-                                                        }
-                                                        return true;
-                                                    }
-                                            }
-
-                                            return false;
-                                        }
-                                    };
-                                }
-                            case 5:
-                                {
-                                    return new OnTouchListener() {
-                                        @Override
-                                        public boolean onTouch(View v, MotionEvent event) {
-                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
-                                            switch (event.getAction()) {
-                                                case MotionEvent.ACTION_DOWN:
-                                                    {
-                                                        if (mAutoPlay != null) {
-                                                            if (mAutoPlay.inPaused()) {
-                                                                mAutoPlay.pauseAutoPlay();
-                                                            } else {
-                                                                mAutoPlay.resumeAutoPlay();
-                                                            }
-                                                        }
-                                                        return true;
-                                                    }
-                                            }
-
-                                            return false;
-                                        }
-                                    };
-                                }
-                            case 6:
-                                {
-                                    return new OnTouchListener() {
-                                        @Override
-                                        public boolean onTouch(View v, MotionEvent event) {
-                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
-                                            switch (event.getAction()) {
-                                                case MotionEvent.ACTION_DOWN:
-                                                    {
-                                                        if (mAutoPlay != null
-                                                                && mAutoPlay.isRunning()) {
-                                                            mAutoPlay.advanceAutoPlay();
-                                                        }
-                                                        return true;
-                                                    }
-                                            }
-
-                                            return false;
-                                        }
-                                    };
-                                }
-                            case 7:
-                                {
-                                    return new OnTouchListener() {
-                                        @Override
-                                        public boolean onTouch(View v, MotionEvent event) {
-                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
-                                            switch (event.getAction()) {
-                                                case MotionEvent.ACTION_DOWN:
-                                                    {
-                                                        return true;
-                                                    }
-                                            }
-                                            return false;
-                                        }
-                                    };
-                                }
-                            case 8:
-                                {
-                                    return new OnTouchListener() {
-                                        @Override
-                                        public boolean onTouch(View v, MotionEvent event) {
-                                            XLog.v("Top Chain", String.valueOf(mPadInfo.colum));
-                                            switch (event.getAction()) {
-                                                case MotionEvent.ACTION_DOWN:
-                                                    {
-                                                        pad.watermark = !pad.watermark;
-                                                        if (pad.watermark) {
-                                                            v.findViewById(R.id.press).setAlpha(1f);
-                                                        } else {
-                                                            v.findViewById(R.id.press).setAlpha(0f);
-                                                        }
-                                                    }
-                                            }
-                                            return false;
-                                        }
-                                    };
-                                }
-                        }
-                    } else if (mPadInfo.row > 0
-                            && mPadInfo.row < 9
-                            && mPadInfo.colum > 0
-                            && mPadInfo.colum < 9) {
-                        return padOnClick;
-                    } else if (mPadInfo.colum == 0 || mPadInfo.colum == 9 || mPadInfo.row == 9) {
-                        return chainOnClick;
+                        case 3:
+                            {
+                                return onAutoplaySwitchTouch;
+                            }
+                        case 4:
+                            {
+                                return onAutoplayPrevTouch;
+                            }
+                        case 5:
+                            {
+                                return onAutoplayPauseTouch;
+                            }
+                        case 6:
+                            {
+                                return onAutoplayNextTouch;
+                            }
+                        case 7:
+                            {
+                                return onLayoutSwitchTouch;
+                            }
+                        case 8:
+                            {
+                                return onWatermarkTouch;
+                            }
                     }
-                    return null;
+                } else if (mPadInfo.row > 0
+                        && mPadInfo.row < 9
+                        && mPadInfo.colum > 0
+                        && mPadInfo.colum < 9) {
+                    return onPadTouch;
+                } else if (mPadInfo.colum == 0 || mPadInfo.colum == 9 || mPadInfo.row == 9) {
+                    return onChainTouch;
                 }
+                return null;
+            };
+        }
+
+        @Override
+        public OnTouchListener onPadTouch() {
+            return (View v, MotionEvent event) -> {
+                MakePads.PadInfo mPadInfo = (MakePads.PadInfo) v.getTag();
+                XLog.v("Pad press", "X: " + mPadInfo.row + ",Y: " + mPadInfo.colum);
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        {
+                            mPadPress.call(pad.current_chain, mPadInfo.row, mPadInfo.colum);
+                            return true;
+                        }
+                }
+
+                return false;
+            };
+        }
+
+        @Override
+        public OnTouchListener onChainTouch() {
+            return (View v, MotionEvent event) -> {
+                MakePads.PadInfo mPadInfo = (MakePads.PadInfo) v.getTag();
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        {
+                            mPadPress.call(pad.current_chain, mPadInfo.row, mPadInfo.colum);
+                            if (mPadPress.getLastSucessCount() == 0) {
+                                int[] current_chain = pad.getCurrentChain();
+                                v.getRootView()
+                                        .findViewById(
+                                                MakePads.PadID.getId(
+                                                        current_chain[0], current_chain[1]))
+                                        .findViewById(R.id.press);
+                                pad.setCurrentChain(mPadInfo.row, mPadInfo.colum);
+                            }
+                            return true;
+                        }
+                }
+
+                return false;
+            };
+        }
+
+        @Override
+        public OnTouchListener onPressWatermarkTouch() {
+            return (View v, MotionEvent event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        {
+                            pad.watermark_press = !pad.watermark_press;
+                            if (pad.watermark_press) {
+                                v.findViewById(R.id.press).setAlpha(1f);
+                            } else {
+                                v.findViewById(R.id.press).setAlpha(0f);
+                            }
+                            return true;
+                        }
+                }
+
+                return false;
+            };
+        }
+
+        @Override
+        public OnTouchListener onLedSwitchTouch() {
+            return (View v, MotionEvent event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        {
+                            if (mKeyLED != null) {
+                                if (mPadPress.calls.contains(mKeyLED)) {
+                                    mPadPress.calls.remove(mKeyLED);
+                                } else {
+                                    mPadPress.calls.add(mKeyLED);
+                                }
+                                if (mKeySounds != null) {
+                                } else {
+                                    mPadPress.calls.add(mKeyLED);
+                                }
+                            }
+                            return true;
+                        }
+                }
+                return false;
+            };
+        }
+
+        @Override
+        public OnTouchListener onAutoplaySwitchTouch() {
+            return (View v, MotionEvent event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        {
+                            if (mAutoPlay != null) {
+                                if (mAutoPlay.isRunning()) {
+                                    mAutoPlay.stopAutoPlay();
+                                } else {
+                                    mAutoPlay.startAutoPlay(pad.getActivePads().getGridPads());
+                                }
+                            }
+                            return true;
+                        }
+                }
+                return false;
+            };
+        }
+
+        @Override
+        public OnTouchListener onAutoplayPrevTouch() {
+            return (View v, MotionEvent event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        {
+                            if (mAutoPlay != null && mAutoPlay.isRunning()) {
+                                mAutoPlay.regressAutoPlay();
+                            }
+                            return true;
+                        }
+                }
+                return false;
+            };
+        }
+
+        @Override
+        public OnTouchListener onAutoplayPauseTouch() {
+            return (View v, MotionEvent event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        {
+                            if (mAutoPlay != null) {
+                                if (mAutoPlay.inPaused()) {
+                                    mAutoPlay.pauseAutoPlay();
+                                } else {
+                                    mAutoPlay.resumeAutoPlay();
+                                }
+                            }
+                            return true;
+                        }
+                }
+                return false;
+            };
+        }
+
+        @Override
+        public OnTouchListener onAutoplayNextTouch() {
+            return (View v, MotionEvent event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        {
+                            if (mAutoPlay != null && mAutoPlay.isRunning()) {
+                                mAutoPlay.advanceAutoPlay();
+                            }
+                            return true;
+                        }
+                }
+                return false;
+            };
+        }
+
+        @Override
+        public OnTouchListener onLayoutSwitchTouch() {
+            return (View v, MotionEvent event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        {
+                            return true;
+                        }
+                }
+                return false;
+            };
+        }
+
+        @Override
+        public OnTouchListener onWatermarkTouch() {
+            return (View v, MotionEvent event) -> {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        {
+                            pad.watermark = !pad.watermark;
+                            if (pad.watermark) {
+                                v.findViewById(R.id.press).setAlpha(1f);
+                            } else {
+                                v.findViewById(R.id.press).setAlpha(0f);
+                            }
+                        }
+                }
+                return false;
             };
         }
     }

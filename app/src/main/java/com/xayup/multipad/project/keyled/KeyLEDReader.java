@@ -23,7 +23,7 @@ public class KeyLEDReader implements MapData {
         if (led != null)
             try {
                 List<String> led_lines = Files.readLines(led, StandardCharsets.UTF_8);
-                int[][] frames = new int[led_lines.size()][4];
+                int[][] frames = new int[led_lines.size()][5];
                 mLoadingProject.onStartReadFile(led.getName());
                 XLog.v("Led file: ", led.getName());
                 char[] led_name_char = led.getName().toCharArray();

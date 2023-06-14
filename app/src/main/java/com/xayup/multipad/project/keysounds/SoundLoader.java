@@ -41,15 +41,14 @@ public class SoundLoader {
         mSoundPool = null;
         sound_rpt = new HashMap<>();
     }
-    public void clear(){
+
+    public void clear() {
         sound_rpt.clear();
         this.release();
     }
     /**
      * @Param sound_file é o arquivo de sample @Param length é a duração da sample em
-     * segundos.
-     * @Param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId())
-     * @Param to_chain
+     * segundos. @Param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId()) @Param to_chain
      * usado para identificar que deve-sse pular automaticamente para determinada chain
      */
     public void loadSound(
@@ -120,8 +119,8 @@ public class SoundLoader {
     }
 
     /**
-     * @Param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId())
-     * @Param rpt quantos click já foi dada na mesma pad sequencialmente
+     * @Param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId()) @Param rpt quantos click
+     * já foi dada na mesma pad sequencialmente
      */
     public boolean playSound(String chain_and_pad) {
         try {
@@ -134,9 +133,13 @@ public class SoundLoader {
             switch ((int) sound.get(TYPE)) {
                 case EXOPLAYER:
                     XLog.v("Play with", "ExoPlayer");
-                    mExoPlayer.pause();
-                    mExoPlayer.setMediaItem((MediaItem) sound.get(SOUND));
-                    mExoPlayer.play();
+                    MediaItem mi = (MediaItem) sound.get(SOUND);
+                    context.runOnUiThread(
+                            () -> {
+                                mExoPlayer.pause();
+                                mExoPlayer.setMediaItem(mi);
+                                mExoPlayer.play();
+                            });
                     break;
                 case SOUNDPOOL:
                     XLog.v("Play with", "SoundPool");
@@ -147,18 +150,16 @@ public class SoundLoader {
             sound_rpt.put(chain_and_pad, sound_rpt.get(chain_and_pad) + 1);
             String to_chain = (String) sounds.get(chain_and_pad).get(rpt).get(TO_CHAIN);
             sound = null;
-            if (to_chain != "") {
-                
-            }
+            if (to_chain != "") {}
+
         } catch (NullPointerException e) {
             XLog.v("PlaySound() error", e.getMessage());
             return false;
         }
         return true;
     }
-    
-    public void stopSounds(){
-    }
+
+    public void stopSounds() {}
 
     public void release() {
         if (mSoundPool != null) {
