@@ -8,11 +8,7 @@ import com.xayup.multipad.project.autoplay.AutoPlay;
 import com.xayup.multipad.project.keyled.KeyLED;
 import com.xayup.multipad.project.keysounds.KeySounds;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class LoadProject implements Runnable {
 
@@ -20,8 +16,8 @@ public class LoadProject implements Runnable {
     protected Project mProject;
     protected LoadingProject mLoadingProject;
     /* For Read Leds */
-    protected List<File> ledT1;
-    protected List<File> ledT2;
+    protected List<File[]> ledT1;
+    protected List<File[]> ledT2;
     protected byte total_threads = 2;
     protected byte ended_threads = 0;
 
@@ -74,27 +70,45 @@ public class LoadProject implements Runnable {
         }
         if (mProject.keyleds_paths != null) {
             XLog.e("Try read keyleds", "Readings...");
+            List<List<File>> keyled_folders = new ArrayList<>(); //Cada lista será uma pasta e em cada "Pasta" terá os arquivos, já ordenados
+            List<File[]> led_file_name_equals = new ArrayList<>();
+
+            for(File paths : mProject.keyleds_paths){
+                List<File> led_files = new ArrayList<>(Arrays.asList(Objects.requireNonNull(paths.listFiles())));
+                keyled_folders.add(led_files);
+            }
+            for(int fd = 0; fd < keyled_folders.size(); fd++){
+                List<File> keyled_folder = keyled_folders.get(fd);
+                while(!keyled_folder.isEmpty()){
+                    File[] leds = new File[keyled_folders.size()];
+                    leds[fd] = keyled_folder.remove(0);
+                    for(int ofd = fd+1; ofd < keyled_folders.size(); ofd++){
+                        List<File> other_folder = keyled_folders.get(ofd);
+                        for(int fi = 0; fi < other_folder.size(); fi++){
+                            if(leds[fd].getName().equals(other_folder.get(fi).getName())){
+                                leds[ofd] = other_folder.remove(fi);
+                                break;
+                            }
+                        }
+                    }
+                    led_file_name_equals.add(leds);
+                }
+            }
+            keyled_folders.clear();
+            Collections.sort(led_file_name_equals, (File[] af1, File[] af2) -> {return af1[0].getName().compareTo(af2[0].getName());});
             mProject.mKeyLED = new KeyLED(context);
             ledT1 = new ArrayList<>();
             ledT2 = new ArrayList<>();
-            int leds_count = 0;
-            for (File path : mProject.keyleds_paths) { // Order
-                List<File> files = Arrays.asList(path.listFiles());
-                Collections.sort(
-                        files,
-                        (File f1, File f2) -> {
-                            return f1.getName().compareTo(f2.getName());
-                        });
-                for(File file : files){
-                    ledT2.add(file);
-                }
-            }
-            leds_count = ledT2.size() / 2;
-            while(ledT2.size() > leds_count){
-                ledT1.add(ledT2.remove(0));
-            }
             total_threads = 2;
             ended_threads = 0;
+            int list_size = led_file_name_equals.size() / total_threads;
+            while (!led_file_name_equals.isEmpty()){
+                if(list_size < ledT1.size()){
+                    ledT1.add(led_file_name_equals.remove(0));
+                } else {
+                    ledT2.add(led_file_name_equals.remove(0));
+                }
+            }
             new Thread(
                             () -> {
                                 ledRead(ledT1);
@@ -114,8 +128,8 @@ public class LoadProject implements Runnable {
         mLoadingProject.onFinishLoadProject();
     }
 
-    protected void ledRead(List<File> led_files) {
-        for (File led : led_files) {
+    protected void ledRead(List<File[]> led_files) {
+        for (File[] led : led_files) {
             mProject.mKeyLED.parse(led, mLoadingProject);
         }
     }

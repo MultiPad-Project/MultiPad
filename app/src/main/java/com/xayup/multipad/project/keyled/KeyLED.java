@@ -48,14 +48,14 @@ public class KeyLED extends Project
         this.added_new_led = false;
     }
 
-    public void parse(File keyled_file, LoadProject.LoadingProject mLoadingProject) {
+    public void parse(File[] keyled_file, LoadProject.LoadingProject mLoadingProject) {
         new KeyLEDReader().read(keyled_file, mLedMap, mLoadingProject);
     }
 
     @Override
     public boolean showLed(int chain, int x, int y) {
         XLog.v("Try show led", "");
-        int[][] frames = mLedMap.getLedData(chain, x, y);
+        int[][] frames = mLedMap.getLedData(chain, x, y).getFrames();
         if (frames != null && frames.length > 0) {
             XLog.v("Led", Arrays.deepToString(frames));
             new_leds_standby.add(new ArrayList<>(List.of(frames)));

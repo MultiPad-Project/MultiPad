@@ -12,22 +12,22 @@
 */
 
 package com.xayup.multipad.project.keyled;
-import com.xayup.multipad.project.keyled.KeyLEDReader;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 public class LedMap implements KeyLEDReader.KeyLEDMap {
     protected int led_count = 0;
-    protected int[/*chain*/][/*pad_x*/][/*pad_y*/][/*sequence*/][/*frames*/][/*TYPE, VALUE, PAD_X, PAD_Y*/] led_map;
+    protected Map<String, KeyLEDData[]> led_map;
     protected byte[][] sequence_index;
     public LedMap(){
-        led_map = new int[24][10][10]/*Dynamic add with put()*/[0][0][0];
+        led_map = new HashMap<>();
         sequence_index = new byte[10][10];
     }
     @Override
     public void clear(){
         led_count = 0;
-        Arrays.fill(led_map, null);
+        led_map.clear();
         led_map = null;
         resetSquencesIndex();
         sequence_index = null;
@@ -36,23 +36,21 @@ public class LedMap implements KeyLEDReader.KeyLEDMap {
         Arrays.fill(sequence_index, null);
     }
     @Override
-    public void putFrame(int chain, int x, int y, int sequence, int[/*TYPE, VALUE, PAD_X, PAD_Y, PADS_LAYOUT*/] led_frame){
-        int[][] tmp = led_map[chain][x][y][sequence];
-        tmp = Arrays.copyOf(tmp, tmp.length+1);
-        tmp[tmp.length-1] = led_frame;
-        led_map[chain][x][y][sequence] = tmp;
-    }
-    @Override
-    public void putSequence(int chain, int x, int y, int[/*FRAME*/][/*TYPE, VALUE, PAD_X, PAD_Y, PADS_LAYOUT*/] led_frames_sequence){
-        int[][][] tmp = led_map[chain][x][y];
-        tmp = Arrays.copyOf(tmp, tmp.length+1);
-        tmp[tmp.length-1] = led_frames_sequence;
-        led_map[chain][x][y] = tmp;
+    public void putSequence(int c, int x, int y, KeyLEDData led_data){
+        String key = makeKey(c, x, y);
+        if(led_map.containsKey(key)){
+
+        }
         led_count++;
     }
-    public int[/*FRAMES*/][/*TYPE, VALUE, PAD_X, PAD_Y, PADS_LAYOUT*/] getLedData(int chain, int x, int y){
+    public String makeKey(int c, int x, int y){
+        return c + String.valueOf(x) + y;
+    }
+    @Override
+    public KeyLEDData getLedData(int c, int x, int y){
         int lenght;
-        if((lenght = led_map[chain][x][y].length) > 0){
+        String key = makeKey(c, x, y);
+        if((lenght = led_map.get(key).length) > 0){
             if(sequence_index[x][y] >= lenght){
                 sequence_index[x][y] = 0;
             }
@@ -61,8 +59,13 @@ public class LedMap implements KeyLEDReader.KeyLEDMap {
         return null;
     }
     @Override
-    public int[/*FRAMES*/][/*TYPE, VALUE, PAD_X, PAD_Y, PADS_LAYOUT*/] getLedData(int chain, int x, int y, int sequence){
-        return (led_map[chain][x][y].length > 0) ? led_map[chain][x][y][sequence] : null;
+    public KeyLEDData getLedData(int chain, int x, int y, int sequence){
+        return null;
+    }
+
+    @Override
+    public KeyLEDData newFrameData(){
+        return new KeyLEDData();
     }
     @Override
     public int framesCount(int chain, int x, int y, int sequence){
