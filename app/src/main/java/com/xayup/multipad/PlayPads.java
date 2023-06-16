@@ -63,7 +63,6 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
     public Activity context = this;
 
-    Colors colors;
     LoadScreen mLoadScreen;
     PadPress mPadPress;
     PadRelease mPadRelease;
@@ -114,108 +113,11 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
     }
 
     class CreateUi extends Project implements PadInterface {
-        private Pad.Pads last_pads_grid;
-        private RelativeLayout root_pads;
-        protected boolean show_project_erros = false;
-        protected boolean hide_load_screen = false;
+        private final RelativeLayout root_pads;
         protected Pad pad;
 
         public CreateUi(Activity context) {
-            this.root_pads = context.findViewById(R.id.contAllPads);
-            loadProject(
-                    context,
-                    new LoadProject.LoadingProject() {
-
-                        @Override
-                        public void onStartLoadProject() {
-                            /* GET FILES DIRs */
-                            path = context.getIntent().getExtras().getString("project_path");
-                            XLog.e("PATHHH", path + "");
-                            boolean[] flags = new boolean[FLAG_SIZE];
-                            flags[TYPE_SAMPLE_FOLDER] = true;
-                            flags[TYPE_KEYLED_FOLDERS] = true;
-                            flags[TYPE_AUTOPLAY_FILE] = true;
-                            readInProject(flags);
-                        }
-
-                        @Override
-                        public void onStartReadFile(String file_name) {
-                            context.runOnUiThread(
-                                    () ->
-                                            mLoadScreen.updatedText(
-                                                    context.getString(R.string.reading)
-                                                            + ": "
-                                                            + file_name));
-                        }
-
-                        @Override
-                        public void onFileError(String file_name, int line, String cause) {
-                            project_loaded_problems.add(line + ":" + file_name + ": " + cause);
-                        }
-
-                        @Override
-                        public void onFinishLoadProject() {
-                            /* Press Pads */
-                            mPadPress = new PadPress();
-                            mPadRelease = new PadRelease();
-                            if (mKeyLED != null) {
-                            mKeyLED.setToShowLed((x, y, real_color, lp_index) -> {
-                                Pad.Pads mPads = pad.getPads(lp_index);
-                                XLog.v("Show led with lp index", String.valueOf(lp_index));
-                                if(mPads != null) {
-                                    View led = mPads.getGridPads().getChildAt(MakePads.PadID.getGridIndexFromXY(mPads.getGridPads().getColumnCount(), x, y)).findViewById(R.id.led);
-                                    context.runOnUiThread(() -> {
-                                        led.setBackgroundColor(real_color);
-                                    });
-                                }
-                            }
-                            );
-                                mPadPress.calls.add(mKeyLED);}
-                            if (mKeySounds != null) mPadPress.calls.add(mKeySounds);
-                            /* Hide Load Screen */
-                            hide_load_screen = true;
-                            show_project_erros = (project_loaded_problems.size() > 0);
-                            if (show_project_erros) {
-                                mLoadScreen.showErrorsList(
-                                        project_loaded_problems,
-                                        (view) -> {
-                                            mLoadScreen.OnEndAnimation(
-                                                    () -> {
-                                                        mLoadScreen.remove();
-                                                        mLoadScreen = null;
-                                                    });
-                                            mLoadScreen.hide(300);
-                                            view.setOnClickListener(null);
-                                        });
-                            } else {
-                                context.runOnUiThread(() -> mLoadScreen.hide(500));
-                            }
-                            context.runOnUiThread(
-                                    () -> {
-                                        mPlayPadsOptions =
-                                                new PlayPadsOptions(context) {
-                                                    @Override
-                                                    public void onExit() {
-                                                        /* Clear */
-                                                        if (mKeyLED != null) {
-                                                            mKeyLED.clear();
-                                                            mKeyLED = null;
-                                                        }
-                                                        if (mAutoPlay != null) {
-                                                            mAutoPlay.clear();
-                                                            mAutoPlay = null;
-                                                        }
-                                                        if (mKeySounds != null) {
-                                                            mKeySounds.clear();
-                                                            mKeySounds = null;
-                                                        }
-                                                        context.finish();
-                                                    }
-                                                };
-                                    });
-                        }
-                    });
-
+            /*Set pads functions*/
             onPadTouch = onChainTouch();
             onChainTouch = onChainTouch();
             onPressWatermarkTouch = onPressWatermarkTouch();
@@ -226,26 +128,117 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             onAutoplayNextTouch = onAutoplayNextTouch();
             onLayoutSwitchTouch = onLayoutSwitchTouch();
             onWatermarkTouch = onWatermarkTouch();
-
+            /*Load Project*/
+            loadProject(context, getLoadingProject());
+            /*Create Pads Layout*/
             pad = new Pad(context, padInteraction());
-            root_pads.post(
+            (this.root_pads = context.findViewById(R.id.contAllPads)).post(
                     () -> {
+                        /*Get display size from MATCH_PARENT view*/
                         int h = root_pads.getMeasuredHeight();
                         int w = root_pads.getMeasuredWidth();
-                        last_pads_grid =
-                                pad.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
-                        ViewGroup virtual_launchpad = last_pads_grid.getRootPads();
-                        GridLayout launchpad_grid = last_pads_grid.getGridPads();
-                        root_pads.addView(virtual_launchpad, new RelativeLayout.LayoutParams(w, h));
-                        ViewGroup.LayoutParams rLayout = launchpad_grid.getLayoutParams();
+
+                        /*Make new Pads object*/
+                        pad.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
+
+                        /*Get View from Pads*/
+                        ViewGroup virtual_launchpad = pad.getActivePads().getRootPads(); //Background
+
+                        /*Prepare Params after add Pads to scene*/
+                        RelativeLayout.LayoutParams bParams = new RelativeLayout.LayoutParams(h, h);
+                        bParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+                        /*Add Pads to scene*/
+                        root_pads.addView(virtual_launchpad, bParams);
+
+                        /*Get Pads grid params and set new values (Size)*/
+                        ViewGroup.LayoutParams rLayout = pad.getActivePads().getGridPads().getLayoutParams();
                         rLayout.height = h;
                         rLayout.width = h;
-                        last_pads_grid.applySkin(
-                                pad.mSkinManager.getPropertiesFromPackage(
-                                        GlobalConfigs.PlayPadsConfigs.skin_package, true));
                     });
         }
-
+        public LoadProject.LoadingProject getLoadingProject() {
+            return new LoadProject.LoadingProject() {
+                @Override
+                public void onStartLoadProject() {
+                    /* GET FILES DIRs */
+                    path = context.getIntent().getExtras().getString("project_path");
+                    XLog.e("PATHHH", path + "");
+                    boolean[] flags = new boolean[FLAG_SIZE];
+                    flags[TYPE_SAMPLE_FOLDER] = true;
+                    flags[TYPE_KEYLED_FOLDERS] = true;
+                    flags[TYPE_AUTOPLAY_FILE] = true;
+                    readInProject(flags);
+                }
+                @Override
+                public void onStartReadFile(String file_name) {
+                    context.runOnUiThread(() -> mLoadScreen.updatedText(context.getString(R.string.reading) + ": " + file_name));
+                }
+                @Override
+                public void onFileError(String file_name, int line, String cause) {
+                    project_loaded_problems.add(line + ":" + file_name + ": " + cause);
+                }
+                @Override
+                public void onFinishLoadProject() {
+                    /* Press Pads */
+                    mPadPress = new PadPress();
+                    mPadRelease = new PadRelease();
+                    if (mKeyLED != null) {
+                        mKeyLED.setToShowLed((x, y, real_color, lp_index) -> {
+                            List<Pad.Pads> mPadsList = pad.getPadsWithIndex(lp_index);
+                            XLog.v("Show led with lp index", String.valueOf(lp_index));
+                            if(mPadsList != null) {
+                                for(Pad.Pads mPads : mPadsList) {
+                                    View led = mPads.getGridPads().getChildAt(MakePads.PadID.getGridIndexFromXY(mPads.getGridPads().getColumnCount(), x, y)).findViewById(R.id.led);
+                                    context.runOnUiThread(() -> led.setBackgroundColor(real_color));
+                                }
+                            }
+                        });
+                        mPadPress.calls.add(mKeyLED);
+                    }
+                    if (mKeySounds != null) mPadPress.calls.add(mKeySounds);
+                    /* Hide Load Screen */
+                    if (project_loaded_problems.size() > 0) {
+                        mLoadScreen.showErrorsList(
+                                project_loaded_problems,
+                                (view) -> {
+                                    mLoadScreen.OnEndAnimation(
+                                            () -> {
+                                                mLoadScreen.remove();
+                                                mLoadScreen = null;
+                                            });
+                                    mLoadScreen.hide(300);
+                                    view.setOnClickListener(null);
+                                });
+                    } else {
+                        context.runOnUiThread(() -> mLoadScreen.hide(500));
+                    }
+                    context.runOnUiThread(
+                            () -> {
+                                mPlayPadsOptions =
+                                        new PlayPadsOptions(context) {
+                                            @Override
+                                            public void onExit() {
+                                                /* Clear */
+                                                if (mKeyLED != null) {
+                                                    mKeyLED.clear();
+                                                    mKeyLED = null;
+                                                }
+                                                if (mAutoPlay != null) {
+                                                    mAutoPlay.clear();
+                                                    mAutoPlay = null;
+                                                }
+                                                if (mKeySounds != null) {
+                                                    mKeySounds.clear();
+                                                    mKeySounds = null;
+                                                }
+                                                context.finish();
+                                            }
+                                        };
+                            });
+                }
+            };
+        }
         protected PadInteraction padInteraction() {
             XLog.v("PAD INTERACTION", "");
             return (View view) -> {

@@ -78,6 +78,7 @@ public class KeyLEDReader implements MapData {
                         switch (chars[0]) {
                             case "delay":
                             case "d": {
+                                if(chars[1].equals("0")) continue;
                                 delays[i] = Integer.parseInt(chars[1]);
                                 continue list_loop;
                             }
@@ -130,11 +131,10 @@ public class KeyLEDReader implements MapData {
                 XLog.v("Get the smallest delay", "");
 
                 for(int d : delays) {
-                    if (delay < 1 || d < delay) {
+                    if (d > 0 && (delay < 1 || d < delay)) {
                         delay = d;
                     }
                 }
-
                 if(delay < 1) break;
                 /*Subtract the delays by the smallest delay obtained*/
                 for(int i = 0; i < delays.length; i++){
@@ -142,9 +142,8 @@ public class KeyLEDReader implements MapData {
                     delays[i] = delays[i] - delay;
                     XLog.v("Delays before", delays[i]+"");
                 }
-
-
                 ledData.putFrame(FRAME_TYPE_DELAY, delay, 0, 0, 0);
+                delay = 0;
             }
             leds_list.clear();
             map.putSequence(chain, x, y, ledData);

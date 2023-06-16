@@ -1,39 +1,42 @@
 package com.xayup.multipad.pads;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
-import com.xayup.multipad.pads.PadInteraction;
-import com.xayup.multipad.pads.PadsLayoutInterface;
+import com.xayup.multipad.R;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.pads.Render.PadSkinData;
 import com.xayup.multipad.pads.Render.SkinManager;
 import com.xayup.multipad.skin.SkinProperties;
 import com.xayup.multipad.skin.SkinSupport;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public class Pad {
-    public Activity context;
-    protected Map<String, Pads> mGridViews;
+    protected Activity context;
+    protected Map<String, List<Pads>> mGridViews;
     public SkinManager mSkinManager;
-    public PadInteraction mPadInteraction;
+    protected PadInteraction mPadInteraction;
+    protected Pads active_pad = null;
+    protected View.OnTouchListener resize_touch;
+    protected View.OnTouchListener rotate_touch;
+    protected View.OnTouchListener move_touch;
+    /*Shared*/
     public int current_chain = 1;
     public int[] current_chain_array = new int[] {1, 9};
     public boolean watermark_press = false;
     public boolean watermark = true;
-    protected String active_layout = null;
 
     public interface PadLayoutMode {
-        public int LAYOUT_PRO_MODE = 0;
-        public int LAYOUT_MK2_MODE = 1;
-        public int LAYOUT_UNIPAD_MODE = 2;
-        public int LAYOUT_MATRIX_MODE = 3;
+        int LAYOUT_PRO_MODE = 0;
+        int LAYOUT_MK2_MODE = 1;
+        int LAYOUT_UNIPAD_MODE = 2;
+        int LAYOUT_MATRIX_MODE = 3;
     }
 
     public Pad(Context context, PadInteraction mPadInteraction) {
@@ -43,20 +46,101 @@ public class Pad {
         mGridViews = new HashMap<>();
     }
 
-    public Pads newPads(String skin_package, int rows, int colums) {
+    /**
+     * Make new Pads Object. Get this or last created pad with getActivePads()
+     * @param skin_package : SKin name to get and set on the Pads
+     * @param rows : rows count
+     * @param columns : columns count.
+     */
+    public void newPads(String skin_package, int rows, int columns) {
         Pads pads =
-                new Pads(mSkinManager.getPropertiesFromPackage(skin_package, true), rows, colums);
-        active_layout = String.valueOf(mGridViews.size());
-        mGridViews.put(active_layout, pads);
-        return pads;
+                new Pads(mSkinManager.getPropertiesFromPackage(skin_package, true), rows, columns);
+        pads.setId(mGridViews.size());
+        if(mGridViews.get(String.valueOf(mGridViews.size())) != null){
+            Objects.requireNonNull(mGridViews.get(String.valueOf(mGridViews.size()))).add(pads);
+        } else {
+            mGridViews.put(String.valueOf(mGridViews.size()), new ArrayList<>(List.of(pads)));
+        }
+        active_pad = pads;
+    }
+
+    public void setEditMode(boolean enable){
+        for(List<Pads> listPads : mGridViews.values()){
+            for(Pads mPads : listPads){
+                if(enable) {
+                    context.getLayoutInflater().inflate(R.layout.pads_editor_view, mPads.getRootPads(), true);
+                } else {
+                    mPads.getRootPads().removeViewAt(mPads.getRootPads().getChildCount()-1);
+                }
+            }
+        }
     }
     
-    public Pads getPads(int index){
+    public List<Pads> getPadsWithIndex(int index){
         return mGridViews.get(String.valueOf(index));
     }
-    
+
+    /**
+     * Isso retorna a Pads ativa (Que será definido pelo usuário ou quando uma nova Pads é criada)
+     * @return um Objeto Pads atual
+     */
     public Pads getActivePads(){
-        return mGridViews.get(active_layout);
+        return active_pad;
+    }
+
+    public View.OnTouchListener getResize_touch(){
+        return new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+                    int h = view.getLayoutParams().height;
+                    int w = view.getLayoutParams().width;
+                    view.getRootView().getLayoutParams().height = h - (int) motionEvent.getY();
+                    view.getRootView().getLayoutParams().width = w - (int) motionEvent.getX();
+                    return true;
+                }
+                return false;
+            }
+        };
+    }
+
+    public View.OnTouchListener getRotate_touch(){
+        return new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
+
+                    return true;
+                }
+                return false;
+            }
+        };
+    }
+
+    public View.OnTouchListener getMove_touch(){
+        return new View.OnTouchListener() {
+            int x;
+            int y;
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch(motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        x = (int) motionEvent.getX();
+                        y = (int) motionEvent.getY();
+                        return true;
+                    }
+                    case MotionEvent.ACTION_MOVE: {
+                        view.setTranslationX(view.getTranslationX() + (motionEvent.getX() - x));
+                        view.setTranslationY(view.getTranslationY() + (motionEvent.getY() - y));
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
     }
 
     public void setCurrentChain(int x, int y) {
@@ -81,15 +165,31 @@ public class Pad {
         protected PadSkinData mSkinData;
         protected ViewGroup mRootPads;
         protected GridLayout mGrid;
+        protected int lp_id;
 
         public Pads(SkinProperties skin, int rows, int colums) {
-            this.mSkinProperties = mSkinProperties;
+            this.mSkinProperties = skin;
             this.mSkinData = new PadSkinData();
             mSkinManager.loadSkin(skin, mSkinData, null);
             this.mRootPads = new MakePads(context, rows, colums).make(mSkinData);
             this.mGrid = (GridLayout) mRootPads.getChildAt(1);
-
+            this.layout_mode = PadLayoutMode.LAYOUT_PRO_MODE;
+            this.lp_id = 0;
             setPadsFunctions();
+        }
+
+        protected void setId(int id){
+            Objects.requireNonNull(mGridViews.get(String.valueOf(lp_id))).remove(this);
+            if(mGridViews.get(String.valueOf(id)) != null){
+                Objects.requireNonNull(mGridViews.get(String.valueOf(id))).add(this);
+            } else {
+                mGridViews.put(String.valueOf(id), new ArrayList<>(List.of(this)));
+            }
+            lp_id = id;
+        }
+
+        public void removeThis(){
+            Objects.requireNonNull(mGridViews.get(String.valueOf(lp_id))).remove(this);
         }
 
         protected void setPadsFunctions() {

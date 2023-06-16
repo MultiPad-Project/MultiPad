@@ -139,7 +139,13 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case ANDROID_11_REQUEST_PERMISSION_AMF:
-                if (Environment.isExternalStorageManager()) {
+                boolean storage;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    storage = Environment.isExternalStorageManager();
+                } else {
+                    storage = Environment.getExternalStorageDirectory().canWrite();
+                }
+                if (storage) {
                     makeActivity(true);
                 } else {
                     makeActivity(false);

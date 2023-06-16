@@ -1,0 +1,65 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/floating_options_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <LinearLayout
+            android:id="@+id/floating_options_top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background_material_dark"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+        <Button
+                android:id="@+id/floating_options_top_bar_button_prev"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/inter_prev" />
+
+        <TextView
+                android:id="@+id/floating_options_top_bar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="@string/main_floating_title"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+    </LinearLayout>
+
+    <ViewFlipper
+            android:id="@+id/main_floating_menu_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/main_floating_menu_button_exit"
+            android:layout_below="@id/main_floating_menu_bar"
+            android:layout_marginTop="1dp"
+            android:background="@color/background_material_dark"
+            android:orientation="vertical" >
+
+    </ViewFlipper>
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/main_floating_menu_bar"
+            android:background="@color/view_divider_color" />
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/main_floating_menu_bar"
+            android:background="@color/view_divider_color" />
+
+    <LinearLayout
+            android:id="@+id/floating_options_top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background_material_dark"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+</LinearLayout>
+</RelativeLayout>
