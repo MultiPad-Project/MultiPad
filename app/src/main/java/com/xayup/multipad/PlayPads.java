@@ -54,6 +54,8 @@ import com.xayup.multipad.pads.PadInterface;
 import com.xayup.multipad.pads.PadPressCallInterface;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.project.keyled.Colors;
+import com.xayup.multipad.project.keyled.KeyLED;
+
 import java.io.*;
 import java.util.*;
 
@@ -156,7 +158,19 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                             /* Press Pads */
                             mPadPress = new PadPress();
                             mPadRelease = new PadRelease();
-                            if (mKeyLED != null) mPadPress.calls.add(mKeyLED);
+                            if (mKeyLED != null) {
+                            mKeyLED.setToShowLed((x, y, real_color, lp_index) -> {
+                                Pad.Pads mPads = pad.getPads(lp_index);
+                                XLog.v("Show led with lp index", String.valueOf(lp_index));
+                                if(mPads != null) {
+                                    View led = mPads.getGridPads().getChildAt(MakePads.PadID.getGridIndexFromXY(mPads.getGridPads().getColumnCount(), x, y)).findViewById(R.id.led);
+                                    context.runOnUiThread(() -> {
+                                        led.setBackgroundColor(real_color);
+                                    });
+                                }
+                            }
+                            );
+                                mPadPress.calls.add(mKeyLED);}
                             if (mKeySounds != null) mPadPress.calls.add(mKeySounds);
                             /* Hide Load Screen */
                             hide_load_screen = true;

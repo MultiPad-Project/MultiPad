@@ -46,13 +46,13 @@ public class Pad {
     public Pads newPads(String skin_package, int rows, int colums) {
         Pads pads =
                 new Pads(mSkinManager.getPropertiesFromPackage(skin_package, true), rows, colums);
-        active_layout = "pad_" + mGridViews.size();
+        active_layout = String.valueOf(mGridViews.size());
         mGridViews.put(active_layout, pads);
         return pads;
     }
     
-    public Pads getPads(String name){
-        return mGridViews.get(name);
+    public Pads getPads(int index){
+        return mGridViews.get(String.valueOf(index));
     }
     
     public Pads getActivePads(){

@@ -15,6 +15,7 @@ package com.xayup.multipad.project.keyled;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class LedMap implements KeyLEDReader.KeyLEDMap {
     protected int led_count = 0;
@@ -29,17 +30,22 @@ public class LedMap implements KeyLEDReader.KeyLEDMap {
         led_count = 0;
         led_map.clear();
         led_map = null;
-        resetSquencesIndex();
+        resetSequencesIndex();
         sequence_index = null;
     }
-    public void resetSquencesIndex(){
+    public void resetSequencesIndex(){
         Arrays.fill(sequence_index, null);
     }
     @Override
     public void putSequence(int c, int x, int y, KeyLEDData led_data){
         String key = makeKey(c, x, y);
-        if(led_map.containsKey(key)){
-
+        if(led_map.get(key) == null){
+            led_map.put(key, new KeyLEDData[]{led_data});
+        } else {
+            KeyLEDData[] tmp = led_map.get(key);
+            tmp = Arrays.copyOf(Objects.requireNonNull(tmp), tmp.length+1);
+            tmp[tmp.length-1] = led_data;
+            led_map.put(key, tmp);
         }
         led_count++;
     }
@@ -48,13 +54,15 @@ public class LedMap implements KeyLEDReader.KeyLEDMap {
     }
     @Override
     public KeyLEDData getLedData(int c, int x, int y){
-        int lenght;
+        int length;
         String key = makeKey(c, x, y);
-        if((lenght = led_map.get(key).length) > 0){
-            if(sequence_index[x][y] >= lenght){
+        KeyLEDData[] tmp = led_map.get(key);
+        if(tmp == null) return null;
+        if((length = tmp.length) > 0){
+            if(sequence_index[x][y] >= length){
                 sequence_index[x][y] = 0;
             }
-            return led_map[chain][x][y][sequence_index[x][y]++];    
+            return tmp[sequence_index[x][y]++];
         }
         return null;
     }
@@ -69,11 +77,11 @@ public class LedMap implements KeyLEDReader.KeyLEDMap {
     }
     @Override
     public int framesCount(int chain, int x, int y, int sequence){
-        return led_map[chain][x][y][sequence].length;
+        return Objects.requireNonNull(led_map.get(makeKey(chain, x, y)))[sequence].length();
     }
     @Override
     public int sequenceCount(int chain, int x, int y){
-        return led_map[chain][x][y].length;
+        return Objects.requireNonNull(led_map.get(makeKey(chain, x, y))).length;
     }
     @Override
     public int ledsCount(){

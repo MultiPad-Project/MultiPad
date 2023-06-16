@@ -23,19 +23,23 @@ public class KeyLEDReader implements MapData {
     public void read(File[] leds, KeyLEDMap map, LoadProject.LoadingProject mLoadingProject) {
         if (leds != null){
             boolean checked_name = false;
-            int chain, x, y;
+            int chain = 0;
+            int x = 0;
+            int y = 0;
             boolean loop = false;
             List<List<String>> leds_list = new ArrayList<>();
             for (File led : leds) {
                 if (led != null) {
                     if (!checked_name) {
-                        String[] chars = leds[0].getName().split("\\s");
-                        if (chars.length < 3) return;
+                        String[] chars = led.getName().split("\\s");
+                        XLog.v("Name", led.getName());
+
                         try {
+                            if (chars.length < 3) throw new NumberFormatException();
                             chain = Integer.parseInt(chars[0]);
                             x = Integer.parseInt(chars[1]);
                             y = Integer.parseInt(chars[2]);
-                            loop = chars.length > 3 && chars[3].equals("0");
+                            loop = chars[3].equals("0");
 
                         } catch (NumberFormatException n) {
                             mLoadingProject.onFileError(leds[0].getName(), 0, "Name format");
@@ -51,24 +55,31 @@ public class KeyLEDReader implements MapData {
                 }
             }
             /*Synchronize*/
+            XLog.v("Synchronize Leds", "");
             KeyLEDData ledData = map.newFrameData();
+            ledData.setTypeLoop(loop);
             int[] delays = new int[leds_list.size()];
-            Arrays.fill(delays, -1);
-            while(!leds_list.isEmpty()) {
-                next_file: for (int i = 0; i < leds_list.size(); i++) {
+            int delay = 0;
+            while(true) {
+                XLog.v("loop 1", "");
+                list_loop: for (int i = 0; i < leds_list.size(); i++) {
+                    XLog.v("loop 2", "");
+
                     while (!leds_list.get(i).isEmpty()) {
+                        XLog.v("loop 3", "");
+
+                        if(delays[i] > 0) break;
                         String[] chars = leds_list.get(i).remove(0).split("\\s");
                         if (chars.length < 2) continue;
                         int type = 0;
                         int value = 0;
                         int pad_x = 0;
                         int pad_y = 0;
-
                         switch (chars[0]) {
                             case "delay":
                             case "d": {
                                 delays[i] = Integer.parseInt(chars[1]);
-                                continue next_file;
+                                continue list_loop;
                             }
                             case "on":
                             case "o": {
@@ -80,14 +91,18 @@ public class KeyLEDReader implements MapData {
                                 type = FRAME_TYPE_OFF;
                                 pad_x = Integer.parseInt(chars[1]);
                                 pad_y = Integer.parseInt(chars[2]);
+                                ledData.putFrame(type, value, pad_x, pad_y, i);
+                                continue;
+                            }
+                            default: {
                                 continue;
                             }
                         }
-                        if (chars[1].equals("l")) {
+                        if (chars[1].equalsIgnoreCase("l")) {
                             pad_x = 0;
                             pad_y = 9;
                             value = Integer.parseInt(chars[3]);
-                        } else if (chars[1].matches("mc|\\*")) {
+                        } else if (chars[1].matches("[m|M][c|C]|\\*")) {
                             int mc = Integer.parseInt(chars[2]);
                             if (mc > 24) {
                                 pad_x = 33 - mc;
@@ -108,10 +123,31 @@ public class KeyLEDReader implements MapData {
                             pad_y = Integer.parseInt(chars[2]);
                             value = Integer.parseInt(chars[4]);
                         }
+                        ledData.putFrame(type, value, pad_x, pad_y, i);
                     }
-
                 }
+                /*Get the smallest delay*/
+                XLog.v("Get the smallest delay", "");
+
+                for(int d : delays) {
+                    if (delay < 1 || d < delay) {
+                        delay = d;
+                    }
+                }
+
+                if(delay < 1) break;
+                /*Subtract the delays by the smallest delay obtained*/
+                for(int i = 0; i < delays.length; i++){
+                    XLog.v("Delays after", delays[i]+"");
+                    delays[i] = delays[i] - delay;
+                    XLog.v("Delays before", delays[i]+"");
+                }
+
+
+                ledData.putFrame(FRAME_TYPE_DELAY, delay, 0, 0, 0);
             }
+            leds_list.clear();
+            map.putSequence(chain, x, y, ledData);
         }
     }
 

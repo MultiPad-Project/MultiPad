@@ -52,6 +52,9 @@ public class MakePads {
     }
     /** Obtenha o id da pad atraves de suas cordenada X e Y */
     public static class PadID {
+        public static int getGridIndexFromXY(int grid_colums, int row, int colum) {
+            return (grid_colums * row) + colum;
+        }
         public static byte[ /*X*/][ /*Y*/] ids = new byte[10][10];
 
         public static int getId(int x, int y) {

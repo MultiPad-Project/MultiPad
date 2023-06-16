@@ -35,6 +35,11 @@ public class KeyLED extends Project
     protected List<List<int[]>> new_leds_standby;
     protected List<int[]> delays;
     protected Colors colors;
+    protected ToShowLed mToShowLed;
+
+    public interface ToShowLed {
+        void showLed(int x, int y, int real_color, int lp_index);
+    }
 
     public KeyLED(Activity context) {
         this.context = context;
@@ -46,19 +51,23 @@ public class KeyLED extends Project
         this.colors = new Colors(context);
         this.led_thread = new Thread(this);
         this.added_new_led = false;
+        this.mToShowLed = null;
     }
 
     public void parse(File[] keyled_file, LoadProject.LoadingProject mLoadingProject) {
         new KeyLEDReader().read(keyled_file, mLedMap, mLoadingProject);
     }
 
+    public void setToShowLed(ToShowLed mToShowLed){
+        this.mToShowLed = mToShowLed;
+    };
+
     @Override
     public boolean showLed(int chain, int x, int y) {
         XLog.v("Try show led", "");
-        int[][] frames = mLedMap.getLedData(chain, x, y).getFrames();
-        if (frames != null && frames.length > 0) {
-            XLog.v("Led", Arrays.deepToString(frames));
-            new_leds_standby.add(new ArrayList<>(List.of(frames)));
+        KeyLEDData ledData = mLedMap.getLedData(chain, x, y);
+        if (ledData != null && ledData.length() > 0) {
+            new_leds_standby.add(new ArrayList<>(List.of(ledData.getFrames())));
             added_new_led = true;
             if (!running.get()) {
                 running.set(true);
@@ -92,18 +101,13 @@ public class KeyLED extends Project
     @Override
     public void run() {
         XLog.v("Run thread led", "");
-        int delay_array_index = 0;
         long delay_array_delay = 0;
-        int old_delay_array_delay = 0;
-        int delay_index = 0;
-        boolean sub_delay = false;
         while (running.get()) {
             while (new_leds_standby.isEmpty()) {}
             while (!new_leds_standby.isEmpty()) {
                 delays.add(null);
                 leds_standby.add(new_leds_standby.remove(0));
             }
-            leds_standby:
             while (!leds_standby.isEmpty()) {
                 for (int l = 0; l < leds_standby.size(); l++) {
                     if ((leds_standby.get(l) != null)) {
@@ -112,12 +116,12 @@ public class KeyLED extends Project
                                 int[] frame = leds_standby.get(l).remove(0);
                                 if (frame[FRAME_TYPE] == FRAME_TYPE_DELAY) {
                                     delays.remove(l);
-                                    delays.add(l, new int[] {frame[FRAME_VALUE]});
+                                    delays.add(l, new int[]{frame[FRAME_VALUE]});
                                 } else {
-                                    onUi(
+                                    if(mToShowLed != null) mToShowLed.showLed(
                                             frame[FRAME_PAD_X],
                                             frame[FRAME_PAD_Y],
-                                            (byte) frame[FRAME_VALUE]);
+                                            colors.colorFromVelocity((byte) frame[FRAME_VALUE]), frame[FRAME_LP_INDEX]);
                                     continue;
                                 }
                             }
@@ -134,14 +138,15 @@ public class KeyLED extends Project
                     for (int d = 0; d < delays.size(); d++) {
                         if ((delays.get(d) != null)
                                 && (delay_array_delay <= 0
-                                        || delays.get(d)[0] < delay_array_delay)) {
+                                || delays.get(d)[0] < delay_array_delay)) {
                             delay_array_delay = delays.get(d)[0];
                         }
                     }
                     long delay_time = SystemClock.uptimeMillis() + delay_array_delay;
                     while (SystemClock.uptimeMillis() < delay_time
                             && running.get()
-                            && !added_new_led) {}
+                            && !added_new_led) {
+                    }
                     added_new_led = false;
                     int time = 0;
                     if ((time = (int) (delay_time - SystemClock.uptimeMillis())) > 0) {
@@ -157,7 +162,6 @@ public class KeyLED extends Project
                         }
                     }
                 }
-                delay_array_index = 0;
                 delay_array_delay = 0;
                 if (!new_leds_standby.isEmpty()) {
                     break;
@@ -165,19 +169,5 @@ public class KeyLED extends Project
             }
         }
         XLog.v("Finish thread led", "");
-    }
-
-    public void onUi(int x, int y, byte velocity) {
-        context.runOnUiThread(
-                () -> {
-                    try {
-                        Log.v("ID", String.valueOf(MakePads.PadID.getId(x, y)));
-                        context.findViewById(MakePads.PadID.getId(x, y))
-                                .findViewById(R.id.led)
-                                .setBackgroundColor(colors.colorFromVelocity(velocity));
-                    } catch (NullPointerException n) {
-                        Log.e("KeyLED", "Null led frame?");
-                    }
-                });
     }
 }

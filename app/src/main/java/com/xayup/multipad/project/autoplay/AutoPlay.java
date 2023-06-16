@@ -125,12 +125,6 @@ public class AutoPlay
         return 0;
     }
 
-    public View getViewFromXY(int row, int colum) {
-        int child_index = (viewRoot.getColumnCount() * row) + colum;
-        XLog.v("Child index", "row - " + row + ", colum - " + colum + " = " + child_index);
-        return viewRoot.getChildAt(child_index); 
-    }
-
     @Override
     public void run() {
         // mAutoPlayChange.onAutoPlayStarted(auto_play_map.size());
@@ -150,31 +144,22 @@ public class AutoPlay
                     {
                         // ACTION_DOWN
                         mTouch.touch(
-                                viewRoot.findViewById(
-                                        MakePads.PadID.getId(
-                                                frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
+                                viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
                         break;
                     }
                 case FRAME_TYPE_OFF:
                     {
                         // ACTION_UP
                         mTouch.release(
-                                        getViewFromXY(
-                                                frame[FRAME_PAD_X], frame[FRAME_PAD_Y]));
+                                        viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
                         break;
                     }
                 case FRAME_TYPE_TOUCH:
-                    {
-                        // ACTION_DOWN and ACTION_UP
-                        mTouch.touchAndRelease(
-                                getViewFromXY(
-                                                frame[FRAME_PAD_X], frame[FRAME_PAD_Y]));
-                        break;
-                    }
                 case FRAME_TYPE_CHAIN:
                     {
                         // Touch in chain
-                        mTouch.touch(getViewFromXY(frame[FRAME_PAD_X], frame[FRAME_PAD_Y]));
+                        mTouch.touchAndRelease(
+                                viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
                         break;
                     }
             }
