@@ -15,6 +15,5 @@
 	<color name="background_floating_material_dark_pressed">#FF3C85C5</color>
 	<color name="accent_material_dark">#ffffffff</color>
 	<color name="background_item_clicked">#12FFFFFF</color>
-	<color name="view_divider_color">#FF7D7D7D</color>
-	
+
 </resources>

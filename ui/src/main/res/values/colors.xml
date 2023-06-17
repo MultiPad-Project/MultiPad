@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="floating_options_divider_color">#FFFFFFFF</color>
+    <color name="floating_options_text_title_color">#FFFFFFFF</color>
+    <color name="floating_options_text_item_title_color">#FFFFFFFF</color>
+    <color name="floating_options_text_item_description_color">#FFFFFFFF</color>
+    <color name="background_item_clicked">#12FFFFFF</color>
 </resources>
