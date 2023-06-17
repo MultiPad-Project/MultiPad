@@ -25,7 +25,6 @@ android {
         }
     }
     compileSdk 32
-    buildToolsVersion "33.0.0"
 
     defaultConfig {
         applicationId "com.xayup.multipad"

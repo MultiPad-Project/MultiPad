@@ -1,43 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                android:id="@+id/main_floating_item_useunipadfolder"
-                android:background="@drawable/inter_main_floating_item"
-                android:clickable="true"
-                android:orientation="vertical"
+                android:layout_height="@dimen/floating_options_item_height"
                 android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:paddingTop="8dp" >
 
         <TextView
-                android:id="@+id/main_floating_item_useunipadfolder_title"
+                android:id="@+id/floating_options_item_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:text="@string/use_unipad_folder"
-                android:textColor="@color/primary_text_default_material_dark"
-                android:textSize="14dp" />
+                android:text="title"
+                android:layout_toStartOf="@+id/floating_options_item_indentify_container"
+                android:textColor="@color/floating_options_item_title_color"
+                android:textSize="@dimen/floating_options_item_title_text_size" />
 
         <TextView
-                android:id="@+id/main_floating_item_useunipadfolder_subtitle"
+                android:id="@+id/floating_options_item_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/main_floating_item_useunipadfolder_title"
-                android:text="@string/use_unipad_folder_subtitle"
-                android:textColor="@color/secondary_text_material_dark"
-                android:textSize="12dp" />
+                android:layout_alignParentStart="true"
+                android:text="description"
+                android:layout_toStartOf="@+id/floating_options_item_indentify_container"
+                android:layout_below="@id/floating_options_item_title"
+                android:textColor="@color/floating_options_item_description_color"
+                android:textSize="@dimen/floating_options_item_description_text_size" />
 
-        <CheckBox
-                android:id="@+id/main_floating_menu_useunipadfolder_check"
+        <RelativeLayout
+                android:id="@+id/floating_options_item_indentify_container"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:clickable="false"
-                android:typeface="monospace" />
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true">
+                <View
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/floating_options_divider_color"/>
+                <CheckBox
+                        android:id="@+id/floating_options_item_checkbox"
+                        android:layout_width="@dimen/floating_options_item_identify_size"
+                        android:layout_height="@dimen/floating_options_item_identify_size"
+                        android:layout_centerInParent="true"
+                        android:clickable="false"
+                        android:typeface="monospace" />
+                <ImageView
+                        android:id="@+id/floating_options_item_img_arrow"
+                        android:layout_width="@dimen/floating_options_item_identify_size"
+                        android:layout_height="@dimen/floating_options_item_identify_size"
+                        android:layout_centerInParent="true"
+                        android:scaleX="-1.0"
+                        android:src="@drawable/prev"
+                        android:layout_marginEnd="16dp" android:layout_centerHorizontal="true"/>
+
+        </RelativeLayout>
 
 </RelativeLayout>

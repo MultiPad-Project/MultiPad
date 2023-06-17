@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 import com.xayup.ui.R;
 
-public class OptionsItem implements  OptionsInterface {
+public class OptionsItem implements OptionsItemInterface {
     protected final View layout;
     protected int type;
 
@@ -26,26 +26,37 @@ public class OptionsItem implements  OptionsInterface {
 
     @Override
     public void setTitle(String title) {
-        ((TextView) layout.findViewById(0000)).setText(title);
+        ((TextView) layout.findViewById(R.id.floating_options_item_title)).setText(title);
     }
 
     @Override
     public void setDescription(String desc) {
-
+        ((TextView) layout.findViewById(R.id.floating_options_item_description)).setText(desc);
     }
 
     @Override
     public void setOnClick(View.OnClickListener onClick) {
+        layout.setOnClickListener(onClick);
+    }
+
+    @Override
+    public void setOnLongClick(View.OnLongClickListener onLongClick) {
+        layout.setOnLongClickListener(onLongClick);
 
     }
 
     @Override
-    public void setOnLongClick(View.OnLongClickListener onClick) {
-
+    public void setEnabled(boolean enable){
+        if(enable){
+            layout.setAlpha(1.0f);
+        } else {
+            layout.setAlpha(0.4f);
+        }
+        layout.setEnabled(enable);
     }
 
     @Override
     public boolean enabled() {
-        return false;
+        return layout.isEnabled();
     }
 }
