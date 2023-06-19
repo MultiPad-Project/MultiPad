@@ -55,19 +55,13 @@ public class KeyLEDReader implements MapData {
                 }
             }
             /*Synchronize*/
-            XLog.v("Synchronize Leds", "");
             KeyLEDData ledData = map.newFrameData();
             ledData.setTypeLoop(loop);
             int[] delays = new int[leds_list.size()];
             int delay = 0;
             while(true) {
-                XLog.v("loop 1", "");
                 list_loop: for (int i = 0; i < leds_list.size(); i++) {
-                    XLog.v("loop 2", "");
-
                     while (!leds_list.get(i).isEmpty()) {
-                        XLog.v("loop 3", "");
-
                         if(delays[i] > 0) break;
                         String[] chars = leds_list.get(i).remove(0).split("\\s");
                         if (chars.length < 2) continue;

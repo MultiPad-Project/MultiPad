@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="options_item_title" type="id"/>
+    <item name="options_item_description" type="id"/>
+    <item name="options_item_with_image_image" type="id"/>
+    <item name="options_item_identify_checkbox" type="id"/>
+    <item name="options_item_identify_arrow" type="id"/>
+    <item name="options_item_identify_container" type="id"/>
+</resources>

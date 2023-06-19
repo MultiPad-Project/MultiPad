@@ -9,9 +9,22 @@ public class OptionsItem implements OptionsItemInterface {
     protected final View layout;
     protected int type;
 
-    public OptionsItem(Activity context){
-        this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
-        this.type = TYPE_CLICKABLE;
+    public OptionsItem(Activity context, int type){
+        this.type = type;
+        switch (type){
+            case TYPE_SIMPLE:{
+                this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
+                break;
+            }
+            case TYPE_SIMPLE_WITH_CHECKBOX:{
+                this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
+                break;
+            }
+            case TYPE_CENTER_WITH_IMAGE:{
+                this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
+                break;
+            }
+        }
     }
 
     @Override

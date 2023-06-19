@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/floating_options_item_height"
+                android:layout_height="@dimen/options_item_height"
                 android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:paddingTop="8dp" >
 
         <TextView
-                android:id="@+id/floating_options_item_title"
+                android:id="@id/options_item_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:text="title"
-                android:layout_toStartOf="@+id/floating_options_item_indentify_container"
-                android:textColor="@color/floating_options_item_title_color"
-                android:textSize="@dimen/floating_options_item_title_text_size" />
+                android:text="Title"
+                android:layout_toStartOf="@id/options_item_identify_container"
+                android:textColor="@color/options_item_title_color"
+                android:textSize="@dimen/options_item_title_text_size" />
 
         <TextView
-                android:id="@+id/floating_options_item_description"
+                android:id="@+id/options_item_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:text="description"
-                android:layout_toStartOf="@+id/floating_options_item_indentify_container"
-                android:layout_below="@id/floating_options_item_title"
-                android:textColor="@color/floating_options_item_description_color"
-                android:textSize="@dimen/floating_options_item_description_text_size" />
+                android:text="Description"
+                android:layout_toStartOf="@id/options_item_identify_container"
+                android:layout_below="@id/options_item_title"
+                android:textColor="@color/options_item_description_color"
+                android:textSize="@dimen/options_item_description_text_size" />
 
         <RelativeLayout
-                android:id="@+id/floating_options_item_indentify_container"
+                android:id="@id/options_item_identify_container"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
@@ -38,18 +38,18 @@
                 <View
                         android:layout_width="2dp"
                         android:layout_height="match_parent"
-                        android:background="@color/floating_options_divider_color"/>
+                        android:background="@color/options_divider_color"/>
                 <CheckBox
-                        android:id="@+id/floating_options_item_checkbox"
-                        android:layout_width="@dimen/floating_options_item_identify_size"
-                        android:layout_height="@dimen/floating_options_item_identify_size"
+                        android:id="@+id/options_item_identify_checkbox"
+                        android:layout_width="@dimen/options_item_identify_size"
+                        android:layout_height="@dimen/options_item_identify_size"
                         android:layout_centerInParent="true"
                         android:clickable="false"
                         android:typeface="monospace" />
                 <ImageView
-                        android:id="@+id/floating_options_item_img_arrow"
-                        android:layout_width="@dimen/floating_options_item_identify_size"
-                        android:layout_height="@dimen/floating_options_item_identify_size"
+                        android:id="@+id/options_item_identify_arrow"
+                        android:layout_width="@dimen/options_item_identify_size"
+                        android:layout_height="@dimen/options_item_identify_size"
                         android:layout_centerInParent="true"
                         android:scaleX="-1.0"
                         android:src="@drawable/prev"

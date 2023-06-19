@@ -46,6 +46,9 @@ import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.pads.Pad;
 import com.xayup.multipad.pads.PadInteraction;
 import com.xayup.multipad.pads.Render.MakePads;
+import com.xayup.ui.options.FluctuateOptionsView;
+import com.xayup.ui.options.OptionsItem;
+import com.xayup.ui.options.OptionsPage;
 
 import java.io.*;
 import java.util.*;
@@ -109,6 +112,11 @@ public abstract class PlayPadsOptions extends GlobalConfigs.PlayPadsConfigs {
 
     public PlayPadsOptions(Activity context) {
         this.context = context;
+        FluctuateOptionsView mFlutuantOptions = new FluctuateOptionsView(context);
+        OptionsPage page = mFlutuantOptions.getPage(mFlutuantOptions.newPage(context.getString(R.string.alert_exit_title)));
+        OptionsItem item = new OptionsItem(context);
+        item.setTitle();
+
         // Layout
         View onExitDialog = context.getLayoutInflater().inflate(R.layout.alertexit_dialog, null);
         // Botões principais
