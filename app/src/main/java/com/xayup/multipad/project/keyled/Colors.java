@@ -65,15 +65,20 @@ public class Colors {
                         });
     }
 
-    public void getTable(String table_name) throws IOException {
-        if (new File(table_path, table_name).exists()) {
-            colors = mColorTable.toColorWithAlpha(mColorTable.parse(new File(table_path, table_name)));
+    public void getTable(File table) throws IOException {
+        if (table.exists()) {
+            colors = mColorTable.toColorWithAlpha(mColorTable.parse(table));
         } else {
             colors = mColorTable.toColorWithAlpha(mColorTable.parse(new File(default_table_name)));
         }
         if (colors == null) {
-            new IOException(table_path+"/"+table_name + " does not exist!");
+            throw new IOException(table_path + "/" + table.getName() + " does not exist!");
         }
+    }
+
+    public void getTable(String table_name) throws IOException {
+        getTable(new File(table_path, table_name));
+
     }
 
     public int colorFromVelocity(byte velocity) {

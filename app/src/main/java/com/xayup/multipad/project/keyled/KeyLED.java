@@ -21,6 +21,7 @@ import com.xayup.multipad.load.Project;
 import com.xayup.multipad.load.ProjectMapData;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -52,6 +53,14 @@ public class KeyLED extends Project
         this.led_thread = new Thread(this);
         this.added_new_led = false;
         this.mToShowLed = null;
+    }
+
+    public void setColorTable(File color_table){
+        try {
+            colors.getTable(color_table);
+        } catch (IOException io){
+            XLog.e("Set color table error", io.toString());
+        }
     }
 
     public void parse(File[] keyled_file, LoadProject.LoadingProject mLoadingProject) {

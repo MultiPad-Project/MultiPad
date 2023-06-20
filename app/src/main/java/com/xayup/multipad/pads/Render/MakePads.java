@@ -110,14 +110,17 @@ public class MakePads {
         this.context = (Activity) context;
     }
 
-    public ViewGroup make(PadSkinData mSkinData) {
+    /**
+     *
+     * @return
+     */
+    public ViewGroup make() {
         View led;
         ImageView btn, btn_, phantom, playbg;
         TextView touch_map;
         RelativeLayout grid_root = new RelativeLayout(context);
         GridLayout mGrid = new GridLayout(context);
         playbg = new ImageView(context);
-        playbg.setImageDrawable(mSkinData.draw_playbg);
         playbg.setScaleType(ImageView.ScaleType.CENTER);
         RelativeLayout.LayoutParams rLayout = new RelativeLayout.LayoutParams(-1, -1);
         grid_root.addView(playbg, rLayout);
@@ -165,8 +168,6 @@ public class MakePads {
                                                 (byte) r, (byte) c, PadInfo.PadInfoIdentifier.LOGO
                                             }));
                         } else {
-
-                            phantom.setImageDrawable(mSkinData.draw_chainled);
                             phantom.setTag(
                                     new PadInfo(
                                             new byte[] {

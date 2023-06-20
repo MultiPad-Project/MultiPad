@@ -1,30 +1,56 @@
 package com.xayup.ui.options;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.xayup.ui.R;
 
 public class OptionsItem implements OptionsItemInterface {
     protected final View layout;
     protected int type;
+    public Object tag;
 
     public OptionsItem(Activity context, int type){
         this.type = type;
         switch (type){
-            case TYPE_SIMPLE:{
-                this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
-                break;
-            }
             case TYPE_SIMPLE_WITH_CHECKBOX:{
                 this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
+                ((ViewGroup) this.layout.findViewById(R.id.options_item_identify_container)).removeView(this.layout.findViewById(R.id.options_item_identify_arrow));
                 break;
             }
             case TYPE_CENTER_WITH_IMAGE:{
+                this.layout = context.getLayoutInflater().inflate(R.layout.options_item_center_with_image, null, false);
+                break;
+            }
+            default:{
                 this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
+                ((ViewGroup) this.layout.findViewById(R.id.options_item_identify_container)).removeView(this.layout.findViewById(R.id.options_item_identify_checkbox));
                 break;
             }
         }
+    }
+
+    public void setTag(Object tag){
+        this.tag = tag;
+    }
+    public Object getTag(){
+        return this.tag;
+    }
+
+    public void setChecked(boolean checked){
+        getCheckBox().setChecked(checked);
+    }
+
+    public CheckBox getCheckBox(){
+        return ((CheckBox) this.layout.findViewById(R.id.options_item_identify_checkbox));
+    }
+
+    public void setImg(Drawable img){
+        ((ImageView) this.layout.findViewById(R.id.options_item_with_image_image)).setImageDrawable(img);
     }
 
     @Override
@@ -39,12 +65,12 @@ public class OptionsItem implements OptionsItemInterface {
 
     @Override
     public void setTitle(String title) {
-        ((TextView) layout.findViewById(R.id.floating_options_item_title)).setText(title);
+        ((TextView) layout.findViewById(R.id.options_item_title)).setText(title);
     }
 
     @Override
     public void setDescription(String desc) {
-        ((TextView) layout.findViewById(R.id.floating_options_item_description)).setText(desc);
+        ((TextView) layout.findViewById(R.id.options_item_description)).setText(desc);
     }
 
     @Override

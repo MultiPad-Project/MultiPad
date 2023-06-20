@@ -39,11 +39,11 @@ public class GlobalConfigs {
     // PlayPads
     public static class PlayPadsConfigs {
 
-        public int glowPadRadius = 180;
-        public int glowChainRadius = 160;
-        public float glowIntensity = 0.9f;
-        public float glowChainIntensity = 0.6f;
-        public boolean mk2,
+        public static int glowPadRadius = 180;
+        public static int glowChainRadius = 160;
+        public static float glowIntensity = 0.9f;
+        public static float glowChainIntensity = 0.6f;
+        public static boolean mk2,
                 autoPlayCheck,
                 spamSounds,
                 spamLeds,
@@ -52,9 +52,9 @@ public class GlobalConfigs {
                 recAutoplay,
                 glow_cfg_visible = false;
         /* Persistent */
-        public boolean slideMode;
-        public boolean hide_buttoms_b;
-        public boolean glow_enabled;
+        public static boolean slideMode;
+        public static boolean hide_buttoms_b;
+        public static boolean glow_enabled;
         public static String skin_package = "com.xayup.multipad";
         public static String current_table = "EyeDrop_default.ct";
         public static String default_table_name = "EyeDrop_default.ct";

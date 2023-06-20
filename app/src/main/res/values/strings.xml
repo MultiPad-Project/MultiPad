@@ -9,6 +9,10 @@
     <string name="main_bottom_bar_text_broken">Broken:</string>
     <string name="main_bottom_bar_text_total">Total:</string>
 
+    <!--List Skin-->
+    <string name="list_skin_apply_title">Apply skin for:</string>
+    <string name="list_skin_apply_for_all">Apply for All</string>
+
     <string name="app_name">MultiPad</string>
     <string name="permission_storage_necessary">Permission to storage needed!</string>
     <string name="diag_invalidfiles_title">Invalid formats</string>

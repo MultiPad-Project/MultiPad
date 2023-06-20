@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import com.xayup.multipad.R;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.pads.Render.PadSkinData;
-import com.xayup.multipad.pads.Render.SkinManager;
+import com.xayup.multipad.skin.SkinManager;
 import com.xayup.multipad.skin.SkinProperties;
 import com.xayup.multipad.skin.SkinSupport;
 
@@ -54,13 +54,15 @@ public class Pad {
      */
     public void newPads(String skin_package, int rows, int columns) {
         Pads pads =
-                new Pads(mSkinManager.getPropertiesFromPackage(skin_package, true), rows, columns);
-        pads.setId(mGridViews.size());
+                new Pads(mSkinManager.getPropertiesFromPackage(context, skin_package, true), rows, columns);
+        /*
         if(mGridViews.get(String.valueOf(mGridViews.size())) != null){
             Objects.requireNonNull(mGridViews.get(String.valueOf(mGridViews.size()))).add(pads);
         } else {
             mGridViews.put(String.valueOf(mGridViews.size()), new ArrayList<>(List.of(pads)));
-        }
+        }*/
+        pads.setId(mGridViews.size());
+        pads.setName("pad_" + pads.getId());
         active_pad = pads;
     }
 
@@ -78,6 +80,14 @@ public class Pad {
     
     public List<Pads> getPadsWithIndex(int index){
         return mGridViews.get(String.valueOf(index));
+    }
+
+    public List<Pads> getAllPadsList(){
+        List<Pads> tmp = new ArrayList<>();
+        for(List<Pads> list: mGridViews.values()){
+            tmp.addAll(list);
+        }
+        return tmp;
     }
 
     /**
@@ -160,6 +170,7 @@ public class Pad {
     }
 
     public class Pads implements PadsLayoutInterface, SkinSupport {
+        protected String name;
         public int layout_mode;
         protected SkinProperties mSkinProperties;
         protected PadSkinData mSkinData;
@@ -167,25 +178,37 @@ public class Pad {
         protected GridLayout mGrid;
         protected int lp_id;
 
-        public Pads(SkinProperties skin, int rows, int colums) {
+        public Pads(SkinProperties skin, int rows, int columns) {
             this.mSkinProperties = skin;
             this.mSkinData = new PadSkinData();
-            mSkinManager.loadSkin(skin, mSkinData, null);
-            this.mRootPads = new MakePads(context, rows, colums).make(mSkinData);
+            this.mRootPads = new MakePads(context, rows, columns).make();
             this.mGrid = (GridLayout) mRootPads.getChildAt(1);
             this.layout_mode = PadLayoutMode.LAYOUT_PRO_MODE;
             this.lp_id = 0;
             setPadsFunctions();
+            applySkin(this.mSkinProperties);
         }
 
         protected void setId(int id){
-            Objects.requireNonNull(mGridViews.get(String.valueOf(lp_id))).remove(this);
+            if(mGridViews.get(String.valueOf(lp_id)) != null) mGridViews.get(String.valueOf(lp_id)).remove(this);
             if(mGridViews.get(String.valueOf(id)) != null){
                 Objects.requireNonNull(mGridViews.get(String.valueOf(id))).add(this);
             } else {
                 mGridViews.put(String.valueOf(id), new ArrayList<>(List.of(this)));
             }
             lp_id = id;
+        }
+
+        public int getId(){
+            return this.lp_id;
+        }
+
+        public void setName(String name){
+            this.name = name;
+        }
+
+        public String getName(){
+            return this.name;
         }
 
         public void removeThis(){

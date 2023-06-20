@@ -55,8 +55,15 @@ import com.xayup.multipad.pads.PadPressCallInterface;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.project.keyled.Colors;
 import com.xayup.multipad.project.keyled.KeyLED;
+import com.xayup.multipad.skin.SkinManager;
+import com.xayup.multipad.skin.SkinProperties;
+import com.xayup.ui.options.FluctuateOptionsView;
+import com.xayup.ui.options.OptionsItem;
+import com.xayup.ui.options.OptionsItemInterface;
+import com.xayup.ui.options.OptionsPage;
 
 import java.io.*;
+import java.security.cert.PKIXRevocationChecker;
 import java.util.*;
 
 public class PlayPads extends Activity implements PlayPadsOptionsInterface {
@@ -234,49 +241,108 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                                 }
                                                 context.finish();
                                             }
+
+                                            @Override
+                                            public void obtainedSkin(SkinProperties properties) {
+                                                FluctuateOptionsView window = new FluctuateOptionsView(context);
+                                                window.getBackButton().setVisibility(View.GONE);
+                                                OptionsPage page = window.getPage(window.newPage(context.getString(R.string.list_skin_apply_title)));
+                                                OptionsItem apply_for_all = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
+                                                apply_for_all.setTitle(context.getString(R.string.list_skin_apply_for_all));
+                                                apply_for_all.setOnClick((view)->{
+                                                    for(Pad.Pads pads : pad.getAllPadsList()) {
+                                                        pads.applySkin(new SkinProperties(SkinManager.getSkinInfo(context, properties.package_name, true)));
+                                                    }
+                                                });
+                                                for(Pad.Pads pads : pad.getAllPadsList()) {
+                                                    OptionsItem item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
+                                                    item.setTitle(pads.getName());
+                                                    item.setTag(pads);
+                                                    page.putOption(item);
+                                                    item.setOnClick((view)->{
+                                                        ((Pad.Pads) item.getTag()).applySkin(new SkinProperties(SkinManager.getSkinInfo(context, properties.package_name, true)));
+                                                    });
+                                                }
+                                                window.show();
+                                            }
+
+                                            @Override
+                                            public void obtainedColorTable(File table) {
+                                                if(mKeyLED != null) mKeyLED.setColorTable(table);
+                                            }
+
+                                            @Override
+                                            public void updatePadsList(OptionsPage page) {
+                                                for(Pad.Pads pads : pad.getAllPadsList()){
+                                                    OptionsItem item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
+                                                    item.setTitle(pads.getName());
+                                                    item.setDescription(String.valueOf(pads.getId()));
+                                                    item.setTag(pads);
+                                                    item.setOnClick(padsConfigItemOnClick());
+                                                }
+                                            }
                                         };
                             });
                 }
             };
         }
+
+        protected View.OnClickListener padsConfigItemOnClick(){
+            return (view)->{
+                FluctuateOptionsView pad_op = new FluctuateOptionsView(context);
+                OptionsPage pad_op_page = pad_op.getPage(pad_op.newPage(context.getString(R.string.alert_exit_options)));
+
+                /*Pads options*/
+                OptionsItem delete = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                delete.setTitle("Delete");
+
+                OptionsItem rename = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                rename.setTitle("Rename");
+
+                OptionsItem clone = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                clone.setTitle("Clone");
+
+                OptionsItem use_id = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                use_id.setTitle("Set id");
+
+                pad_op_page.putOption(use_id);
+                pad_op_page.putOption(rename);
+                pad_op_page.putOption(clone);
+                pad_op_page.putOption(delete);
+
+                /*Set items functions*/
+                delete.setOnClick((item_view)->{});
+                rename.setOnClick((item_view)->{});
+                clone.setOnClick((item_view)->{});
+                use_id.setOnClick((item_view)->{});
+
+                /*Add bottom buttons*/
+                Button new_pads = new Button(context);
+                new_pads.setBackground(context.getDrawable(R.drawable.icon_plus));
+                new_pads.setOnClickListener((new_pads_button)->{
+                    pad.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
+                    OptionsItem new_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                    new_item.setTitle(pad.getActivePads().getName());
+                    new_item.setOnClick(padsConfigItemOnClick());
+                    pad_op_page.putOption(new_item);
+                });
+            };
+        }
+
         protected PadInteraction padInteraction() {
             XLog.v("PAD INTERACTION", "");
             return (View view) -> {
                 MakePads.PadInfo mPadInfo = (MakePads.PadInfo) view.getTag();
                 if (mPadInfo.row == 0) {
                     switch (mPadInfo.colum) {
-                        case 1:
-                            {
-                                return onPressWatermarkTouch;
-                            }
-                        case 2:
-                            {
-                                return onLedSwitchTouch;
-                            }
-                        case 3:
-                            {
-                                return onAutoplaySwitchTouch;
-                            }
-                        case 4:
-                            {
-                                return onAutoplayPrevTouch;
-                            }
-                        case 5:
-                            {
-                                return onAutoplayPauseTouch;
-                            }
-                        case 6:
-                            {
-                                return onAutoplayNextTouch;
-                            }
-                        case 7:
-                            {
-                                return onLayoutSwitchTouch;
-                            }
-                        case 8:
-                            {
-                                return onWatermarkTouch;
-                            }
+                        case 1: return onPressWatermarkTouch;
+                        case 2: return onLedSwitchTouch;
+                        case 3: return onAutoplaySwitchTouch;
+                        case 4: return onAutoplayPrevTouch;
+                        case 5: return onAutoplayPauseTouch;
+                        case 6: return onAutoplayNextTouch;
+                        case 7: return onLayoutSwitchTouch;
+                        case 8: return onWatermarkTouch;
                     }
                 } else if (mPadInfo.row > 0
                         && mPadInfo.row < 9
@@ -576,6 +642,8 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
     @Override
     public void onBackPressed() {
-        if (mPlayPadsOptions != null) mPlayPadsOptions.show();
+        if (mPlayPadsOptions != null) {
+            mPlayPadsOptions.show();
+        }
     }
 }

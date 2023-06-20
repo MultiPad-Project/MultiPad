@@ -21,8 +21,9 @@ public class PadSkinData implements SkinData {
         draw_chainled = res.getDrawable(res.getIdentifier("chainled", "drawable", skin_package_name), null);
         draw_btn = res.getDrawable(res.getIdentifier("btn", "drawable", skin_package_name), null);
         draw_btn_ = res.getDrawable(res.getIdentifier("btn_", "drawable", skin_package_name), null);
-        int playbg_id = res.getIdentifier("playbg", "drawable", skin_package_name);
+        int playbg_id = res.getIdentifier("playbg_pro", "drawable", skin_package_name);
         draw_playbg = res.getDrawable((playbg_id == 0) ? res.getIdentifier("playbg", "drawable", skin_package_name) : playbg_id, null);
-        draw_logo = res.getDrawable(res.getIdentifier("applogo", "drawable", skin_package_name), null);
+        int applogo_id = res.getIdentifier("applogo", "drawable", skin_package_name);
+        draw_logo = res.getDrawable((applogo_id == 0) ? res.getIdentifier("logo", "drawable", skin_package_name): applogo_id, null);
     }
 }

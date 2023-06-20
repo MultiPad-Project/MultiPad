@@ -1,51 +1,50 @@
-package com.xayup.multipad.pads.Render;
+package com.xayup.multipad.skin;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import com.xayup.multipad.pads.Render.SkinManager;
 import com.xayup.multipad.skin.SkinData;
 import com.xayup.multipad.skin.SkinProperties;
 import com.xayup.multipad.skin.SkinVariables;
 
 public class SkinManager implements SkinVariables {
 
-    public static Activity context;
+    public Activity context;
     public static Resources mResources;
 
     public SkinManager(Context context) {
-        SkinManager.context = (Activity) context;
+        this.context = (Activity) context;
     }
     
-    public SkinProperties getPropertiesFromPackage(String package_name, boolean and_resources){
-        return new SkinProperties(getSkinInfo(package_name, and_resources));
+    public SkinProperties getPropertiesFromPackage(Context context, String package_name, boolean and_resources){
+        return new SkinProperties(getSkinInfo(context, package_name, and_resources));
     }
-    public static Object[] getSkinInfo(String package_name, boolean and_resources) {
-        setCurrentResource(package_name);
+    public static Object[] getSkinInfo(Context context, String package_name, boolean and_resources) {
+        setCurrentResource(context, package_name);
         Object[] skin = new Object[ARRAY_SIZE];
         try {
-        skin[SKIN_PACKAGE] = package_name;
-        skin[SKIN_LOGO] =
-                mResources.getDrawable(
-                        mResources.getIdentifier("theme_ic", "drawable", package_name), null);
-        skin[SKIN_NAME] =
-                mResources.getString(
-                        mResources.getIdentifier("theme_name", "string", package_name));
-        skin[SKIN_AUTHOR] =
-                mResources.getString(
-                        mResources.getIdentifier("theme_author", "string", package_name));
-        if (and_resources) skin[SKIN_RESOURCES] = mResources;
-            } catch (Resources.NotFoundException n){
-                SkinManager.getSkinInfo(context.getPackageName(), and_resources);
-            }
+            skin[SKIN_PACKAGE] = package_name;
+            skin[SKIN_LOGO] =
+                    mResources.getDrawable(
+                            mResources.getIdentifier("theme_ic", "drawable", package_name), null);
+            skin[SKIN_NAME] =
+                    mResources.getString(
+                            mResources.getIdentifier("theme_name", "string", package_name));
+            skin[SKIN_AUTHOR] =
+                    mResources.getString(
+                            mResources.getIdentifier("theme_author", "string", package_name));
+            if (and_resources) skin[SKIN_RESOURCES] = mResources;
+        } catch (Resources.NotFoundException n){
+            SkinManager.getSkinInfo(context, context.getPackageName(), and_resources);
+        }
         return skin;
     }
     
     /**
     * @return true if success.
     */
-    public static boolean setCurrentResource(String package_name) {
+    public static boolean setCurrentResource(Context context, String package_name) {
         try {
             mResources = context.getPackageManager().getResourcesForApplication(package_name);
             return true;
