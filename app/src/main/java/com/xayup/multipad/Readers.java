@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import android.app.*;
+import com.xayup.debug.XLog;
 
 public class Readers {
 
@@ -272,7 +273,7 @@ public class Readers {
               line = line.replace(" ", "");
               String ifToChain = line.substring(line.lastIndexOf(".") + 4);
               if (ifToChain.matches("1([1-9]|[1-2][0-9])")) ifToChain = ifToChain.substring(1);
-              else ifToChain = "";
+              else ifToChain = null;
               line = line.substring(0, line.lastIndexOf(".") + 4);
               String sound = soundPath + "/" + line.substring(indextheSound);
               try {
@@ -287,6 +288,7 @@ public class Readers {
                         + context.getString(R.string.invalid_sound)
                         + " "
                         + line);
+                XLog.e("Load sound from reader", i.toString());
               }
             } else {
               PlayPads.invalid_formats.add(
@@ -298,7 +300,7 @@ public class Readers {
                       + line);
             }
         }
-        PlayPads.mSoundLoader.prepare();
+        //PlayPads.mSoundLoader.prepare();
         return sounds;
       } catch (IOException e) {
       }

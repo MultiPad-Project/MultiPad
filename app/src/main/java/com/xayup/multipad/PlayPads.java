@@ -248,8 +248,10 @@ public class PlayPads extends Activity {
     }
     SkinTheme.inplayPads = false;
     if (have_sounds) mSoundLoader.release();
-    ledFiles.clear();
-    ledFiles = null;
+    if (ledFiles != null) {
+      ledFiles.clear();
+      ledFiles = null;
+    }
     glows = null;
   }
 
