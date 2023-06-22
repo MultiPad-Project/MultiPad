@@ -10,6 +10,7 @@ import com.google.android.exoplayer2.Player;
 public abstract class PlayerExoPlayer implements SoundPlayer{
     protected ExoPlayer exo;
     protected int to_chain;
+    protected SoundPlayer this_class;
 
     /**
      * Cria uma instância do ExoPlayer.
@@ -17,6 +18,7 @@ public abstract class PlayerExoPlayer implements SoundPlayer{
      * @param sound_path diretorio do arquivo de audio
      */
     public PlayerExoPlayer(Context context, String sound_path, String to_chain){
+        this.this_class = this;
         this.exo = new ExoPlayer.Builder(context).build();
         ((Activity) context).runOnUiThread(()-> {
             this.exo.setMediaItem(new MediaItem.Builder().setUri(sound_path).build());
@@ -27,6 +29,7 @@ public abstract class PlayerExoPlayer implements SoundPlayer{
             public void onPlaybackStateChanged(int playbackState) {
                 Player.Listener.super.onPlaybackStateChanged(playbackState);
                 if(playbackState == Player.STATE_ENDED){
+                    onFinished(this_class);
                 }
             }
         });
@@ -43,7 +46,6 @@ public abstract class PlayerExoPlayer implements SoundPlayer{
 
     @Override
     public void play() {
-        pause();
         exo.seekTo(0);
         exo.play();
     }
@@ -55,7 +57,7 @@ public abstract class PlayerExoPlayer implements SoundPlayer{
 
     @Override
     public void stop() {
-        exo.stop();
+        pause();
     }
 
     @Override

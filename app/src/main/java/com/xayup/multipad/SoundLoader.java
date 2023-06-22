@@ -14,25 +14,25 @@ import com.xayup.multipad.sound.PlayerSoundPool;
 import com.xayup.multipad.sound.SoundPlayer;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class SoundLoader {
-  /*Map Object[] Index*/
-  protected final int MAP_SOUNDS_INDEX = 0; //Return map with index to get sound from mSoundPlayer
-  protected final int MAP_SOUND_SEQUENCE = 1; //Return int
-
   protected Activity context;
   protected SoundPool mSoundPool;
 
-  protected List<SoundPlayer> mSoundPlayers;
-  protected Map<String, Object[]> map;
-
+  protected boolean stop_all;
+  /**/
+  protected Map<String, List<SoundPlayer>> map;
   /*Current playing*/
-  List<SoundPlayer> current_players;
+  protected List<SoundPlayer> current_players;
+
+  int[][] sequencer;
 
   public SoundLoader(Activity context) {
     this.context = context;
-    this.mSoundPlayers = new ArrayList<>();
+    this.stop_all = false;
+    this.sequencer = new int[8][8];
     this.map = new HashMap<>();
     this.mSoundPool = new SoundPool.Builder().setMaxStreams(10).build();
     this.current_players = new ArrayList<>();
@@ -44,15 +44,16 @@ public class SoundLoader {
    * @param to_chain usado para identificar que deve-se pular automaticamente para determinada chain
    */
   public void loadSound(String sound_file_path, int length, String chain_and_pad, String to_chain) {
-    if(!map.containsKey(chain_and_pad)) map.put(chain_and_pad, new Object[]{new ArrayList<>(), 0});
+    if(!map.containsKey(chain_and_pad)) map.put(chain_and_pad, new ArrayList<>());
     SoundPlayer player;
-    ((ArrayList) map.get(chain_and_pad)[MAP_SOUNDS_INDEX]).add(mSoundPlayers.size());
     if(length > 5){
       /*Use ExoPlayer*/
       player = new PlayerExoPlayer(context, sound_file_path, to_chain){
         @Override
         public void onFinished(SoundPlayer player) {
-          current_players.remove(player);
+          XLog.v("onFinished()", "PlayerExoPlayer");
+          if(!stop_all) current_players.remove(player);
+          XLog.v("Current list size", String.valueOf(current_players.size()));
         }
       };
     } else {
@@ -60,14 +61,32 @@ public class SoundLoader {
       player = new PlayerSoundPool(context, mSoundPool, sound_file_path, to_chain) {
         @Override
         public void onFinished(SoundPlayer player) {
-          current_players.remove(player);
+          XLog.v("onFinished()", "PlayerSoundPool");
+          if(!stop_all) current_players.remove(player);
+          XLog.v("Current list size", String.valueOf(current_players.size()));
         }
       };
     }
-    mSoundPlayers.add(player);
+    map.get(chain_and_pad).add(player);
   }
 
-  public void resetRpt() {
+  public void resetSequencer() {
+    Arrays.fill(sequencer, new int[8]);
+  }
+
+  protected int[] getXY(String chain_and_pad){
+    char[] chars = chain_and_pad.toCharArray();
+    int row = Character.getNumericValue(chars[chars.length-3]);
+    int colum = Character.getNumericValue(chars[chars.length-2]);
+    return new int[]{row, colum};
+  }
+
+  public int getSequence(int row, int colum){
+    return sequencer[row-1][colum-1];
+  }
+
+  protected void changeSequence(int row, int colum, int value){
+    sequencer[row-1][colum-1] = value;
   }
 
   /**
@@ -75,25 +94,37 @@ public class SoundLoader {
    */
   public void playSound(String chain_and_pad) {
     if(map.containsKey(chain_and_pad)) {
-      Object[] tmp_map_sound_obj = map.get(chain_and_pad);
-      SoundPlayer tmp_player = mSoundPlayers.get((int) ((ArrayList<?>) tmp_map_sound_obj[MAP_SOUNDS_INDEX]).get((int) tmp_map_sound_obj[MAP_SOUND_SEQUENCE]));
+      List<SoundPlayer> tmp_map_sound = map.get(chain_and_pad);
+      if(tmp_map_sound == null) return;
+      int[] xy = getXY(chain_and_pad);
+      SoundPlayer tmp_player = map.get(chain_and_pad).get(getSequence(xy[0], xy[1]));
       context.runOnUiThread(tmp_player::play);
       current_players.add(tmp_player);
       if (tmp_player.getToChain() != -1){
         XayUpFunctions.touchAndRelease(context, Integer.parseInt(VariaveisStaticas.chainsIDlist.get(tmp_player.getToChain())), XayUpFunctions.TOUCH_AND_RELEASE);
       }
-      if(((ArrayList<?>) tmp_map_sound_obj[MAP_SOUNDS_INDEX]).size()-1 == (int) tmp_map_sound_obj[MAP_SOUND_SEQUENCE]){
-        tmp_map_sound_obj[MAP_SOUND_SEQUENCE] = 0;
+      if(tmp_map_sound.size()-1 == getSequence(xy[0], xy[1])){
+        changeSequence(xy[0], xy[1], 0);
       } else {
-        tmp_map_sound_obj[MAP_SOUND_SEQUENCE] = 1 + (int) tmp_map_sound_obj[MAP_SOUND_SEQUENCE];
+        changeSequence(xy[0], xy[1], getSequence(xy[0], xy[1])+1);
       }
     }
   }
 
+  public void stopAll(){
+    stop_all = true;
+    while(!current_players.isEmpty()) current_players.remove(0).stop();
+    stop_all = false;
+  }
+
   public void release() {
     mSoundPool.release();
-    while(mSoundPlayers.isEmpty()){
-      mSoundPlayers.remove(0).release();
+    List<String> keys = new ArrayList<>(map.keySet());
+    while(!keys.isEmpty()){
+      List<SoundPlayer> players = map.get(keys.remove(0));
+      if(players == null) continue;
+      while(!players.isEmpty()) players.remove(0).release();
     }
+    map.clear();
   }
 }

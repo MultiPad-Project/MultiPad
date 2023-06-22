@@ -38,15 +38,11 @@ public abstract class PlayerSoundPool implements SoundPlayer {
 
         /*For Handler*/
         this.runnable = ()->{
-            if(playing){
-                XLog.v("Try call", "onFinish()");
-                playing = false;
-                onFinished(this);
-            }
+            XLog.v("Try call", "onFinish()");
+            playing = false;
+            onFinished(this);
         };
-
     }
-
 
     /**
      * @return retorna a chain (MC) desta sample, do contrário -1 se não houver
@@ -58,7 +54,7 @@ public abstract class PlayerSoundPool implements SoundPlayer {
 
     @Override
     public void play() {
-        mHandler.postDelayed(runnable, SystemClock.uptimeMillis()+sampleDuration);
+        mHandler.postDelayed(runnable, sampleDuration);
         this.streamID = pool.play(sound_id, 1f, 1f, 1, 0, 1f);
     }
 
@@ -70,6 +66,7 @@ public abstract class PlayerSoundPool implements SoundPlayer {
 
     @Override
     public void stop() {
+        mHandler.removeCallbacks(runnable);
         pool.stop(streamID);
     }
 
@@ -82,6 +79,7 @@ public abstract class PlayerSoundPool implements SoundPlayer {
      */
     @Override
     public void release() {
+        mHandler.removeCallbacks(runnable);
     }
 
     /**

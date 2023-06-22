@@ -234,6 +234,7 @@ public class MakePads {
                             press.setAlpha(0.0f);
                             PlayPads.stopAll = true;
                             XayUpFunctions.clearLeds(context, view.getRootView());
+                            if(PlayPads.mSoundLoader != null) PlayPads.mSoundLoader.stopAll();
                         } else {
                             press.setImageDrawable(context.getDrawable(R.drawable.currentchain));
                             press.setAlpha(PlayPads.watermark);
@@ -489,7 +490,7 @@ public class MakePads {
                             for (String k : PlayPads.ledrpt.keySet()) {
                                 PlayPads.ledrpt.put(k, 0);
                             }
-                            if(PlayPads.mSoundLoader != null) PlayPads.mSoundLoader.resetRpt();
+                            if(PlayPads.mSoundLoader != null) PlayPads.mSoundLoader.resetSequencer();
                             //	}
                             if (PlayPads.recAutoplay) {
                                 AutoplayRecFunc.addChain(PlayPads.chainSl);
