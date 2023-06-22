@@ -16,29 +16,28 @@ public class KeySounds implements Project.SoundInterface, PadPressCallInterface 
     
     public KeySounds(Context context){
         this.context = (Activity) context;
-        mSoundLoader = new SoundLoader(context);
+        mSoundLoader = new SoundLoader(this.context);
         
     }
     
     public void parse(File keysound_path, File sample_path, LoadProject.LoadingProject mLoadingProject){
         new KeySoundsReader().read(keysound_path, sample_path, mSoundLoader, mLoadingProject);
-        mSoundLoader.prepare();
     }
     
     public void clear(){
-        mSoundLoader.clear();
+        mSoundLoader.release();
     }
     
     @Override
     public boolean playSound(int chain, int x, int y) {
         XLog.v("Try play sound", "");
-        mSoundLoader.playSound(chain+""+((x*10)+y));
+        mSoundLoader.playSound(String.valueOf(chain)+((x*10)+y));
         return false;
     }
 
     @Override
     public boolean stopSound(int chain, int x, int y) {
-        mSoundLoader.stopSounds();
+        mSoundLoader.stopAll();
         return false;
     }
 

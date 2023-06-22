@@ -9,166 +9,127 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 
 import com.xayup.debug.XLog;
+import com.xayup.multipad.VariaveisStaticas;
 import com.xayup.multipad.XayUpFunctions;
+import com.xayup.multipad.sound.PlayerExoPlayer;
+import com.xayup.multipad.sound.PlayerSoundPool;
+import com.xayup.multipad.sound.SoundPlayer;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class SoundLoader {
+  protected Activity context;
+  protected SoundPool mSoundPool;
 
-    public final int SOUND = 0;
-    public final int TYPE = 1;
-    public final int TO_CHAIN = 2;
-    public final int SOUNDPOOL = 3;
-    public final int EXOPLAYER = 4;
-    public final int SOUND_ID = 5;
+  protected boolean stop_all;
+  /**/
+  protected Map<String, List<SoundPlayer>> map;
+  /*Current playing*/
+  protected List<SoundPlayer> current_players;
 
-    private Activity context;
-    private Map<String, List<Map<Integer, Object>>> sounds;
-    ExoPlayer mExoPlayer;
-    SoundPool mSoundPool;
-    Map<String, Integer> sound_rpt;
+  int[][] sequencer;
 
-    // Temporario
-    Map<Integer, Object> sound;
-
-    public SoundLoader(Context context) {
-        this.context = (Activity) context;
-        this.sounds = new HashMap<String, List<Map<Integer, Object>>>();
-        mExoPlayer = null;
-        mSoundPool = null;
-        sound_rpt = new HashMap<>();
-    }
-
-    public void clear() {
-        sound_rpt.clear();
-        this.release();
-    }
-    /**
-     * @Param sound_file é o arquivo de sample @Param length é a duração da sample em
-     * segundos. @Param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId()) @Param to_chain
-     * usado para identificar que deve-sse pular automaticamente para determinada chain
-     */
-    public void loadSound(
-            String sound_file_path, int length, String chain_and_pad, String to_chain) {
-        List<Map<Integer, Object>> to_map = new ArrayList<>();
-        Map<Integer, Object> to_list = new HashMap<>();
-        to_list.put(TO_CHAIN, to_chain);
-        if (length > 5) { // ExoPlayer
-            to_list.put(TYPE, EXOPLAYER);
-            int list_size = 0;
-            if (sounds.get(chain_and_pad) != null) {
-                list_size = sounds.get(chain_and_pad).size();
-            }
-            MediaItem media =
-                    new MediaItem.Builder()
-                            .setMediaId(chain_and_pad + list_size)
-                            .setUri(sound_file_path)
-                            .build();
-            to_list.put(SOUND, media);
-            if (mExoPlayer == null) {
-                mExoPlayer = new ExoPlayer.Builder(context).build();
-            }
-            context.runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mExoPlayer.addMediaItem(media);
-                        }
-                    });
-        } else { // SoundPool
-            to_list.put(TYPE, SOUNDPOOL);
-            if (mSoundPool == null) {
-                mSoundPool = new SoundPool.Builder().setMaxStreams(10).build();
-            }
-            to_list.put(SOUND, mSoundPool.load(sound_file_path, 1));
+  public SoundLoader(Activity context) {
+    this.context = context;
+    this.stop_all = false;
+    this.sequencer = new int[8][8];
+    this.map = new HashMap<>();
+    this.mSoundPool = new SoundPool.Builder().setMaxStreams(10).build();
+    this.current_players = new ArrayList<>();
+  }
+  /**
+   * @param sound_file_path é o arquivo de sample
+   * @param necessary_info required information obtained by "KeySoundsReader > getNecessaryMetadata()".
+   * @param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId())
+   * @param to_chain usado para identificar que deve-se pular automaticamente para determinada chain
+   */
+  public void loadSound(String sound_file_path, int[] necessary_info, String chain_and_pad, String to_chain) {
+    XLog.v("Sound Durations Metadata", sound_file_path.substring(sound_file_path.lastIndexOf(File.separator)) + ": " + Arrays.toString(necessary_info));
+    if(!map.containsKey(chain_and_pad)) map.put(chain_and_pad, new ArrayList<>());
+    SoundPlayer player;
+    if(necessary_info[1] > 950 || necessary_info[0] > 5400 /*5 seconds*/){
+      /*Use ExoPlayer*/
+      XLog.v("Use Sample Player", "PlayerExoPlayer");
+      player = new PlayerExoPlayer(context, sound_file_path, to_chain){
+        @Override
+        public void onFinished(SoundPlayer player) {
+          XLog.v("onFinished()", "PlayerExoPlayer");
+          if(!stop_all) current_players.remove(player);
+          XLog.v("Current list size", String.valueOf(current_players.size()));
         }
-        /*
-         * Condições: verifique se sounds contem uma lista para chain_and_pad.
-         * Se contem, apenas adicione na lista. Caso contrário adicione uma lista.
-         * para posteriormente adicionar itens nela.
-         */
-        if (sounds.get(chain_and_pad) == null) {
-            to_map.add(to_list);
-            sounds.put(chain_and_pad, to_map);
-        } else {
-            sounds.get(chain_and_pad).add(to_list);
+      };
+    } else {
+      /*Use SoundPool*/
+      XLog.v("Use Sample Player", "PlayerSoundPool");
+      player = new PlayerSoundPool(context, mSoundPool, sound_file_path, necessary_info[0], to_chain) {
+        @Override
+        public void onFinished(SoundPlayer player) {
+          XLog.v("onFinished()", "PlayerSoundPool");
+          if(!stop_all) current_players.remove(player);
+          XLog.v("Current list size", String.valueOf(current_players.size()));
         }
+      };
     }
-    /*
-     * Use sempre use isto pois pode haver ExoPlayer e será necessário prepará-lo no final
-     */
-    public void prepare() {
-        if (mExoPlayer != null) {
-            context.runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mExoPlayer.prepare();
-                        }
-                    });
-        }
+    map.get(chain_and_pad).add(player);
+  }
+
+  public void resetSequencer() {
+    Arrays.fill(sequencer, new int[8]);
+  }
+
+  protected int[] getXY(String chain_and_pad){
+    char[] chars = chain_and_pad.toCharArray();
+    int row = Character.getNumericValue(chars[chars.length-3]);
+    int colum = Character.getNumericValue(chars[chars.length-2]);
+    return new int[]{row, colum};
+  }
+
+  public int getSequence(int row, int colum){
+    return sequencer[row-1][colum-1];
+  }
+
+  protected void changeSequence(int row, int colum, int value){
+    sequencer[row-1][colum-1] = value;
+  }
+
+  /**
+   * @param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId())
+   */
+  public void playSound(String chain_and_pad) {
+    if(map.containsKey(chain_and_pad)) {
+      List<SoundPlayer> tmp_map_sound = map.get(chain_and_pad);
+      if(tmp_map_sound == null || tmp_map_sound.size() < 1) return;
+      int[] xy = getXY(chain_and_pad);
+      int sequence = getSequence(xy[0], xy[1]);
+      if(tmp_map_sound.size() == sequence) {
+        sequence = 0;
+      }
+      SoundPlayer tmp_player = tmp_map_sound.get(sequence++);
+      context.runOnUiThread(tmp_player::play);
+      if(!current_players.contains(tmp_player)) current_players.add(tmp_player);
+      if (tmp_player.getToChain() != -1){
+        XayUpFunctions.touchAndRelease(context, Integer.parseInt(VariaveisStaticas.chainsIDlist.get(tmp_player.getToChain())), XayUpFunctions.TOUCH_AND_RELEASE);
+      }
+      changeSequence(xy[0], xy[1], sequence);
     }
+  }
 
-    public void resetRpt() {
-        for (String key : sound_rpt.keySet()) {
-            sound_rpt.put(key, 0);
-        }
+  public void stopAll(){
+    stop_all = true;
+    while(!current_players.isEmpty()) current_players.remove(0).stop();
+    stop_all = false;
+  }
+
+  public void release() {
+    mSoundPool.release();
+    List<String> keys = new ArrayList<>(map.keySet());
+    while(!keys.isEmpty()){
+      List<SoundPlayer> players = map.get(keys.remove(0));
+      if(players == null) continue;
+      while(!players.isEmpty()) players.remove(0).release();
     }
-
-    /**
-     * @Param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId()) @Param rpt quantos click
-     * já foi dada na mesma pad sequencialmente
-     */
-    public boolean playSound(String chain_and_pad) {
-        try {
-            if (sound_rpt.get(chain_and_pad) == null
-                    || sound_rpt.get(chain_and_pad) >= sounds.get(chain_and_pad).size()) {
-                sound_rpt.put(chain_and_pad, 0);
-            }
-            int rpt = sound_rpt.get(chain_and_pad);
-            sound = sounds.get(chain_and_pad).get(rpt);
-            switch ((int) sound.get(TYPE)) {
-                case EXOPLAYER:
-                    XLog.v("Play with", "ExoPlayer");
-                    MediaItem mi = (MediaItem) sound.get(SOUND);
-                    context.runOnUiThread(
-                            () -> {
-                                mExoPlayer.pause();
-                                mExoPlayer.setMediaItem(mi);
-                                mExoPlayer.play();
-                            });
-                    break;
-                case SOUNDPOOL:
-                    XLog.v("Play with", "SoundPool");
-                    if (sound.get(SOUND_ID) != null) mSoundPool.stop((int) sound.get(SOUND_ID));
-                    sound.put(SOUND_ID, mSoundPool.play((Integer) sound.get(SOUND), 1, 1, 1, 0, 1));
-                    break;
-            }
-            sound_rpt.put(chain_and_pad, sound_rpt.get(chain_and_pad) + 1);
-            String to_chain = (String) sounds.get(chain_and_pad).get(rpt).get(TO_CHAIN);
-            sound = null;
-            if (to_chain != "") {}
-
-        } catch (NullPointerException e) {
-            XLog.v("PlaySound() error", e.getMessage());
-            return false;
-        }
-        return true;
-    }
-
-    public void stopSounds() {}
-
-    public void release() {
-        if (mSoundPool != null) {
-            mSoundPool.release();
-            mSoundPool = null;
-        }
-        if (mExoPlayer != null) {
-            mExoPlayer.release();
-            mExoPlayer = null;
-        }
-    }
+    map.clear();
+  }
 }

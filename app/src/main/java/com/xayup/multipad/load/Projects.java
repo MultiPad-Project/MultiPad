@@ -7,10 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Projects extends Project {
     
@@ -39,7 +36,7 @@ public class Projects extends Project {
     
     public final byte FLAG_SIZE = 19; /* Array flag size */
 
-    public Map<Integer, Object> projects = null;
+    public List<Object> projects = null;
 
     /*
      * Change vars from Project class
@@ -48,8 +45,8 @@ public class Projects extends Project {
     public void readProjectsPath(File path) {
         if(path == null) return;
         File[] folders = path.listFiles();
-        if (folders.length > 0) {
-            projects = new HashMap<>();
+        if (folders != null && folders.length > 0) {
+            projects = new ArrayList<>();
             for (File folder : folders) {
                 File info = new File(folder, "info");
                 Log.v("Project folder name", folder.getName());
@@ -74,17 +71,22 @@ public class Projects extends Project {
                             project_properties.put(PROJECT_TITLE, title);
                             project_properties.put(PROJECT_PRODUCER_NAME, producerName);
                             project_properties.put(PROJECT_PATH, folder.getPath());
-                            projects.put(projects.size(), project_properties);
+                            projects.add(project_properties);
                             
                         } else {
-                            new Throwable("ready() return false.");
+                            throw new IOException("ready() return false.");
                         }
                     } catch (IOException io) {
                         Log.v("Project info reader", io.toString());
                     }
                 }
             }
-            if (!(projects.size() > 0)) projects = null;
+            if (!(projects.size() > 0)){
+                projects = null;
+            } else {
+                /*Alphabetic order*/
+                Collections.sort(projects, (m1, m2) -> ((String) ((HashMap) m1).get(PROJECT_TITLE)).toLowerCase().compareTo(((String) ((HashMap) m2).get(PROJECT_TITLE)).toLowerCase()));
+            }
         } else {
             projects = null;
         }

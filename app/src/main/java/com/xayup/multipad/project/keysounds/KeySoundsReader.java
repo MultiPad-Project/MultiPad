@@ -2,6 +2,7 @@ package com.xayup.multipad.project.keysounds;
 
 import android.media.MediaMetadataRetriever;
 import com.google.common.io.Files;
+import com.xayup.debug.XLog;
 import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.project.keysounds.SoundLoader;
 import java.io.File;
@@ -11,14 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KeySoundsReader {
-    protected int getDuration(File file) {
-        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-        mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
-        String durationStr =
-                mediaMetadataRetriever.extractMetadata(
-                        MediaMetadataRetriever.METADATA_KEY_DURATION);
-        /*Retorno em segundos*/
-        return ((int) ((Long.parseLong(durationStr) % (1000 * 60 * 60)) % (1000 * 60) / 1000));
+    /**
+     * @param file Sample file
+     * @return an array with size 2, where index 0 is the time (in milliseconds) and index 1 is the raw file size.
+     */
+    protected int[] getNecessaryMetadata(File file) {
+        try (MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever()){
+            mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
+            return new int[]{Integer.parseInt(
+                    mediaMetadataRetriever.extractMetadata(
+                            MediaMetadataRetriever.METADATA_KEY_DURATION)), ((int) file.length()/1024)};
+        }
     }
 
     protected boolean checkKeySound(String line) {
@@ -30,7 +34,6 @@ public class KeySoundsReader {
      *
      * @param key_sounds "keysounds" file
      * @param mSoundLoader Class for load samples
-     * @return List of possible errors
      */
     public void read(
             File key_sounds,
@@ -56,14 +59,13 @@ public class KeySoundsReader {
                             String ifToChain = line.substring(line.lastIndexOf(".") + 4);
                             if (ifToChain.matches("1([1-9]|[1-2][0-9])"))
                                 ifToChain = ifToChain.substring(1);
-                            else ifToChain = "";
+                            else ifToChain = null;
                             line = line.substring(0, line.lastIndexOf(".") + 4);
                             String sound = sample_path + "/" + line.substring(indextheSound);
                             try {
-                                int sound_length = getDuration(new File(sound));
                                 mSoundLoader.loadSound(
                                         sound,
-                                        sound_length,
+                                        getNecessaryMetadata(new File(sound)),
                                         line.substring(0, indextheSound),
                                         ifToChain);
                             } catch (IllegalArgumentException i) {

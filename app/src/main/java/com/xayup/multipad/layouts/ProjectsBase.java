@@ -245,8 +245,8 @@ public class ProjectsBase extends Projects implements ProjectsBaseInterface {
         if (list.getChildCount() > 0) {
             list.removeAllViews();
         }
-        for (Object propertie : projects.values()) {
-            list.addView(getViewFromProperties((Map<Byte, Object>) propertie));
+        for (Object properties : projects) {
+            list.addView(getViewFromProperties((Map<Byte, Object>) properties));
         }
     }
 

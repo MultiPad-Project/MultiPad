@@ -74,7 +74,6 @@ public class Readers {
                     String producerName = "?";
                     String title = "?";
                     infoInfo.put(ProjectsAdapter.STATE, "false");
-
                     try {
                         BufferedReader bufferInfo = new BufferedReader(new FileReader(info));
                         String line = bufferInfo.readLine();

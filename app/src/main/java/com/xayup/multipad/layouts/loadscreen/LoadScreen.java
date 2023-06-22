@@ -77,7 +77,7 @@ public class LoadScreen {
         flipper.getOutAnimation().setDuration(200);
         flipper.setInAnimation(context, R.anim.fade_in_splash);
         flipper.getInAnimation().setDuration(200);
-        flipper.showNext();
+        context.runOnUiThread(()->flipper.showNext());
         ((ListView) flipper.findViewById(R.id.loading_screen_error_list))
                 .setAdapter(new ArrayAdapter(context, R.layout.simple_list_item, errors));
         ((Button) flipper.findViewById(R.id.loading_screen_error_button_ok))
