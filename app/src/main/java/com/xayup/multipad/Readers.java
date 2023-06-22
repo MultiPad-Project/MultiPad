@@ -63,7 +63,6 @@ public class Readers {
       mapFolder.put("pr", null);
       return mapFolder;
     } else {
-
       if (projectDir.listFiles(filterFolder).length != 0) {
         for (final File projectFolder : projectDir.listFiles(filterFolder)) {
           File info = new File(projectFolder.getPath() + "/info");
@@ -104,12 +103,12 @@ public class Readers {
                     .replaceFirst(producerName.substring(0, producerName.indexOf("=") + 1), "")
                     .trim());
           } else {
-            infoInfo.put("title", context.getString(R.string.without_info));
+            infoInfo.put("title", projectFolder.getName());
             infoInfo.put("producerName", context.getString(R.string.incomplet_project));
             infoInfo.put("bad", "True");
           }
           infoInfo.put("local", projectFolder.getPath());
-          mapFolder.put(projectFolder.getName(), infoInfo);
+          mapFolder.put(infoInfo.get("title"), infoInfo);
         }
       } else {
         mapFolder.put("Empyt", infoInfo = null);
