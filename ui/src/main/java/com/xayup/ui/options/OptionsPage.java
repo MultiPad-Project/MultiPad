@@ -25,6 +25,10 @@ public class OptionsPage extends Options {
         this.scroll.addView(page);
     }
 
+    /**
+     * Define a "Title" that will be returned by "getTitle()" in the future
+     * @param title the title
+     */
     public void setTitle(String title){
         this.title = title;
     }

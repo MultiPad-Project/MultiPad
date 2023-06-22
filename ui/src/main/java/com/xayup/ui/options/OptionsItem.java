@@ -26,7 +26,13 @@ public class OptionsItem implements OptionsItemInterface {
                 this.layout = context.getLayoutInflater().inflate(R.layout.options_item_center_with_image, null, false);
                 break;
             }
-            default:{
+            case TYPE_SIMPLE:{
+                this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
+                ((ViewGroup) this.layout.findViewById(R.id.options_item_identify_container)).removeView(this.layout.findViewById(R.id.options_item_identify_arrow));
+                ((ViewGroup) this.layout.findViewById(R.id.options_item_identify_container)).removeView(this.layout.findViewById(R.id.options_item_identify_checkbox));
+                break;
+            }
+            default /*TYPE_SIMPLE_WITH_ARROW*/:{
                 this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
                 ((ViewGroup) this.layout.findViewById(R.id.options_item_identify_container)).removeView(this.layout.findViewById(R.id.options_item_identify_checkbox));
                 break;

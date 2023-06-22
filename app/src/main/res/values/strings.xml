@@ -115,5 +115,6 @@
     <string name="dialog_replace_check">Apply for next items</string>
     <string name="replace">Replace</string>
     <string name="reading">Reading</string>
-    
+    <string name="grid_pads_title">Pads List</string>
+
 </resources>

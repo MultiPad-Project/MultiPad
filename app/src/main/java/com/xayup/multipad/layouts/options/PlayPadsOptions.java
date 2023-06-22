@@ -80,7 +80,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
     }
 
     /**
-     * Apenas para "Reiniciar" a visualizacao para a pagina principal, quando o menu for aberto
+     * Just to "Reset" the view to the main page, when the menu is opened
      */
     public void defaultScreen(){
         updateSkinList();
@@ -93,6 +93,9 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
         flipper.setDisplayedChild(0);
     }
 
+    /**
+     * Update the list skins
+     */
     protected void updateSkinList(){
         mSkinAdapter.updateList();
         skin_page.clear();
@@ -130,18 +133,21 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
         /*Pages*/
         // Select Skin page
         skin_page = new OptionsPage(context);
+        skin_page.setTitle(context.getString(R.string.skins));
 
         // Option page
         OptionsPage options_page = new OptionsPage(context);
+        options_page.setTitle(context.getString(R.string.alert_exit_options));
 
         // Color table page
         OptionsPage color_table_page = new OptionsPage(context);
+        color_table_page.setTitle(context.getString(R.string.color_table_title));
 
         // Grid pads page
         OptionsPage grid_pads_page = new OptionsPage(context);
+        grid_pads_page.setTitle(context.getString(R.string.grid_pads_title));
 
         /*Options Item*/
-
         OptionsItem glows_switch_item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE_WITH_CHECKBOX);
         glows_switch_item.setTitle(context.getString(R.string.glow_title));
         glows_switch_item.setDescription(context.getString(R.string.glow_subtitle));
@@ -205,41 +211,44 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
 
         /*Switch to Options Page*/
         configs.setOnClickListener((view) -> {
-                        configs.setVisibility(View.GONE);
-                        switchTo(EXIT_PAGE_CONFIGS, false);
-                    });
+            configs.setVisibility(View.GONE);
+            color_table.setVisibility(View.GONE);
+            pads_list.setVisibility(View.GONE);
+            switchTo(EXIT_PAGE_CONFIGS, false);
+        });
 
         /*Back Button*/
         getBackButton().setOnClickListener((View arg0) -> {
-                        switch ((byte) getCurrentPageIndex()) {
-                            case EXIT_PAGE_CONFIGS:
-                            case EXIT_PAGE_LIST_COLOR_TABLE:
-                            case EXIT_PAGE_PAD_GRIDS:
-                                switchTo(EXIT_PAGE_LISTSKIN, true);
-                                color_table.setVisibility(View.VISIBLE);
-                                configs.setVisibility(View.VISIBLE);
-                                break;
-                            default: break;
-                        }
-                    });
+            switch ((byte) getCurrentPageIndex()) {
+                case EXIT_PAGE_CONFIGS:
+                case EXIT_PAGE_LIST_COLOR_TABLE:
+                case EXIT_PAGE_PAD_GRIDS:
+                    switchTo(EXIT_PAGE_LISTSKIN, true);
+                    color_table.setVisibility(View.VISIBLE);
+                    configs.setVisibility(View.VISIBLE);
+                    pads_list.setVisibility(View.VISIBLE);
+                    break;
+                default: break;
+            }
+        });
 
         /*Back to the Unipacks list*/
         exit.setOnClickListener((view) -> onExit());
 
         /*View Pads list*/
-        pads_list.setOnClickListener(
-                new Button.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        configs.setVisibility(View.GONE);
-                        color_table.setVisibility(View.GONE);
-                        updatePadsList(grid_pads_page);
-                    }
-                });
+        pads_list.setOnClickListener((v) -> {
+            configs.setVisibility(View.GONE);
+            color_table.setVisibility(View.GONE);
+            pads_list.setVisibility(View.GONE);
+            switchTo(EXIT_PAGE_PAD_GRIDS, false);
+            updatePadsList(grid_pads_page);
+        });
 
         // Button color_table
         color_table.setOnClickListener((view) -> {
+            configs.setVisibility(View.GONE);
             color_table.setVisibility(View.GONE);
+            pads_list.setVisibility(View.GONE);
             switchTo(EXIT_PAGE_LIST_COLOR_TABLE, false);
             File root = new File(GlobalConfigs.DefaultConfigs.COLOR_TABLE_PATH);
             if(root.exists()) for(File file : root.listFiles()){
@@ -255,76 +264,70 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
         // Option page functions
         // sound spam
         sound_spam_item.setOnClick((view) -> {
-                        if (!GlobalConfigs.PlayPadsConfigs.spamSounds) {
-                            AlertDialog.Builder spam_alert = new AlertDialog.Builder(context);
-                            spam_alert.setCancelable(false);
-                            spam_alert.setMessage(R.string.sound_spam_dialog);
-                            spam_alert.setPositiveButton(
-                                    R.string.yes,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface arg0, int arg1) {
-                                            sound_spam_item.setChecked(GlobalConfigs.PlayPadsConfigs.spamSounds);
-                                        }
-                                    });
-                            spam_alert.setNegativeButton(R.string.no, null);
-                            spam_alert.create().show();
-                        }
-                    });
+            if (!GlobalConfigs.PlayPadsConfigs.spamSounds) {
+                AlertDialog.Builder spam_alert = new AlertDialog.Builder(context);
+                spam_alert.setCancelable(false);
+                spam_alert.setMessage(R.string.sound_spam_dialog);
+                spam_alert.setPositiveButton(
+                        R.string.yes,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                sound_spam_item.setChecked(GlobalConfigs.PlayPadsConfigs.spamSounds);
+                            }
+                        });
+                spam_alert.setNegativeButton(R.string.no, null);
+                spam_alert.create().show();
+            }
+        });
 
         // Show glow effect
         glows_switch_item.setOnClick((view) -> {
-                        if (!GlobalConfigs.PlayPadsConfigs.glow_enabled) {
-                            glows_switch_item.setChecked(true);
-                            glow_configs_item.setEnabled(true);
-                            /*
+            if (!GlobalConfigs.PlayPadsConfigs.glow_enabled) {
+                glows_switch_item.setChecked(true);
+                glow_configs_item.setEnabled(true);
+                /*
 
-                            MAKE GLOW HERE
+                MAKE GLOW HERE
 
-                            */
-                        }
-                        GlobalConfigs.app_configs.edit().putBoolean("glowEf", GlobalConfigs.PlayPadsConfigs.glow_enabled);
-                    });
+                */
+            }
+            GlobalConfigs.app_configs.edit().putBoolean("glowEf", GlobalConfigs.PlayPadsConfigs.glow_enabled);
+        });
 
         /*Change layer decoration image*/
         layer_decoration_item.setOnClick((view) -> {
-                        if (layer_decoration_item.getCheckBox().isChecked()) {
-                            int PICK_IMG = 12;
-                            Intent get_image_from_gallery =
-                                    new Intent(
-                                            Intent.ACTION_PICK,
-                                            android.provider.MediaStore.Images.Media
-                                                    .EXTERNAL_CONTENT_URI);
-                            context.startActivityForResult(get_image_from_gallery, PICK_IMG);
-                        }
-                    });
+            if (layer_decoration_item.getCheckBox().isChecked()) {
+                int PICK_IMG = 12;
+                Intent get_image_from_gallery =
+                        new Intent(
+                                Intent.ACTION_PICK,
+                                android.provider.MediaStore.Images.Media
+                                        .EXTERNAL_CONTENT_URI);
+                context.startActivityForResult(get_image_from_gallery, PICK_IMG);
+            }
+        });
 
         /*Enable layer decoration*/
         layer_decoration_item.getCheckBox().setOnCheckedChangeListener(
-                new CheckBox.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-                        View window = context.findViewById(R.id.layer_cfg_window);
-                        if (!arg1) {
-                            window.setVisibility(View.GONE);
-                            GlobalConfigs.PlayPadsConfigs.layer_decoration = false;
-                            context.findViewById(R.id.launchpadOverride)
-                                    .setVisibility(View.GONE);
-                            layer_decoration_item.setEnabled(false);
-                            context.findViewById(
-                                    R.id.layer_decoration_scale_background)
-                                    .setVisibility(View.GONE);
-                        } else {
-                            GlobalConfigs.PlayPadsConfigs.layer_decoration = true;
-                            ImageView layer = context.findViewById(R.id.launchpadOverride);
-                            layer.getLayoutParams().height = GlobalConfigs.display_height;
-                            layer.getLayoutParams().width = GlobalConfigs.display_width;
-                            layer.setVisibility(View.VISIBLE);
-                            window.setVisibility(View.VISIBLE);
-                            layer_decoration_item.setEnabled(true);
-                        }
-                    }
-                });
+        (CompoundButton arg0, boolean arg1) -> {
+            View window = context.findViewById(R.id.layer_cfg_window);
+            if (!arg1) {
+                window.setVisibility(View.GONE);
+                GlobalConfigs.PlayPadsConfigs.layer_decoration = false;
+                context.findViewById(R.id.launchpadOverride).setVisibility(View.GONE);
+                layer_decoration_item.setEnabled(false);
+                context.findViewById(R.id.layer_decoration_scale_background).setVisibility(View.GONE);
+            } else {
+                GlobalConfigs.PlayPadsConfigs.layer_decoration = true;
+                ImageView layer = context.findViewById(R.id.launchpadOverride);
+                layer.getLayoutParams().height = GlobalConfigs.display_height;
+                layer.getLayoutParams().width = GlobalConfigs.display_width;
+                layer.setVisibility(View.VISIBLE);
+                window.setVisibility(View.VISIBLE);
+                layer_decoration_item.setEnabled(true);
+            }
+        });
 
         /*Led spam*/
         led_spam_item.setOnClick((view) -> {

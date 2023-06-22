@@ -29,28 +29,28 @@
                 android:textColor="@color/options_item_description_color"
                 android:textSize="@dimen/options_item_description_text_size" />
 
+        <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@id/options_item_identify_container"
+                android:background="@color/options_divider_color"/>
+
         <RelativeLayout
                 android:id="@id/options_item_identify_container"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/options_item_identify_size"
                 android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true">
-                <View
-                        android:layout_width="2dp"
-                        android:layout_height="match_parent"
-                        android:background="@color/options_divider_color"/>
                 <CheckBox
                         android:id="@+id/options_item_identify_checkbox"
                         android:layout_width="@dimen/options_item_identify_size"
                         android:layout_height="@dimen/options_item_identify_size"
-                        android:layout_centerInParent="true"
                         android:clickable="false"
                         android:typeface="monospace" />
                 <ImageView
                         android:id="@+id/options_item_identify_arrow"
                         android:layout_width="@dimen/options_item_identify_size"
                         android:layout_height="@dimen/options_item_identify_size"
-                        android:layout_centerInParent="true"
                         android:scaleX="-1.0"
                         android:src="@drawable/prev"
                         android:layout_marginEnd="16dp" android:layout_centerHorizontal="true"/>

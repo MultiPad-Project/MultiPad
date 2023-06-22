@@ -278,7 +278,8 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                                     item.setTitle(pads.getName());
                                                     item.setDescription(String.valueOf(pads.getId()));
                                                     item.setTag(pads);
-                                                    item.setOnClick(padsConfigItemOnClick());
+                                                    item.setOnClick(padsConfigItemOnClick(pads));
+                                                    page.putOption(item);
                                                 }
                                             }
                                         };
@@ -287,12 +288,16 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
-        protected View.OnClickListener padsConfigItemOnClick(){
+        protected View.OnClickListener padsConfigItemOnClick(Pad.Pads pads){
             return (view)->{
                 FluctuateOptionsView pad_op = new FluctuateOptionsView(context);
                 OptionsPage pad_op_page = pad_op.getPage(pad_op.newPage(context.getString(R.string.alert_exit_options)));
 
-                /*Pads options*/
+                /*Page UI definitions*/
+                pad_op.setTitle(pads.getName());
+                pad_op.getBackButton().setVisibility(View.INVISIBLE);
+
+                /*Create and Place Pads Options*/
                 OptionsItem delete = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
                 delete.setTitle("Delete");
 
@@ -323,9 +328,10 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                     pad.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
                     OptionsItem new_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
                     new_item.setTitle(pad.getActivePads().getName());
-                    new_item.setOnClick(padsConfigItemOnClick());
+                    new_item.setOnClick(padsConfigItemOnClick(pads));
                     pad_op_page.putOption(new_item);
                 });
+                pad_op.show();
             };
         }
 
