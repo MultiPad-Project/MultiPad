@@ -11,6 +11,7 @@ import com.google.android.exoplayer2.MediaItem;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.VariaveisStaticas;
 import com.xayup.multipad.XayUpFunctions;
+import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.sound.PlayerExoPlayer;
 import com.xayup.multipad.sound.PlayerSoundPool;
 import com.xayup.multipad.sound.SoundPlayer;
@@ -29,12 +30,12 @@ public class SoundLoader {
   /*Current playing*/
   protected List<SoundPlayer> current_players;
 
-  int[][] sequencer;
+  int[] sequencer;
 
-  public SoundLoader(Activity context) {
-    this.context = context;
+  public SoundLoader(Context context) {
+    this.context = (Activity) context;
     this.stop_all = false;
-    this.sequencer = new int[8][8];
+    this.sequencer = new int[100/*row 10*10 columns*/];
     this.map = new HashMap<>();
     this.mSoundPool = new SoundPool.Builder().setMaxStreams(10).build();
     this.current_players = new ArrayList<>();
@@ -76,22 +77,22 @@ public class SoundLoader {
   }
 
   public void resetSequencer() {
-    Arrays.fill(sequencer, new int[8]);
+    Arrays.fill(sequencer, 0);
   }
 
   protected int[] getXY(String chain_and_pad){
     char[] chars = chain_and_pad.toCharArray();
-    int row = Character.getNumericValue(chars[chars.length-3]);
-    int colum = Character.getNumericValue(chars[chars.length-2]);
+    int row = Character.getNumericValue(chars[chars.length-2]);
+    int colum = Character.getNumericValue(chars[chars.length-1]);
     return new int[]{row, colum};
   }
 
   public int getSequence(int row, int colum){
-    return sequencer[row-1][colum-1];
+    return sequencer[MakePads.PadID.getGridIndexFromXY(10, row, colum)];
   }
 
   protected void changeSequence(int row, int colum, int value){
-    sequencer[row-1][colum-1] = value;
+    sequencer[MakePads.PadID.getGridIndexFromXY(10, row, colum)] = value;
   }
 
   /**
@@ -102,10 +103,13 @@ public class SoundLoader {
       List<SoundPlayer> tmp_map_sound = map.get(chain_and_pad);
       if(tmp_map_sound == null || tmp_map_sound.size() < 1) return;
       int[] xy = getXY(chain_and_pad);
+      XLog.v("XY", Arrays.toString(xy));
       int sequence = getSequence(xy[0], xy[1]);
-      if(tmp_map_sound.size() == sequence) {
+      if(sequence >= tmp_map_sound.size()) {
         sequence = 0;
       }
+      XLog.v("sequence", Arrays.toString(sequencer));
+
       SoundPlayer tmp_player = tmp_map_sound.get(sequence++);
       context.runOnUiThread(tmp_player::play);
       if(!current_players.contains(tmp_player)) current_players.add(tmp_player);

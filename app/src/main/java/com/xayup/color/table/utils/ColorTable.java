@@ -36,7 +36,7 @@ public class ColorTable extends TableAdapter {
     }
 
     public int[] toColorWithAlpha(int[][] table) {
-        if (color_table == null) return null;
+        if (color_table == null || table == null) return null;
         float[] hsv = new float[3];
         int[] colors = new int[table.length];
         for (int i = 0; i < color_table.length; i++) {
@@ -51,7 +51,7 @@ public class ColorTable extends TableAdapter {
     }
 
     public int[] toColor(int[][] table) {
-        if (color_table == null) return null;
+        if (color_table == null || table == null) return null;
         int[] colors = new int[table.length];
         for (int i = 0; i < color_table.length; i++) {
             if (table[i] != null) {
@@ -97,7 +97,7 @@ public class ColorTable extends TableAdapter {
                         to_value += Character.toString(tChar);
                     } else if (!to_value.equals("")) {
                         if (Character.toString(tChar).equals(";")) {
-                            id_rgb[value++] = Integer.parseInt(to_value) * 4;
+                            id_rgb[value] = Integer.parseInt(to_value) * 4;
                             color_table[id] = id_rgb;
                             value = 0;
                         } else if (Character.toString(tChar).equals(",")) {
@@ -110,17 +110,8 @@ public class ColorTable extends TableAdapter {
                 }
                 line = bReader.readLine();
             }
-        } catch (IOException f) {
-            System.out.println(f);
-            return null;
-        } catch (NullPointerException n) {
-            System.out.println(n);
-            return null;
-        } catch (NumberFormatException n) {
-            System.out.println(n);
-            return null;
-        } catch (ArrayIndexOutOfBoundsException a) {
-            System.out.println(a);
+        } catch (IOException | NullPointerException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            Log.e("parseAnother()", e.getStackTrace()[0].toString());
             return null;
         }
         return color_table;

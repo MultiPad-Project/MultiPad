@@ -13,7 +13,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:text="Title"
                 android:layout_toStartOf="@id/options_item_identify_container"
                 android:textColor="@color/options_item_title_color"
                 android:textSize="@dimen/options_item_title_text_size" />
@@ -23,7 +22,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:text="Description"
                 android:layout_toStartOf="@id/options_item_identify_container"
                 android:layout_below="@id/options_item_title"
                 android:textColor="@color/options_item_description_color"

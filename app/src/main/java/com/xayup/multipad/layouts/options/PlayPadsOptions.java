@@ -25,7 +25,10 @@ import com.xayup.multipad.R;
 import com.xayup.multipad.Readers;
 import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
+import com.xayup.multipad.pads.Pad;
+import com.xayup.multipad.project.keyled.KeyLED;
 import com.xayup.multipad.skin.SkinAdapter;
+import com.xayup.multipad.skin.SkinManager;
 import com.xayup.multipad.skin.SkinProperties;
 import com.xayup.ui.options.FluctuateOptionsView;
 import com.xayup.ui.options.OptionsItem;
@@ -33,6 +36,7 @@ import com.xayup.ui.options.OptionsItemInterface;
 import com.xayup.ui.options.OptionsPage;
 
 import java.io.File;
+import java.util.List;
 
 public abstract class PlayPadsOptions extends FluctuateOptionsView {
         /*Identify*/
@@ -56,9 +60,8 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
 
     /*Abstracts*/
     public abstract void onExit();
-    public abstract void obtainedSkin(SkinProperties properties);
-    public abstract void obtainedColorTable(File table);
-    public abstract void updatePadsList(OptionsPage page);
+    public abstract KeyLED getKeyLEDInstance();
+    public abstract Pad getPadInstance();
 
     /*Pages*/
     public OptionsPage skin_page;
@@ -68,6 +71,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
     protected Button configs;
     protected Button color_table;
     protected Button pads_list;
+    protected Button new_pads;
 
     @Override
     public void show(){
@@ -88,6 +92,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
         configs.setVisibility(View.VISIBLE);
         color_table.setVisibility(View.VISIBLE);
         pads_list.setVisibility(View.VISIBLE);
+        new_pads.setVisibility(View.GONE);
         flipper.setInAnimation(null);
         flipper.setOutAnimation(null);
         flipper.setDisplayedChild(0);
@@ -106,7 +111,34 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
             item.setDescription(skin_properties.author);
             item.setTag(skin_properties);
             item.setImg(skin_properties.icon);
-            item.setOnClick((view)-> obtainedSkin(skin_properties));
+            item.setOnClick((v)-> {
+                FluctuateOptionsView window = new FluctuateOptionsView(context);
+                window.getBackButton().setVisibility(View.GONE);
+                OptionsPage page = window.getPage(window.newPage(context.getString(R.string.list_skin_apply_title)));
+                OptionsItem apply_for_all = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
+                apply_for_all.setTitle(context.getString(R.string.list_skin_apply_for_all));
+                apply_for_all.setOnClick((view)->{
+                    List<Pad.Pads> list_pads = getPadInstance().getAllPadsList();
+                    while(!list_pads.isEmpty()) {
+                        list_pads.remove(0).applySkin(new SkinProperties(SkinManager.getSkinInfo(context, skin_properties.package_name, true)));
+                    }
+                    list_pads = null;
+                });
+                List<Pad.Pads> list_pads = getPadInstance().getAllPadsList();
+                while(!list_pads.isEmpty()) {
+                    Pad.Pads pads = list_pads.remove(0);
+                    OptionsItem pads_item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
+                    pads_item.setTitle(pads.getName());
+                    pads_item.setTag(pads);
+                    page.putOption(pads_item);
+                    pads_item.setOnClick((view)->{
+                        pads.applySkin(new SkinProperties(SkinManager.getSkinInfo(context, skin_properties.package_name, true)));
+                    });
+                }
+                list_pads = null;
+
+                window.show();
+            });
             skin_page.putOption(item);
         }
     }
@@ -121,13 +153,17 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
         (this.configs = new Button(context)).setBackground(context.getDrawable(R.drawable.icon_settings));
         (this.color_table = new Button(context)).setBackground(context.getDrawable(R.drawable.ic_color_table));
         (this.pads_list = new Button(context)).setBackground(context.getDrawable(R.drawable.pad_grids));
+        (this.new_pads = new Button(context)).setBackground(context.getDrawable(R.drawable.icon_plus));
         
         addViewToBottomBar(configs);
         addViewToBottomBar(color_table);
         addViewToBottomBar(pads_list);
+        addViewToBottomBar(new_pads);
+        /*Separator*/
         LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(-1, 1);
         param.weight = 1f;
         addViewToBottomBar(new View(context), param);
+
         addViewToBottomBar(exit);
 
         /*Pages*/
@@ -146,6 +182,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
         // Grid pads page
         OptionsPage grid_pads_page = new OptionsPage(context);
         grid_pads_page.setTitle(context.getString(R.string.grid_pads_title));
+
 
         /*Options Item*/
         OptionsItem glows_switch_item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE_WITH_CHECKBOX);
@@ -227,6 +264,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
                     color_table.setVisibility(View.VISIBLE);
                     configs.setVisibility(View.VISIBLE);
                     pads_list.setVisibility(View.VISIBLE);
+                    new_pads.setVisibility(View.GONE);
                     break;
                 default: break;
             }
@@ -240,8 +278,28 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
             configs.setVisibility(View.GONE);
             color_table.setVisibility(View.GONE);
             pads_list.setVisibility(View.GONE);
+            new_pads.setVisibility(View.VISIBLE);
+            grid_pads_page.clear();
+            List<Pad.Pads> pads_list = getPadInstance().getAllPadsList();
+            while(!pads_list.isEmpty()){
+                Pad.Pads pads = pads_list.remove(0);
+                OptionsItem item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
+                item.setTitle(pads.getName());
+                item.setDescription(String.valueOf(pads.getId()));
+                item.setOnClick(padsConfigItemOnClick(pads));
+                grid_pads_page.putOption(item);
+            }
             switchTo(EXIT_PAGE_PAD_GRIDS, false);
-            updatePadsList(grid_pads_page);
+        });
+
+        /*Add bottom buttons*/
+        new_pads.setOnClickListener((new_pads_button)->{
+            getPadInstance().newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
+            OptionsItem new_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+            new_item.setTitle(getPadInstance().getActivePads().getName());
+            new_item.setDescription(String.valueOf(getPadInstance().getActivePads().getId()));
+            new_item.setOnClick(padsConfigItemOnClick(getPadInstance().getActivePads()));
+            grid_pads_page.putOption(new_item);
         });
 
         // Button color_table
@@ -253,15 +311,17 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
             File root = new File(GlobalConfigs.DefaultConfigs.COLOR_TABLE_PATH);
             if(root.exists()) for(File file : root.listFiles()){
                 OptionsItem item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                item.setTitle(file.getName().replace(".ct", ""));
+                byte format_index = (byte) file.getName().lastIndexOf(".");
+                item.setTitle((format_index == -1) ? file.getName() : file.getName().replace(file.getName().substring(format_index), ""));
                 item.setOnClick((view1)->{
-                    XLog.v("Color Table name", ((File) item.getTag()).getName());
-                    obtainedColorTable((File) item.getTag());
+                    XLog.v("Color Table name", file.getName());
+                    getKeyLEDInstance().setColorTable(file);
                 });
+                color_table_page.putOption(item);
             }
         });
 
-        // Option page functions
+        // Options page functions
         // sound spam
         sound_spam_item.setOnClick((view) -> {
             if (!GlobalConfigs.PlayPadsConfigs.spamSounds) {
@@ -355,5 +415,42 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
 
         /*Create AlertDialog. Get with 'mAlertDialog' */
         create();
+    }
+
+    protected View.OnClickListener padsConfigItemOnClick(Pad.Pads pads){
+        return (view)->{
+            FluctuateOptionsView pad_op = new FluctuateOptionsView(context);
+            OptionsPage pad_op_page = pad_op.getPage(pad_op.newPage(context.getString(R.string.alert_exit_options)));
+
+            /*Page UI definitions*/
+            pad_op.setTitle(pads.getName());
+            pad_op.getBackButton().setVisibility(View.GONE);
+
+            /*Create and Place Pads Options*/
+            OptionsItem delete = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+            delete.setTitle("Delete");
+
+            OptionsItem rename = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+            rename.setTitle("Rename");
+
+            OptionsItem clone = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+            clone.setTitle("Clone");
+
+            OptionsItem use_id = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+            use_id.setTitle("Set id");
+
+            pad_op_page.putOption(use_id);
+            pad_op_page.putOption(rename);
+            pad_op_page.putOption(clone);
+            pad_op_page.putOption(delete);
+
+            /*Set items functions*/
+            delete.setOnClick((item_view)->{});
+            rename.setOnClick((item_view)->{});
+            clone.setOnClick((item_view)->{});
+            use_id.setOnClick((item_view)->{});
+
+            pad_op.show();
+        };
     }
 }

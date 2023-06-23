@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="default_padding">8dp</dimen>
     <dimen name="floating_options_button_size">42dp</dimen>
     <dimen name="options_item_height">80dp</dimen>
     <dimen name="options_item_title_text_size">18sp</dimen>
     <dimen name="options_item_description_text_size">14sp</dimen>
-    <dimen name="options_item_identify_size">16dp</dimen>
+    <dimen name="options_item_identify_size">18dp</dimen>
     <dimen name="options_item_center_with_image_height">120dp</dimen>
     <dimen name="options_item_center_with_image_image_size">50dp</dimen>
 </resources>

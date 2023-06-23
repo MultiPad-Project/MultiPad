@@ -52,8 +52,8 @@ public class MakePads {
     }
     /** Obtenha o id da pad atraves de suas cordenada X e Y */
     public static class PadID {
-        public static int getGridIndexFromXY(int grid_colums, int row, int colum) {
-            return (grid_colums * row) + colum;
+        public static int getGridIndexFromXY(int grid_columns, int row, int colum) {
+            return (grid_columns * row) + colum;
         }
         public static byte[ /*X*/][ /*Y*/] ids = new byte[10][10];
 
@@ -61,36 +61,39 @@ public class MakePads {
             return ids[x][y];
         }
 
+        /**
+         * A contagem do Chain comeca do topo [row 0, colum 1]
+         *
+         * @param mc chain MC value (1 -> 32)
+         * @param offset altera o inicio na contage (Sentido horario)
+         * @return Chain ID
+         */
         public static int getChainId(int mc, int offset) {
             int[] xy = getChainXY(mc, offset);
             return getId(xy[0], xy[1]);
         }
         /**
-         * A cotagem do Chain comeca do topo
+         * A contagem do Chain comeca do topo [row 0, colum 1]
          *
-         * @param offset altera o inicio na contage (Sentido horario)
+         * @param mc chain MC value (1 -> 32)
+         * @param offset altera o inicio na contage (Sentido horario). O padrão é 1
+         * @return Chain [row, colum]
          */
         public static int[] getChainXY(int mc, int offset) {
-            if (offset > 32)
-                new NumberFormatException(
-                        "The number must be greater than 0 or less than 33. Offset: " + offset);
-            int x, y;
+            if (offset < 1 || offset > 32)
+                throw new NumberFormatException(
+                        "The number must be greater than 1 or less than 33. Offset: " + offset);
             mc = mc + offset - 1;
             if(mc  > 32) mc -= 32;
             if (mc > 24) {
-                x = 0;
-                y = 33 - mc;
+                return new int[] {33 - mc, 0};
             } else if (mc > 16) {
-                x = 25 - mc;
-                y = 9;
+                return new int[] {9, 25 - mc};
             } else if (mc > 8) {
-                x = mc - 8;
-                y = 9;
+                return new int[] {mc - 8, 9};
             } else {
-                x = 0;
-                y = mc;
+                return new int[] {0, mc};
             }
-            return new int[] {x, y};
         }
 
         private static void putId(int x, int y) {

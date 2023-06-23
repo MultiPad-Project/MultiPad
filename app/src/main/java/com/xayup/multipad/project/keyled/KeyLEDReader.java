@@ -5,6 +5,7 @@ import com.google.android.exoplayer2.C;
 import com.google.common.io.Files;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.load.thread.LoadProject;
+import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.project.MapData;
 import com.xayup.multipad.project.keyled.LedMap;
 import java.io.File;
@@ -22,6 +23,7 @@ public class KeyLEDReader implements MapData {
 
     public void read(File[] leds, KeyLEDMap map, LoadProject.LoadingProject mLoadingProject) {
         if (leds != null){
+            String file_name = "";
             boolean checked_name = false;
             int chain = 0;
             int x = 0;
@@ -31,9 +33,8 @@ public class KeyLEDReader implements MapData {
             for (File led : leds) {
                 if (led != null) {
                     if (!checked_name) {
-                        String[] chars = led.getName().split("\\s");
-                        XLog.v("Name", led.getName());
-
+                        String[] chars = (file_name = led.getName()).split("\\s");
+                        XLog.v("Name", file_name);
                         try {
                             if (chars.length < 3) throw new NumberFormatException();
                             chain = Integer.parseInt(chars[0]);
@@ -59,66 +60,78 @@ public class KeyLEDReader implements MapData {
             ledData.setTypeLoop(loop);
             int[] delays = new int[leds_list.size()];
             int delay = 0;
+            int line;
             while(true) {
+                line = 0;
                 list_loop: for (int i = 0; i < leds_list.size(); i++) {
                     while (!leds_list.get(i).isEmpty()) {
                         if(delays[i] > 0) break;
                         String[] chars = leds_list.get(i).remove(0).split("\\s");
                         if (chars.length < 2) continue;
-                        int type = 0;
-                        int value = 0;
-                        int pad_x = 0;
-                        int pad_y = 0;
-                        switch (chars[0]) {
-                            case "delay":
-                            case "d": {
-                                if(chars[1].equals("0")) continue;
-                                delays[i] = Integer.parseInt(chars[1]);
-                                continue list_loop;
+                        int type;
+                        int value;
+                        int pad_x;
+                        int pad_y;
+                        try {
+                            switch (chars[0]) {
+                                case "delay":
+                                case "d": {
+                                    if (chars[1].equals("0")) continue;
+                                    delays[i] = Integer.parseInt(chars[1]);
+                                    continue list_loop;
+                                }
+                                case "on":
+                                case "o": {
+                                    type = FRAME_TYPE_ON;
+                                    break;
+                                }
+                                case "off":
+                                case "f": {
+                                    if(chars[1].matches("[m|M][c|C]|\\*")){
+                                        int[] xy = MakePads.PadID.getChainXY(Integer.parseInt(chars[2]), 1);
+                                        ledData.putFrame(FRAME_TYPE_OFF, 0, xy[0], xy[1], i);
+                                    } else if(chars[1].equalsIgnoreCase("l")) {
+                                        ledData.putFrame(FRAME_TYPE_OFF, 0, 0, 9, i);
+                                    } else {
+                                        ledData.putFrame(FRAME_TYPE_OFF, 0, Integer.parseInt(chars[1]), Integer.parseInt(chars[2]), i);
+                                    }
+                                    continue;
+                                }
+                                default: {
+                                    continue;
+                                }
                             }
-                            case "on":
-                            case "o": {
-                                type = FRAME_TYPE_ON;
-                                break;
-                            }
-                            case "off":
-                            case "f": {
-                                type = FRAME_TYPE_OFF;
+                            if (chars[1].equalsIgnoreCase("l")) {
+                                pad_x = 0;
+                                pad_y = 9;
+                                value = Integer.parseInt(chars[3]);
+                            } else if (chars[1].matches("[m|M][c|C]|\\*")) {
+                                int mc = Integer.parseInt(chars[2]);
+                                if (mc > 24) {
+                                    pad_x = 33 - mc;
+                                    pad_y = 0;
+                                } else if (mc > 16) {
+                                    pad_x = 9;
+                                    pad_y = 25 - mc;
+                                } else if (mc > 8) {
+                                    pad_x = mc - 8;
+                                    pad_y = 9;
+                                } else {
+                                    pad_x = 0;
+                                    pad_y = mc;
+                                }
+                                value = Integer.parseInt(chars[4]);
+                            } else {
                                 pad_x = Integer.parseInt(chars[1]);
                                 pad_y = Integer.parseInt(chars[2]);
-                                ledData.putFrame(type, value, pad_x, pad_y, i);
-                                continue;
+                                value = Integer.parseInt(chars[4]);
                             }
-                            default: {
-                                continue;
-                            }
+                            ledData.putFrame(type, value, pad_x, pad_y, i);
+                        } catch (NumberFormatException e){
+                            mLoadingProject.onFileError(file_name, line, "Invalid Led Format Code");
+                            Log.e(Arrays.toString(chars) + "", e.getStackTrace()[0].toString());
                         }
-                        if (chars[1].equalsIgnoreCase("l")) {
-                            pad_x = 0;
-                            pad_y = 9;
-                            value = Integer.parseInt(chars[3]);
-                        } else if (chars[1].matches("[m|M][c|C]|\\*")) {
-                            int mc = Integer.parseInt(chars[2]);
-                            if (mc > 24) {
-                                pad_x = 33 - mc;
-                                pad_y = 0;
-                            } else if (mc > 16) {
-                                pad_x = 9;
-                                pad_y = 25 - mc;
-                            } else if (mc > 8) {
-                                pad_x = mc - 8;
-                                pad_y = 9;
-                            } else {
-                                pad_x = 0;
-                                pad_y = mc;
-                            }
-                            value = Integer.parseInt(chars[4]);
-                        } else {
-                            pad_x = Integer.parseInt(chars[1]);
-                            pad_y = Integer.parseInt(chars[2]);
-                            value = Integer.parseInt(chars[4]);
-                        }
-                        ledData.putFrame(type, value, pad_x, pad_y, i);
+                        line++;
                     }
                 }
                 /*Get the smallest delay*/

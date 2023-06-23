@@ -162,6 +162,22 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         ViewGroup.LayoutParams rLayout = pad.getActivePads().getGridPads().getLayoutParams();
                         rLayout.height = h;
                         rLayout.width = h;
+
+                        /*Setup actives*/
+                        /*Current Chain*/
+                        pad.getActivePads().getGridPads().getChildAt(
+                                MakePads.PadID.getId(pad.current_chain_array[0], pad.current_chain_array[1])
+                        ).findViewById(R.id.press).setAlpha(1f);
+
+                        /*LEDs*/
+                        pad.getActivePads().getGridPads().getChildAt(
+                                MakePads.PadID.getId(0, 2)
+                        ).findViewById(R.id.press).setAlpha(1f);
+
+                        /*Actives Watermark*/
+                        pad.getActivePads().getGridPads().getChildAt(
+                                MakePads.PadID.getId(0, 8)
+                        ).findViewById(R.id.press).setAlpha(1f);
                     });
         }
         public LoadProject.LoadingProject getLoadingProject() {
@@ -241,97 +257,13 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                                 }
                                                 context.finish();
                                             }
-
                                             @Override
-                                            public void obtainedSkin(SkinProperties properties) {
-                                                FluctuateOptionsView window = new FluctuateOptionsView(context);
-                                                window.getBackButton().setVisibility(View.GONE);
-                                                OptionsPage page = window.getPage(window.newPage(context.getString(R.string.list_skin_apply_title)));
-                                                OptionsItem apply_for_all = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
-                                                apply_for_all.setTitle(context.getString(R.string.list_skin_apply_for_all));
-                                                apply_for_all.setOnClick((view)->{
-                                                    for(Pad.Pads pads : pad.getAllPadsList()) {
-                                                        pads.applySkin(new SkinProperties(SkinManager.getSkinInfo(context, properties.package_name, true)));
-                                                    }
-                                                });
-                                                for(Pad.Pads pads : pad.getAllPadsList()) {
-                                                    OptionsItem item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
-                                                    item.setTitle(pads.getName());
-                                                    item.setTag(pads);
-                                                    page.putOption(item);
-                                                    item.setOnClick((view)->{
-                                                        ((Pad.Pads) item.getTag()).applySkin(new SkinProperties(SkinManager.getSkinInfo(context, properties.package_name, true)));
-                                                    });
-                                                }
-                                                window.show();
-                                            }
-
+                                            public KeyLED getKeyLEDInstance() {return mKeyLED;}
                                             @Override
-                                            public void obtainedColorTable(File table) {
-                                                if(mKeyLED != null) mKeyLED.setColorTable(table);
-                                            }
-
-                                            @Override
-                                            public void updatePadsList(OptionsPage page) {
-                                                for(Pad.Pads pads : pad.getAllPadsList()){
-                                                    OptionsItem item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
-                                                    item.setTitle(pads.getName());
-                                                    item.setDescription(String.valueOf(pads.getId()));
-                                                    item.setTag(pads);
-                                                    item.setOnClick(padsConfigItemOnClick(pads));
-                                                    page.putOption(item);
-                                                }
-                                            }
+                                            public Pad getPadInstance() {return pad;}
                                         };
                             });
                 }
-            };
-        }
-
-        protected View.OnClickListener padsConfigItemOnClick(Pad.Pads pads){
-            return (view)->{
-                FluctuateOptionsView pad_op = new FluctuateOptionsView(context);
-                OptionsPage pad_op_page = pad_op.getPage(pad_op.newPage(context.getString(R.string.alert_exit_options)));
-
-                /*Page UI definitions*/
-                pad_op.setTitle(pads.getName());
-                pad_op.getBackButton().setVisibility(View.INVISIBLE);
-
-                /*Create and Place Pads Options*/
-                OptionsItem delete = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                delete.setTitle("Delete");
-
-                OptionsItem rename = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                rename.setTitle("Rename");
-
-                OptionsItem clone = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                clone.setTitle("Clone");
-
-                OptionsItem use_id = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                use_id.setTitle("Set id");
-
-                pad_op_page.putOption(use_id);
-                pad_op_page.putOption(rename);
-                pad_op_page.putOption(clone);
-                pad_op_page.putOption(delete);
-
-                /*Set items functions*/
-                delete.setOnClick((item_view)->{});
-                rename.setOnClick((item_view)->{});
-                clone.setOnClick((item_view)->{});
-                use_id.setOnClick((item_view)->{});
-
-                /*Add bottom buttons*/
-                Button new_pads = new Button(context);
-                new_pads.setBackground(context.getDrawable(R.drawable.icon_plus));
-                new_pads.setOnClickListener((new_pads_button)->{
-                    pad.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
-                    OptionsItem new_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                    new_item.setTitle(pad.getActivePads().getName());
-                    new_item.setOnClick(padsConfigItemOnClick(pads));
-                    pad_op_page.putOption(new_item);
-                });
-                pad_op.show();
             };
         }
 
@@ -362,6 +294,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onPadTouch() {
             return (View v, MotionEvent event) -> {
@@ -379,6 +312,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onChainTouch() {
             return (View v, MotionEvent event) -> {
@@ -393,8 +327,15 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                         .findViewById(
                                                 MakePads.PadID.getId(
                                                         current_chain[0], current_chain[1]))
-                                        .findViewById(R.id.press);
+                                        .findViewById(R.id.press).setAlpha(0f);
+                                if(mKeySounds != null) mKeySounds.resetSequencer();
                                 pad.setCurrentChain(mPadInfo.row, mPadInfo.colum);
+                                current_chain = pad.getCurrentChain();
+                                v.getRootView()
+                                        .findViewById(
+                                                MakePads.PadID.getId(
+                                                        current_chain[0], current_chain[1]))
+                                        .findViewById(R.id.press).setAlpha(1f);
                             }
                             return true;
                         }
@@ -404,6 +345,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onPressWatermarkTouch() {
             return (View v, MotionEvent event) -> {
@@ -424,6 +366,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onLedSwitchTouch() {
             return (View v, MotionEvent event) -> {
@@ -448,6 +391,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onAutoplaySwitchTouch() {
             return (View v, MotionEvent event) -> {
@@ -468,6 +412,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onAutoplayPrevTouch() {
             return (View v, MotionEvent event) -> {
@@ -484,6 +429,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onAutoplayPauseTouch() {
             return (View v, MotionEvent event) -> {
@@ -504,6 +450,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onAutoplayNextTouch() {
             return (View v, MotionEvent event) -> {
@@ -520,6 +467,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onLayoutSwitchTouch() {
             return (View v, MotionEvent event) -> {
@@ -533,6 +481,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onWatermarkTouch() {
             return (View v, MotionEvent event) -> {

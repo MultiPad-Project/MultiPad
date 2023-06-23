@@ -88,15 +88,18 @@ public class OptionsLayout {
     public void addViewToBottomBar(View view){
         int size = (int) context.getResources().getDimension(R.dimen.floating_options_button_size);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+        int dp = (int) context.getResources().getDimension(R.dimen.default_padding);
+        params.setMargins(dp, dp, dp, dp);
         ((ViewGroup) layout.findViewById(R.id.floating_options_bottom_bar)).addView(view, params);
     }
 
     public void addViewToBottomBar(View view, int index){
         int size = (int) context.getResources().getDimension(R.dimen.floating_options_button_size);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+        int dp = (int) context.getResources().getDimension(R.dimen.default_padding);
+        params.setMargins(dp, dp, dp, dp);
         ((ViewGroup) layout.findViewById(R.id.floating_options_bottom_bar)).addView(view, index, params);
     }
-
     public void addViewToBottomBar(View view, int index, ViewGroup.LayoutParams params){
         ((ViewGroup) layout.findViewById(R.id.floating_options_bottom_bar)).addView(view, index, params);
     }
@@ -106,6 +109,8 @@ public class OptionsLayout {
 
     public void addViewToBottomBar(View view, int width, int height){
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
+        int dp = (int) context.getResources().getDimension(R.dimen.default_padding);
+        params.setMargins(dp, dp, dp, dp);
         ((ViewGroup) layout.findViewById(R.id.floating_options_bottom_bar)).addView(view, width, height);
     }
 }

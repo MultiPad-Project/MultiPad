@@ -2,6 +2,7 @@ package com.xayup.multipad.project.keyled;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 import com.xayup.color.table.utils.ColorTable;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.utils.Utils;
@@ -36,6 +37,7 @@ public class Colors {
             this.getTable(current_table);
         } catch (IOException e) {
             Log.e("eh..", e.toString());
+            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
             colors = new int[128];
         }
     }
@@ -59,7 +61,7 @@ public class Colors {
                                     fw.close();
                                     is.close();
                                 } catch (IOException e) {
-                                    Log.e("Try read color_table asset", e.toString());
+                                    Log.e("Try read asset", e.toString());
                                 }
                             }
                         });
