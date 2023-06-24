@@ -1,5 +1,5 @@
 # MultiPad
-This project is inspired by Unipad by https://github.com/kimjisub/.
+This project is inspired by Unipad by <a href="https://github.com/kimjisub/">Kimjisub</a>
 
 # But why?
 There are many things that I would like in Unipad but that wasn't up to me, so when creating MultiPad I thought of putting in everything that was possible, in addition to other users' wishes.
