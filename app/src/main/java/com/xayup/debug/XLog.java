@@ -3,7 +3,7 @@ package com.xayup.debug;
 import android.util.Log;
 
 public class XLog {
-  protected static boolean enabled = true;
+  protected static boolean enabled = false;
 
   public static Void debug(boolean enable) {
     enabled = enable;
