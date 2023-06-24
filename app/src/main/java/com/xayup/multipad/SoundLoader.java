@@ -25,14 +25,14 @@ public class SoundLoader {
   /**/
   protected Map<String, List<SoundPlayer>> map;
   /*Current playing*/
-  protected List<SoundPlayer> current_players;
+  protected final List<SoundPlayer> current_players;
 
-  int[][] sequencer;
+  protected int[] sequencer;
 
   public SoundLoader(Activity context) {
     this.context = context;
     this.stop_all = false;
-    this.sequencer = new int[8][8];
+    this.sequencer = new int[100];
     this.map = new HashMap<>();
     this.mSoundPool = new SoundPool.Builder().setMaxStreams(10).build();
     this.current_players = new ArrayList<>();
@@ -52,7 +52,9 @@ public class SoundLoader {
         @Override
         public void onFinished(SoundPlayer player) {
           XLog.v("onFinished()", "PlayerExoPlayer");
-          if(!stop_all) current_players.remove(player);
+          synchronized (this) {
+            if(!stop_all) current_players.remove(player);
+          }
           XLog.v("Current list size", String.valueOf(current_players.size()));
         }
       };
@@ -62,7 +64,9 @@ public class SoundLoader {
         @Override
         public void onFinished(SoundPlayer player) {
           XLog.v("onFinished()", "PlayerSoundPool");
-          if(!stop_all) current_players.remove(player);
+          synchronized (this) {
+            if(!stop_all) current_players.remove(player);
+          }
           XLog.v("Current list size", String.valueOf(current_players.size()));
         }
       };
@@ -71,22 +75,22 @@ public class SoundLoader {
   }
 
   public void resetSequencer() {
-    Arrays.fill(sequencer, new int[8]);
+    Arrays.fill(sequencer, 0);
   }
 
   protected int[] getXY(String chain_and_pad){
     char[] chars = chain_and_pad.toCharArray();
-    int row = Character.getNumericValue(chars[chars.length-3]);
-    int colum = Character.getNumericValue(chars[chars.length-2]);
+    int row = Character.getNumericValue(chars[chars.length-2]);
+    int colum = Character.getNumericValue(chars[chars.length-1]);
     return new int[]{row, colum};
   }
 
   public int getSequence(int row, int colum){
-    return sequencer[row-1][colum-1];
+    return sequencer[(row*10)+colum];
   }
 
   protected void changeSequence(int row, int colum, int value){
-    sequencer[row-1][colum-1] = value;
+    sequencer[(row*10)+colum] = value;
   }
 
   /**
@@ -95,19 +99,19 @@ public class SoundLoader {
   public void playSound(String chain_and_pad) {
     if(map.containsKey(chain_and_pad)) {
       List<SoundPlayer> tmp_map_sound = map.get(chain_and_pad);
-      if(tmp_map_sound == null) return;
+      if(tmp_map_sound == null || tmp_map_sound.size() < 1) return;
       int[] xy = getXY(chain_and_pad);
-      SoundPlayer tmp_player = map.get(chain_and_pad).get(getSequence(xy[0], xy[1]));
+      int sequence = getSequence(xy[0], xy[1]);
+      if(sequence >= tmp_map_sound.size()) {
+        sequence = 0;
+      }
+      SoundPlayer tmp_player = tmp_map_sound.get(sequence++);
       context.runOnUiThread(tmp_player::play);
       current_players.add(tmp_player);
       if (tmp_player.getToChain() != -1){
         XayUpFunctions.touchAndRelease(context, Integer.parseInt(VariaveisStaticas.chainsIDlist.get(tmp_player.getToChain())), XayUpFunctions.TOUCH_AND_RELEASE);
       }
-      if(tmp_map_sound.size()-1 == getSequence(xy[0], xy[1])){
-        changeSequence(xy[0], xy[1], 0);
-      } else {
-        changeSequence(xy[0], xy[1], getSequence(xy[0], xy[1])+1);
-      }
+      changeSequence(xy[0], xy[1], sequence);
     }
   }
 
@@ -126,5 +130,6 @@ public class SoundLoader {
       while(!players.isEmpty()) players.remove(0).release();
     }
     map.clear();
+    sequencer = null;
   }
 }
