@@ -73,15 +73,15 @@ public class LoadScreen {
     }
 
     public void showErrorsList(List<String> errors, View.OnClickListener ok_click) {
-        flipper.setOutAnimation(context, R.anim.fade_out_splash);
+        /*flipper.setOutAnimation(context, R.anim.fade_out_splash);
         flipper.getOutAnimation().setDuration(200);
         flipper.setInAnimation(context, R.anim.fade_in_splash);
-        flipper.getInAnimation().setDuration(200);
-        context.runOnUiThread(()->flipper.showNext());
+        flipper.getInAnimation().setDuration(200);*/
         ((ListView) flipper.findViewById(R.id.loading_screen_error_list))
                 .setAdapter(new ArrayAdapter(context, R.layout.simple_list_item, errors));
         ((Button) flipper.findViewById(R.id.loading_screen_error_button_ok))
                 .setOnClickListener(ok_click);
+        context.runOnUiThread(()->flipper.showNext());
     }
 
     public Animation getCurrentAnimation() {

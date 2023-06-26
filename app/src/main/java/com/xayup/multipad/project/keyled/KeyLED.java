@@ -88,7 +88,10 @@ public class KeyLED extends Project
     }
     
     public void clear(){
-        mLedMap.clear();    
+        mLedMap.clear();
+        leds_standby.clear();
+        new_leds_standby.clear();
+        running.set(false);
     }
 
     @Override

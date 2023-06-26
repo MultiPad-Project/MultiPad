@@ -47,29 +47,29 @@ public class SoundLoader {
    * @param to_chain usado para identificar que deve-se pular automaticamente para determinada chain
    */
   public void loadSound(String sound_file_path, int[] necessary_info, String chain_and_pad, String to_chain) {
-    XLog.v("Sound Durations Metadata", sound_file_path.substring(sound_file_path.lastIndexOf(File.separator)) + ": " + Arrays.toString(necessary_info));
+    //XLog.v("Sound Durations Metadata", sound_file_path.substring(sound_file_path.lastIndexOf(File.separator)) + ": " + Arrays.toString(necessary_info));
     if(!map.containsKey(chain_and_pad)) map.put(chain_and_pad, new ArrayList<>());
     SoundPlayer player;
     if(necessary_info[1] > 950 || necessary_info[0] > 5400 /*5 seconds*/){
       /*Use ExoPlayer*/
-      XLog.v("Use Sample Player", "PlayerExoPlayer");
+      //XLog.v("Use Sample Player", "PlayerExoPlayer");
       player = new PlayerExoPlayer(context, sound_file_path, to_chain){
         @Override
         public void onFinished(SoundPlayer player) {
-          XLog.v("onFinished()", "PlayerExoPlayer");
+          //XLog.v("onFinished()", "PlayerExoPlayer");
           if(!stop_all) current_players.remove(player);
-          XLog.v("Current list size", String.valueOf(current_players.size()));
+          //XLog.v("Current list size", String.valueOf(current_players.size()));
         }
       };
     } else {
       /*Use SoundPool*/
-      XLog.v("Use Sample Player", "PlayerSoundPool");
+      //XLog.v("Use Sample Player", "PlayerSoundPool");
       player = new PlayerSoundPool(context, mSoundPool, sound_file_path, necessary_info[0], to_chain) {
         @Override
         public void onFinished(SoundPlayer player) {
-          XLog.v("onFinished()", "PlayerSoundPool");
+          //XLog.v("onFinished()", "PlayerSoundPool");
           if(!stop_all) current_players.remove(player);
-          XLog.v("Current list size", String.valueOf(current_players.size()));
+          //XLog.v("Current list size", String.valueOf(current_players.size()));
         }
       };
     }
@@ -103,12 +103,12 @@ public class SoundLoader {
       List<SoundPlayer> tmp_map_sound = map.get(chain_and_pad);
       if(tmp_map_sound == null || tmp_map_sound.size() < 1) return;
       int[] xy = getXY(chain_and_pad);
-      XLog.v("XY", Arrays.toString(xy));
+      //XLog.v("XY", Arrays.toString(xy));
       int sequence = getSequence(xy[0], xy[1]);
       if(sequence >= tmp_map_sound.size()) {
         sequence = 0;
       }
-      XLog.v("sequence", Arrays.toString(sequencer));
+      //XLog.v("sequence", Arrays.toString(sequencer));
 
       SoundPlayer tmp_player = tmp_map_sound.get(sequence++);
       context.runOnUiThread(tmp_player::play);

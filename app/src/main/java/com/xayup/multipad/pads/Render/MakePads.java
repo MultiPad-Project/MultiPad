@@ -147,7 +147,6 @@ public class MakePads {
                     pad = context.getLayoutInflater().inflate(R.layout.pad, null, false);
                     btn = pad.findViewById(R.id.pad);
                     btn_ = pad.findViewById(R.id.press);
-                    btn_.setVisibility(View.INVISIBLE);
                     phantom = pad.findViewById(R.id.phantom);
                     led = pad.findViewById(R.id.led);
                     touch_map = pad.findViewById(R.id.touch_map);

@@ -22,16 +22,15 @@ public class KeyLEDData implements MapData {
         return frames;
     }
 
-    public void putFrame(int type, int value, int pad_row , int pad_colum, int lp_index){
+    public void putFrame(int type, int value, int pad_row , int pad_colum, int lp_index) throws NumberFormatException {
+        /* Throw */
+        if((pad_row & pad_colum) > 10 || (pad_row & pad_colum) < 0) throw new NumberFormatException("Invalid row or colum number: Row: " + pad_row + ", Colum: " + pad_colum);
+        else if (type != FRAME_TYPE_DELAY && (value > 127 || value < 0)) throw new NumberFormatException("Invalid value number: " + value);
+        /* Add frame */
         frames = Arrays.copyOf(frames, frames.length+1);
-        if(type == FRAME_TYPE_DELAY){
-            frames[frames.length-1] = new int[]{type, value};
-        } else {
-            frames[frames.length-1] = new int[]{type, value, pad_row, pad_colum, lp_index};
-        }
+        if(type == FRAME_TYPE_DELAY) frames[frames.length-1] = new int[]{type, value};
+        else frames[frames.length-1] = new int[]{type, value, pad_row, pad_colum, lp_index};
     }
 
-    public int length(){
-        return frames.length;
-    }
+    public int length(){ return frames.length; }
 }

@@ -66,7 +66,8 @@ public class KeyLEDReader implements MapData {
                 list_loop: for (int i = 0; i < leds_list.size(); i++) {
                     while (!leds_list.get(i).isEmpty()) {
                         if(delays[i] > 0) break;
-                        String[] chars = leds_list.get(i).remove(0).split("\\s");
+                        String line_string;
+                        String[] chars = (line_string = leds_list.get(i).remove(0)).split("\\s");
                         if (chars.length < 2) continue;
                         int type;
                         int value;
@@ -127,16 +128,14 @@ public class KeyLEDReader implements MapData {
                                 value = Integer.parseInt(chars[4]);
                             }
                             ledData.putFrame(type, value, pad_x, pad_y, i);
-                        } catch (NumberFormatException e){
-                            mLoadingProject.onFileError(file_name, line, "Invalid Led Format Code");
-                            Log.e(Arrays.toString(chars) + "", e.getStackTrace()[0].toString());
+                        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e){
+                            mLoadingProject.onFileError(file_name, line, "Invalid Led Format: " + line_string);
+                            Log.e(String.valueOf(Arrays.toString(chars)), e.getStackTrace()[0].toString());
                         }
                         line++;
                     }
                 }
                 /*Get the smallest delay*/
-                XLog.v("Get the smallest delay", "");
-
                 for(int d : delays) {
                     if (d > 0 && (delay < 1 || d < delay)) {
                         delay = d;
@@ -145,9 +144,7 @@ public class KeyLEDReader implements MapData {
                 if(delay < 1) break;
                 /*Subtract the delays by the smallest delay obtained*/
                 for(int i = 0; i < delays.length; i++){
-                    XLog.v("Delays after", delays[i]+"");
                     delays[i] = delays[i] - delay;
-                    XLog.v("Delays before", delays[i]+"");
                 }
                 ledData.putFrame(FRAME_TYPE_DELAY, delay, 0, 0, 0);
                 delay = 0;

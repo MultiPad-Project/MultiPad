@@ -143,23 +143,23 @@ public class AutoPlay
                 case FRAME_TYPE_ON:
                     {
                         // ACTION_DOWN
-                        mTouch.touch(
-                                viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
+                        context.runOnUiThread(() -> mTouch.touch(
+                                viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y]))));
                         break;
                     }
                 case FRAME_TYPE_OFF:
                     {
                         // ACTION_UP
-                        mTouch.release(
-                                        viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
+                        context.runOnUiThread(() -> mTouch.release(
+                                        viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y]))));
                         break;
                     }
                 case FRAME_TYPE_TOUCH:
                 case FRAME_TYPE_CHAIN:
                     {
                         // Touch in chain
-                        mTouch.touchAndRelease(
-                                viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
+                        context.runOnUiThread(() -> mTouch.touchAndRelease(
+                                viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y]))));
                         break;
                     }
             }

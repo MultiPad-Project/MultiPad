@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         applicationId "com.xayup.multipad.development"
-        minSdk 21
+        minSdk 23 //Android M
         targetSdk 32
         versionCode 230622        //year, month, day
         versionName "2.2"
