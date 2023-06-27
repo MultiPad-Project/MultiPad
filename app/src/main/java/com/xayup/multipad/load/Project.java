@@ -1,12 +1,9 @@
 package com.xayup.multipad.load;
 
-import android.app.Activity;
 import android.content.Context;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.project.keyled.KeyLED;
 import com.xayup.multipad.project.autoplay.AutoPlay;
-import com.xayup.multipad.ProjectsAdapter;
-import com.xayup.multipad.layouts.PlayProject;
 import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.project.keysounds.KeySounds;
 import java.io.File;
@@ -71,7 +68,7 @@ public class Project {
         public boolean stopAutoPlay();
 
         public boolean pauseAutoPlay();
-        public boolean inPaused();
+        public boolean isPaused();
 
         public boolean resumeAutoPlay();
 

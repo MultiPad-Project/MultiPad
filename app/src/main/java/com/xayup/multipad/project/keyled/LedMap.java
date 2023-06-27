@@ -34,7 +34,9 @@ public class LedMap implements KeyLEDReader.KeyLEDMap {
         sequence_index = null;
     }
     public void resetSequencesIndex(){
-        Arrays.fill(sequence_index, null);
+        for(final byte[] s : sequence_index){
+            Arrays.fill(s, (byte) 0);
+        }
     }
     @Override
     public void putSequence(int c, int x, int y, KeyLEDData led_data){

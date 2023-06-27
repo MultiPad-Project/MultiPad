@@ -29,8 +29,7 @@ public class KeySounds extends SoundLoader implements Project.SoundInterface, Pa
     @Override
     public boolean playSound(int chain, int x, int y) {
         XLog.v("Try play sound", String.valueOf(chain)+x+y);
-        playSound(String.valueOf(chain)+x+y);
-        return false;
+        return playSound(String.valueOf(chain)+x+y);
     }
 
     @Override

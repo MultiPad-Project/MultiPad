@@ -82,9 +82,17 @@ public class KeyLED extends Project
                 running.set(true);
                 led_thread.start();
             }
+            XLog.v("Success show led", "");
+
             return true;
         }
+        XLog.v("Error show led", "");
+
         return false;
+    }
+
+    public void resetSequence(){
+        mLedMap.resetSequencesIndex();
     }
     
     public void clear(){

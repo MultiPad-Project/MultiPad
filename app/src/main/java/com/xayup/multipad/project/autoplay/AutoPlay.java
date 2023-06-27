@@ -1,6 +1,7 @@
 package com.xayup.multipad.project.autoplay;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.GridLayout;
@@ -12,23 +13,26 @@ import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.project.MapData;
 import com.xayup.multipad.load.Project;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoPlay
         implements Project.AutoPlayInterface, MapData, Runnable, PadPressCallInterface {
     protected Activity context;
-    protected List<int[]> auto_play_map;
-    protected AtomicBoolean running;
-    protected boolean paused;
-    protected Thread mThread;
     protected int autoplay_index;
     protected int forecast_max_count;
-    protected AutoPlayChange mAutoPlayChange;
-    protected GridLayout viewRoot;
+    protected boolean paused;
+    protected List<int[]> auto_play_map;
+    protected AtomicBoolean running;
+    protected Thread mThread;
     protected Ui.Touch mTouch;
+    protected AutoPlayChanges mAutoPlayChanges;
+    protected View[] forecasts;
+    protected PadPressCallInterface pausedCall;
+    protected int[] practical_request;
+    protected PadPressCallInterface callInterface;
 
     public AutoPlay(Activity context) {
         this.context = context;
@@ -43,6 +47,118 @@ public class AutoPlay
 
     public void clear() {
         auto_play_map.clear();
+        if(forecasts != null) Arrays.fill(forecasts, null);
+        running.set(false);
+        paused = false;
+    }
+
+    /**
+     * Start autoplay
+     * @param autoPlayChanges .
+     * @return PadPressCallInterface to add call
+     */
+    public PadPressCallInterface startAutoPlay(AutoPlayChanges autoPlayChanges) {
+        if(auto_play_map.isEmpty()) return null;
+
+        XLog.v("Try start autoplay", "");
+
+        this.running.set(true);
+        this.paused = false;
+        this.mAutoPlayChanges = autoPlayChanges;
+        this.autoplay_index = 0;
+        if(mTouch == null) this.mTouch = new Ui.Touch();
+        (mThread = new Thread(this)).start();
+        return (chain, x, y)->{
+            if(isPaused()){
+                checkFramePractical(chain, x, y);
+                return true;
+            }
+            return false;
+        };
+    }
+
+    public void pauseAutoPlay(int forecast_max_count) {
+        this.forecast_max_count = forecast_max_count;
+        forecasts = new View[forecast_max_count];
+        practical_request = new int[3];
+        paused = true;
+    }
+
+    public void setFramePractical(){
+        int retry_loop = 0;
+        for (int i = 0; i < forecast_max_count; i++) {
+            int[] frame = auto_play_map.get(autoplay_index+retry_loop);
+            if(frame == null) break;
+            switch (frame[FRAME_TYPE]) {
+                case FRAME_TYPE_ON:
+                case FRAME_TYPE_TOUCH:
+                case FRAME_TYPE_CHAIN:
+                {
+                    View view = mAutoPlayChanges.getViewShowPracticalMark(frame[FRAME_PAD_X], frame[FRAME_PAD_Y]);
+                    final int final_i = i;
+                    context.runOnUiThread( ()-> {
+                        view.setBackgroundColor(Color.BLUE);
+                        view.setAlpha(1f - (final_i * 0.2f));
+                    });
+                    forecasts[i] = view;
+                    if(i == 0){
+                        practical_request[0] = frame[FRAME_VALUE];
+                        practical_request[1] = frame[FRAME_PAD_X];
+                        practical_request[2] = frame[FRAME_PAD_Y];
+                    }
+                    break;
+                }
+                default: {
+                    i--;
+                    break;
+                }
+            }
+            retry_loop++;
+        }
+    }
+
+    public void checkFramePractical(int chain, int row, int colum) {
+        if(!(chain == practical_request[0] &&
+                row == practical_request[1] &&
+                colum == practical_request[2])) return;
+
+        autoplay_index++;
+        if(forecasts != null && forecasts[0] != null){
+                context.runOnUiThread(()-> {
+                forecasts[0].setBackgroundColor(Color.WHITE);
+                forecasts[0].setAlpha(0);
+            });
+        }
+        setFramePractical();
+    }
+
+    public void removeForecast(){
+        if (forecasts != null) {
+            for (View v : forecasts) {
+                if(v == null) continue;
+                v.setBackgroundColor(Color.WHITE);
+                v.setAlpha(0f);
+            }
+        }
+        forecasts = null;
+    }
+
+    @Override
+    public boolean stopAutoPlay() {
+        return false;
+    }
+
+    public PadPressCallInterface stopAutoPlayy() {
+        running.set(false);
+        autoplay_index = 0;
+        mTouch = null;
+        removeForecast();
+        return callInterface;
+    }
+
+    @Override
+    public boolean pauseAutoPlay() {
+        return false;
     }
 
     @Override
@@ -50,69 +166,23 @@ public class AutoPlay
         return running.get();
     }
 
+    @Deprecated
     @Override
     public boolean startAutoPlay() {
         return false;
     }
 
-    public boolean startAutoPlay(GridLayout rootView) {
-        if(auto_play_map.isEmpty()) return false;
-        XLog.v("Try start autoplay", "");
-        this.viewRoot = rootView;
-        mTouch = new Ui.Touch();
-        running.set(true);
-        paused = false;
-        (mThread = new Thread(this)).start();
-        return true;
-    }
-
     @Override
-    public boolean stopAutoPlay() {
-        running.set(false);
-        mTouch = null;
-        return true;
-    }
-
-    @Override
-    public boolean pauseAutoPlay() {
-        paused = true;
-        return false;
-    }
-
-    public PadPressCallInterface praticeModeCall(int forecast_max_count) {
-        this.forecast_max_count = forecast_max_count;
-        return (chain, x, y) -> {
-            nextFramePraticle();
-            return true;
-        };
-    }
-
-    @Override
-    public boolean inPaused() {
+    public boolean isPaused() {
         return paused;
     }
 
     @Override
     public boolean resumeAutoPlay() {
         paused = false;
+        mThread.start();
+        removeForecast();
         return true;
-    }
-
-    public void nextFramePraticle() {
-        int[] frame = auto_play_map.get(autoplay_index);
-        switch (frame[FRAME_TYPE]) {
-            case FRAME_TYPE_ON:
-            case FRAME_TYPE_TOUCH:
-            case FRAME_TYPE_CHAIN:
-                {
-                    for (int i = 0; i < forecast_max_count; i++) {
-                        mAutoPlayChange.onAutoPlayPraticle(
-                                frame[FRAME_PAD_X], frame[FRAME_PAD_Y], i);
-                    }
-                    break;
-                }
-        }
-        autoplay_index++;
     }
 
     @Override
@@ -140,26 +210,22 @@ public class AutoPlay
                         while (SystemClock.uptimeMillis() < delay && running.get() && !paused) {}
                         continue;
                     }
-                case FRAME_TYPE_ON:
+                case FRAME_TYPE_ON: // ACTION_DOWN
                     {
-                        // ACTION_DOWN
-                        context.runOnUiThread(() -> mTouch.touch(
-                                viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y]))));
+                        if(frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainId()) context.runOnUiThread(() -> mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
+                        context.runOnUiThread(() -> mTouch.touch(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
                         break;
                     }
-                case FRAME_TYPE_OFF:
+                case FRAME_TYPE_OFF: // ACTION_UP
                     {
-                        // ACTION_UP
-                        context.runOnUiThread(() -> mTouch.release(
-                                        viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y]))));
+                        if(frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainId()) context.runOnUiThread(() -> mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
+                        context.runOnUiThread(() -> mTouch.release(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
                         break;
                     }
-                case FRAME_TYPE_TOUCH:
-                case FRAME_TYPE_CHAIN:
+                case FRAME_TYPE_TOUCH: // Touch in pad button
+                case FRAME_TYPE_CHAIN: // Touch in chain button
                     {
-                        // Touch in chain
-                        context.runOnUiThread(() -> mTouch.touchAndRelease(
-                                viewRoot.getChildAt(MakePads.PadID.getGridIndexFromXY(viewRoot.getColumnCount(), frame[FRAME_PAD_X], frame[FRAME_PAD_Y]))));
+                        context.runOnUiThread(() -> mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
                         break;
                     }
             }
@@ -167,7 +233,7 @@ public class AutoPlay
         if (autoplay_index >= auto_play_map.size()) {
             autoplay_index = 0;
         } else if (paused) {
-            nextFramePraticle();
+            setFramePractical();
         }
     }
 
@@ -176,18 +242,9 @@ public class AutoPlay
         return startAutoPlay();
     }
 
-    public interface AutoPlayChange {
-
-        public void onAutoPlayProgress(int percent);
-
-        public void onAutoPlayStarted(int length);
-
-        public void onPauseAutoPlay();
-
-        public void onResumeAutoPlay();
-
-        public void onAutoPlayStopped();
-
-        public void onAutoPlayPraticle(int x_next, int y_next, int forecast_count);
+    public interface AutoPlayChanges {
+        View getViewShowPracticalMark(int r, int c);
+        View getPadToTouch(int r, int c);
+        int getCurrentChainId();
     }
 }

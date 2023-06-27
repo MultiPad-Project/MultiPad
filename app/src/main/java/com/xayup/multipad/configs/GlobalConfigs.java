@@ -18,12 +18,7 @@ public class GlobalConfigs {
     public static void loadSharedPreferences(Activity context) {
         app_configs = context.getSharedPreferences("app_configs", 0 /*MODE_PRIVATE*/);
         app_configs.registerOnSharedPreferenceChangeListener(
-                new SharedPreferences.OnSharedPreferenceChangeListener() {
-                    @Override
-                    public void onSharedPreferenceChanged(SharedPreferences arg0, String arg1) {
-                        arg0.edit().commit();
-                    }
-                });
+                (arg0, arg1) -> arg0.edit().commit());
     }
 
     // Configurações do app (Default startup)

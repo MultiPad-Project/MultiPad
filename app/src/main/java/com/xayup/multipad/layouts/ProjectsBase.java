@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.xayup.debug.XLog;
 import com.xayup.multipad.MainActivity;
 import com.xayup.multipad.R;
 import com.xayup.multipad.load.Projects;
@@ -119,7 +120,7 @@ public class ProjectsBase extends Projects implements ProjectsBaseInterface {
 
     protected void setFromTag(View child) {
         Object tag = child.getTag();
-        Log.v("Tag", tag + "");
+        XLog.v("Tag", String.valueOf(tag));
         if (tag != null) {
             switch (Byte.parseByte((String) tag)) {
                     /*Info Space*/
@@ -296,7 +297,7 @@ public class ProjectsBase extends Projects implements ProjectsBaseInterface {
     }
 
     protected void loadProject() {
-        Log.v("Properties", project_properties+"");
+        XLog.v("Properties", project_properties+"");
         mPlayProject.onPreLoadProject();
         mPlayProject.loadProject(path);
     }

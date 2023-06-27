@@ -98,10 +98,10 @@ public class SoundLoader {
   /**
    * @param chain_and_pad é a junção de ChainSl(1 a 24)+padId(viewId())
    */
-  public void playSound(String chain_and_pad) {
+  public boolean playSound(String chain_and_pad) {
     if(map.containsKey(chain_and_pad)) {
       List<SoundPlayer> tmp_map_sound = map.get(chain_and_pad);
-      if(tmp_map_sound == null || tmp_map_sound.size() < 1) return;
+      if(tmp_map_sound == null || tmp_map_sound.size() < 1) return false;
       int[] xy = getXY(chain_and_pad);
       //XLog.v("XY", Arrays.toString(xy));
       int sequence = getSequence(xy[0], xy[1]);
@@ -117,7 +117,9 @@ public class SoundLoader {
         XayUpFunctions.touchAndRelease(context, Integer.parseInt(VariaveisStaticas.chainsIDlist.get(tmp_player.getToChain())), XayUpFunctions.TOUCH_AND_RELEASE);
       }
       changeSequence(xy[0], xy[1], sequence);
+      return true;
     }
+    return false;
   }
 
   public void stopAll(){

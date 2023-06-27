@@ -2,7 +2,6 @@ package com.xayup.multipad;
 
 import android.app.*;
 import android.content.*;
-import android.content.pm.*;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.media.midi.MidiDeviceInfo;
@@ -26,7 +25,7 @@ import java.io.*;
 public class MainActivity extends Activity {
     private final Activity context = this;
 
-    protected final byte INTENT_PLAYPADS = 0;
+    protected final byte INTENT_PLAY_PADS = 0;
 
     protected LoadScreen mLoadScreen;
     protected File info;
@@ -41,54 +40,25 @@ public class MainActivity extends Activity {
     protected static int width;
 
     protected File rootFolder;
-    protected final String ACTION_USB_PERMISSION = getPackageName()+".USB_PERMISSION";
+    protected String ACTION_USB_PERMISSION;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.main_activity);
+        ACTION_USB_PERMISSION = this.getPackageName()+".USB_PERMISSION";
+        this.mFMP = new FileManagerPermission(context);
+        mFMP.checkPermission(new ManagePermission() {
+            @Override
+            public void onStorageGranted() {
+                makeActivity(true);
+            }
 
-        // decorView = getWindow().getDecorView();
-        String traceLog = Debug.stackTrace(context);
-        if (traceLog != null) {
-            setContentView(R.layout.crash);
-
-            TextView textLog = findViewById(R.id.logText);
-            textLog.setText(traceLog);
-
-            Button copyToClipboard = findViewById(R.id.copyLog);
-            Button finishApp = findViewById(R.id.exitcrash);
-            Button restartApp = findViewById(R.id.restartApp);
-
-            copyToClipboard.setOnClickListener((v) -> {
-                ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE)).setPrimaryClip(new ClipData("MultiPad error log", new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, new ClipData.Item(traceLog)));
-                Toast.makeText(context, R.string.cop, Toast.LENGTH_SHORT).show();
-            });
-            finishApp.setOnClickListener((v) -> finishAffinity());
-            restartApp.setOnClickListener((v) -> recreate());
-        } else {
-            /*getWindow()
-                    .setFlags(
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN);*/
-            new Debug(this);
-            setContentView(R.layout.main_activity);
-            /*getWindow()
-                    .setFlags(
-                            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);*/
-            this.mFMP = new FileManagerPermission(context);
-            mFMP.checkPermission(new ManagePermission() {
-                @Override
-                public void onStorageGranted() {
-                    makeActivity(true);
-                }
-
-                @Override
-                public void onStorageDenied() {
-                    mFMP.showSimpleAlertDialog("Title", "Msg", "cancel", "ok");
-                }
-            });
-        }
+            @Override
+            public void onStorageDenied() {
+                mFMP.showSimpleAlertDialog("Title", "Msg", "cancel", "ok");
+            }
+        });
     }
 
     @Override
@@ -114,7 +84,7 @@ public class MainActivity extends Activity {
         if(requestCode == mFMP.ANDROID_11_REQUEST_PERMISSION_AMF) {
             makeActivity(mFMP.permissionGranted());
         }
-        else if (requestCode == INTENT_PLAYPADS){
+        else if (requestCode == INTENT_PLAY_PADS){
             mLoadScreen.OnEndAnimation(null);
             mLoadScreen.hide(0);
             mLoadScreen.remove();
@@ -158,13 +128,18 @@ public class MainActivity extends Activity {
                                 () -> {
                                     Intent intent = new Intent(context, PlayPads.class);;
                                     context.startActivityForResult(
-                                            intent.putExtra("project_path", path), INTENT_PLAYPADS);
+                                            intent.putExtra("project_path", path), INTENT_PLAY_PADS);
                                     context.overridePendingTransition(0, 0);
                                 });
                         mLoadScreen.show(500);
                     }
                 });
+        rootView.findViewById(R.id.main_floating_menu_button).setOnClickListener((v)->setMenuFunctions());
         rootView.post(this::hideSplash);
+        rootView.post(()->{
+            GlobalConfigs.display_height = rootView.getMeasuredHeight();
+            GlobalConfigs.display_width = rootView.getMeasuredWidth();
+        });
     }
 
     protected void hideSplash() {
@@ -182,7 +157,7 @@ public class MainActivity extends Activity {
         View menu = getLayoutInflater().inflate(R.layout.main_float_menu, null);
         // Funcoes principais
         TextView barTitle = menu.findViewById(R.id.main_floating_menu_bar_title);
-        ViewFlipper swit = menu.findViewById(R.id.main_floating_menu_background);
+        ViewFlipper flipper = menu.findViewById(R.id.main_floating_menu_background);
         Button prev = menu.findViewById(R.id.main_floating_menu_bar_button_prev);
         Button import_project = menu.findViewById(R.id.main_floating_menu_button_import_project);
         // View..
@@ -195,8 +170,8 @@ public class MainActivity extends Activity {
         View item_manual = menu.findViewById(R.id.main_floating_item_manual);
         Button list_usb_midi = menu.findViewById(R.id.main_floating_menu_button_midi_devices);
 
-        CheckBox unipadfolder = menu.findViewById(R.id.main_floating_menu_useunipadfolder_check);
-        unipadfolder.setChecked(useUnipadFolderConfig);
+        CheckBox unipad_folder = menu.findViewById(R.id.main_floating_menu_useunipadfolder_check);
+        unipad_folder.setChecked(useUnipadFolderConfig);
 
         floating_menu.setView(menu);
         Button floating_button_exit =
@@ -205,24 +180,15 @@ public class MainActivity extends Activity {
         XayUpFunctions.showDiagInFullscreen(show);
 
         // Botoes principais
-        floating_button_exit.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View arg0) {
-                        show.dismiss();
-                    }
-                });
+        floating_button_exit.setOnClickListener((v)-> show.dismiss());
 
-        list_usb_midi.setOnClickListener(
-                new Button.OnClickListener() {
-                    @Override
-                    public void onClick(View arg0) {
+        list_usb_midi.setOnClickListener((v) -> {
                         list_usb_midi.setVisibility(View.GONE);
                         barTitle.setText(getString(R.string.usb_midi));
-                        swit.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
-                        swit.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
-                        swit.setDisplayedChild(USB_MIDI);
-                        ListView list_mids = ((ListView) swit.getChildAt(USB_MIDI));
+                        flipper.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
+                        flipper.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
+                        flipper.setDisplayedChild(USB_MIDI);
+                        ListView list_mids = ((ListView) flipper.getChildAt(USB_MIDI));
                         list_mids.setAdapter(new UsbMidiAdapter(getApplicationContext(), true));
                         list_mids.setOnItemClickListener(
                                 new AdapterView.OnItemClickListener() {
@@ -255,86 +221,76 @@ public class MainActivity extends Activity {
                                         } else new UsbDeviceActivity().openMidiDevice(context, usb_midi);
                                     }
                                 });
-                    }
-                });
+                    });
 
         import_project.setOnClickListener((v) -> new FileExplorerDialog(context).getExplorerDialog());
 
         prev.setOnClickListener(
-                (v) -> { switch (swit.getDisplayedChild()) {
-                            case SKINS:
-                                swit.setInAnimation(
-                                        getApplicationContext(), R.anim.move_in_to_right);
-                                swit.setOutAnimation(
-                                        getApplicationContext(), R.anim.move_out_to_right);
-                                swit.setDisplayedChild(MAIN);
-                                barTitle.setText(getString(R.string.main_floating_title));
-                                break;
-                            case USB_MIDI:
-                                swit.setInAnimation(
-                                        getApplicationContext(), R.anim.move_in_to_right);
-                                swit.setOutAnimation(
-                                        getApplicationContext(), R.anim.move_out_to_right);
-                                swit.setDisplayedChild(MAIN);
-                                list_usb_midi.setVisibility(View.VISIBLE);
-                                barTitle.setText(getString(R.string.main_floating_title));
-                                break;
-                            default:
+                (v) -> {
+                    switch (flipper.getDisplayedChild()) {
+                        case SKINS:
+                            flipper.setInAnimation(getApplicationContext(), R.anim.move_in_to_right);
+                            flipper.setOutAnimation(getApplicationContext(), R.anim.move_out_to_right);
+                            flipper.setDisplayedChild(MAIN);
+                            barTitle.setText(getString(R.string.main_floating_title));
+                            break;
+                        case USB_MIDI:
+                            flipper.setInAnimation(getApplicationContext(), R.anim.move_in_to_right);
+                            flipper.setOutAnimation(getApplicationContext(), R.anim.move_out_to_right);
+                            flipper.setDisplayedChild(MAIN);
+                            list_usb_midi.setVisibility(View.VISIBLE);
+                            barTitle.setText(getString(R.string.usb_midi));
+                            break;
+                        default:
                         }
                     });
 
         // items clicked
         item_skins.setOnClickListener((v) -> {
-                        barTitle.setText(getString(R.string.skins));
-                        swit.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
-                        swit.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
-                        swit.setDisplayedChild(SKINS);
-                    });
+            barTitle.setText(getString(R.string.skins));
+            flipper.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
+            flipper.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
+            flipper.setDisplayedChild(SKINS);
+        });
         item_useUnipadFolder.setOnClickListener((v) -> {
-                        SharedPreferences app_configs =
-                                getSharedPreferences("app_configs", MODE_PRIVATE);
-                        SharedPreferences.Editor editConfigs = app_configs.edit();
-                        if (app_configs.getBoolean("useUnipadFolder", false)) {
-                            unipadfolder.setChecked(false);
-                            editConfigs.putBoolean("useUnipadFolder", false);
-                        } else {
-                            unipadfolder.setChecked(true);
-                            editConfigs.putBoolean("useUnipadFolder", true);
-                        }
-                        editConfigs.apply();
-                        MainActivity.this.recreate();
-                    });
+            SharedPreferences app_configs =
+                    getSharedPreferences("app_configs", MODE_PRIVATE);
+            SharedPreferences.Editor editConfigs = app_configs.edit();
+            if (app_configs.getBoolean("useUnipadFolder", false)) {
+                unipad_folder.setChecked(false);
+                editConfigs.putBoolean("useUnipadFolder", false);
+            } else {
+                unipad_folder.setChecked(true);
+                editConfigs.putBoolean("useUnipadFolder", true);
+            }
+            editConfigs.apply();
+            MainActivity.this.recreate();
+        });
 
         item_sourceCode.setOnClickListener((v) -> {
-                        Intent source_code_page = new Intent(Intent.ACTION_VIEW);
-                        source_code_page.setData(Uri.parse("https://github.com/XayUp/MultiPad"));
-                        startActivity(source_code_page);
-                    });
+            Intent source_code_page = new Intent(Intent.ACTION_VIEW);
+            source_code_page.setData(Uri.parse("https://github.com/XayUp/MultiPad"));
+            startActivity(source_code_page);
+        });
         item_myChannel.setOnClickListener((v) -> {
-                        Intent my_channel_page = new Intent(Intent.ACTION_VIEW);
-                        my_channel_page.setData(
-                                Uri.parse("https://youtube.com/channel/UCQUG1PVbnmIIYRDbC-qYTqA"));
-                        startActivity(my_channel_page);
-                    });
+            Intent my_channel_page = new Intent(Intent.ACTION_VIEW);
+            my_channel_page.setData(
+                    Uri.parse("https://youtube.com/channel/UCQUG1PVbnmIIYRDbC-qYTqA"));
+            startActivity(my_channel_page);
+        });
         item_manual.setOnClickListener((v) -> {
-                        AlertDialog.Builder manual =
-                                new AlertDialog.Builder(
-                                        MainActivity.this, R.style.alertdialog_transparent);
-                        ImageView manualImg = new ImageView(MainActivity.this);
-                        manualImg.setImageDrawable(getDrawable(R.drawable.manual));
-                        manual.setView(manualImg);
-                        Dialog show_manual = manual.create();
-                        XayUpFunctions.showDiagInFullscreen(show_manual);
-                        manualImg.setOnClickListener(
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View arg0) {
-                                        show_manual.dismiss();
-                                    }
-                                });
-                    });
+            AlertDialog.Builder manual =
+                    new AlertDialog.Builder(
+                            MainActivity.this, R.style.alertdialog_transparent);
+            ImageView manualImg = new ImageView(MainActivity.this);
+            manualImg.setImageDrawable(getDrawable(R.drawable.manual));
+            manual.setView(manualImg);
+            Dialog show_manual = manual.create();
+            XayUpFunctions.showDiagInFullscreen(show_manual);
+            manualImg.setOnClickListener((view) -> show_manual.dismiss());
+        });
 
-        show.getWindow().setLayout(height, WindowManager.LayoutParams.MATCH_PARENT);
+        show.getWindow().setLayout(GlobalConfigs.display_width/2, WindowManager.LayoutParams.MATCH_PARENT);
         show.getWindow().setGravity(Gravity.END);
         show.getWindow().setBackgroundDrawable(getDrawable(R.drawable.inset_floating_menu));
     }

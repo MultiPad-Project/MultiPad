@@ -164,7 +164,9 @@ public class Pad {
             current_chain = 25 - x;
         }
     }
-    /* index: 0 = X, 1 = Y, 2 = MC */
+    /**
+     * @return Array[X, Y, CHAIN_MC]
+     * */
     public int[] getCurrentChain() {
         return new int[] {current_chain_array[0], current_chain_array[1], current_chain};
     }

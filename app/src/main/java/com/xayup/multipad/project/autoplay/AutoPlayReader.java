@@ -15,21 +15,12 @@ import java.util.List;
 
 public class AutoPlayReader implements MapData {
     // Algoritimo autoPlay
-    private boolean checkAutoPlayFormat(String line) {
-        switch (line.toLowerCase().substring(0, 1)) {
-            case "d":
-                return line.matches("d\\d+");
-            case "c":
-                return line.matches("c([1-2][0-9]|[1-9])");
-            default:
-                return line.matches("\\w{1,2}[1-8]{2}");
-        }
-    }
     /**
      * Read AutoPLay file and return list with possibles errors.
      *
      * @param autoPlay "autoplay" file
-     * @param aut_play_map List to be interacted
+     * @param auto_play_map List to be interacted
+     * @param mLoadingProject .
      * @return List of possible errors
      */
     public void read(
@@ -37,6 +28,7 @@ public class AutoPlayReader implements MapData {
         try {
             List<String> keys = Files.readLines(autoPlay, StandardCharsets.UTF_8);
             mLoadingProject.onStartReadFile(autoPlay.getName());
+            int chain_id = 19;
             next_line:
             while (!keys.isEmpty()) {
                 String[] chars = keys.remove(0).split("\\s");
@@ -60,6 +52,7 @@ public class AutoPlayReader implements MapData {
                                                 Integer.parseInt(chars[1]), 9);
                                 autoplay_map[FRAME_PAD_X] = xy[0];
                                 autoplay_map[FRAME_PAD_Y] = xy[1];
+                                chain_id = Integer.parseInt(String.valueOf(xy[0]) + xy[1]);
                                 auto_play_map.add(autoplay_map);
                                 continue next_line;
                             }
@@ -85,6 +78,8 @@ public class AutoPlayReader implements MapData {
                             continue next_line;
                         }
                     }
+                    /* Use FRAME_VALUE to get chain to current frame */
+                    autoplay_map[FRAME_VALUE] = chain_id;
                     autoplay_map[FRAME_PAD_X] = Integer.parseInt(chars[1]);
                     autoplay_map[FRAME_PAD_Y] = Integer.parseInt(chars[2]);
                     auto_play_map.add(autoplay_map);
