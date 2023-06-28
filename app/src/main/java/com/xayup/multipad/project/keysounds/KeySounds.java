@@ -6,9 +6,9 @@ import com.xayup.debug.XLog;
 import com.xayup.multipad.load.Project;
 import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.pads.PadPressCallInterface;
+import com.xayup.multipad.pads.Render.MakePads;
 
 import java.io.File;
-import java.util.List;
 
 public class KeySounds extends SoundLoader implements Project.SoundInterface, PadPressCallInterface {
     protected Activity context;
@@ -39,7 +39,7 @@ public class KeySounds extends SoundLoader implements Project.SoundInterface, Pa
     }
 
     @Override
-    public boolean call(int chain, int x, int y) {
-        return playSound(chain, x, y);
+    public boolean call(MakePads.ChainInfo chain, MakePads.PadInfo pad) {
+        return playSound(chain.getMc(), pad.row, pad.colum);
     }
 }

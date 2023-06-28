@@ -23,7 +23,6 @@
         android:layout_width="match_parent"
         android:clickable="false"
         android:scaleType="fitXY"
-        android:background="@android:color/white"
         android:alpha="0.0"
         android:id="@+id/press" />
 

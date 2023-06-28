@@ -120,7 +120,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
                 apply_for_all.setOnClick((view)->{
                     List<Pad.Pads> list_pads = getPadInstance().getAllPadsList();
                     while(!list_pads.isEmpty()) {
-                        list_pads.remove(0).applySkin(new SkinProperties(SkinManager.getSkinInfo(context, skin_properties.package_name, true)));
+                        list_pads.remove(0).applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                     }
                     list_pads = null;
                 });
@@ -132,7 +132,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
                     pads_item.setTag(pads);
                     page.putOption(pads_item);
                     pads_item.setOnClick((view)->{
-                        pads.applySkin(new SkinProperties(SkinManager.getSkinInfo(context, skin_properties.package_name, true)));
+                        pads.applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                     });
                 }
                 list_pads = null;

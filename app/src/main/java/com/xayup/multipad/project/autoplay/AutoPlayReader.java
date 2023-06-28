@@ -28,7 +28,7 @@ public class AutoPlayReader implements MapData {
         try {
             List<String> keys = Files.readLines(autoPlay, StandardCharsets.UTF_8);
             mLoadingProject.onStartReadFile(autoPlay.getName());
-            int chain_id = 19;
+            int chain_mc = 1;
             next_line:
             while (!keys.isEmpty()) {
                 String[] chars = keys.remove(0).split("\\s");
@@ -47,12 +47,13 @@ public class AutoPlayReader implements MapData {
                         case "c":
                             {
                                 autoplay_map[FRAME_TYPE] = FRAME_TYPE_CHAIN;
+                                autoplay_map[FRAME_VALUE] = chain_mc;
+                                chain_mc = Integer.parseInt(chars[1]);
                                 int[] xy =
-                                        MakePads.PadID.getChainXY(
-                                                Integer.parseInt(chars[1]), 9);
+                                        MakePads.PadID.getChainXY(chain_mc
+                                                , 9);
                                 autoplay_map[FRAME_PAD_X] = xy[0];
                                 autoplay_map[FRAME_PAD_Y] = xy[1];
-                                chain_id = Integer.parseInt(String.valueOf(xy[0]) + xy[1]);
                                 auto_play_map.add(autoplay_map);
                                 continue next_line;
                             }
@@ -79,7 +80,7 @@ public class AutoPlayReader implements MapData {
                         }
                     }
                     /* Use FRAME_VALUE to get chain to current frame */
-                    autoplay_map[FRAME_VALUE] = chain_id;
+                    autoplay_map[FRAME_VALUE] = chain_mc;
                     autoplay_map[FRAME_PAD_X] = Integer.parseInt(chars[1]);
                     autoplay_map[FRAME_PAD_Y] = Integer.parseInt(chars[2]);
                     auto_play_map.add(autoplay_map);

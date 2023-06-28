@@ -1,24 +1,14 @@
 package com.xayup.multipad.project.keyled;
 
-import android.app.*;
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
 import android.os.SystemClock;
-import android.provider.Settings;
-import android.util.Log;
-import android.view.View;
-import android.widget.*;
 
 import com.xayup.debug.XLog;
-import com.xayup.multipad.R;
 import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.pads.PadPressCallInterface;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.project.MapData;
-import com.xayup.multipad.project.keyled.KeyLEDReader;
 import com.xayup.multipad.load.Project;
-import com.xayup.multipad.load.ProjectMapData;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,8 +104,8 @@ public class KeyLED extends Project
     }
 
     @Override
-    public boolean call(int chain, int x, int y) {
-        return showLed(chain, x, y);
+    public boolean call(MakePads.ChainInfo chain, MakePads.PadInfo pad) {
+        return showLed(chain.getMc(), pad.row, pad.colum);
     }
 
     @Override

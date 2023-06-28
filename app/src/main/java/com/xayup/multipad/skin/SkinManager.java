@@ -10,56 +10,40 @@ import com.xayup.multipad.skin.SkinVariables;
 
 public class SkinManager implements SkinVariables {
 
-    public Activity context;
-    public static Resources mResources;
+    public static SkinProperties getSkinProperties(Context context, String package_name){
+        Resources mResources = getResources(context, package_name);
+        return new SkinProperties(new Object[]{
+                package_name,
+                mResources.getDrawable(mResources.getIdentifier("theme_ic", "drawable", package_name), null),
+                mResources.getString(mResources.getIdentifier("theme_name", "string", package_name)),
+                mResources.getString(mResources.getIdentifier("theme_author", "string", package_name))
+        });
+    }
 
-    public SkinManager(Context context) {
-        this.context = (Activity) context;
-    }
-    
-    public SkinProperties getPropertiesFromPackage(Context context, String package_name, boolean and_resources){
-        return new SkinProperties(getSkinInfo(context, package_name, and_resources));
-    }
-    public static Object[] getSkinInfo(Context context, String package_name, boolean and_resources) {
-        setCurrentResource(context, package_name);
-        Object[] skin = new Object[ARRAY_SIZE];
-        try {
-            skin[SKIN_PACKAGE] = package_name;
-            skin[SKIN_LOGO] =
-                    mResources.getDrawable(
-                            mResources.getIdentifier("theme_ic", "drawable", package_name), null);
-            skin[SKIN_NAME] =
-                    mResources.getString(
-                            mResources.getIdentifier("theme_name", "string", package_name));
-            skin[SKIN_AUTHOR] =
-                    mResources.getString(
-                            mResources.getIdentifier("theme_author", "string", package_name));
-            if (and_resources) skin[SKIN_RESOURCES] = mResources;
-        } catch (Resources.NotFoundException n){
-            SkinManager.getSkinInfo(context, context.getPackageName(), and_resources);
-        }
-        return skin;
-    }
-    
     /**
-    * @return true if success.
-    */
-    public static boolean setCurrentResource(Context context, String package_name) {
-        try {
-            mResources = context.getPackageManager().getResourcesForApplication(package_name);
-            return true;
-        } catch (PackageManager.NameNotFoundException n) {
-            mResources = context.getResources();
-            return false;
-        }
+     * Get Resources from package name.
+     * @param context application context.
+     * @param package_name application package name to get resources.
+     * @return Resources from package_name, else return resources from this application.
+     */
+    public static Resources getResources(Context context, String package_name){
+        try { return context.getPackageManager().getResourcesForApplication(package_name); }
+        catch (PackageManager.NameNotFoundException n){ return context.getResources(); }
     }
 
-    public void loadSkin(SkinProperties skin, SkinData mSkinData, LoadedSkin onLoaded) {
-        mSkinData.loadFromResources(skin.resources, skin.package_name);
+    /**
+     * .
+     * @param context .
+     * @param skin .
+     * @param mSkinData .
+     * @param onLoaded .
+     */
+    public void loadSkin(Context context, SkinProperties skin, SkinData mSkinData, LoadedSkin onLoaded) {
+        mSkinData.loadFromResources(context, skin.package_name);
         if (onLoaded != null) onLoaded.onLoaded(skin);
     }
 
     public interface LoadedSkin {
-        public void onLoaded(SkinProperties skin);
+        void onLoaded(SkinProperties skin);
     }
 }

@@ -1,5 +1,7 @@
 package com.xayup.multipad.pads;
 
+import com.xayup.multipad.pads.Render.MakePads;
+
 public interface PadPressCallInterface {
-    public boolean call(int chain, int x, int y);
+    boolean call(MakePads.ChainInfo chain, MakePads.PadInfo pad);
 }

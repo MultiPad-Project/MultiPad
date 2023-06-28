@@ -26,6 +26,7 @@ import com.xayup.multipad.load.Project;
 import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.pads.*;
 import com.xayup.multipad.pads.Render.MakePads;
+import com.xayup.multipad.pads.Render.PadSkinData;
 import com.xayup.multipad.project.autoplay.AutoPlay;
 import com.xayup.multipad.project.keyled.KeyLED;
 
@@ -131,18 +132,15 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         /*Setup actives*/
                         /*Current Chain*/
                         pad.getActivePads().getGridPads().findViewById(
-                                MakePads.PadID.getId(pad.current_chain_array[0], pad.current_chain_array[1])
-                        ).findViewById(R.id.press).setAlpha(1f);
+                                MakePads.PadID.getId(pad.current_chain.row, pad.current_chain.colum)).findViewById(R.id.press).setAlpha(1f);
 
                         /*LEDs*/
                         pad.getActivePads().getGridPads().findViewById(
-                                MakePads.PadID.getId(0, 2)
-                        ).findViewById(R.id.press).setAlpha(1f);
+                                MakePads.PadID.getId(0, 2)).findViewById(R.id.press).setAlpha(1f);
 
                         /*Actives Watermark*/
                         pad.getActivePads().getGridPads().findViewById(
-                                MakePads.PadID.getId(0, 8)
-                        ).findViewById(R.id.press).setAlpha(1f);
+                                MakePads.PadID.getId(0, 8)).findViewById(R.id.press).setAlpha(1f);
                     });
         }
         public LoadProject.LoadingProject getLoadingProject() {
@@ -270,13 +268,13 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         {
-                            mPadPress.call(pad.current_chain, mPadInfo.row, mPadInfo.colum);
+                            mPadPress.call(pad.current_chain, mPadInfo);
                             if(pad.watermark_press) v.findViewById(R.id.press).setAlpha(1f);
                             return true;
                         }
                     case MotionEvent.ACTION_UP: {
-                        mPadRelease.call(pad.current_chain, mPadInfo.row, mPadInfo.colum);
-                        v.findViewById(R.id.press).setAlpha(0f);
+                        mPadRelease.call(pad.current_chain, mPadInfo);
+                        if(pad.watermark_press) v.findViewById(R.id.press).setAlpha(0f);
                         return true;
                     }
                 }
@@ -294,25 +292,16 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         {
-                            mPadPress.call(pad.current_chain, mPadInfo.row, mPadInfo.colum);
-                            int[] current_chain = pad.getCurrentChain();
-                            v.getRootView()
-                                    .findViewById(
-                                            MakePads.PadID.getId(
-                                                    current_chain[0], current_chain[1]))
-                                    .findViewById(R.id.press).setAlpha(0f);
+                            v.getRootView().findViewById(MakePads.PadID.getId(mPadInfo.row, mPadInfo.colum)).findViewById(R.id.press).setAlpha(0f);
                             if(mKeySounds != null) mKeySounds.resetSequencer();
                             if(mKeyLED != null) mKeyLED.resetSequence();
-                            pad.setCurrentChain(mPadInfo.row, mPadInfo.colum);
-                            current_chain = pad.getCurrentChain();
-                            v.findViewById(
-                                            MakePads.PadID.getId(
-                                                    current_chain[0], current_chain[1]))
-                                    .findViewById(R.id.press).setAlpha(1f);
+                            pad.current_chain.setMc(mPadInfo.row, mPadInfo.colum);
+                            v.findViewById(MakePads.PadID.getId(mPadInfo.row, mPadInfo.colum)).findViewById(R.id.press).setAlpha(1f);
+                            mPadPress.call(pad.current_chain, mPadInfo);
                             return true;
                         }
                     case MotionEvent.ACTION_UP: {
-                        mPadRelease.call(pad.current_chain, mPadInfo.row, mPadInfo.colum);
+                        mPadRelease.call(pad.current_chain, mPadInfo);
                         return true;
                     }
                 }
@@ -331,7 +320,6 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                             pad.watermark_press = !pad.watermark_press;
                             if (pad.watermark_press) v.findViewById(R.id.press).setAlpha(1f);
                             else v.findViewById(R.id.press).setAlpha(0f);
-
                             return true;
                         }
                 }
@@ -392,8 +380,13 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                         }
 
                                         @Override
-                                        public int getCurrentChainId() {
-                                            return Integer.parseInt(String.valueOf(pad.current_chain_array[0]) + pad.current_chain_array[1]);
+                                        public MakePads.ChainInfo getCurrentChainProperties() {
+                                            return pad.current_chain;
+                                        }
+
+                                        @Override
+                                        public PadSkinData getSkinData() {
+                                            return pad.getActivePads().getSkinData();
                                         }
                                     }));
                                     v.findViewById(R.id.press).setAlpha(1f);
@@ -440,7 +433,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                 if (mAutoPlay.isPaused()) {
                                     mAutoPlay.resumeAutoPlay();
                                 } else {
-                                    mAutoPlay.pauseAutoPlay(3);
+                                    mAutoPlay.pauseAutoPlay(2);
                                 }
                             }
                             return true;

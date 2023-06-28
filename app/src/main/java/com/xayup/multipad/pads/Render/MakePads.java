@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.R;
+import com.xayup.multipad.pads.Pad;
 import com.xayup.multipad.pads.PadInterface;
 import com.xayup.utils.Utils;
 
@@ -24,31 +25,56 @@ public class MakePads {
 
     public static class PadInfo {
         public interface PadInfoIdentifier {
-            public final byte CHAIN_TOP = 0;
-            public final byte CHAIN_LEFT = 1;
-            public final byte CHAIN_RIGHT = 2;
-            public final byte CHAIN_BOTTOM = 3;
-            public final byte PAD = 4;
-            public final byte PHANTOM = 5;
-            public final byte PHANTOM_ = 6;
-            public final byte BTN = 7;
-            public final byte BTN_ = 8;
-            public final byte PAD_LOGO = 9;
-            public final byte LOGO = 10;
-            public final byte CHAIN_LED = 11;
-            public final byte LED = 12;
-            public final byte TOUCH_MAP = 13;
+            byte CHAIN = 0;
+            byte PAD = 1;
+            byte PHANTOM = 2;
+            byte PHANTOM_ = 3;
+            byte BTN = 4;
+            byte BTN_ = 5;
+            byte PAD_LOGO = 6;
+            byte LOGO = 7;
+            byte CHAIN_LED = 8;
+            byte LED = 9;
+            byte TOUCH_MAP = 10;
         }
 
         public final byte row;
         public final byte colum;
         public final byte type;
+        /**
+         * mc is -1 if pad and not chain
+         */
 
+        /**
+         * @param padinfo {row, colum, type}
+         */
         protected PadInfo(byte[] padinfo) {
             this.row = padinfo[0];
             this.colum = padinfo[1];
             this.type = padinfo[2];
         }
+
+        public int getId(){ return PadID.getId(row, colum); }
+    }
+
+    public static class ChainInfo extends PadInfo {
+        protected byte mc;
+        public ChainInfo(int row, int colum){
+            super(new byte[]{(byte) row, (byte) colum, PadInfoIdentifier.CHAIN});
+            if(this.type == PadInfoIdentifier.CHAIN){
+                this.mc = (byte) PadID.getChainMc(row, colum, 9);
+            } else {
+                this.mc = -1;
+            }
+        }
+
+        public void setMc(int row, int colum) {
+            this.mc = (byte) PadID.getChainMc(row, colum, 9);
+        }
+
+        public int getMc(){
+            return mc;
+        };
     }
     /** Obtenha o id da pad atraves de suas cordenada X e Y */
     public static class PadID {
@@ -94,6 +120,32 @@ public class MakePads {
             } else {
                 return new int[] {0, mc};
             }
+        }
+
+        /**
+         * Obtém o MC da chain através das suas cordenadas.
+         * @param row a linha da localização da chain
+         * @param colum a coluna da localização da chain.
+         * @param offset altera o inicio na contage (Sentido horario). O padrão é 1
+         * @return chain MC.
+         */
+        public static int getChainMc(int row, int colum, int offset) {
+            if (offset < 1 || offset > 32)
+                throw new NumberFormatException(
+                        "The number must be greater than 1 or less than 33. Offset: " + offset);
+            if(row == 0){
+                offset = colum - offset;
+            } else if (row == 9) {
+                offset = (25-colum) - offset;
+            } else if (colum == 0) {
+                offset = (33-row) - offset;
+            } else if (colum == 9){
+                offset = (8+row)  - offset;
+            } else {
+                return -1;
+            }
+            if((offset += 1) < 1) offset += 32;
+            return offset;
         }
 
         private static void putId(int x, int y) {
@@ -177,42 +229,16 @@ public class MakePads {
                                                 (byte) c,
                                                 PadInfo.PadInfoIdentifier.CHAIN_LED
                                             }));
-                            if (r == 0) {
-                                pad.setRotation(-90);
-                                pad.setTag(
-                                        new PadInfo(
-                                                new byte[] {
+                            pad.setTag(
+                                    new PadInfo(
+                                            new byte[] {
                                                     (byte) r,
                                                     (byte) c,
-                                                    PadInfo.PadInfoIdentifier.CHAIN_TOP
-                                                }));
-                            } else if (r == 9) {
-                                pad.setRotation(90);
-                                pad.setTag(
-                                        new PadInfo(
-                                                new byte[] {
-                                                    (byte) r,
-                                                    (byte) c,
-                                                    PadInfo.PadInfoIdentifier.CHAIN_BOTTOM
-                                                }));
-                            } else if (c == 0) {
-                                phantom.setScaleX(phantom.getScaleX() * -1);
-                                pad.setTag(
-                                        new PadInfo(
-                                                new byte[] {
-                                                    (byte) r,
-                                                    (byte) c,
-                                                    PadInfo.PadInfoIdentifier.CHAIN_LEFT
-                                                }));
-                            } else {
-                                pad.setTag(
-                                        new PadInfo(
-                                                new byte[] {
-                                                    (byte) r,
-                                                    (byte) c,
-                                                    PadInfo.PadInfoIdentifier.CHAIN_RIGHT
-                                                }));
-                            }
+                                                    PadInfo.PadInfoIdentifier.CHAIN
+                                            }));
+                            if (r == 0) { pad.setRotation(-90); }
+                            else if (r == 9) { pad.setRotation(90); }
+                            else if (c == 0) { phantom.setScaleX(phantom.getScaleX() * -1); }
                         }
                     } else {
                         pad.setTag(

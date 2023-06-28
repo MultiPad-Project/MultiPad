@@ -14,20 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkinAdapter extends BaseAdapter implements SkinVariables {
-    protected Activity context;
-    protected List<Object[]> skins;
-    protected long custom_view_id;
+    protected Context context;
+    protected List<SkinProperties> skins;
 
     public SkinAdapter(Context context) {
-        this.context = (Activity) context;
+        this.context = context;
         this.skins = new ArrayList<>();
     }
 
-    protected void add(String skin_package) {
-        boolean success = SkinManager.setCurrentResource(context, skin_package);
-        XLog.v("Success skin data", String.valueOf(success));
-        if (success) skins.add(SkinManager.getSkinInfo(context, skin_package, false));
-    }
+    protected void add(String skin_package) { skins.add(SkinManager.getSkinProperties(context, skin_package)); }
+    public SkinProperties remove(int pos){ return skins.remove(pos); }
 
     public void updateList() {
         skins.clear();
@@ -42,21 +38,10 @@ public class SkinAdapter extends BaseAdapter implements SkinVariables {
     }
 
     @Override
-    public int getCount() {
-        return skins.size();
-    }
+    public int getCount() { return skins.size(); }
 
     @Override
-    public SkinProperties getItem(int pos) {
-        Object[] skin = skins.get(pos);
-        SkinManager.setCurrentResource(context, (String) skin[SKIN_PACKAGE]);
-        skin[SKIN_RESOURCES] = SkinManager.mResources;
-        return new SkinProperties(skin);
-    }
-
-    public SkinProperties remove(int pos){
-        return new SkinProperties(skins.remove(pos));
-    }
+    public SkinProperties getItem(int pos) { return skins.get(pos); }
 
     @Override
     public long getItemId(int pos) {

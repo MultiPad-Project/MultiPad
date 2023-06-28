@@ -16,5 +16,9 @@
 	<color name="accent_material_dark">#ffffffff</color>
 	<color name="background_item_clicked">#12FFFFFF</color>
 	<color name="view_divider_color">#20FFFFFF</color>
+	<color name="pad_press_color">#FFFFFFFF</color>
+	<color name="autoplay_practical_1">#FF00FF00</color>
+	<color name="autoplay_practical_2">#FF00FFFF</color>
+
 
 </resources>

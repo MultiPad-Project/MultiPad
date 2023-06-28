@@ -27,8 +27,7 @@ public class Pad {
     protected View.OnTouchListener rotate_touch;
     protected View.OnTouchListener move_touch;
     /*Shared*/
-    public int current_chain = 1;
-    public int[] current_chain_array = new int[] {1, 9};
+    public MakePads.ChainInfo current_chain;
     public boolean watermark_press = false;
     public boolean watermark = true;
 
@@ -42,7 +41,8 @@ public class Pad {
     public Pad(Context context, PadInteraction mPadInteraction) {
         this.context = (Activity) context;
         this.mPadInteraction = mPadInteraction;
-        this.mSkinManager = new SkinManager(context);
+        this.mSkinManager = new SkinManager();
+        this.current_chain = new MakePads.ChainInfo(1, 9);
         mGridViews = new HashMap<>();
     }
 
@@ -53,14 +53,7 @@ public class Pad {
      * @param columns : columns count.
      */
     public void newPads(String skin_package, int rows, int columns) {
-        Pads pads =
-                new Pads(mSkinManager.getPropertiesFromPackage(context, skin_package, true), rows, columns);
-        /*
-        if(mGridViews.get(String.valueOf(mGridViews.size())) != null){
-            Objects.requireNonNull(mGridViews.get(String.valueOf(mGridViews.size()))).add(pads);
-        } else {
-            mGridViews.put(String.valueOf(mGridViews.size()), new ArrayList<>(List.of(pads)));
-        }*/
+        Pads pads = new Pads(SkinManager.getSkinProperties(context, skin_package), rows, columns);
         pads.setId(mGridViews.size());
         pads.setName("pad_" + pads.getId());
         active_pad = pads;
@@ -153,24 +146,6 @@ public class Pad {
         };
     }
 
-    public void setCurrentChain(int x, int y) {
-        current_chain_array[0] = x;
-        current_chain_array[1] = y;
-        if (y == 9) {
-            current_chain = x;
-        } else if (x == 9) {
-            current_chain = 17 - y;
-        } else if (y == 0) {
-            current_chain = 25 - x;
-        }
-    }
-    /**
-     * @return Array[X, Y, CHAIN_MC]
-     * */
-    public int[] getCurrentChain() {
-        return new int[] {current_chain_array[0], current_chain_array[1], current_chain};
-    }
-
     public class Pads implements PadsLayoutInterface, SkinSupport {
         protected String name;
         public int layout_mode;
@@ -250,6 +225,7 @@ public class Pad {
         @Override
         public boolean applySkin(SkinProperties mSkinProperties) {
             mSkinManager.loadSkin(
+                    context,
                     mSkinProperties,
                     mSkinData,
                     (skin) -> {

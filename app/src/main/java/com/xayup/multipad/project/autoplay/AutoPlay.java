@@ -1,17 +1,19 @@
 package com.xayup.multipad.project.autoplay;
 
 import android.app.Activity;
-import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
 import android.view.View;
-import android.widget.GridLayout;
+import android.widget.ImageView;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.Ui;
 import com.xayup.multipad.load.thread.LoadProject;
 import com.xayup.multipad.pads.PadPressCallInterface;
 import com.xayup.multipad.pads.Render.MakePads;
+import com.xayup.multipad.pads.Render.PadSkinData;
 import com.xayup.multipad.project.MapData;
 import com.xayup.multipad.load.Project;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,12 +70,11 @@ public class AutoPlay
         this.autoplay_index = 0;
         if(mTouch == null) this.mTouch = new Ui.Touch();
         (mThread = new Thread(this)).start();
-        return (chain, x, y)->{
+        return (chain, pad)->{
             if(isPaused()){
-                checkFramePractical(chain, x, y);
-                return true;
+                checkFramePractical(pad);
             }
-            return false;
+            return true;
         };
     }
 
@@ -84,27 +85,24 @@ public class AutoPlay
         paused = true;
     }
 
-    public void setFramePractical(){
-        int retry_loop = 0;
-        for (int i = 0; i < forecast_max_count; i++) {
-            int[] frame = auto_play_map.get(autoplay_index+retry_loop);
-            if(frame == null) break;
+    protected void setFramePractical(int forecast_max, int offset){
+        int autoplay_next_index = autoplay_index;
+        for (int i = offset; i < forecast_max; i++) {
+            if(autoplay_next_index >= auto_play_map.size()) break;
+            int[] frame = auto_play_map.get(autoplay_next_index);
             switch (frame[FRAME_TYPE]) {
                 case FRAME_TYPE_ON:
                 case FRAME_TYPE_TOUCH:
                 case FRAME_TYPE_CHAIN:
                 {
                     View view = mAutoPlayChanges.getViewShowPracticalMark(frame[FRAME_PAD_X], frame[FRAME_PAD_Y]);
-                    final int final_i = i;
-                    context.runOnUiThread( ()-> {
-                        view.setBackgroundColor(Color.BLUE);
-                        view.setAlpha(1f - (final_i * 0.2f));
-                    });
+                    setPractical_request(view, i);
                     forecasts[i] = view;
-                    if(i == 0){
+                    if(i == 0) {
                         practical_request[0] = frame[FRAME_VALUE];
                         practical_request[1] = frame[FRAME_PAD_X];
                         practical_request[2] = frame[FRAME_PAD_Y];
+                        XLog.e("Request touch", Arrays.toString(practical_request));
                     }
                     break;
                 }
@@ -113,34 +111,52 @@ public class AutoPlay
                     break;
                 }
             }
-            retry_loop++;
+            autoplay_next_index++;
         }
     }
 
-    public void checkFramePractical(int chain, int row, int colum) {
-        if(!(chain == practical_request[0] &&
-                row == practical_request[1] &&
-                colum == practical_request[2])) return;
+    protected void setPractical_request(View view, int level){
+        context.runOnUiThread( ()-> {
+            view.setAlpha(1f);
+            ((ImageView) view).setImageDrawable(new ColorDrawable((level == 0) ?
+                    mAutoPlayChanges.getSkinData().color_autoplay_practical_1:
+                    mAutoPlayChanges.getSkinData().color_autoplay_practical_2));
+        });
+    }
+
+    /**
+     *  .
+     * @param pad .
+     */
+    public void checkFramePractical(MakePads.PadInfo pad) {
+        if (pad.row == practical_request[1] && pad.colum == practical_request[1]) {
+            if (pad.type == MakePads.PadInfo.PadInfoIdentifier.CHAIN) {
+                removeForecast();
+                int[] xy = MakePads.PadID.getChainXY(practical_request[0], 9);
+                practical_request[1] = xy[0];
+                practical_request[2] = xy[1];
+                setPractical_request(mAutoPlayChanges.getViewShowPracticalMark(xy[0], xy[1]), 0);
+                setFramePractical(forecast_max_count, 1);
+                return;
+            }
+            if (mAutoPlayChanges.getCurrentChainProperties().getMc() == practical_request[0]) {
+            }
+            return;
+        }
 
         autoplay_index++;
-        if(forecasts != null && forecasts[0] != null){
-                context.runOnUiThread(()-> {
-                forecasts[0].setBackgroundColor(Color.WHITE);
-                forecasts[0].setAlpha(0);
-            });
-        }
-        setFramePractical();
+        removeForecast();
+        setFramePractical(forecast_max_count, 0);
     }
 
     public void removeForecast(){
         if (forecasts != null) {
             for (View v : forecasts) {
                 if(v == null) continue;
-                v.setBackgroundColor(Color.WHITE);
+                ((ImageView) v).setImageDrawable(mAutoPlayChanges.getSkinData().draw_btn_);
                 v.setAlpha(0f);
             }
         }
-        forecasts = null;
     }
 
     @Override
@@ -153,6 +169,7 @@ public class AutoPlay
         autoplay_index = 0;
         mTouch = null;
         removeForecast();
+        forecasts = null;
         return callInterface;
     }
 
@@ -180,8 +197,9 @@ public class AutoPlay
     @Override
     public boolean resumeAutoPlay() {
         paused = false;
-        mThread.start();
+        (mThread = new Thread(this)).start();
         removeForecast();
+        forecasts = null;
         return true;
     }
 
@@ -212,13 +230,15 @@ public class AutoPlay
                     }
                 case FRAME_TYPE_ON: // ACTION_DOWN
                     {
-                        if(frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainId()) context.runOnUiThread(() -> mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
+                        if(frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainProperties().getId()) context.runOnUiThread(() ->
+                                mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
                         context.runOnUiThread(() -> mTouch.touch(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
                         break;
                     }
                 case FRAME_TYPE_OFF: // ACTION_UP
                     {
-                        if(frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainId()) context.runOnUiThread(() -> mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
+                        if(frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainProperties().getId()) context.runOnUiThread(() ->
+                                mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
                         context.runOnUiThread(() -> mTouch.release(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
                         break;
                     }
@@ -233,18 +253,19 @@ public class AutoPlay
         if (autoplay_index >= auto_play_map.size()) {
             autoplay_index = 0;
         } else if (paused) {
-            setFramePractical();
+            setFramePractical(forecast_max_count, 0);
         }
     }
 
     @Override
-    public boolean call(int chain, int x, int y) {
+    public boolean call(MakePads.ChainInfo chain, MakePads.PadInfo pad) {
         return startAutoPlay();
     }
 
     public interface AutoPlayChanges {
         View getViewShowPracticalMark(int r, int c);
         View getPadToTouch(int r, int c);
-        int getCurrentChainId();
+        MakePads.ChainInfo getCurrentChainProperties();
+        PadSkinData getSkinData();
     }
 }
