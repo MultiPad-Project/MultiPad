@@ -32,7 +32,6 @@ public class AutoPlay
     protected Ui.Touch mTouch;
     protected AutoPlayChanges mAutoPlayChanges;
     protected View[] forecasts;
-    protected PadPressCallInterface pausedCall;
     protected int[] practical_request;
     protected PadPressCallInterface callInterface;
 
@@ -54,30 +53,6 @@ public class AutoPlay
         paused = false;
     }
 
-    /**
-     * Start autoplay
-     * @param autoPlayChanges .
-     * @return PadPressCallInterface to add call
-     */
-    public PadPressCallInterface startAutoPlay(AutoPlayChanges autoPlayChanges) {
-        if(auto_play_map.isEmpty()) return null;
-
-        XLog.v("Try start autoplay", "");
-
-        this.running.set(true);
-        this.paused = false;
-        this.mAutoPlayChanges = autoPlayChanges;
-        this.autoplay_index = 0;
-        if(mTouch == null) this.mTouch = new Ui.Touch();
-        (mThread = new Thread(this)).start();
-        return (chain, pad)->{
-            if(isPaused()){
-                checkFramePractical(pad);
-            }
-            return true;
-        };
-    }
-
     public void pauseAutoPlay(int forecast_max_count) {
         this.forecast_max_count = forecast_max_count;
         forecasts = new View[forecast_max_count];
@@ -85,7 +60,7 @@ public class AutoPlay
         paused = true;
     }
 
-    protected void setFramePractical(int forecast_max, int offset){
+    protected void setFramePractical(int forecast_max, int offset, int increment_index){
         int autoplay_next_index = autoplay_index;
         for (int i = offset; i < forecast_max; i++) {
             if(autoplay_next_index >= auto_play_map.size()) break;
@@ -103,6 +78,9 @@ public class AutoPlay
                         practical_request[1] = frame[FRAME_PAD_X];
                         practical_request[2] = frame[FRAME_PAD_Y];
                         XLog.e("Request touch", Arrays.toString(practical_request));
+                    }
+                    if (i == increment_index){
+                        autoplay_index = autoplay_next_index;
                     }
                     break;
                 }
@@ -129,24 +107,29 @@ public class AutoPlay
      * @param pad .
      */
     public void checkFramePractical(MakePads.PadInfo pad) {
-        if (pad.row == practical_request[1] && pad.colum == practical_request[1]) {
-            if (pad.type == MakePads.PadInfo.PadInfoIdentifier.CHAIN) {
-                removeForecast();
-                int[] xy = MakePads.PadID.getChainXY(practical_request[0], 9);
-                practical_request[1] = xy[0];
-                practical_request[2] = xy[1];
-                setPractical_request(mAutoPlayChanges.getViewShowPracticalMark(xy[0], xy[1]), 0);
-                setFramePractical(forecast_max_count, 1);
-                return;
-            }
-            if (mAutoPlayChanges.getCurrentChainProperties().getMc() == practical_request[0]) {
-            }
-            return;
-        }
+        boolean chain_request = practical_request[0] == -1;
+        boolean is_chain = pad.getType() == MakePads.PadInfo.PadInfoIdentifier.CHAIN;
 
-        autoplay_index++;
-        removeForecast();
-        setFramePractical(forecast_max_count, 0);
+        XLog.e("Check Frame Practical", (is_chain) ? "Chain" : "Pad");
+
+        if(pad.getRow() == practical_request[1] && pad.getColum() == practical_request[2] &&
+                (mAutoPlayChanges.getCurrentChainProperties().getMc() == practical_request[0] ||
+                (is_chain && chain_request))){
+            XLog.e("Accept Button Practical", (is_chain) ? "Chain" : "Pad");
+
+            removeForecast();
+            setFramePractical(forecast_max_count, 0, (chain_request) ? 0 : 1);
+        } else if(is_chain && !chain_request){
+            XLog.e("Request chain", "Chain");
+
+            removeForecast();
+            int[] request_chain = MakePads.PadID.getChainXY(practical_request[0], 9);
+            practical_request[0] = -1;
+            practical_request[1] = request_chain[0];
+            practical_request[2] = request_chain[1];
+            setPractical_request(forecasts[0] = mAutoPlayChanges.getViewShowPracticalMark(request_chain[0], request_chain[1]), 0);
+            setFramePractical(forecast_max_count-1, 1, 0);
+        }
     }
 
     public void removeForecast(){
@@ -161,16 +144,15 @@ public class AutoPlay
 
     @Override
     public boolean stopAutoPlay() {
-        return false;
-    }
-
-    public PadPressCallInterface stopAutoPlayy() {
         running.set(false);
+        paused = false;
         autoplay_index = 0;
         mTouch = null;
         removeForecast();
         forecasts = null;
-        return callInterface;
+        practical_request = null;
+        mAutoPlayChanges.onStopped(callInterface);
+        return true;
     }
 
     @Override
@@ -183,10 +165,33 @@ public class AutoPlay
         return running.get();
     }
 
-    @Deprecated
     @Override
     public boolean startAutoPlay() {
         return false;
+    }
+
+    /**
+     * Start autoplay
+     *
+     * @param autoPlayChanges .
+     */
+    public void startAutoPlay(AutoPlayChanges autoPlayChanges) {
+        if(auto_play_map.isEmpty()) return;
+
+        XLog.v("Try start autoplay", "");
+
+        this.running.set(true);
+        this.paused = false;
+        this.mAutoPlayChanges = autoPlayChanges;
+        this.autoplay_index = 0;
+        if(mTouch == null) this.mTouch = new Ui.Touch();
+        (mThread = new Thread(this)).start();
+        mAutoPlayChanges.onStarted((chain, pad)->{
+            if(isPaused()){
+                checkFramePractical(pad);
+            }
+            return true;
+        });
     }
 
     @Override
@@ -251,9 +256,9 @@ public class AutoPlay
             }
         }
         if (autoplay_index >= auto_play_map.size()) {
-            autoplay_index = 0;
+            stopAutoPlay();
         } else if (paused) {
-            setFramePractical(forecast_max_count, 0);
+            setFramePractical(forecast_max_count, 0, 1);
         }
     }
 
@@ -267,5 +272,8 @@ public class AutoPlay
         View getPadToTouch(int r, int c);
         MakePads.ChainInfo getCurrentChainProperties();
         PadSkinData getSkinData();
+
+        void onStopped(PadPressCallInterface call);
+        void onStarted(PadPressCallInterface call);
     }
 }

@@ -40,6 +40,6 @@ public class KeySounds extends SoundLoader implements Project.SoundInterface, Pa
 
     @Override
     public boolean call(MakePads.ChainInfo chain, MakePads.PadInfo pad) {
-        return playSound(chain.getMc(), pad.row, pad.colum);
+        return playSound(chain.getMc(), pad.getRow(), pad.getColum());
     }
 }

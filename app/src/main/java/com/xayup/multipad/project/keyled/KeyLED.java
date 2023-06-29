@@ -105,7 +105,7 @@ public class KeyLED extends Project
 
     @Override
     public boolean call(MakePads.ChainInfo chain, MakePads.PadInfo pad) {
-        return showLed(chain.getMc(), pad.row, pad.colum);
+        return showLed(chain.getMc(), pad.getRow(), pad.getColum());
     }
 
     @Override

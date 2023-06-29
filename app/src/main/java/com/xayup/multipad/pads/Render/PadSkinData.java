@@ -33,13 +33,23 @@ public class PadSkinData implements SkinData {
 
         /* Exclusive */
         int playbg_id = res.getIdentifier("playbg_pro", "drawable", skin_package_name);
-            draw_playbg = res.getDrawable((playbg_id == 0) ? res.getIdentifier("playbg", "drawable", skin_package_name) : playbg_id, null);
+        draw_playbg = res.getDrawable((playbg_id == 0) ? res.getIdentifier("playbg", "drawable", skin_package_name) : playbg_id, null);
+
         int applogo_id = res.getIdentifier("applogo", "drawable", skin_package_name);
-            draw_logo = res.getDrawable((applogo_id == 0) ? res.getIdentifier("logo", "drawable", skin_package_name): applogo_id, null);
+        if(applogo_id == 0){ applogo_id = res.getIdentifier("logo", "drawable", skin_package_name); }
+        draw_logo = (applogo_id == 0) ?
+                context.getResources().getDrawable(context.getResources().getIdentifier("applogo", "drawable", context.getPackageName()), null) :
+                res.getDrawable(applogo_id, null);
+
         //Color Resource
         int color_autoplay_practical_1_id = res.getIdentifier("autoplay_practical_1", "color", skin_package_name);
-            color_autoplay_practical_1 = res.getColor((color_autoplay_practical_1_id == 0) ? res.getIdentifier("autoplay_practical_1", "color", context.getPackageName()) : color_autoplay_practical_1_id, null);
+        color_autoplay_practical_1 = (color_autoplay_practical_1_id == 0) ?
+                context.getResources().getColor(context.getResources().getIdentifier("autoplay_practical_1", "color", context.getPackageName()), null) :
+                res.getColor(color_autoplay_practical_1_id, null);
+
         int color_autoplay_practical_2_id = res.getIdentifier("autoplay_practical_2", "color", skin_package_name);
-            color_autoplay_practical_2 = res.getColor((color_autoplay_practical_2_id == 0) ? res.getIdentifier("autoplay_practical_2", "color", context.getPackageName()) : color_autoplay_practical_2_id, null);
+        color_autoplay_practical_2 = (color_autoplay_practical_2_id == 0) ?
+                context.getResources().getColor(context.getResources().getIdentifier("autoplay_practical_2", "color", context.getPackageName()), null) :
+                res.getColor(color_autoplay_practical_2_id, null);
     }
 }

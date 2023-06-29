@@ -19,7 +19,12 @@ public class AutoPlayReader implements MapData {
      * Read AutoPLay file and return list with possibles errors.
      *
      * @param autoPlay "autoplay" file
-     * @param auto_play_map List to be interacted
+     * @param auto_play_map List to be interacted. Essa lista conterá arrays de 4 slots, sendo:
+     *                      index 0 (slot 1), o tipo. Nunca será um delay pois o delay estará no index 4 (slot 5)
+     *                      index 1 (slot 2), a chain em que esse frame deverá executado.
+     *                      index 2 (slot 3), a localização Y (linha).
+     *                      index 3 (slot 4), a localização X (Coluna).
+     *                      index 4 (slot 5), o dalay antes de executar a frame.
      * @param mLoadingProject .
      * @return List of possible errors
      */
@@ -29,19 +34,18 @@ public class AutoPlayReader implements MapData {
             List<String> keys = Files.readLines(autoPlay, StandardCharsets.UTF_8);
             mLoadingProject.onStartReadFile(autoPlay.getName());
             int chain_mc = 1;
+            int delay = 0;
             next_line:
             while (!keys.isEmpty()) {
                 String[] chars = keys.remove(0).split("\\s");
                 if (chars.length > 1) {
-                    int[] autoplay_map = new int[4];
+                    int[] autoplay_map = new int[5];
                     switch (chars[0]) {
                         case "delay":
                         case "d":
                             {
-                                autoplay_map[FRAME_TYPE] = FRAME_TYPE_DELAY;
-                                autoplay_map[FRAME_VALUE] = Integer.parseInt(chars[1]);
-                                auto_play_map.add(autoplay_map);
-                                continue next_line;
+                                delay = Integer.parseInt(chars[1]);
+                                continue;
                             }
                         case "chain":
                         case "c":
@@ -79,11 +83,12 @@ public class AutoPlayReader implements MapData {
                             continue next_line;
                         }
                     }
-                    /* Use FRAME_VALUE to get chain to current frame */
                     autoplay_map[FRAME_VALUE] = chain_mc;
                     autoplay_map[FRAME_PAD_X] = Integer.parseInt(chars[1]);
                     autoplay_map[FRAME_PAD_Y] = Integer.parseInt(chars[2]);
+                    autoplay_map[FRAME_AUTOPLAY_DELAY] = delay;
                     auto_play_map.add(autoplay_map);
+                    delay = 0;
                 }
             }
         } catch (IOException e) {

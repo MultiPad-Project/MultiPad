@@ -235,10 +235,9 @@ public class Pad {
                                 (pad) -> {
                                     for (int ii = 0; ii < pad.getChildCount(); ii++) {
                                         View view = pad.getChildAt(ii);
-                                        MakePads.PadInfo mPadInfo =
-                                                (MakePads.PadInfo) view.getTag();
-                                        if (mPadInfo == null) continue;
-                                        switch (mPadInfo.type) {
+                                        if(view.getTag() == null) continue;
+                                        byte type = (byte) view.getTag();
+                                        switch (type) {
                                             case MakePads.PadInfo.PadInfoIdentifier.BTN:
                                                 {
                                                     ((ImageView) view).setImageDrawable(null);

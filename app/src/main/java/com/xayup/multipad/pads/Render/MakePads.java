@@ -25,34 +25,75 @@ public class MakePads {
 
     public static class PadInfo {
         public interface PadInfoIdentifier {
+            /**
+             * Button identification
+             */
             byte CHAIN = 0;
+            /**
+             * Button identification
+             */
             byte PAD = 1;
-            byte PHANTOM = 2;
-            byte PHANTOM_ = 3;
-            byte BTN = 4;
-            byte BTN_ = 5;
-            byte PAD_LOGO = 6;
+            /**
+             * Button identification
+             */
+            byte PAD_LOGO = 2;
+            /**
+             * Button identification
+             */
+            byte LED = 3;
+            /**
+             * Button Layer identification
+             */
+            byte TOUCH_MAP = 4;
+            /**
+             * Skin identification
+             */
+            byte BTN = 5;
+            /**
+             * Skin identification
+             */
+            byte BTN_ = 6;
+            /**
+             * Skin identification
+             */
             byte LOGO = 7;
+            /**
+             * Skin identification
+             */
             byte CHAIN_LED = 8;
-            byte LED = 9;
-            byte TOUCH_MAP = 10;
+            /**
+             * Skin identification
+             */
+            byte PHANTOM = 9;
+            /**
+             * Skin identification
+             */
+            byte PHANTOM_ = 10;
         }
 
-        public final byte row;
-        public final byte colum;
-        public final byte type;
-        /**
-         * mc is -1 if pad and not chain
-         */
+        protected byte row;
+        protected byte colum;
+        protected byte type;
 
         /**
-         * @param padinfo {row, colum, type}
+         * Make PadInfo with:
+         * @param row .
+         * @param colum .
+         * @param type . Set type with PadInfoIdentifier
          */
-        protected PadInfo(byte[] padinfo) {
-            this.row = padinfo[0];
-            this.colum = padinfo[1];
-            this.type = padinfo[2];
+        protected PadInfo(byte row, byte colum, byte type) {
+            this.row = row;
+            this.colum = colum;
+            this.type = type;
         }
+
+        public int getRow(){ return row; }
+        public int getColum(){ return colum; }
+        public int getType(){ return type; }
+
+        public void setRow(byte row){ this.row = row; }
+        public void setColum(byte colum){ this.colum = colum; }
+        public void setType(byte type){ this.type = type; }
 
         public int getId(){ return PadID.getId(row, colum); }
     }
@@ -60,12 +101,18 @@ public class MakePads {
     public static class ChainInfo extends PadInfo {
         protected byte mc;
         public ChainInfo(int row, int colum){
-            super(new byte[]{(byte) row, (byte) colum, PadInfoIdentifier.CHAIN});
+            super((byte) row, (byte) colum, PadInfoIdentifier.CHAIN);
             if(this.type == PadInfoIdentifier.CHAIN){
                 this.mc = (byte) PadID.getChainMc(row, colum, 9);
             } else {
                 this.mc = -1;
             }
+        }
+
+        public void setCurrentChain(int row, int colum){
+            setMc(row, colum);
+            setRow((byte) row);
+            setColum((byte) colum);
         }
 
         public void setMc(int row, int colum) {
@@ -76,7 +123,10 @@ public class MakePads {
             return mc;
         };
     }
-    /** Obtenha o id da pad atraves de suas cordenada X e Y */
+
+    /**
+     *
+     */
     public static class PadID {
         public static int getGridIndexFromXY(int grid_columns, int row, int colum) {
             return (grid_columns * row) + colum;
@@ -148,15 +198,22 @@ public class MakePads {
             return offset;
         }
 
-        private static void putId(int x, int y) {
-            ids[x][y] = (byte) ((x * 10) + y);
+        /**
+         * Assign ID with row and colum.
+         * @param row .
+         * @param colum .
+         * @return return ID
+         */
+        private static int assign(int row, int colum) {
+            ids[row][colum] = (byte) ((row * 10) + colum);
+            return ids[row][colum];
         }
     }
 
-    public MakePads(Context context, int rows, int colums) {
+    public MakePads(Context context, int rows, int columns) {
         this.context = (Activity) context;
         this.rows = rows;
-        this.colums = colums;
+        this.colums = columns;
         chain_top_matrix = new Matrix();
         chain_bottom_matrix = new Matrix();
     }
@@ -166,8 +223,8 @@ public class MakePads {
     }
 
     /**
-     *
-     * @return
+     * Make new Grid
+     * @return Container with one Grid rowsXcolumns
      */
     public ViewGroup make() {
         View led;
@@ -202,58 +259,23 @@ public class MakePads {
                     phantom = pad.findViewById(R.id.phantom);
                     led = pad.findViewById(R.id.led);
                     touch_map = pad.findViewById(R.id.touch_map);
-                    touch_map.setTag(
-                            new PadInfo(
-                                    new byte[] {
-                                        (byte) r, (byte) c, PadInfo.PadInfoIdentifier.TOUCH_MAP
-                                    }));
+                    touch_map.setTag(PadInfo.PadInfoIdentifier.TOUCH_MAP);
                     if (r == 0 || r == 9 || c == 0 || c == 9) {
                         if (r == 0 && c == 9) {
-                            pad.setTag(
-                                    new PadInfo(
-                                            new byte[] {
-                                                (byte) r,
-                                                (byte) c,
-                                                PadInfo.PadInfoIdentifier.PAD_LOGO
-                                            }));
-                            phantom.setTag(
-                                    new PadInfo(
-                                            new byte[] {
-                                                (byte) r, (byte) c, PadInfo.PadInfoIdentifier.LOGO
-                                            }));
+                            pad.setTag(new PadInfo((byte) r, (byte) c, PadInfo.PadInfoIdentifier.PAD_LOGO));
+                            phantom.setTag(PadInfo.PadInfoIdentifier.LOGO);
                         } else {
-                            phantom.setTag(
-                                    new PadInfo(
-                                            new byte[] {
-                                                (byte) r,
-                                                (byte) c,
-                                                PadInfo.PadInfoIdentifier.CHAIN_LED
-                                            }));
-                            pad.setTag(
-                                    new PadInfo(
-                                            new byte[] {
-                                                    (byte) r,
-                                                    (byte) c,
-                                                    PadInfo.PadInfoIdentifier.CHAIN
-                                            }));
+                            /*CHAIN*/
+                            phantom.setTag(PadInfo.PadInfoIdentifier.CHAIN_LED);
+                            pad.setTag(new ChainInfo((byte) r, (byte) c));
                             if (r == 0) { pad.setRotation(-90); }
                             else if (r == 9) { pad.setRotation(90); }
                             else if (c == 0) { phantom.setScaleX(phantom.getScaleX() * -1); }
                         }
                     } else {
-                        pad.setTag(
-                                new PadInfo(
-                                        new byte[] {
-                                            (byte) r, (byte) c, PadInfo.PadInfoIdentifier.PAD
-                                        }));
+                        pad.setTag(new PadInfo((byte) r, (byte) c, PadInfo.PadInfoIdentifier.PAD));
                         if ((r == 4 || r == 5) && (c == 4 || c == 5)) {
-                            phantom.setTag(
-                                    new PadInfo(
-                                            new byte[] {
-                                                (byte) r,
-                                                (byte) c,
-                                                PadInfo.PadInfoIdentifier.PHANTOM_
-                                            }));
+                            phantom.setTag(PadInfo.PadInfoIdentifier.PHANTOM_);
                             if (r == 4 && c == 5) {
                                 phantom.setScaleX(phantom.getScaleX() * -1);
                             } else if (r == 5 && c == 4) {
@@ -263,32 +285,13 @@ public class MakePads {
                                 phantom.setScaleY(phantom.getScaleY() * -1);
                             }
                         } else {
-                            phantom.setTag(
-                                    new PadInfo(
-                                            new byte[] {
-                                                (byte) r,
-                                                (byte) c,
-                                                PadInfo.PadInfoIdentifier.PHANTOM
-                                            }));
+                            phantom.setTag(PadInfo.PadInfoIdentifier.PHANTOM);
                         }
                     }
-                    btn.setTag(
-                            new PadInfo(
-                                    new byte[] {
-                                        (byte) r, (byte) c, PadInfo.PadInfoIdentifier.BTN
-                                    }));
-                    btn_.setTag(
-                            new PadInfo(
-                                    new byte[] {
-                                        (byte) r, (byte) c, PadInfo.PadInfoIdentifier.BTN_
-                                    }));
-                    led.setTag(
-                            new PadInfo(
-                                    new byte[] {
-                                        (byte) r, (byte) c, PadInfo.PadInfoIdentifier.LED
-                                    }));
-                    PadID.putId(r, c);
-                    pad.setId(PadID.getId(r, c));
+                    btn.setTag(PadInfo.PadInfoIdentifier.BTN);
+                    btn_.setTag(PadInfo.PadInfoIdentifier.BTN_);
+                    led.setTag(PadInfo.PadInfoIdentifier.LED);
+                    pad.setId(PadID.assign(r, c));
                 }
                 mGrid.addView(pad, mPadParams);
             }
