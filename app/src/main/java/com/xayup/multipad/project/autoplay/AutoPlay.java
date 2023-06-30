@@ -60,11 +60,10 @@ public class AutoPlay
         paused = true;
     }
 
-    protected void setFramePractical(int forecast_max, int offset, int increment_index){
-        int autoplay_next_index = autoplay_index;
-        for (int i = offset; i < forecast_max; i++) {
-            if(autoplay_next_index >= auto_play_map.size()) break;
-            int[] frame = auto_play_map.get(autoplay_next_index);
+    protected void setFramePractical(int forecast_max, int forecast_offset, int autoplay_index, boolean request){
+        for (int i = forecast_offset; i < forecast_max; i++) {
+            if(autoplay_index >= auto_play_map.size()) break;
+            int[] frame = auto_play_map.get(autoplay_index);
             switch (frame[FRAME_TYPE]) {
                 case FRAME_TYPE_ON:
                 case FRAME_TYPE_TOUCH:
@@ -73,14 +72,11 @@ public class AutoPlay
                     View view = mAutoPlayChanges.getViewShowPracticalMark(frame[FRAME_PAD_X], frame[FRAME_PAD_Y]);
                     setPractical_request(view, i);
                     forecasts[i] = view;
-                    if(i == 0) {
+                    if(request && i == 0) {
                         practical_request[0] = frame[FRAME_VALUE];
                         practical_request[1] = frame[FRAME_PAD_X];
                         practical_request[2] = frame[FRAME_PAD_Y];
                         XLog.e("Request touch", Arrays.toString(practical_request));
-                    }
-                    if (i == increment_index){
-                        autoplay_index = autoplay_next_index;
                     }
                     break;
                 }
@@ -89,7 +85,7 @@ public class AutoPlay
                     break;
                 }
             }
-            autoplay_next_index++;
+            autoplay_index++;
         }
     }
 
@@ -112,23 +108,27 @@ public class AutoPlay
 
         XLog.e("Check Frame Practical", (is_chain) ? "Chain" : "Pad");
 
-        if(pad.getRow() == practical_request[1] && pad.getColum() == practical_request[2] &&
+        if (pad.getRow() == practical_request[1] && pad.getColum() == practical_request[2] &&
                 (mAutoPlayChanges.getCurrentChainProperties().getMc() == practical_request[0] ||
-                (is_chain && chain_request))){
+                        practical_request[0] == 0 || (is_chain && chain_request))) {
             XLog.e("Accept Button Practical", (is_chain) ? "Chain" : "Pad");
 
             removeForecast();
-            setFramePractical(forecast_max_count, 0, (chain_request) ? 0 : 1);
-        } else if(is_chain && !chain_request){
-            XLog.e("Request chain", "Chain");
+            setFramePractical(forecast_max_count, 0, autoplay_index++, true);
+        } else if (is_chain){
+            if (!(mAutoPlayChanges.getCurrentChainProperties().getRow() == pad.getRow() &&
+                    mAutoPlayChanges.getCurrentChainProperties().getColum() == pad.getColum()) &&
+                    !chain_request) {
+                XLog.e("Request chain", "Chain");
 
-            removeForecast();
-            int[] request_chain = MakePads.PadID.getChainXY(practical_request[0], 9);
-            practical_request[0] = -1;
-            practical_request[1] = request_chain[0];
-            practical_request[2] = request_chain[1];
-            setPractical_request(forecasts[0] = mAutoPlayChanges.getViewShowPracticalMark(request_chain[0], request_chain[1]), 0);
-            setFramePractical(forecast_max_count-1, 1, 0);
+                removeForecast();
+                int[] request_chain = MakePads.PadID.getChainXY(practical_request[0], 9);
+                practical_request[0] = -1;
+                practical_request[1] = request_chain[0];
+                practical_request[2] = request_chain[1];
+                setPractical_request(forecasts[0] = mAutoPlayChanges.getViewShowPracticalMark(request_chain[0], request_chain[1]), 0);
+                setFramePractical(forecast_max_count, 1, (autoplay_index--)-1, false);
+            }
         }
     }
 
@@ -147,7 +147,6 @@ public class AutoPlay
         running.set(false);
         paused = false;
         autoplay_index = 0;
-        mTouch = null;
         removeForecast();
         forecasts = null;
         practical_request = null;
@@ -186,7 +185,7 @@ public class AutoPlay
         this.autoplay_index = 0;
         if(mTouch == null) this.mTouch = new Ui.Touch();
         (mThread = new Thread(this)).start();
-        mAutoPlayChanges.onStarted((chain, pad)->{
+        mAutoPlayChanges.onStarted(callInterface = (chain, pad)->{
             if(isPaused()){
                 checkFramePractical(pad);
             }
@@ -220,46 +219,52 @@ public class AutoPlay
 
     @Override
     public void run() {
-        // mAutoPlayChange.onAutoPlayStarted(auto_play_map.size());
-        for (;
-                autoplay_index < auto_play_map.size() && !paused && running.get();
-                autoplay_index++) {
-            //mAutoPlayChange.onAutoPlayProgress(autoplay_index);
+        for (;autoplay_index < auto_play_map.size() &&
+                !paused && running.get(); autoplay_index++) {
+
             int[] frame = auto_play_map.get(autoplay_index);
-            switch (frame[FRAME_TYPE]) {
-                case FRAME_TYPE_DELAY:
-                    {
-                        long delay = SystemClock.uptimeMillis() + frame[FRAME_VALUE];
-                        while (SystemClock.uptimeMillis() < delay && running.get() && !paused) {}
-                        continue;
-                    }
-                case FRAME_TYPE_ON: // ACTION_DOWN
-                    {
-                        if(frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainProperties().getId()) context.runOnUiThread(() ->
-                                mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
-                        context.runOnUiThread(() -> mTouch.touch(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
+
+            long delay = SystemClock.uptimeMillis() + frame[FRAME_AUTOPLAY_DELAY];
+            while (SystemClock.uptimeMillis() < delay && running.get() && !paused) {}
+
+            if(running.get()) {
+                if (frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainProperties().getId()) {
+                    int[] xy = MakePads.PadID.getChainXY(frame[FRAME_VALUE], 9);
+                    context.runOnUiThread(() -> mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(xy[0], xy[1])));
+                }
+
+                View pad_touch = mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y]);
+
+                switch (frame[FRAME_TYPE]) {
+                    case FRAME_TYPE_ON: {
+                        context.runOnUiThread(() -> mTouch.touch(pad_touch));
                         break;
                     }
-                case FRAME_TYPE_OFF: // ACTION_UP
-                    {
-                        if(frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainProperties().getId()) context.runOnUiThread(() ->
-                                mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
-                        context.runOnUiThread(() -> mTouch.release(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
-                        break;
+                    case FRAME_TYPE_OFF: {
+                        context.runOnUiThread(() -> mTouch.release(pad_touch));
                     }
-                case FRAME_TYPE_TOUCH: // Touch in pad button
-                case FRAME_TYPE_CHAIN: // Touch in chain button
-                    {
-                        context.runOnUiThread(() -> mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y])));
-                        break;
+                    case FRAME_TYPE_TOUCH:
+                    case FRAME_TYPE_CHAIN: {
+                        context.runOnUiThread(() -> mTouch.touchAndRelease(pad_touch));
                     }
-            }
+                }
+            } else mTouch = null;
         }
+
         if (autoplay_index >= auto_play_map.size()) {
             stopAutoPlay();
         } else if (paused) {
-            setFramePractical(forecast_max_count, 0, 1);
+            setFramePractical(forecast_max_count, 0, autoplay_index++, true);
         }
+    }
+
+    /**
+     * Gerencia e carrega os dados da frame.
+     * @param frame o array de tamanho 4 padrão
+     * @param touch_type o tipo de interação. 0 - Touch. 1 - Release. 3 -
+     */
+    public void showFrame(int[] frame, int touch_type){
+
     }
 
     @Override

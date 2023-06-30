@@ -44,22 +44,20 @@ public class AutoPlayReader implements MapData {
                         case "delay":
                         case "d":
                             {
-                                delay = Integer.parseInt(chars[1]);
+                                delay += Integer.parseInt(chars[1]);
                                 continue;
                             }
                         case "chain":
                         case "c":
                             {
                                 autoplay_map[FRAME_TYPE] = FRAME_TYPE_CHAIN;
-                                autoplay_map[FRAME_VALUE] = chain_mc;
-                                chain_mc = Integer.parseInt(chars[1]);
-                                int[] xy =
-                                        MakePads.PadID.getChainXY(chain_mc
-                                                , 9);
+                                autoplay_map[FRAME_VALUE] = 0;
+                                int[] xy = MakePads.PadID.getChainXY(chain_mc = Integer.parseInt(chars[1]), 9);
                                 autoplay_map[FRAME_PAD_X] = xy[0];
                                 autoplay_map[FRAME_PAD_Y] = xy[1];
+                                autoplay_map[FRAME_AUTOPLAY_DELAY] = delay;
                                 auto_play_map.add(autoplay_map);
-                                continue next_line;
+                                continue;
                             }
                         case "on":
                         case "o":
@@ -80,7 +78,7 @@ public class AutoPlayReader implements MapData {
                                 break;
                             }
                         default: {
-                            continue next_line;
+                            continue;
                         }
                     }
                     autoplay_map[FRAME_VALUE] = chain_mc;
