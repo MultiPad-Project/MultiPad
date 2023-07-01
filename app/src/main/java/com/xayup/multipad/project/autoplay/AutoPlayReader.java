@@ -51,7 +51,7 @@ public class AutoPlayReader implements MapData {
                         case "c":
                             {
                                 autoplay_map[FRAME_TYPE] = FRAME_TYPE_CHAIN;
-                                autoplay_map[FRAME_VALUE] = 0;
+                                autoplay_map[FRAME_VALUE] = chain_mc;
                                 int[] xy = MakePads.PadID.getChainXY(chain_mc = Integer.parseInt(chars[1]), 9);
                                 autoplay_map[FRAME_PAD_X] = xy[0];
                                 autoplay_map[FRAME_PAD_Y] = xy[1];

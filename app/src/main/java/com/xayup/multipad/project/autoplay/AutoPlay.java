@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.VerticalSeekBar;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.Ui;
 import com.xayup.multipad.load.thread.LoadProject;
@@ -20,20 +21,31 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class AutoPlay
-        implements Project.AutoPlayInterface, MapData, Runnable, PadPressCallInterface {
+public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, PadPressCallInterface {
     protected Activity context;
-    protected int autoplay_index;
-    protected int forecast_max_count;
+
+    /*States*/
     protected boolean paused;
-    protected List<int[]> auto_play_map;
     protected AtomicBoolean running;
+    protected int autoplay_index;
+
+    /*Work*/
+    protected List<int[]> auto_play_map;
     protected Thread mThread;
     protected Ui.Touch mTouch;
     protected AutoPlayChanges mAutoPlayChanges;
+    protected PadPressCallInterface callInterface;
+
+    /*Paused/Practical Mode properties*/
+    protected int forecast_max_count;
     protected View[] forecasts;
     protected int[] practical_request;
-    protected PadPressCallInterface callInterface;
+    protected VerticalSeekBar progress_bar;
+
+    /*Default values*/
+    protected final int ADVANCE_FRAME_DISTANCE = 3;
+    protected final int REGRESS_FRAME_DISTANCE = 3;
+
 
     public AutoPlay(Activity context) {
         this.context = context;
@@ -47,6 +59,7 @@ public class AutoPlay
     }
 
     public void clear() {
+        if(running.get()) stopAutoPlay();
         auto_play_map.clear();
         if(forecasts != null) Arrays.fill(forecasts, null);
         running.set(false);
@@ -54,6 +67,10 @@ public class AutoPlay
     }
 
     public void pauseAutoPlay(int forecast_max_count) {
+        if(mAutoPlayChanges == null){
+            XLog.e("AutoPlayChanges", "is null");
+            return;
+        }
         this.forecast_max_count = forecast_max_count;
         forecasts = new View[forecast_max_count];
         practical_request = new int[3];
@@ -102,7 +119,7 @@ public class AutoPlay
      *  .
      * @param pad .
      */
-    public void checkFramePractical(MakePads.PadInfo pad) {
+    protected void checkFramePractical(MakePads.PadInfo pad) {
         boolean chain_request = practical_request[0] == -1;
         boolean is_chain = pad.getType() == MakePads.PadInfo.PadInfoIdentifier.CHAIN;
 
@@ -132,7 +149,7 @@ public class AutoPlay
         }
     }
 
-    public void removeForecast(){
+    protected void removeForecast(){
         if (forecasts != null) {
             for (View v : forecasts) {
                 if(v == null) continue;
@@ -140,6 +157,11 @@ public class AutoPlay
                 v.setAlpha(0f);
             }
         }
+    }
+
+    protected void touchInChain(int mc){
+        int[] xy = MakePads.PadID.getChainXY(mc, 9);
+        context.runOnUiThread(() -> mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(xy[0], xy[1])));
     }
 
     @Override
@@ -209,12 +231,32 @@ public class AutoPlay
 
     @Override
     public float advanceAutoPlay() {
-        return 0;
+        if(autoplay_index + ADVANCE_FRAME_DISTANCE >= auto_play_map.size()){
+            stopAutoPlay();
+        } else {
+            autoplay_index += ADVANCE_FRAME_DISTANCE;
+        }
+        if(isPaused()){
+            removeForecast();
+            setFramePractical(forecast_max_count, 0, autoplay_index++, true);
+            touchInChain(practical_request[0]);
+        }
+        return autoplay_index;
     }
 
     @Override
     public float regressAutoPlay() {
-        return 0;
+        if(autoplay_index - REGRESS_FRAME_DISTANCE < 0){
+            autoplay_index = 0;
+        } else {
+            autoplay_index -= REGRESS_FRAME_DISTANCE;
+        }
+        if(isPaused()){
+            removeForecast();
+            setFramePractical(forecast_max_count, 0, autoplay_index++, true);
+            touchInChain(practical_request[0]);
+        }
+        return autoplay_index;
     }
 
     @Override
@@ -229,8 +271,7 @@ public class AutoPlay
 
             if(running.get()) {
                 if (frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainProperties().getId()) {
-                    int[] xy = MakePads.PadID.getChainXY(frame[FRAME_VALUE], 9);
-                    context.runOnUiThread(() -> mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(xy[0], xy[1])));
+                    touchInChain(frame[FRAME_VALUE]);
                 }
 
                 View pad_touch = mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y]);
@@ -258,18 +299,18 @@ public class AutoPlay
         }
     }
 
-    /**
-     * Gerencia e carrega os dados da frame.
-     * @param frame o array de tamanho 4 padrão
-     * @param touch_type o tipo de interação. 0 - Touch. 1 - Release. 3 -
-     */
-    public void showFrame(int[] frame, int touch_type){
-
-    }
-
     @Override
     public boolean call(MakePads.ChainInfo chain, MakePads.PadInfo pad) {
         return startAutoPlay();
+    }
+
+    /*Progress bar*/
+    public VerticalSeekBar getProgress_bar(){
+        return progress_bar;
+    }
+
+    protected void setDefaultForProgressBar(VerticalSeekBar bar){
+        bar.setMax(auto_play_map.size());
     }
 
     public interface AutoPlayChanges {

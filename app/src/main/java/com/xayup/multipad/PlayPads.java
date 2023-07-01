@@ -366,6 +366,12 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                 if (mAutoPlay.isRunning()) {
                                     mAutoPlay.stopAutoPlay();
                                     v.findViewById(R.id.press).setAlpha(0f);
+                                    /*Disable control*/
+                                        /////// TEMPORARY ///////
+                                    ViewGroup a = pad.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 4)); a.removeView(a.getChildAt(a.getChildCount()-1));
+                                    ViewGroup b = pad.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 5)); b.removeView(b.getChildAt(b.getChildCount()-1));
+                                    ViewGroup c = pad.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 6)); c.removeView(c.getChildAt(c.getChildCount()-1));
+
                                 } else {
                                     mAutoPlay.startAutoPlay(new AutoPlay.AutoPlayChanges() {
                                         @Override
@@ -399,6 +405,14 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                         }
                                     });
                                     v.findViewById(R.id.press).setAlpha(1f);
+                                    /*Enable control*/
+                                        /////// TEMPORARY ///////
+                                    ImageView a = new ImageView(context); a.setImageDrawable(context.getDrawable(R.drawable.play_prev)); a.setRotation(90f);
+                                    ImageView b = new ImageView(context); b.setImageDrawable(context.getDrawable(R.drawable.play_pause)); b.setRotation(90f);
+                                    ImageView c = new ImageView(context); c.setImageDrawable(context.getDrawable(R.drawable.play_prev)); c.setScaleX(-1f); c.setRotation(90f);
+                                    ((ViewGroup) pad.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 4))).addView(a, new ViewGroup.LayoutParams(-1, -1));
+                                    ((ViewGroup) pad.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 5))).addView(b, new ViewGroup.LayoutParams(-1, -1));
+                                    ((ViewGroup) pad.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 6))).addView(c, new ViewGroup.LayoutParams(-1, -1));
                                 }
                             }
                             return true;
