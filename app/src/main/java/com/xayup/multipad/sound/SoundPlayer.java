@@ -7,4 +7,5 @@ public interface SoundPlayer {
     void stop();
     void prepare();
     void release();
+    int currentTime();
 }

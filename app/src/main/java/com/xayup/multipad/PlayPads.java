@@ -258,6 +258,10 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             };
         }
 
+        protected void calculateSlide(View button_clicked, int x, int y){
+
+        }
+
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public OnTouchListener onPadTouch() {

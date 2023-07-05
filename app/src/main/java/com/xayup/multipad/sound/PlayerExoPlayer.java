@@ -36,6 +36,11 @@ public abstract class PlayerExoPlayer implements SoundPlayer{
         this.to_chain = (to_chain != null) ? Integer.parseInt(to_chain) : -1;
     }
 
+    @Override
+    public int currentTime(){
+        return (int) exo.getCurrentPosition();
+    }
+
     /**
      * @return retorna a chain (MC) desta sample, do contrário -1 se não houver
      */

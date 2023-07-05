@@ -117,6 +117,7 @@ public class SoundLoader {
         XayUpFunctions.touchAndRelease(context, Integer.parseInt(VariaveisStaticas.chainsIDlist.get(tmp_player.getToChain())), XayUpFunctions.TOUCH_AND_RELEASE);
       }
       changeSequence(xy[0], xy[1], sequence);
+      if(current_players.size() > 0) XLog.v("SOUND CURRENT TIME", String.valueOf(current_players.get(current_players.size()-1)));
       return true;
     }
     return false;

@@ -246,6 +246,16 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
         rec_autoplay_item.setChecked(GlobalConfigs.PlayPadsConfigs.recAutoplay);
         slider_item.setChecked(GlobalConfigs.PlayPadsConfigs.slideMode);
 
+        slider_item.setOnClick((v)->{
+            slider_item.getCheckBox().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    GlobalConfigs.PlayPadsConfigs.slideMode = b;
+                    XLog.v("Slide Checkbox Click", String.valueOf(b));
+                }
+            });
+        });
+
         /*Switch to Options Page*/
         configs.setOnClickListener((view) -> {
             configs.setVisibility(View.GONE);
