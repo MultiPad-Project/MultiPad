@@ -87,14 +87,21 @@ public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, P
                 case FRAME_TYPE_CHAIN:
                 {
                     View view = mAutoPlayChanges.getViewShowPracticalMark(frame[FRAME_PAD_X], frame[FRAME_PAD_Y]);
-                    setPractical_request(view, i);
                     forecasts[i] = view;
-                    if(request && i == 0) {
-                        practical_request[0] = frame[FRAME_VALUE];
-                        practical_request[1] = frame[FRAME_PAD_X];
-                        practical_request[2] = frame[FRAME_PAD_Y];
-                        XLog.e("Request touch", Arrays.toString(practical_request));
+                    if(request) {
+                        if(i == 0) {
+                            practical_request[0] = frame[FRAME_VALUE];
+                            practical_request[1] = frame[FRAME_PAD_X];
+                            practical_request[2] = frame[FRAME_PAD_Y];
+                            XLog.e("Request touch", Arrays.toString(practical_request));
+                        } else {
+                            if(practical_request[0] == frame[FRAME_VALUE]
+                            && practical_request[1] == frame[FRAME_PAD_X]
+                            && practical_request[2] == frame[FRAME_PAD_Y]
+                            ) continue;
+                        }
                     }
+                    setPractical_request(view, i); //Set color
                     break;
                 }
                 default: {
