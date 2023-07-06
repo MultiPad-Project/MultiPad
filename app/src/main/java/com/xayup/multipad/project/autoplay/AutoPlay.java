@@ -277,7 +277,7 @@ public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, P
             while (SystemClock.uptimeMillis() < delay && running.get() && !paused) {}
 
             if(running.get()) {
-                if (frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainProperties().getId()) {
+                if (frame[FRAME_VALUE] != mAutoPlayChanges.getCurrentChainProperties().getMc()) {
                     touchInChain(frame[FRAME_VALUE]);
                 }
 

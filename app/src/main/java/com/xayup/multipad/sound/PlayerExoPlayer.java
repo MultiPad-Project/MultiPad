@@ -37,8 +37,17 @@ public abstract class PlayerExoPlayer implements SoundPlayer{
     }
 
     @Override
+    public boolean appendAfterFinish(Runnable after_finish){
+        return false;
+    }
+
+    @Override
     public int currentTime(){
         return (int) exo.getCurrentPosition();
+    }
+    @Override
+    public int restTime(){
+        return  (int) exo.getDuration() - currentTime();
     }
 
     /**

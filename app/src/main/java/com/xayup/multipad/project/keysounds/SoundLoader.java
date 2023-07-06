@@ -111,13 +111,19 @@ public class SoundLoader {
       //XLog.v("sequence", Arrays.toString(sequencer));
 
       SoundPlayer tmp_player = tmp_map_sound.get(sequence++);
-      context.runOnUiThread(tmp_player::play);
+      SoundPlayer last_sound;
+      if(current_players.size() > 0 &&
+        (last_sound = current_players.get(current_players.size()-1)).restTime() <= 500){
+        XLog.v("SOUND CURRENT TIME", String.valueOf(last_sound.currentTime()));
+        last_sound.appendAfterFinish(() -> context.runOnUiThread(tmp_player::play));
+      } else {
+        context.runOnUiThread(tmp_player::play);
+      }
       if(!current_players.contains(tmp_player)) current_players.add(tmp_player);
       if (tmp_player.getToChain() != -1){
         XayUpFunctions.touchAndRelease(context, Integer.parseInt(VariaveisStaticas.chainsIDlist.get(tmp_player.getToChain())), XayUpFunctions.TOUCH_AND_RELEASE);
       }
       changeSequence(xy[0], xy[1], sequence);
-      if(current_players.size() > 0) XLog.v("SOUND CURRENT TIME", String.valueOf(current_players.get(current_players.size()-1)));
       return true;
     }
     return false;

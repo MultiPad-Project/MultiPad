@@ -30,8 +30,8 @@ android {
         applicationId "com.xayup.multipad.development"
         minSdk 23 //Android M
         targetSdk 32
-        versionCode 230622        //year, month, day
-        versionName "2.2"
+        versionCode 230706        //year, month, day
+        versionName "3.0"
     }
 
     buildTypes {

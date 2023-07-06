@@ -8,4 +8,6 @@ public interface SoundPlayer {
     void prepare();
     void release();
     int currentTime();
+    int restTime();
+    boolean appendAfterFinish(Runnable after_finish);
 }

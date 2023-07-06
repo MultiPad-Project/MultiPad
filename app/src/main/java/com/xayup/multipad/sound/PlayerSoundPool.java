@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import com.xayup.debug.XLog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class PlayerSoundPool implements SoundPlayer {
@@ -38,6 +39,7 @@ public abstract class PlayerSoundPool implements SoundPlayer {
         this.sampleDuration = duration;
         XLog.v("Sound Durations Media Player", String.valueOf(sampleDuration));
         /*For Handler*/
+        after_finish = new ArrayList<>();
         this.runnable = ()->{
             XLog.v("Try call", "onFinish()");
             playing = false;
@@ -61,6 +63,7 @@ public abstract class PlayerSoundPool implements SoundPlayer {
         return STATE == 2;
     }
 
+    @Override
     public boolean appendAfterFinish(Runnable run_this){
         if(run_this == null) return false;
         after_finish.add(run_this);
@@ -113,9 +116,18 @@ public abstract class PlayerSoundPool implements SoundPlayer {
 
     @Override
     public int currentTime(){
-        return (currentTime = (int) (SystemClock.uptimeMillis() - startedTime)) > sampleDuration ? sampleDuration : currentTime;
+        currentTime = (int) (SystemClock.uptimeMillis() - startedTime);
+        XLog.v("Get current Time", "Started " + startedTime + ", current System Time" + SystemClock.uptimeMillis() +
+                ", Sample Duration " + sampleDuration + ", Rest time" + (sampleDuration - currentTime));
+        return Math.min(currentTime, sampleDuration);
     }
 
+    /**
+     * @return Rest time.
+     */
+    public int restTime(){
+        return sampleDuration - currentTime();
+    }
     /**
      * Quando a sample chega ao final
      */

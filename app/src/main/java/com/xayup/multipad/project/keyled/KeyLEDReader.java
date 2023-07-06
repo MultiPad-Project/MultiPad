@@ -35,6 +35,7 @@ public class KeyLEDReader implements MapData {
                     if (!checked_name) {
                         String[] chars = (file_name = led.getName()).split("\\s");
                         XLog.v("Name", file_name);
+                        mLoadingProject.onStartReadFile(file_name);
                         try {
                             if (chars.length < 3) throw new NumberFormatException();
                             chain = Integer.parseInt(chars[0]);
@@ -55,7 +56,7 @@ public class KeyLEDReader implements MapData {
                     }
                 }
             }
-            /*Synchronize*/
+            /*Synchronize leds*/
             KeyLEDData ledData = map.newFrameData();
             ledData.setTypeLoop(loop);
             int[] delays = new int[leds_list.size()];

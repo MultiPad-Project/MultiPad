@@ -289,23 +289,24 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
         @Override
         public OnTouchListener onChainTouch() {
             return (View v, MotionEvent event) -> {
-                MakePads.PadInfo mPadInfo = (MakePads.PadInfo) v.getTag();
-                XLog.v("Chain press", "X: " + mPadInfo.getRow() + ",Y: " + mPadInfo.getColum());
+                MakePads.ChainInfo mChainInfo = (MakePads.ChainInfo) v.getTag();
+                XLog.v("Chain press", "X: " + mChainInfo.getRow() + ",Y: " + mChainInfo.getColum());
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN: {
                         pad.getActivePads().getGridPads().findViewById(pad.current_chain.getId()).findViewById(R.id.press).setAlpha(0f);
-                        if(mKeySounds != null) mKeySounds.resetSequencer();
-                        if(mKeyLED != null) mKeyLED.resetSequence();
+                        boolean chain_changed = pad.current_chain.getMc() != mChainInfo.getMc();
+                        if(mKeySounds != null && chain_changed) mKeySounds.resetSequencer();
+                        if(mKeyLED != null && chain_changed) mKeyLED.resetSequence();
 
-                        mPadPress.call(pad.current_chain, mPadInfo);
+                        mPadPress.call(pad.current_chain, mChainInfo);
 
-                        pad.current_chain.setCurrentChain(mPadInfo.getRow(), mPadInfo.getColum());
+                        pad.current_chain.setCurrentChain(mChainInfo.getRow(), mChainInfo.getColum());
                         /* After set this chain to current chain */
                         pad.getActivePads().getGridPads().findViewById(pad.current_chain.getId()).findViewById(R.id.press).setAlpha(1f);
                         return true;
                     }
                     case MotionEvent.ACTION_UP: {
-                        mPadRelease.call(pad.current_chain, mPadInfo);
+                        mPadRelease.call(pad.current_chain, mChainInfo);
                         return true;
                     }
                 }
