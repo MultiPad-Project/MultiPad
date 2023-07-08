@@ -3,6 +3,7 @@ package com.xayup.multipad.project.autoplay;
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.VerticalSeekBar;
@@ -16,6 +17,7 @@ import com.xayup.multipad.project.MapData;
 import com.xayup.multipad.load.Project;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -282,18 +284,21 @@ public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, P
                 }
 
                 View pad_touch = mAutoPlayChanges.getPadToTouch(frame[FRAME_PAD_X], frame[FRAME_PAD_Y]);
-
-                switch (frame[FRAME_TYPE]) {
-                    case FRAME_TYPE_ON: {
-                        context.runOnUiThread(() -> mTouch.touch(pad_touch));
-                        break;
-                    }
-                    case FRAME_TYPE_OFF: {
-                        context.runOnUiThread(() -> mTouch.release(pad_touch));
-                    }
-                    case FRAME_TYPE_TOUCH:
-                    case FRAME_TYPE_CHAIN: {
-                        context.runOnUiThread(() -> mTouch.touchAndRelease(pad_touch));
+                if(pad_touch == null){
+                    Log.e("Pad error", Arrays.toString(frame));
+                } else {
+                    switch (frame[FRAME_TYPE]) {
+                        case FRAME_TYPE_ON: {
+                            context.runOnUiThread(() -> mTouch.touch(pad_touch));
+                            break;
+                        }
+                        case FRAME_TYPE_OFF: {
+                            context.runOnUiThread(() -> mTouch.release(pad_touch));
+                        }
+                        case FRAME_TYPE_TOUCH:
+                        case FRAME_TYPE_CHAIN: {
+                            context.runOnUiThread(() -> mTouch.touchAndRelease(pad_touch));
+                        }
                     }
                 }
             } else mTouch = null;

@@ -168,6 +168,7 @@ public class MainActivity extends Activity {
         View item_sourceCode = menu.findViewById(R.id.main_floating_item_sourcecode);
         View item_myChannel = menu.findViewById(R.id.main_floating_item_mychannel);
         View item_manual = menu.findViewById(R.id.main_floating_item_manual);
+        View item_crash = menu.findViewById(R.id.main_floating_item_crash);
         Button list_usb_midi = menu.findViewById(R.id.main_floating_menu_button_midi_devices);
 
         CheckBox unipad_folder = menu.findViewById(R.id.main_floating_menu_useunipadfolder_check);
@@ -289,6 +290,9 @@ public class MainActivity extends Activity {
             XayUpFunctions.showDiagInFullscreen(show_manual);
             manualImg.setOnClickListener((view) -> show_manual.dismiss());
         });
+
+        // DEBUG //
+        item_crash.setOnClickListener(v -> { throw new RuntimeException("Crash app (TEST)"); });
 
         show.getWindow().setLayout(GlobalConfigs.display_width/2, WindowManager.LayoutParams.MATCH_PARENT);
         show.getWindow().setGravity(Gravity.END);

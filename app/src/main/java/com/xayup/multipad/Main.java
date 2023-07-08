@@ -36,8 +36,16 @@ public class Main extends Activity {
             finishApp.setOnClickListener((v) -> finishAffinity());
             restartApp.setOnClickListener((v) -> recreate());
         } else {
-            new Debug(this);
-            this.startActivity(new Intent(this, MainActivity.class));
+            Context context = this;
+            Debug debug = new Debug(this){
+                @Override
+                public void afterCrash() {
+                    super.afterCrash();
+                    //context.startActivity(new Intent(context, Main.class));
+                }
+            };
+            context.startActivity(new Intent(context, MainActivity.class));
+            this.finish();
         }
     }
 }
