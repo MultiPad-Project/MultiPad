@@ -112,13 +112,13 @@ public class SoundLoader {
 
       SoundPlayer tmp_player = tmp_map_sound.get(sequence++);
       SoundPlayer last_sound;
-      /*if(current_players.size() > 0 &&
+      if(current_players.size() > 0 &&
         (last_sound = current_players.get(current_players.size()-1)).restTime() <= 200){
         XLog.v("SOUND CURRENT TIME", String.valueOf(last_sound.currentTime()));
         last_sound.appendAfterFinish(() -> context.runOnUiThread(tmp_player::play));
-      } else {*/
+      } else {
         context.runOnUiThread(tmp_player::play);
-      //}
+      }
       if(!current_players.contains(tmp_player)) current_players.add(tmp_player);
       if (tmp_player.getToChain() != -1){
         XayUpFunctions.touchAndRelease(context, Integer.parseInt(VariaveisStaticas.chainsIDlist.get(tmp_player.getToChain())), XayUpFunctions.TOUCH_AND_RELEASE);

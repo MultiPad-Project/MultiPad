@@ -2,8 +2,10 @@ package com.xayup.debug;
 
 import android.app.*;
 import android.content.*;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.*;
 
@@ -40,6 +42,28 @@ public class Debug {
 
     public void afterCrash(){}
 
+    public static File genAppLog(Context context) throws IOException {
+        StringBuilder log = genAppLog();
+        FileOutputStream fos = context.openFileOutput("MultiPad_log.txt", Context.MODE_PRIVATE);
+        fos.write(log.toString().getBytes());
+        XLog.e("Log", log.toString());
+        fos.close();
+        return new File("MultiPad_log.txt");
+    }
+
+    public static StringBuilder genAppLog() throws IOException {
+        Process process = Runtime.getRuntime().exec("logcat -d");
+        BufferedReader br = new BufferedReader(new InputStreamReader((process.getInputStream())));
+        String line;
+        StringBuilder log = new StringBuilder();
+        Log.e("Get Log", "Start write string");
+        while((line = br.readLine()) != null){
+            log.append(line).append("\n");
+        }
+        Log.e("Get Log", "Finish");
+        return log;
+    }
+
     public Debug(Activity context) {
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(context));
     }
@@ -61,7 +85,9 @@ public class Debug {
             XLog.v("Stack Trace", "uncaughtException()");
 
             StackTraceElement[] arr = e.getStackTrace();
-            StringBuilder report = new StringBuilder("--------- Device Info ---------");
+            StringBuilder report = new StringBuilder("Package: " + app.getPackageName());
+            report.append("\n\n");
+            report.append("--------- Device Info ---------");
             report.append("\n\n");
             report.append("       Android version: ").append(Build.VERSION.RELEASE).append("\n");
             report.append("       Manufacturer: ").append(" ").append(Build.MANUFACTURER).append("\n");
@@ -103,6 +129,7 @@ public class Debug {
             catch (IOException ioe) {
                 Log.e("Debug.uncaughtException()", ioe.toString());
             }
+            Toast.makeText(app, "Please open the app to get the error log", Toast.LENGTH_LONG).show();
             afterCrash();
             defaultUEH.uncaughtException(t, e);
         }
