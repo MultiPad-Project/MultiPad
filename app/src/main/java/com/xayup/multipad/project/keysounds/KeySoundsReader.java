@@ -1,6 +1,7 @@
 package com.xayup.multipad.project.keysounds;
 
 import android.media.MediaMetadataRetriever;
+import android.os.Build;
 import com.google.common.io.Files;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.load.thread.LoadProject;
@@ -17,12 +18,14 @@ public class KeySoundsReader {
      * @return an array with size 2, where index 0 is the time (in milliseconds) and index 1 is the raw file size.
      */
     protected int[] getNecessaryMetadata(File file) {
-        try (MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever()){
-            mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
-            return new int[]{Integer.parseInt(
-                    mediaMetadataRetriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_DURATION)), ((int) file.length()/1024)};
-        }
+        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(file.getAbsolutePath());
+        int[] rtr =  new int[]{Integer.parseInt(
+                mediaMetadataRetriever.extractMetadata(
+                        MediaMetadataRetriever.METADATA_KEY_DURATION)), ((int) file.length() / 1024)};
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) mediaMetadataRetriever.release();
+        else mediaMetadataRetriever.close();
+        return rtr;
     }
 
     protected boolean checkKeySound(String line) {

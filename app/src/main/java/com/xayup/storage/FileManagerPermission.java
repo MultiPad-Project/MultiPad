@@ -82,6 +82,7 @@ public abstract class FileManagerPermission {
                 ok, (DialogInterface arg0, int arg1) -> getTotalStoragePermission());
         alert_get_storage_permission.setNegativeButton(
                 cancel, (DialogInterface arg0, int arg1) -> context.finishAffinity());
+        alert_get_storage_permission.setCancelable(false);
         return alert_get_storage_permission;
     }
 

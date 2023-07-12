@@ -1,7 +1,7 @@
 <resources>
     <!--App-->
-    <string name="app_version">2.2</string>
-    <string name="app_name">MultiPad</string>
+    <string name="app_version">3.0</string>
+    <string name="app_name">MultiPad Development</string>
 
     <!--Theme info-->
     <string name="theme_name">MultiPad Theme</string>
@@ -36,9 +36,13 @@
 
     <string name="permission_storage_necessary">Permission to storage needed!</string>
     <string name="diag_invalidfiles_title">Invalid formats</string>
+
+    <!--Crash app-->
     <string name="copy_log">Copy Log</string>
     <string name="cop">Copied to the clipboard!</string>
     <string name="exitcrash">Close app</string>
+    <string name="msg_after_crash">Open it again and copy the log. Please send it to @XayUp</string>
+    
     <string name="invalid_led_color">Color led invalid:</string>
     <string name="warning">Warning!</string>
     <string name="invalid_keyled">Invalid KeyLed:</string>

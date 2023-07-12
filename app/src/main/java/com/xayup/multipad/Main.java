@@ -42,7 +42,16 @@ public class Main extends Activity {
             finishApp.setOnClickListener((v) -> finishAffinity());
             restartApp.setOnClickListener((v) -> recreate());
         } else {
-            new Debug(this);
+            new Debug(this) {
+                @Override
+                public void afterCrash(){
+                    super.afterCrash();
+                    context.runOnUiThread(()-> Toast.makeText(
+                            context,
+                            context.getString(R.string.msg_after_crash),
+                            Toast.LENGTH_SHORT).show());
+                }
+            };
             checkPermissions(this);
         }
     }
@@ -97,7 +106,7 @@ public class Main extends Activity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (fmp.resultIsStoragePermission(requestCode)) {
-            if(fmp.permissionGranted()) startActivity();
+            if (fmp.permissionGranted()) startActivity();
             else fmp.checkPermission();
         }
     }

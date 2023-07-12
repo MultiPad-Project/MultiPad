@@ -317,6 +317,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
             configs.setVisibility(View.GONE);
             color_table.setVisibility(View.GONE);
             pads_list.setVisibility(View.GONE);
+            color_table_page.clear();
             switchTo(EXIT_PAGE_LIST_COLOR_TABLE, false);
             File root = new File(GlobalConfigs.DefaultConfigs.COLOR_TABLE_PATH);
             if(root.exists()) for(File file : root.listFiles()){

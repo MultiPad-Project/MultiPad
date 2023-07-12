@@ -6,17 +6,9 @@ import android.widget.Toast;
 import com.xayup.color.table.utils.ColorTable;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.utils.Utils;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Arrays;
 
 public class Colors {
     protected Activity context;
@@ -37,34 +29,32 @@ public class Colors {
             this.getTable(current_table);
         } catch (IOException e) {
             Log.e("eh..", e.toString());
-            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
+            context.runOnUiThread(() -> Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show());
             colors = new int[128];
         }
     }
 
     protected void assetExported() throws IOException {
-        Arrays.asList(context.getAssets().list("color_tables"))
-                .forEach(
-                        (v) -> {
-                            File file = new File(table_path, v);
-                            if (!file.exists()) {
-                                InputStream is = null;
-                                try {
-                                    if (!file.createNewFile()) {
-                                        new IOException("Make file");
-                                    }
-                                    Utils.FileWriter fw = new Utils.FileWriter(file);
-                                    fw.write(
-                                            (is = context.getAssets().open("color_tables/" + v)),
-                                            0,
-                                            new byte[1024]);
-                                    fw.close();
-                                    is.close();
-                                } catch (IOException e) {
-                                    Log.e("Try read asset", e.toString());
-                                }
-                            }
-                        });
+        String[] default_tables = context.getAssets().list("color_tables");
+        for(String table : default_tables){
+            File file = new File(table_path, table);
+            if (file.getParentFile().mkdirs() || !file.exists()) {
+                try {
+                    if (!file.createNewFile())
+                        throw new IOException("Make file");
+                    Utils.FileWriter fw = new Utils.FileWriter(file);
+                    InputStream is;
+                    fw.write(
+                            (is = context.getAssets().open("color_tables/".concat(table))),
+                            0,
+                            new byte[1024]);
+                    fw.close();
+                    is.close();
+                } catch (IOException e) {
+                    Log.e("Try read asset", e.toString());
+                }
+            }
+        }
     }
 
     public void getTable(File table) throws IOException {

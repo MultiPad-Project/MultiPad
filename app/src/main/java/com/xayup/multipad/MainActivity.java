@@ -146,6 +146,8 @@ public class MainActivity extends Activity {
         View item_sourceCode = menu.findViewById(R.id.main_floating_item_sourcecode);
         View item_myChannel = menu.findViewById(R.id.main_floating_item_mychannel);
         View item_manual = menu.findViewById(R.id.main_floating_item_manual);
+        View item_crash = menu.findViewById(R.id.main_floating_item_crash);
+        View item_genlogfile = menu.findViewById(R.id.main_floating_item_genlogfile);
         Button list_usb_midi = menu.findViewById(R.id.main_floating_menu_button_midi_devices);
 
         CheckBox unipad_folder = menu.findViewById(R.id.main_floating_menu_useunipadfolder_check);
@@ -263,6 +265,30 @@ public class MainActivity extends Activity {
             XayUpFunctions.showDiagInFullscreen(show_manual);
             manualImg.setOnClickListener((view) -> show_manual.dismiss());
         });
+        item_genlogfile.setOnClickListener((v) -> {
+            try {
+                File log_share = new File(GlobalConfigs.DefaultConfigs.MULTIPAD_PATH, "MultiPad_log.txt");
+                if(log_share.exists()) log_share.delete(); else log_share.getParentFile().mkdirs();
+                log_share.createNewFile();
+                FileOutputStream fos = new FileOutputStream(log_share);
+                fos.write(Debug.genAppLog().toString().getBytes());
+                fos.close();
+                Toast.makeText(context, "Save on MultiPad path. Please send it to @XayUp", Toast.LENGTH_LONG).show();
+                // Share
+                /*
+                Intent share = new Intent(Intent.ACTION_SEND);
+                share.setType("text/*");
+                share.putExtra(Intent.EXTRA_STREAM, Uri.parse(log_share.getPath()));
+                share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                context.startActivity(Intent.createChooser(share, "Please send it to @XayUp"));
+                 */
+            } catch (IOException e) {
+                Toast.makeText(context, "Error generating log file", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // DEBUG //
+        item_crash.setOnClickListener(v -> { throw new RuntimeException("Crash app (TEST)"); });
 
         show.getWindow().setLayout(GlobalConfigs.display_width/2, WindowManager.LayoutParams.MATCH_PARENT);
         show.getWindow().setGravity(Gravity.END);

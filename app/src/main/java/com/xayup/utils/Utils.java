@@ -14,10 +14,8 @@ public class Utils {
         }
 
         public void write(InputStream is, int offset, byte[] bytes) throws IOException {
-            while (is.read(bytes) != -1) {
-                this.write(bytes, offset, bytes.length);
-                offset++;
-            }
+            int length;
+            while ((length = is.read(bytes)) != -1) this.write(bytes, offset, length);
         }
         
         public void close() throws IOException {
