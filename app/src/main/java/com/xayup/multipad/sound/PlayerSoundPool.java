@@ -12,15 +12,16 @@ import java.util.List;
 public abstract class PlayerSoundPool implements SoundPlayer {
     protected int STATE = 0; //0 - Stoped; 1 - Playing; 2 - Paused
 
-    protected int to_chain;
-    protected int sound_id;
+    protected final int to_chain;
+    protected final int sound_id;
+    protected final int sampleDuration;
+    protected final Runnable runnable;
+
     protected int streamID;
     protected boolean playing;
     protected SoundPool pool;
-    protected Runnable runnable;
     protected int currentTime;
     protected long startedTime;
-    protected int sampleDuration;
     protected Handler mHandler;
     protected List<Runnable> after_finish;
 
@@ -119,7 +120,11 @@ public abstract class PlayerSoundPool implements SoundPlayer {
         currentTime = (int) (SystemClock.uptimeMillis() - startedTime);
         XLog.v("Get current Time", "Started " + startedTime + ", current System Time" + SystemClock.uptimeMillis() +
                 ", Sample Duration " + sampleDuration + ", Rest time" + (sampleDuration - currentTime));
-        return Math.min(currentTime, sampleDuration);
+        return (sampleDuration < currentTime) ? 0: currentTime;
+    }
+    @Override
+    public int getDuration(){
+        return sampleDuration;
     }
 
     /**

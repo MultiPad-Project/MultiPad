@@ -9,5 +9,6 @@ public interface SoundPlayer {
     void release();
     int currentTime();
     int restTime();
+    int getDuration();
     boolean appendAfterFinish(Runnable after_finish);
 }

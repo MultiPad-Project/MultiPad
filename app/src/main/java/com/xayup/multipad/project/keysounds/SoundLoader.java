@@ -3,10 +3,6 @@ package com.xayup.multipad.project.keysounds;
 import android.app.Activity;
 import android.content.Context;
 import android.media.SoundPool;
-import android.util.Log;
-
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
 
 import com.xayup.debug.XLog;
 import com.xayup.multipad.VariaveisStaticas;
@@ -16,11 +12,11 @@ import com.xayup.multipad.sound.PlayerExoPlayer;
 import com.xayup.multipad.sound.PlayerSoundPool;
 import com.xayup.multipad.sound.SoundPlayer;
 
-import java.io.File;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class SoundLoader {
+  protected final int SYNCHRONIZE_WITH_MILLIS = 500;
+
   protected Activity context;
   protected SoundPool mSoundPool;
 
@@ -109,21 +105,27 @@ public class SoundLoader {
         sequence = 0;
       }
       //XLog.v("sequence", Arrays.toString(sequencer));
-
       SoundPlayer tmp_player = tmp_map_sound.get(sequence++);
-      SoundPlayer last_sound;
-      if(current_players.size() > 0 &&
-        (last_sound = current_players.get(current_players.size()-1)).restTime() <= 500){
-        XLog.v("SOUND CURRENT TIME", String.valueOf(last_sound.currentTime()));
-        last_sound.appendAfterFinish(() -> context.runOnUiThread(tmp_player::play));
-      } else {
-        context.runOnUiThread(tmp_player::play);
-      }
+      if(!useSynchronizeSample(tmp_player)) context.runOnUiThread(tmp_player::play);
       if(!current_players.contains(tmp_player)) current_players.add(tmp_player);
       if (tmp_player.getToChain() != -1){
         XayUpFunctions.touchAndRelease(context, Integer.parseInt(VariaveisStaticas.chainsIDlist.get(tmp_player.getToChain())), XayUpFunctions.TOUCH_AND_RELEASE);
       }
       changeSequence(xy[0], xy[1], sequence);
+      return true;
+    }
+    return false;
+  }
+
+  public boolean useSynchronizeSample(SoundPlayer sample){
+    boolean use_synchronize_samples = true;
+    if(!use_synchronize_samples) return false;
+    SoundPlayer last_sound;
+    if(current_players.size() > 0
+            && (last_sound = current_players.get(current_players.size()-1)).restTime() <= SYNCHRONIZE_WITH_MILLIS
+            ) {
+      XLog.v("SOUND CURRENT TIME", String.valueOf(last_sound.currentTime()));
+      last_sound.appendAfterFinish(() -> context.runOnUiThread(sample::play));
       return true;
     }
     return false;

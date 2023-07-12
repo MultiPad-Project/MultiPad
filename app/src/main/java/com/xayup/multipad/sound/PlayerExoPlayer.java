@@ -45,10 +45,14 @@ public abstract class PlayerExoPlayer implements SoundPlayer{
     public int currentTime(){
         return (int) exo.getCurrentPosition();
     }
+
     @Override
     public int restTime(){
         return  (int) exo.getDuration() - currentTime();
     }
+
+    @Override
+    public int getDuration(){ return (int) exo.getDuration(); }
 
     /**
      * @return retorna a chain (MC) desta sample, do contrário -1 se não houver

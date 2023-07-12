@@ -24,14 +24,12 @@ import java.io.*;
 
 public class MainActivity extends Activity {
     private final Activity context = this;
-
     protected final byte INTENT_PLAY_PADS = 0;
 
     protected LoadScreen mLoadScreen;
     protected File info;
 
     protected PendingIntent permissionIntent;
-    protected FileManagerPermission mFMP;
 
     protected static String skinConfig;
     protected static boolean useUnipadFolderConfig;
@@ -47,18 +45,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         ACTION_USB_PERMISSION = this.getPackageName()+".USB_PERMISSION";
-        this.mFMP = new FileManagerPermission(context);
-        mFMP.checkPermission(new ManagePermission() {
-            @Override
-            public void onStorageGranted() {
-                makeActivity(true);
-            }
-
-            @Override
-            public void onStorageDenied() {
-                mFMP.showSimpleAlertDialog("Title", "Msg", "cancel", "ok");
-            }
-        });
+        makeActivity();
     }
 
     @Override
@@ -70,21 +57,15 @@ public class MainActivity extends Activity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (mFMP.STORAGE_PERMISSION == requestCode) {
-            makeActivity(mFMP.permissionGranted());
-        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == mFMP.ANDROID_11_REQUEST_PERMISSION_AMF) {
-            makeActivity(mFMP.permissionGranted());
-        }
-        else if (requestCode == INTENT_PLAY_PADS){
+        if (requestCode == INTENT_PLAY_PADS){
             mLoadScreen.OnEndAnimation(null);
             mLoadScreen.hide(0);
             mLoadScreen.remove();
@@ -92,22 +73,19 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void makeActivity(boolean granted) {
+    public void makeActivity() {
         XayUpFunctions.hideSystemBars(getWindow());
         GlobalConfigs.loadSharedPreferences(context);
+        skinConfig = GlobalConfigs.app_configs.getString("skin", context.getPackageName());
+        useUnipadFolderConfig = GlobalConfigs.app_configs.getBoolean("useUnipadFolder", false);
+        GlobalConfigs.use_unipad_colors = false;
 
-        if (granted) {
-            skinConfig = GlobalConfigs.app_configs.getString("skin", context.getPackageName());
-            useUnipadFolderConfig = GlobalConfigs.app_configs.getBoolean("useUnipadFolder", false);
-            GlobalConfigs.use_unipad_colors = false;
+        if (useUnipadFolderConfig) rootFolder = new File(GlobalConfigs.DefaultConfigs.UNIPAD_PATH);
+        else rootFolder = new File(GlobalConfigs.DefaultConfigs.PROJECTS_PATH);
 
-            if (useUnipadFolderConfig) rootFolder = new File(GlobalConfigs.DefaultConfigs.UNIPAD_PATH);
-            else rootFolder = new File(GlobalConfigs.DefaultConfigs.PROJECTS_PATH);
+        if (!rootFolder.exists()) rootFolder.mkdirs();
 
-            if (!rootFolder.exists()) rootFolder.mkdirs();
-
-            registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
-        }
+        //registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
 
         ViewGroup rootView = findViewById(R.id.main_activity);
         new ProjectsBase(
@@ -191,10 +169,7 @@ public class MainActivity extends Activity {
                         ListView list_mids = ((ListView) flipper.getChildAt(USB_MIDI));
                         list_mids.setAdapter(new UsbMidiAdapter(getApplicationContext(), true));
                         list_mids.setOnItemClickListener(
-                                new AdapterView.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(
-                                            AdapterView<?> adapter, View v, int pos, long id) {
+                                (AdapterView<?> adapter, View view, int pos, long id) -> {
                                         MidiDeviceInfo usb_midi =
                                                 (MidiDeviceInfo) adapter.getItemAtPosition(pos);
                                         if (MidiStaticVars.midiDevice == usb_midi) {
@@ -219,8 +194,7 @@ public class MainActivity extends Activity {
                                                     : PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
                                             MidiStaticVars.manager.requestPermission(MidiStaticVars.device, permissionIntent);
                                         } else new UsbDeviceActivity().openMidiDevice(context, usb_midi);
-                                    }
-                                });
+                                    });
                     });
 
         import_project.setOnClickListener((v) -> new FileExplorerDialog(context).getExplorerDialog());

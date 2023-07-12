@@ -12,9 +12,10 @@ import android.provider.Settings;
 import android.os.Build;
 import android.os.Environment;
 
-public class FileManagerPermission {
+public abstract class FileManagerPermission {
     protected Activity context;
     protected ManagePermission mPermission;
+    protected int denied = 0;
 
     public final String[] per =
             new String[] {
@@ -27,21 +28,19 @@ public class FileManagerPermission {
     public final int ANDROID_11_REQUEST_PERMISSION_AMF = 1001;
     public final int android11per = 1;
 
+    public abstract void onStorageGranted();
+    public abstract void onStorageDenied(int attempts, FileManagerPermission managerPermission);
+
     public FileManagerPermission(Context context) {
         this.context = (Activity) context;
     }
 
-    public void checkPermission(ManagePermission mPermission) {
-        this.mPermission = mPermission;
-        checkPermission();
-    }
-
-    protected void checkPermission() {
+    public void checkPermission() {
         boolean storage_granted = permissionGranted();
         if (storage_granted) {
-            mPermission.onStorageGranted();
+            onStorageGranted();
         } else {
-            mPermission.onStorageDenied();
+            onStorageDenied(denied++, this);
         }
     }
 
@@ -74,36 +73,19 @@ public class FileManagerPermission {
         }
     }
 
-    public void showSimpleAlertDialog(String title, String msg, String cancel, String ok) {
+    public AlertDialog.Builder showSimpleAlertDialog(String title, String msg, String cancel, String ok) {
         // Crie um dialogo
         AlertDialog.Builder alert_get_storage_permission = new AlertDialog.Builder(context);
         alert_get_storage_permission.setTitle(title);
         alert_get_storage_permission.setMessage(msg);
         alert_get_storage_permission.setPositiveButton(
-                ok,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        getTotalStoragePermission();
-                    }
-                });
+                ok, (DialogInterface arg0, int arg1) -> getTotalStoragePermission());
         alert_get_storage_permission.setNegativeButton(
-                cancel,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        context.finishAffinity();
-                    }
-                });
-        AlertDialog show_diag_per = alert_get_storage_permission.create();
-        show_diag_per.show();
+                cancel, (DialogInterface arg0, int arg1) -> context.finishAffinity());
+        return alert_get_storage_permission;
     }
 
-    public void onActivityResult() {
-        checkPermission();
-    }
-
-    public void onRequestPermissionsResult(int arg0, String[] arg1, int[] arg2) {
-        checkPermission();
+    public boolean resultIsStoragePermission(int requestCode){
+        return requestCode == ANDROID_11_REQUEST_PERMISSION_AMF || requestCode == STORAGE_PERMISSION;
     }
 }

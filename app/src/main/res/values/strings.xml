@@ -1,7 +1,12 @@
 <resources>
+    <!--App-->
+    <string name="app_version">2.2</string>
+    <string name="app_name">MultiPad</string>
+
     <!--Theme info-->
     <string name="theme_name">MultiPad Theme</string>
     <string name="theme_author">XayUp</string>
+
     <!--Main-->
     <string name="splash_title">Powered by XayUp, inspired by Unipad by Kimjisub.</string>
 
@@ -13,7 +18,22 @@
     <string name="list_skin_apply_title">Apply skin for:</string>
     <string name="list_skin_apply_for_all">Apply for All</string>
 
-    <string name="app_name">MultiPad</string>
+    <string name="cancel">@android:string/cancel</string>
+    <string name="ok">@android:string/ok</string>
+    <string name="retry">retry</string>
+
+    <!--Storage messages-->
+    <string name="storage_permission_title">Permission to storage needed!</string>
+    <string name="storage_permission_msg">
+        Allow MultiPad to access storage to read your unipack in /MultiPad or /Unipad folder
+    </string>
+    <string name="storage_permission_title_1">Trust in me!</string>
+    <string name="storage_permission_msg_1">
+        I only need storage access to access your Unipacks. See here https://github.com/XayUp/MultiPad
+    </string>
+    <string name="storage_permission_title_2">you do not trust me?</string>
+    <string name="storage_permission_msg_2">OK. Bye then :/</string>
+
     <string name="permission_storage_necessary">Permission to storage needed!</string>
     <string name="diag_invalidfiles_title">Invalid formats</string>
     <string name="copy_log">Copy Log</string>
@@ -28,7 +48,6 @@
     <string name="skins">Skins</string>
     <string name="skins_subtitle">Select your favorite skins</string>
     <string name="default_skin">Default Skin</string>
-    <string name="app_version">2.2</string>
     <string name="use_unipad_folder">Use Unipad folder</string>
     <string name="use_unipad_folder_subtitle">Read unipack in Unipad folder</string>
     <string name="use_soundpool_title">Samples without delay</string>
