@@ -5,9 +5,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical|center|center_horizontal"
-                android:background="@drawable/bgactivity"
+                android:background="@color/default_app_color"
                 android:scaleType="centerCrop">
-    
-    
+
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/main_container"/>
+
+    <!--Botão flutuante (FAB)-->
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" >
+
+        <Button
+                android:id="@+id/main_floating_menu_button"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="14dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/inter_floating_button"
+                android:tag="@integer/BUTTON_OPTIONS" />
+    </RelativeLayout>
+
+    <include layout="@layout/splash_screen"/>
     
 </RelativeLayout>

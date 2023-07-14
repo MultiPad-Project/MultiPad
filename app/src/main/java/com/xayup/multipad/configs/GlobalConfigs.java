@@ -15,12 +15,6 @@ import java.util.Map;
 public class GlobalConfigs {
     public static SharedPreferences app_configs;
 
-    public static void loadSharedPreferences(Activity context) {
-        app_configs = context.getSharedPreferences("app_configs", 0 /*MODE_PRIVATE*/);
-        app_configs.registerOnSharedPreferenceChangeListener(
-                (arg0, arg1) -> arg0.edit().commit());
-    }
-
     // Configurações do app (Default startup)
     public static String projects_root_folder = VariaveisStaticas.PROJECTS_PATH;
     public static boolean use_old_main_layout = false;
@@ -64,5 +58,11 @@ public class GlobalConfigs {
         public String UNIPAD_PATH = Environment.getExternalStorageDirectory() + "/Unipad"; //Android 10--
         public String COLOR_TABLE_PATH = MULTIPAD_PATH + "/LCT";
         public String PROJECTS_PATH = MULTIPAD_PATH + "/Projects";
+    }
+
+    public static void loadSharedPreferences(Activity context) {
+        app_configs = context.getSharedPreferences("app_configs", 0 /*MODE_PRIVATE*/);
+        app_configs.registerOnSharedPreferenceChangeListener(
+                (arg0, arg1) -> arg0.edit().commit());
     }
 }

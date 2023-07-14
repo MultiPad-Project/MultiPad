@@ -10,7 +10,9 @@ import android.os.*;
 import android.view.*;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
+import androidx.core.view.WindowCompat;
 import com.xayup.debug.Debug;
+import com.xayup.debug.XLog;
 import com.xayup.filesexplorer.FileExplorerDialog;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.layouts.PlayProject;
@@ -45,21 +47,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         ACTION_USB_PERMISSION = this.getPackageName()+".USB_PERMISSION";
-        makeActivity();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        this.makeActivity();
     }
 
     @Override
@@ -74,6 +62,7 @@ public class MainActivity extends Activity {
     }
 
     public void makeActivity() {
+        //Load and get settings
         XayUpFunctions.hideSystemBars(getWindow());
         GlobalConfigs.loadSharedPreferences(context);
         skinConfig = GlobalConfigs.app_configs.getString("skin", context.getPackageName());
@@ -85,10 +74,14 @@ public class MainActivity extends Activity {
 
         if (!rootFolder.exists()) rootFolder.mkdirs();
 
-        //registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
+        ViewGroup container = findViewById(R.id.main_container);
+        ViewGroup splash = findViewById(R.id.splash);
 
-        ViewGroup rootView = findViewById(R.id.main_activity);
-        new ProjectsBase(
+        // Ready project after render
+        Runnable onPost = new Runnable() {
+            @Override
+            public void run() {
+                /*new ProjectsBase(
                 this,
                 rootFolder,
                 rootView,
@@ -111,13 +104,20 @@ public class MainActivity extends Activity {
                                 });
                         mLoadScreen.show(500);
                     }
-                });
-        rootView.findViewById(R.id.main_floating_menu_button).setOnClickListener((v)->setMenuFunctions());
-        rootView.post(this::hideSplash);
-        rootView.post(()->{
-            GlobalConfigs.display_height = rootView.getMeasuredHeight();
-            GlobalConfigs.display_width = rootView.getMeasuredWidth();
-        });
+                });*/
+                GlobalConfigs.display_height = splash.getMeasuredHeight();
+                GlobalConfigs.display_width = splash.getMeasuredWidth();
+                hideSplash();
+                splash.removeCallbacks(this);
+            }
+        };
+        splash.post(onPost);
+
+        //registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
+
+        View floating_button = findViewById(R.id.main_floating_menu_button);
+        floating_button.setOnClickListener((v) -> setMenuFunctions());
+
     }
 
     protected void hideSplash() {
@@ -314,8 +314,28 @@ public class MainActivity extends Activity {
             };
 
     @Override
+    public void onBackPressed() {
+        setMenuFunctions();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean bool) {
         super.onWindowFocusChanged(bool);
+        //XLog.e("Activity Focus Change", String.valueOf(bool));
         if (bool) {
             XayUpFunctions.hideSystemBars(getWindow());
         }

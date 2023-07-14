@@ -3,4 +3,13 @@
     <dimen name="new_main_right_bar_width">80dp</dimen>
     <dimen name="new_main_bottom_bar_text_size">20sp</dimen>
     <dimen name="main_cover_right_bar_width">400dp</dimen>
+
+    <dimen name="main_panel_window_width">-2</dimen>
+    <dimen name="main_panel_window_height">-1</dimen>
+    <dimen name="main_panel_width">300dp</dimen>
+    <dimen name="main_panel_height">-1</dimen>
+    <dimen name="main_panel_tab_left_width">200dp</dimen>
+    <dimen name="main_panel_tab_left_height">-1</dimen>
+
+
 </resources>

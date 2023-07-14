@@ -10,6 +10,12 @@
     <!--Main-->
     <string name="splash_title">Powered by XayUp, inspired by Unipad by Kimjisub.</string>
 
+    <!--Main menu-->
+    <string name="main_panel_left_tab_projects">Projects</string>
+    <string name="main_panel_left_tab_skins">Skins</string>
+    <string name="main_panel_left_tab_settings">Settings</string>
+    <string name="main_panel_left_tab_about">About</string>
+
     <string name="main_bottom_bar_text_erro">Erro:</string>
     <string name="main_bottom_bar_text_broken">Broken:</string>
     <string name="main_bottom_bar_text_total">Total:</string>

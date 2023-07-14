@@ -2,6 +2,7 @@ package com.xayup.multipad.project.keysounds;
 
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
+import android.util.Log;
 import com.google.common.io.Files;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.load.thread.LoadProject;
@@ -23,8 +24,12 @@ public class KeySoundsReader {
         int[] rtr =  new int[]{Integer.parseInt(
                 mediaMetadataRetriever.extractMetadata(
                         MediaMetadataRetriever.METADATA_KEY_DURATION)), ((int) file.length() / 1024)};
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) mediaMetadataRetriever.release();
-        else mediaMetadataRetriever.close();
+        try {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) mediaMetadataRetriever.release();
+            else mediaMetadataRetriever.close();
+        } catch (IOException io){
+            Log.e("MediaMetadataRetrever", io.toString());
+        }
         return rtr;
     }
 
