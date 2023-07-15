@@ -2,11 +2,12 @@ package com.xayup.ui.options;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 
 public class FluctuateOptionsView extends OptionsLayout {
     protected AlertDialog.Builder ad;
     public AlertDialog mAlertDialog;
-    public FluctuateOptionsView(Activity context){
+    public FluctuateOptionsView(Context context){
         super(context);
         this.ad = new AlertDialog.Builder(context);
     }

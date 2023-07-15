@@ -1,7 +1,9 @@
 package com.xayup.ui.options;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -14,26 +16,26 @@ public class OptionsItem implements OptionsItemInterface {
     protected int type;
     public Object tag;
 
-    public OptionsItem(Activity context, int type){
+    public OptionsItem(Context context, int type){
         this.type = type;
         switch (type){
             case TYPE_SIMPLE_WITH_CHECKBOX:{
-                this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
+                this.layout = LayoutInflater.from(context).inflate(R.layout.flutuant_options_item_layout, null, false);
                 ((ViewGroup) this.layout.findViewById(R.id.options_item_identify_container)).removeView(this.layout.findViewById(R.id.options_item_identify_arrow));
                 break;
             }
             case TYPE_CENTER_WITH_IMAGE:{
-                this.layout = context.getLayoutInflater().inflate(R.layout.options_item_center_with_image, null, false);
+                this.layout = LayoutInflater.from(context).inflate(R.layout.options_item_center_with_image, null, false);
                 break;
             }
             case TYPE_SIMPLE:{
-                this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
+                this.layout = LayoutInflater.from(context).inflate(R.layout.flutuant_options_item_layout, null, false);
                 ((ViewGroup) this.layout.findViewById(R.id.options_item_identify_container)).removeView(this.layout.findViewById(R.id.options_item_identify_arrow));
                 ((ViewGroup) this.layout.findViewById(R.id.options_item_identify_container)).removeView(this.layout.findViewById(R.id.options_item_identify_checkbox));
                 break;
             }
             default /*TYPE_SIMPLE_WITH_ARROW*/:{
-                this.layout = context.getLayoutInflater().inflate(R.layout.flutuant_options_item_layout, null, false);
+                this.layout = LayoutInflater.from(context).inflate(R.layout.flutuant_options_item_layout, null, false);
                 ((ViewGroup) this.layout.findViewById(R.id.options_item_identify_container)).removeView(this.layout.findViewById(R.id.options_item_identify_checkbox));
                 break;
             }

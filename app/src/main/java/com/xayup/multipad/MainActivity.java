@@ -10,17 +10,14 @@ import android.os.*;
 import android.view.*;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
-import androidx.core.view.WindowCompat;
 import com.xayup.debug.Debug;
-import com.xayup.debug.XLog;
 import com.xayup.filesexplorer.FileExplorerDialog;
 import com.xayup.multipad.configs.GlobalConfigs;
-import com.xayup.multipad.layouts.PlayProject;
-import com.xayup.multipad.layouts.ProjectsBase;
 
 import com.xayup.multipad.layouts.loadscreen.LoadScreen;
-import com.xayup.storage.FileManagerPermission;
-import com.xayup.storage.ManagePermission;
+import com.xayup.multipad.layouts.main.panel.MainPanel;
+import com.xayup.multipad.pads.Pad;
+import com.xayup.multipad.project.keyled.KeyLED;
 
 import java.io.*;
 
@@ -41,6 +38,8 @@ public class MainActivity extends Activity {
 
     protected File rootFolder;
     protected String ACTION_USB_PERMISSION;
+
+    protected MainPanel mMainPanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +115,22 @@ public class MainActivity extends Activity {
         //registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
 
         View floating_button = findViewById(R.id.main_floating_menu_button);
-        floating_button.setOnClickListener((v) -> setMenuFunctions());
+
+        mMainPanel = new MainPanel(context) {
+            @Override
+            public void onExit() { MainActivity.super.onBackPressed(); }
+
+            @Override
+            public KeyLED getKeyLEDInstance() {
+                return null;
+            }
+
+            @Override
+            public Pad getPadInstance() {
+                return null;
+            }
+        };
+        floating_button.setOnClickListener((v) -> mMainPanel.showPanel());
 
     }
 
@@ -124,175 +138,6 @@ public class MainActivity extends Activity {
         View splash_screen = findViewById(R.id.splash);
         splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
         splash_screen.setVisibility(View.GONE);
-    }
-
-    private void setMenuFunctions() {
-        final int MAIN = 0;
-        final int SKINS = 1;
-        final int USB_MIDI = 2;
-
-        AlertDialog.Builder floating_menu = new AlertDialog.Builder(MainActivity.this);
-        View menu = getLayoutInflater().inflate(R.layout.main_float_menu, null);
-        // Funcoes principais
-        TextView barTitle = menu.findViewById(R.id.main_floating_menu_bar_title);
-        ViewFlipper flipper = menu.findViewById(R.id.main_floating_menu_background);
-        Button prev = menu.findViewById(R.id.main_floating_menu_bar_button_prev);
-        Button import_project = menu.findViewById(R.id.main_floating_menu_button_import_project);
-        // View..
-        View item_skins = menu.findViewById(R.id.main_floating_item_skins);
-        View item_useUnipadFolder = menu.findViewById(R.id.main_floating_item_useunipadfolder);
-        // View item_customHeight =
-        // menu.findViewById(R.id.main_floating_item_customHeight);
-        View item_sourceCode = menu.findViewById(R.id.main_floating_item_sourcecode);
-        View item_myChannel = menu.findViewById(R.id.main_floating_item_mychannel);
-        View item_manual = menu.findViewById(R.id.main_floating_item_manual);
-        View item_crash = menu.findViewById(R.id.main_floating_item_crash);
-        View item_genlogfile = menu.findViewById(R.id.main_floating_item_genlogfile);
-        Button list_usb_midi = menu.findViewById(R.id.main_floating_menu_button_midi_devices);
-
-        CheckBox unipad_folder = menu.findViewById(R.id.main_floating_menu_useunipadfolder_check);
-        unipad_folder.setChecked(useUnipadFolderConfig);
-
-        floating_menu.setView(menu);
-        Button floating_button_exit =
-                (Button) menu.findViewById(R.id.main_floating_menu_button_exit);
-        AlertDialog show = floating_menu.create();
-        XayUpFunctions.showDiagInFullscreen(show);
-
-        // Botoes principais
-        floating_button_exit.setOnClickListener((v)-> show.dismiss());
-
-        list_usb_midi.setOnClickListener((v) -> {
-                        list_usb_midi.setVisibility(View.GONE);
-                        barTitle.setText(getString(R.string.usb_midi));
-                        flipper.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
-                        flipper.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
-                        flipper.setDisplayedChild(USB_MIDI);
-                        ListView list_mids = ((ListView) flipper.getChildAt(USB_MIDI));
-                        list_mids.setAdapter(new UsbMidiAdapter(getApplicationContext(), true));
-                        list_mids.setOnItemClickListener(
-                                (AdapterView<?> adapter, View view, int pos, long id) -> {
-                                        MidiDeviceInfo usb_midi =
-                                                (MidiDeviceInfo) adapter.getItemAtPosition(pos);
-                                        if (MidiStaticVars.midiDevice == usb_midi) {
-                                            Toast.makeText(
-                                                            context,
-                                                            context.getString(
-                                                                    R.string.midi_aready_connected),
-                                                            Toast.LENGTH_SHORT)
-                                                    .show();
-                                            return;
-                                        }
-                                        MidiStaticVars.device =
-                                                (UsbDevice)
-                                                        usb_midi.getProperties()
-                                                                .getParcelable(
-                                                                        MidiDeviceInfo
-                                                                                .PROPERTY_USB_DEVICE);
-                                        if (MidiStaticVars.device != null) {
-                                            MidiStaticVars.midiDevice = usb_midi;
-                                            permissionIntent = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                                                    ? PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_MUTABLE)
-                                                    : PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
-                                            MidiStaticVars.manager.requestPermission(MidiStaticVars.device, permissionIntent);
-                                        } else new UsbDeviceActivity().openMidiDevice(context, usb_midi);
-                                    });
-                    });
-
-        import_project.setOnClickListener((v) -> new FileExplorerDialog(context).getExplorerDialog());
-
-        prev.setOnClickListener(
-                (v) -> {
-                    switch (flipper.getDisplayedChild()) {
-                        case SKINS:
-                            flipper.setInAnimation(getApplicationContext(), R.anim.move_in_to_right);
-                            flipper.setOutAnimation(getApplicationContext(), R.anim.move_out_to_right);
-                            flipper.setDisplayedChild(MAIN);
-                            barTitle.setText(getString(R.string.main_floating_title));
-                            break;
-                        case USB_MIDI:
-                            flipper.setInAnimation(getApplicationContext(), R.anim.move_in_to_right);
-                            flipper.setOutAnimation(getApplicationContext(), R.anim.move_out_to_right);
-                            flipper.setDisplayedChild(MAIN);
-                            list_usb_midi.setVisibility(View.VISIBLE);
-                            barTitle.setText(getString(R.string.usb_midi));
-                            break;
-                        default:
-                        }
-                    });
-
-        // items clicked
-        item_skins.setOnClickListener((v) -> {
-            barTitle.setText(getString(R.string.skins));
-            flipper.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
-            flipper.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
-            flipper.setDisplayedChild(SKINS);
-        });
-        item_useUnipadFolder.setOnClickListener((v) -> {
-            SharedPreferences app_configs =
-                    getSharedPreferences("app_configs", MODE_PRIVATE);
-            SharedPreferences.Editor editConfigs = app_configs.edit();
-            if (app_configs.getBoolean("useUnipadFolder", false)) {
-                unipad_folder.setChecked(false);
-                editConfigs.putBoolean("useUnipadFolder", false);
-            } else {
-                unipad_folder.setChecked(true);
-                editConfigs.putBoolean("useUnipadFolder", true);
-            }
-            editConfigs.apply();
-            MainActivity.this.recreate();
-        });
-
-        item_sourceCode.setOnClickListener((v) -> {
-            Intent source_code_page = new Intent(Intent.ACTION_VIEW);
-            source_code_page.setData(Uri.parse("https://github.com/XayUp/MultiPad"));
-            startActivity(source_code_page);
-        });
-        item_myChannel.setOnClickListener((v) -> {
-            Intent my_channel_page = new Intent(Intent.ACTION_VIEW);
-            my_channel_page.setData(
-                    Uri.parse("https://youtube.com/channel/UCQUG1PVbnmIIYRDbC-qYTqA"));
-            startActivity(my_channel_page);
-        });
-        item_manual.setOnClickListener((v) -> {
-            AlertDialog.Builder manual =
-                    new AlertDialog.Builder(
-                            MainActivity.this, R.style.alertdialog_transparent);
-            ImageView manualImg = new ImageView(MainActivity.this);
-            manualImg.setImageDrawable(getDrawable(R.drawable.manual));
-            manual.setView(manualImg);
-            Dialog show_manual = manual.create();
-            XayUpFunctions.showDiagInFullscreen(show_manual);
-            manualImg.setOnClickListener((view) -> show_manual.dismiss());
-        });
-        item_genlogfile.setOnClickListener((v) -> {
-            try {
-                File log_share = new File(GlobalConfigs.DefaultConfigs.MULTIPAD_PATH, "MultiPad_log.txt");
-                if(log_share.exists()) log_share.delete(); else log_share.getParentFile().mkdirs();
-                log_share.createNewFile();
-                FileOutputStream fos = new FileOutputStream(log_share);
-                fos.write(Debug.genAppLog().toString().getBytes());
-                fos.close();
-                Toast.makeText(context, "Save on MultiPad path. Please send it to @XayUp", Toast.LENGTH_LONG).show();
-                // Share
-                /*
-                Intent share = new Intent(Intent.ACTION_SEND);
-                share.setType("text/*");
-                share.putExtra(Intent.EXTRA_STREAM, Uri.parse(log_share.getPath()));
-                share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                context.startActivity(Intent.createChooser(share, "Please send it to @XayUp"));
-                 */
-            } catch (IOException e) {
-                Toast.makeText(context, "Error generating log file", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // DEBUG //
-        item_crash.setOnClickListener(v -> { throw new RuntimeException("Crash app (TEST)"); });
-
-        show.getWindow().setLayout(GlobalConfigs.display_width/2, WindowManager.LayoutParams.MATCH_PARENT);
-        show.getWindow().setGravity(Gravity.END);
-        show.getWindow().setBackgroundDrawable(getDrawable(R.drawable.inset_floating_menu));
     }
 
     private final BroadcastReceiver usbReceiver =
@@ -314,9 +159,7 @@ public class MainActivity extends Activity {
             };
 
     @Override
-    public void onBackPressed() {
-        setMenuFunctions();
-    }
+    public void onBackPressed() { mMainPanel.showPanel(); }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

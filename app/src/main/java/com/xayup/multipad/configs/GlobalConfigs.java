@@ -15,12 +15,13 @@ import java.util.Map;
 public class GlobalConfigs {
     public static SharedPreferences app_configs;
 
-    // Configurações do app (Default startup)
+    // App settings (Default startup)
     public static String projects_root_folder = VariaveisStaticas.PROJECTS_PATH;
     public static boolean use_old_main_layout = false;
     public static int display_height;
     public static int display_width;
     public static boolean use_unipad_colors = false;
+    public static boolean use_unipad_folder = false;
     public static String color_table_file_dir = "";
 
     /* Persistent */
@@ -64,5 +65,7 @@ public class GlobalConfigs {
         app_configs = context.getSharedPreferences("app_configs", 0 /*MODE_PRIVATE*/);
         app_configs.registerOnSharedPreferenceChangeListener(
                 (arg0, arg1) -> arg0.edit().commit());
+
+        use_unipad_folder = app_configs.getBoolean("useUnipadFolder", false);
     }
 }

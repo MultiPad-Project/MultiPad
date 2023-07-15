@@ -2,6 +2,7 @@ package com.xayup.ui.options;
 
 import android.app.Activity;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,10 +19,10 @@ public class OptionsLayout {
     protected final ViewGroup layout;
     protected List<OptionsPage> flipper_pages;
     protected ViewFlipper flipper;
-    public OptionsLayout(Activity context){
+    public OptionsLayout(Context context){
         super();
         this.context = context;
-        this.layout = (ViewGroup) context.getLayoutInflater().inflate(R.layout.flutuant_options_layout, null);
+        this.layout = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.flutuant_options_layout, null);
         this.flipper = this.layout.findViewById(R.id.floating_options_flipper);
         this.flipper_pages = new ArrayList<>();
     }

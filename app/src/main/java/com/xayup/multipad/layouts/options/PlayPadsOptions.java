@@ -135,7 +135,6 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
                         pads.applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                     });
                 }
-                list_pads = null;
 
                 window.show();
             });
