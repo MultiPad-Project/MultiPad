@@ -17,7 +17,6 @@ import com.xayup.multipad.project.MapData;
 import com.xayup.multipad.load.Project;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +33,6 @@ public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, P
     /*Work*/
     protected List<int[]> auto_play_map;
     protected Thread mThread;
-    protected Ui.Touch mTouch;
     protected AutoPlayChanges mAutoPlayChanges;
     protected PadPressCallInterface callInterface;
 
@@ -170,7 +168,7 @@ public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, P
 
     protected void touchInChain(int mc){
         int[] xy = MakePads.PadID.getChainXY(mc, 9);
-        context.runOnUiThread(() -> mTouch.touchAndRelease(mAutoPlayChanges.getPadToTouch(xy[0], xy[1])));
+        context.runOnUiThread(() -> Ui.Touch.touchAndRelease(mAutoPlayChanges.getPadToTouch(xy[0], xy[1])));
     }
 
     @Override
@@ -214,7 +212,6 @@ public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, P
         this.paused = false;
         this.mAutoPlayChanges = autoPlayChanges;
         this.autoplay_index = 0;
-        if(mTouch == null) this.mTouch = new Ui.Touch();
         (mThread = new Thread(this)).start();
         mAutoPlayChanges.onStarted(callInterface = (chain, pad)->{
             if(isPaused()){
@@ -289,19 +286,19 @@ public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, P
                 } else {
                     switch (frame[FRAME_TYPE]) {
                         case FRAME_TYPE_ON: {
-                            context.runOnUiThread(() -> mTouch.touch(pad_touch));
+                            context.runOnUiThread(() -> Ui.Touch.touch(pad_touch));
                             break;
                         }
                         case FRAME_TYPE_OFF: {
-                            context.runOnUiThread(() -> mTouch.release(pad_touch));
+                            context.runOnUiThread(() -> Ui.Touch.release(pad_touch));
                         }
                         case FRAME_TYPE_TOUCH:
                         case FRAME_TYPE_CHAIN: {
-                            context.runOnUiThread(() -> mTouch.touchAndRelease(pad_touch));
+                            context.runOnUiThread(() -> Ui.Touch.touchAndRelease(pad_touch));
                         }
                     }
                 }
-            } else mTouch = null;
+            }
         }
 
         if (autoplay_index >= auto_play_map.size()) {

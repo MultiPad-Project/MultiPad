@@ -36,7 +36,7 @@ public class Projects extends Project {
     
     public final byte FLAG_SIZE = 19; /* Array flag size */
 
-    public List<Object> projects = null;
+    public List<Map<Byte, Object>> projects = null;
 
     /*
      * Change vars from Project class

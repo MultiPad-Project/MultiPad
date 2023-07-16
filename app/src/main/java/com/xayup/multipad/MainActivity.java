@@ -8,6 +8,7 @@ import android.media.midi.MidiDeviceInfo;
 import android.net.Uri;
 import android.os.*;
 import android.view.*;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.xayup.debug.Debug;
@@ -16,10 +17,13 @@ import com.xayup.multipad.configs.GlobalConfigs;
 
 import com.xayup.multipad.layouts.loadscreen.LoadScreen;
 import com.xayup.multipad.layouts.main.panel.MainPanel;
+import com.xayup.multipad.load.Projects;
 import com.xayup.multipad.pads.Pad;
 import com.xayup.multipad.project.keyled.KeyLED;
 
 import java.io.*;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends Activity {
     private final Activity context = this;
@@ -40,6 +44,8 @@ public class MainActivity extends Activity {
     protected String ACTION_USB_PERMISSION;
 
     protected MainPanel mMainPanel;
+
+    protected Projects mProjects;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,42 +82,6 @@ public class MainActivity extends Activity {
         ViewGroup container = findViewById(R.id.main_container);
         ViewGroup splash = findViewById(R.id.splash);
 
-        // Ready project after render
-        Runnable onPost = new Runnable() {
-            @Override
-            public void run() {
-                /*new ProjectsBase(
-                this,
-                rootFolder,
-                rootView,
-                getPackageName(),
-                "main",
-                new PlayProject() {
-                    @Override
-                    public void onPreLoadProject() {
-                        mLoadScreen = new LoadScreen(context, rootView);
-                    }
-
-                    @Override
-                    public void loadProject(String path) {
-                        mLoadScreen.OnEndAnimation(
-                                () -> {
-                                    Intent intent = new Intent(context, PlayPads.class);;
-                                    context.startActivityForResult(
-                                            intent.putExtra("project_path", path), INTENT_PLAY_PADS);
-                                    context.overridePendingTransition(0, 0);
-                                });
-                        mLoadScreen.show(500);
-                    }
-                });*/
-                GlobalConfigs.display_height = splash.getMeasuredHeight();
-                GlobalConfigs.display_width = splash.getMeasuredWidth();
-                hideSplash();
-                splash.removeCallbacks(this);
-            }
-        };
-        splash.post(onPost);
-
         //registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
 
         View floating_button = findViewById(R.id.main_floating_menu_button);
@@ -129,15 +99,48 @@ public class MainActivity extends Activity {
             public Pad getPadInstance() {
                 return null;
             }
+
+            @Override
+            public List<Map<Byte, Object>> getProjects() {
+                return mProjects.projects;
+            }
+
+
         };
         floating_button.setOnClickListener((v) -> mMainPanel.showPanel());
 
+        // Ready project after render
+        Runnable onPost = new Runnable() {
+            @Override
+            public void run() {
+                GlobalConfigs.display_height = splash.getMeasuredHeight();
+                GlobalConfigs.display_width = splash.getMeasuredWidth();
+
+                mProjects = new Projects();
+                mProjects.readProjectsPath(rootFolder);
+                mMainPanel.updates();
+                hideSplash(() -> mMainPanel.showPanel());
+                splash.removeCallbacks(this);
+            }
+        };
+        splash.post(onPost);
+
     }
 
-    protected void hideSplash() {
+    protected void hideSplash(Runnable after_hide) {
         View splash_screen = findViewById(R.id.splash);
         splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
         splash_screen.setVisibility(View.GONE);
+        if(after_hide != null) splash_screen.getAnimation().setAnimationListener(
+                new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) { }
+                    @Override
+                    public void onAnimationEnd(Animation animation) { after_hide.run(); }
+                    @Override
+                    public void onAnimationRepeat(Animation animation) { }
+                }
+        );;
     }
 
     private final BroadcastReceiver usbReceiver =

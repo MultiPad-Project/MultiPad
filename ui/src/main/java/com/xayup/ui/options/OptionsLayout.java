@@ -53,7 +53,7 @@ public class OptionsLayout {
      * @return Retorna o index da página, do contrario retorna -1 se houver falha
      */
     public int newPage(String title){
-        OptionsPage page = new OptionsPage(context);
+        OptionsPage page = new OptionsPage(context, true);
         if(flipper_pages.add(page)){
             page.setTitle(title);
             flipper.addView(page.getPageView());

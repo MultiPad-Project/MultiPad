@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.view.*;
 import android.view.animation.Animation;
@@ -15,8 +17,10 @@ import android.widget.Toast;
 import com.xayup.debug.Debug;
 import com.xayup.multipad.MainActivity;
 import com.xayup.multipad.R;
+import com.xayup.multipad.Ui;
 import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
+import com.xayup.multipad.layouts.project.list.ProjectListAdapter;
 import com.xayup.multipad.pads.Pad;
 import com.xayup.multipad.project.keyled.KeyLED;
 import com.xayup.multipad.skin.SkinAdapter;
@@ -26,23 +30,29 @@ import com.xayup.ui.options.FluctuateOptionsView;
 import com.xayup.ui.options.OptionsItem;
 import com.xayup.ui.options.OptionsItemInterface;
 import com.xayup.ui.options.OptionsPage;
+import com.xayup.utils.Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public abstract class MainPanel {
     protected Context context;
     protected SkinAdapter mSkinAdapter;
     protected AlertDialog windowShow;
+    protected ProjectListAdapter mProjectItem;
 
     protected Animation out;
     protected Animation in;
 
+    protected View project_tab;
+
     public abstract void onExit();
     public abstract KeyLED getKeyLEDInstance();
     public abstract Pad getPadInstance();
+    public abstract List<Map<Byte, Object>> getProjects();
 
     public MainPanel(Context context){
         this.context = context;
@@ -51,11 +61,11 @@ public abstract class MainPanel {
         in = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
 
         // Projects Page
-        OptionsPage projects_page = new OptionsPage(context);
+        OptionsPage projects_page = new OptionsPage(context, false);
         // Skin Page
-        OptionsPage skins_page = new OptionsPage(context);
+        OptionsPage skins_page = new OptionsPage(context, false);
         // Settings page
-        OptionsPage settings_page = new OptionsPage(context);
+        OptionsPage settings_page = new OptionsPage(context, false);
         //// Options Item
         OptionsItem item_useUnipadFolder = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_CHECKBOX);
         item_useUnipadFolder.setTitle(context.getString(R.string.use_unipad_folder));
@@ -113,7 +123,7 @@ public abstract class MainPanel {
 
         // About page
 
-        OptionsPage about_page = new OptionsPage(context);
+        OptionsPage about_page = new OptionsPage(context, false);
         OptionsItem item_sourceCode = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_CHECKBOX);
         item_sourceCode.setTitle(context.getString(R.string.sourcecode));
         item_sourceCode.setDescription(context.getString(R.string.sourcecode_subtitle));
@@ -189,14 +199,19 @@ public abstract class MainPanel {
         View panel = LayoutInflater.from(context).inflate(R.layout.main_panel, null);
         ScrollView right_scroll = panel.findViewById(R.id.main_panel_right_scroll);
 
-        panel.findViewById(R.id.main_panel_tab_projects).setOnClickListener((v)->{
+        (project_tab = panel.findViewById(R.id.main_panel_tab_projects)).setOnClickListener((v)->{
             hideThis(right_scroll);
             right_scroll.removeAllViews();
             right_scroll.addView(projects_page.getPageView());
             projects_page.clear();
-            // UPDATE LIST
-
-
+            ViewGroup projects_page_layout = (ViewGroup) projects_page.getPageView();
+            for(int i = 0; i < mProjectItem.getCount(); i++) {
+                View item = mProjectItem.getView(i, null, null);
+                projects_page_layout.addView(item);
+                item.setOnClickListener(view -> {
+                    Toast.makeText(context, mProjectItem.getTitle(projects_page_layout.indexOfChild(view)), Toast.LENGTH_SHORT).show();
+                });
+            }
             showThis(right_scroll);
         });
 
@@ -264,7 +279,7 @@ public abstract class MainPanel {
         windowShow = window.create();
         windowShow.getWindow().setLayout(GlobalConfigs.display_width/2, WindowManager.LayoutParams.MATCH_PARENT);
         windowShow.getWindow().setGravity(Gravity.END);
-        windowShow.getWindow().setBackgroundDrawable(context.getDrawable(R.drawable.inset_floating_menu));
+        windowShow.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
 
@@ -278,7 +293,16 @@ public abstract class MainPanel {
         view.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Use this after obtained data's
+     */
+    public void updates(){
+        // UPDATE LIST
+        mProjectItem = new ProjectListAdapter(context, getProjects());
+    }
+
     public void showPanel(){
         windowShow.show();
+        Ui.Touch.touchAndRelease(project_tab);
     }
 }

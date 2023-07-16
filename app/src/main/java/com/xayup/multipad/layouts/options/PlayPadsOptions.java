@@ -167,19 +167,19 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
 
         /*Pages*/
         // Select Skin page
-        skin_page = new OptionsPage(context);
+        skin_page = new OptionsPage(context, true);
         skin_page.setTitle(context.getString(R.string.skins));
 
         // Option page
-        OptionsPage options_page = new OptionsPage(context);
+        OptionsPage options_page = new OptionsPage(context, true);
         options_page.setTitle(context.getString(R.string.alert_exit_options));
 
         // Color table page
-        OptionsPage color_table_page = new OptionsPage(context);
+        OptionsPage color_table_page = new OptionsPage(context, true);
         color_table_page.setTitle(context.getString(R.string.color_table_title));
 
         // Grid pads page
-        OptionsPage grid_pads_page = new OptionsPage(context);
+        OptionsPage grid_pads_page = new OptionsPage(context, true);
         grid_pads_page.setTitle(context.getString(R.string.grid_pads_title));
 
 

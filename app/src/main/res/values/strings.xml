@@ -36,6 +36,19 @@
     <string name="led_spam">Spam leds</string>
     <string name="led_spam_subtitle">Allows the leds are not stopped by pressing the same button</string>
 
+    <!--Project Item-->
+    <string name="project_item_text_status_project">Project</string>
+    <string name="project_item_text_status_led">Led</string>
+    <string name="project_item_text_status_sound">Sound</string>
+    <string name="project_item_text_status_autoplay">Autoplay</string>
+    <string name="project_item_text_description_date">Date</string>
+    <string name="project_item_text_description_size">Size</string>
+    <string name="project_item_text_description_difficult">Difficult</string>
+    <string name="project_item_text_description_project">Project:</string>
+    <string name="project_item_text_description_led">Led:</string>
+    <string name="project_item_text_description_sound">Sound:</string>
+    <string name="project_item_text_description_autoplay">Autoplay:</string>
+
     <string name="main_bottom_bar_text_erro">Erro:</string>
     <string name="main_bottom_bar_text_broken">Broken:</string>
     <string name="main_bottom_bar_text_total">Total:</string>

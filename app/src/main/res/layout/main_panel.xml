@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="@dimen/main_panel_width"
-              android:layout_height="@dimen/main_panel_height">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
     <!--Left Tabs-->
     <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/main_panel_left_scroll"
-            android:layout_toStartOf="@+id/main_panel_right_scroll">
+            android:id="@+id/main_panel_left_scroll">
         <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -94,10 +93,10 @@
         </LinearLayout>
     </ScrollView>
     <ScrollView
-            android:layout_width="@dimen/main_panel_width"
+            android:layout_toRightOf="@+id/main_panel_left_scroll"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/main_panel_right_scroll"
-            android:layout_alignParentEnd="true"
-            android:background="@color/background_material_dark_opaque">
+            android:layout_alignParentEnd="true">
     </ScrollView>
 </RelativeLayout>

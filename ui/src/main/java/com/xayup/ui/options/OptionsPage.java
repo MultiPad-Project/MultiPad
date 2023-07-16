@@ -13,8 +13,9 @@ public class OptionsPage extends Options {
     protected String title;
     protected LinearLayout page;
     protected ScrollView scroll;
+    protected boolean with_scroll;
 
-    public OptionsPage(Context context){
+    public OptionsPage(Context context, boolean with_scroll){
         super();
         this.title = null;
         this.page = new LinearLayout(context);
@@ -22,7 +23,8 @@ public class OptionsPage extends Options {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
         this.page.setLayoutParams(params);
         this.page.setOrientation(LinearLayout.VERTICAL);
-        this.scroll.addView(page);
+        this.with_scroll = with_scroll;
+        if(with_scroll) this.scroll.addView(page);
     }
 
     /**
@@ -38,7 +40,7 @@ public class OptionsPage extends Options {
     }
 
     public View getPageView(){
-        return scroll;
+        return (with_scroll) ? scroll : page;
     }
 
     public void clear(){
