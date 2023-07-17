@@ -1,4 +1,4 @@
-package com.xayup.multipad.project.keysounds;
+package com.xayup.multipad.projects.project.keysounds;
 
 import android.app.Activity;
 import android.content.Context;

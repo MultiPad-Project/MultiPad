@@ -1,4 +1,4 @@
-package com.xayup.multipad.project;
+package com.xayup.multipad.projects.project;
 
 public interface MapData {
     /* autoplay/led file Frame array index */

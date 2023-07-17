@@ -1,10 +1,10 @@
-package com.xayup.multipad.project.keysounds;
+package com.xayup.multipad.projects.project.keysounds;
 
 import android.app.Activity;
 import android.content.Context;
 import com.xayup.debug.XLog;
-import com.xayup.multipad.load.Project;
-import com.xayup.multipad.load.thread.LoadProject;
+import com.xayup.multipad.projects.Project;
+import com.xayup.multipad.projects.thread.LoadProject;
 import com.xayup.multipad.pads.PadPressCallInterface;
 import com.xayup.multipad.pads.Render.MakePads;
 

@@ -21,14 +21,14 @@ import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.layouts.loadscreen.LoadScreen;
 import com.xayup.multipad.layouts.options.PlayPadsOptions;
 import com.xayup.multipad.layouts.options.PlayPadsOptionsInterface;
-import com.xayup.multipad.load.Project;
+import com.xayup.multipad.projects.Project;
 
-import com.xayup.multipad.load.thread.LoadProject;
+import com.xayup.multipad.projects.thread.LoadProject;
 import com.xayup.multipad.pads.*;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.pads.Render.PadSkinData;
-import com.xayup.multipad.project.autoplay.AutoPlay;
-import com.xayup.multipad.project.keyled.KeyLED;
+import com.xayup.multipad.projects.project.autoplay.AutoPlay;
+import com.xayup.multipad.projects.project.keyled.KeyLED;
 
 import java.util.*;
 

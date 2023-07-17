@@ -1,16 +1,14 @@
-package com.xayup.multipad.project.keysounds;
+package com.xayup.multipad.projects.project.keysounds;
 
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
 import android.util.Log;
 import com.google.common.io.Files;
-import com.xayup.debug.XLog;
-import com.xayup.multipad.load.thread.LoadProject;
-import com.xayup.multipad.project.keysounds.SoundLoader;
+import com.xayup.multipad.projects.thread.LoadProject;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 public class KeySoundsReader {

@@ -1,6 +1,6 @@
-package com.xayup.multipad.project.keyled;
+package com.xayup.multipad.projects.project.keyled;
 
-import com.xayup.multipad.project.MapData;
+import com.xayup.multipad.projects.project.MapData;
 
 import java.util.Arrays;
 

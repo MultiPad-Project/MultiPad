@@ -1,16 +1,14 @@
-package com.xayup.multipad.project.keyled;
+package com.xayup.multipad.projects.project.keyled;
 
 import android.util.Log;
-import com.google.android.exoplayer2.C;
 import com.google.common.io.Files;
 import com.xayup.debug.XLog;
-import com.xayup.multipad.load.thread.LoadProject;
+import com.xayup.multipad.projects.thread.LoadProject;
 import com.xayup.multipad.pads.Render.MakePads;
-import com.xayup.multipad.project.MapData;
-import com.xayup.multipad.project.keyled.LedMap;
+import com.xayup.multipad.projects.project.MapData;
+
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;

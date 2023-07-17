@@ -1,4 +1,4 @@
-package com.xayup.multipad.load;
+package com.xayup.multipad.projects;
 import java.util.List;
 
 public class ProjectMapData {

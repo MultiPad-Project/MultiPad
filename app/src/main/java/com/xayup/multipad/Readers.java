@@ -2,17 +2,11 @@ package com.xayup.multipad;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.util.Log;
-import android.util.TimeUtils;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
-import com.google.android.exoplayer2.MediaItem;
 import com.google.common.io.Files;
 
-import com.xayup.multipad.load.Project;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;

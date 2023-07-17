@@ -1,0 +1,99 @@
+package com.xayup.multipad.projects;
+
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Environment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+import com.xayup.multipad.R;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+public class ProjectListAdapter extends BaseAdapter {
+
+    protected List<Project> projects;
+    protected Context context;
+
+    public ProjectListAdapter(Context context, List<Project> projects) {
+        this.context = context;
+        this.projects = projects;
+    }
+
+    public boolean isEmpty() {
+        return projects == null;
+    }
+
+    public boolean isExternalStorageManager() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager() || context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public int getCount() { return projects.size(); }
+
+    @Override
+    public Project getItem(int p1) { return projects.get(p1); }
+
+    @Override
+    public long getItemId(int p1) { return p1; }
+
+    @Override
+    public View getView(int p1, View p2, ViewGroup p3) {
+        if(p2 == null) {
+            p2 = LayoutInflater.from(context).inflate(R.layout.project_item, p3, false);
+
+            TextView producerName = p2.findViewById(R.id.project_item_author);
+            TextView title = p2.findViewById(R.id.project_item_title);
+        // Description
+            TextView description_date = p2.findViewById(R.id.project_item_description_date);
+            TextView description_size = p2.findViewById(R.id.project_item_description_size);
+            TextView description_difficult = p2.findViewById(R.id.project_item_description_difficulty);
+            TextView description_project_status = p2.findViewById(R.id.project_item_description_project_status);
+            TextView description_led_count = p2.findViewById(R.id.project_item_description_led_count);
+            TextView description_sound_count = p2.findViewById(R.id.project_item_description_sound_count);
+            TextView description_autoplay_exists = p2.findViewById(R.id.project_item_description_autoplay_exists);
+        // Status
+            View project_status = p2.findViewById(R.id.project_item_status_project_view);
+            View led_status = p2.findViewById(R.id.project_item_status_led_view);
+            View sound_status = p2.findViewById(R.id.project_item_status_sound_view);
+            View autoplay_status = p2.findViewById(R.id.project_item_status_autoplay_view);
+
+            Project project = getItem(p1);
+            if(project != null) {
+                title.setText(project.getTitle());
+                producerName.setText(project.getProducerName());
+
+                applyStatusColor(project_status, project.getState());
+                boolean autoplay = project.getAutoplayPath() != null;
+                applyStatusColor(autoplay_status, project.getAutoplayPath() != null ?
+                        ProjectIndexes.PROJECT_STATE_GOOD : ProjectIndexes.PROJECT_STATE_USELESS);
+                applyStatusColor(led_status, project.getKeyLedPath(0) != null ?
+                        ProjectIndexes.PROJECT_STATE_GOOD : ProjectIndexes.PROJECT_STATE_USELESS);
+                applyStatusColor(sound_status, project.getKeySoundPath() != null ?
+                        ProjectIndexes.PROJECT_STATE_GOOD : ProjectIndexes.PROJECT_STATE_USELESS);
+            }
+
+        // Set Description
+            description_date.setText("--/--/----");
+            description_size.setText("--/--/----");
+            description_autoplay_exists.setText("--/--/----");
+            description_difficult.setText("--/--/----");
+            description_.setText("--/--/----");
+            description_date.setText("--/--/----");
+        }
+        return p2;
+    }
+
+    protected void applyStatusColor(View view, byte status){
+        view.setBackgroundColor(
+                status == ProjectIndexes.PROJECT_STATE_GOOD ? context.getColor(R.color.project_status_good) :
+                        status == ProjectIndexes.PROJECT_STATE_BAD ? context.getColor(R.color.project_status_bad) :
+                                context.getColor(R.color.project_status_useless));
+    }
+}

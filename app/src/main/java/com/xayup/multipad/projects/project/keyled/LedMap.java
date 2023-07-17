@@ -11,7 +11,7 @@
 * O valor 3 (index 2) sera a cordenada X da pad e o valor 4 (index 3) sera a cordenada Y da pad. O valor 5 (index 4) sera a etiqueta para identificar em qual Pads_layout sera reproduzida a led.
 */
 
-package com.xayup.multipad.project.keyled;
+package com.xayup.multipad.projects.project.keyled;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

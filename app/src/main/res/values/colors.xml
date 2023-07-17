@@ -22,9 +22,6 @@
 	<color name="project_item_text_title">#CCFFFFFF</color>
 	<color name="project_item_text_author">#80FFFFFF</color>
 
-	<color name="project_state">#FF3979E4</color>
-	<color name="project_state_bad">#FFE44330</color>
-
 	<color name="material_green_300">#ffe0e0e0</color>
 	<color name="background_floating_material_dark_pressed">#FF3C85C5</color>
 	<color name="accent_material_dark">#ffffffff</color>

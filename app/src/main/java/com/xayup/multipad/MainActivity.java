@@ -2,24 +2,18 @@ package com.xayup.multipad;
 
 import android.app.*;
 import android.content.*;
-import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.media.midi.MidiDeviceInfo;
-import android.net.Uri;
 import android.os.*;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.*;
-import com.xayup.debug.Debug;
-import com.xayup.filesexplorer.FileExplorerDialog;
 import com.xayup.multipad.configs.GlobalConfigs;
 
 import com.xayup.multipad.layouts.loadscreen.LoadScreen;
 import com.xayup.multipad.layouts.main.panel.MainPanel;
-import com.xayup.multipad.load.Projects;
+import com.xayup.multipad.projects.Projects;
 import com.xayup.multipad.pads.Pad;
-import com.xayup.multipad.project.keyled.KeyLED;
+import com.xayup.multipad.projects.project.keyled.KeyLED;
 
 import java.io.*;
 import java.util.List;
@@ -117,7 +111,14 @@ public class MainActivity extends Activity {
                 GlobalConfigs.display_width = splash.getMeasuredWidth();
 
                 mProjects = new Projects();
-                mProjects.readProjectsPath(rootFolder);
+                boolean[] types = new boolean[mProjects.FLAG_SIZE];
+                types[mProjects.FLAG_TITLE] = true;
+                types[mProjects.FLAG_PRODUCER_NAME] = true;
+                types[mProjects.TYPE_AUTOPLAY_FILE] = true;
+                types[mProjects.TYPE_KEYLED_FOLDERS] = true;
+                types[mProjects.TYPE_SAMPLE_FOLDER] = true;
+                types[mProjects.FLAG_ITEM_AUTOPLAY_DIFFICULTY] = true;
+                mProjects.readProjectsPath(rootFolder, types);
                 mMainPanel.updates();
                 hideSplash(() -> mMainPanel.showPanel());
                 splash.removeCallbacks(this);

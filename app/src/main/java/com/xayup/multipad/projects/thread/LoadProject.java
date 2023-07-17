@@ -1,12 +1,12 @@
-package com.xayup.multipad.load.thread;
+package com.xayup.multipad.projects.thread;
 
 import android.app.Activity;
 import android.content.Context;
 import com.xayup.debug.XLog;
-import com.xayup.multipad.load.Project;
-import com.xayup.multipad.project.autoplay.AutoPlay;
-import com.xayup.multipad.project.keyled.KeyLED;
-import com.xayup.multipad.project.keysounds.KeySounds;
+import com.xayup.multipad.projects.Project;
+import com.xayup.multipad.projects.project.autoplay.AutoPlay;
+import com.xayup.multipad.projects.project.keyled.KeyLED;
+import com.xayup.multipad.projects.project.keysounds.KeySounds;
 import java.io.File;
 import java.util.*;
 

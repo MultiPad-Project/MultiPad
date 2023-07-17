@@ -1,16 +1,12 @@
-package com.xayup.multipad.project.autoplay;
+package com.xayup.multipad.projects.project.autoplay;
 
-import android.app.Activity;
 import com.google.common.io.Files;
-import com.xayup.debug.XLog;
-import com.xayup.multipad.load.ProjectMapData;
-import com.xayup.multipad.load.thread.LoadProject;
+import com.xayup.multipad.projects.thread.LoadProject;
 import com.xayup.multipad.pads.Render.MakePads;
-import com.xayup.multipad.project.MapData;
+import com.xayup.multipad.projects.project.MapData;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AutoPlayReader implements MapData {
