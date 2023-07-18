@@ -4,7 +4,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 android:shape="rectangle">
 
 <solid
-android:color="@color/project_state_bad"/>
+android:color="#FF0000"/>
 
 <corners
 android:topLeftRadius="0dp"

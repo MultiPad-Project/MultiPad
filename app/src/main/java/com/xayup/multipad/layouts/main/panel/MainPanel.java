@@ -18,6 +18,7 @@ import com.xayup.multipad.R;
 import com.xayup.multipad.Ui;
 import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
+import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.ProjectListAdapter;
 import com.xayup.multipad.pads.Pad;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
@@ -49,7 +50,8 @@ public abstract class MainPanel {
     public abstract void onExit();
     public abstract KeyLED getKeyLEDInstance();
     public abstract Pad getPadInstance();
-    public abstract List<Map<Byte, Object>> getProjects();
+    public abstract List<Project> getProjects();
+    public abstract void loadProject(Project project);
 
     public MainPanel(Context context){
         this.context = context;
@@ -206,7 +208,7 @@ public abstract class MainPanel {
                 View item = mProjectItem.getView(i, null, null);
                 projects_page_layout.addView(item);
                 item.setOnClickListener(view -> {
-                    Toast.makeText(context, mProjectItem.getTitle(projects_page_layout.indexOfChild(view)), Toast.LENGTH_SHORT).show();
+                    loadProject(mProjectItem.getItem(projects_page_layout.indexOfChild(view)));
                 });
             }
             showThis(right_scroll);

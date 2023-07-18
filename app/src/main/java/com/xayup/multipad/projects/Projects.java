@@ -52,6 +52,10 @@ public class Projects implements ProjectIndexes {
                             Log.v("Project info reader", io.toString());
                         }
                     }
+                } else {
+                    project.setTitle("...");
+                    project.setProducerName("...");
+
                 }
                 // KeyLED op
                 if (types[TYPE_KEYLED_FOLDERS] || types[FLAG_KEYLED_COUNT]) {
@@ -92,7 +96,7 @@ public class Projects implements ProjectIndexes {
             }
             if (projects.size() > 0){
                 // Alphabetic order
-                Collections.sort(projects, (m1, m2) -> m1.getTitle().toLowerCase().compareTo(m2.getTitle().toLowerCase()));
+                Collections.sort(projects, (m1, m2) -> m1.getTitle().compareToIgnoreCase(m2.getTitle()));
             } else {
                 projects = null;
             }

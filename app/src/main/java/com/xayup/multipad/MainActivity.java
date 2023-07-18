@@ -7,10 +7,12 @@ import android.os.*;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 import com.xayup.multipad.configs.GlobalConfigs;
 
 import com.xayup.multipad.layouts.loadscreen.LoadScreen;
 import com.xayup.multipad.layouts.main.panel.MainPanel;
+import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.Projects;
 import com.xayup.multipad.pads.Pad;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
@@ -95,8 +97,13 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public List<Map<Byte, Object>> getProjects() {
+            public List<Project> getProjects() {
                 return mProjects.projects;
+            }
+
+            @Override
+            public void loadProject(Project project) {
+                Toast.makeText(context, project.getTitle(), Toast.LENGTH_SHORT).show();
             }
 
 

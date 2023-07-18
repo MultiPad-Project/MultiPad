@@ -68,32 +68,40 @@ public class ProjectListAdapter extends BaseAdapter {
             if(project != null) {
                 title.setText(project.getTitle());
                 producerName.setText(project.getProducerName());
-
-                applyStatusColor(project_status, project.getState());
+            // Set status view and Description
+                description_project_status.setText(applyStatusColor(project_status, project.getState()));
                 boolean autoplay = project.getAutoplayPath() != null;
-                applyStatusColor(autoplay_status, project.getAutoplayPath() != null ?
+                applyStatusColor(autoplay_status, autoplay ?
                         ProjectIndexes.PROJECT_STATE_GOOD : ProjectIndexes.PROJECT_STATE_USELESS);
                 applyStatusColor(led_status, project.getKeyLedPath(0) != null ?
                         ProjectIndexes.PROJECT_STATE_GOOD : ProjectIndexes.PROJECT_STATE_USELESS);
                 applyStatusColor(sound_status, project.getKeySoundPath() != null ?
                         ProjectIndexes.PROJECT_STATE_GOOD : ProjectIndexes.PROJECT_STATE_USELESS);
-            }
 
-        // Set Description
-            description_date.setText("--/--/----");
-            description_size.setText("--/--/----");
-            description_autoplay_exists.setText("--/--/----");
-            description_difficult.setText("--/--/----");
-            description_.setText("--/--/----");
-            description_date.setText("--/--/----");
+                description_date.setText("--/--/----");
+                description_size.setText("0mb");
+                description_autoplay_exists.setText(autoplay ? context.getString(R.string.yes) : context.getString(R.string.no));
+                description_difficult.setText("--/10");
+                description_led_count.setText("00");
+                description_sound_count.setText("--/--/----");
+            }
         }
         return p2;
     }
 
-    protected void applyStatusColor(View view, byte status){
-        view.setBackgroundColor(
-                status == ProjectIndexes.PROJECT_STATE_GOOD ? context.getColor(R.color.project_status_good) :
-                        status == ProjectIndexes.PROJECT_STATE_BAD ? context.getColor(R.color.project_status_bad) :
-                                context.getColor(R.color.project_status_useless));
+    protected String applyStatusColor(View view, byte status){
+        switch (status){
+            case ProjectIndexes.PROJECT_STATE_GOOD: {
+                view.setBackgroundColor(context.getColor(R.color.project_status_good));
+                return context.getString(R.string.project_status_good);
+            }
+            case ProjectIndexes.PROJECT_STATE_BAD: {
+                view.setBackgroundColor(context.getColor(R.color.project_status_bad));
+                return context.getString(R.string.project_status_bad);}
+            default: {
+                view.setBackgroundColor(context.getColor(R.color.project_status_useless));
+                return context.getString(R.string.project_status_useless);
+            }
+        }
     }
 }

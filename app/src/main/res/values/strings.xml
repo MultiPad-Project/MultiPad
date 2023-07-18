@@ -41,6 +41,9 @@
     <string name="project_item_text_status_led">Led</string>
     <string name="project_item_text_status_sound">Sound</string>
     <string name="project_item_text_status_autoplay">Autoplay</string>
+    <string name="project_status_good">Good</string>
+    <string name="project_status_bad">Bad</string>
+    <string name="project_status_useless">Useless</string>
     <string name="project_item_text_description_date">Date</string>
     <string name="project_item_text_description_size">Size</string>
     <string name="project_item_text_description_difficult">Difficult</string>

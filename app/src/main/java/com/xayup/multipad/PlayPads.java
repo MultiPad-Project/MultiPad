@@ -148,13 +148,13 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                 @Override
                 public void onStartLoadProject() {
                     /* GET FILES DIRs */
-                    path = context.getIntent().getExtras().getString("project_path");
-                    XLog.e("Path", path);
+                    //path = context.getIntent().getExtras().getString("project_path");
+                    //XLog.e("Path", path);
                     boolean[] flags = new boolean[FLAG_SIZE];
                     flags[TYPE_SAMPLE_FOLDER] = true;
                     flags[TYPE_KEYLED_FOLDERS] = true;
                     flags[TYPE_AUTOPLAY_FILE] = true;
-                    readInProject(flags);
+                    //readInProject(flags);
                 }
                 @Override
                 public void onStartReadFile(String file_name) {
