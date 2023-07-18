@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:bottom="14px"
+          android:left="14px"
+          android:right="14px"
+          android:top="14px"
+          android:height="180px"
+          android:width="180px"
+          android:id="@+id/led">
+        <shape android:shape="oval">
+            <solid android:color="@android:color/transparent" />
+            <corners android:radius="20px" />
+        </shape>
+    </item>
+</layer-list>

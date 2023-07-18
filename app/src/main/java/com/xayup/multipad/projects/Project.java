@@ -56,6 +56,10 @@ public class Project implements ProjectIndexes {
     public int getSampleCount(){ return sample_count; }
     public byte getState(){ return state; }
 
+    /// TEST ///
+    public boolean loaded = false;
+    public boolean loaded(){ return loaded; } ///TESTE///mKeyLED != null || mKeySounds != null; }
+
     /**
      * Feche este projeto e libere memoria
      */

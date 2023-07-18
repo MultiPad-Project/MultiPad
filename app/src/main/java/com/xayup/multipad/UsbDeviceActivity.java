@@ -40,7 +40,7 @@ public class UsbDeviceActivity extends Activity {
     public static final String LP_MK2 = "Launchpad Mk2";
 
     // Dados para envio
-    public Activity padsActivity = new PlayPads();
+    //public Activity padsActivity = new PlayPads();
 
     // Dados recebidos
     public List<int[]> received;

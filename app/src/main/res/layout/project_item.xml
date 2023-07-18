@@ -8,8 +8,9 @@
     <!--Item clicked, show this-->
     <LinearLayout
         android:id="@+id/project_item_description_background"
-        android:layout_height="100dp"
+        android:layout_height="@dimen/project_item_description_height"
         android:layout_width="match_parent"
+        android:alpha="0.7"
         android:background="@color/default_app_color"
         android:padding="4dp">
 
@@ -45,7 +46,7 @@
                     android:textColor="@android:color/white"
                     android:text="@string/project_item_text_description_date"
                     android:textSize="@dimen/project_item_text_description"
-                    android:alpha="0.3"/>
+                    android:alpha="0.4"/>
             <TextView
                     android:id="@+id/project_item_description_size"
                     android:layout_height="wrap_content"
@@ -53,7 +54,7 @@
                     android:textColor="@android:color/white"
                     android:text="@string/project_item_text_description_size"
                     android:textSize="@dimen/project_item_text_description"
-                    android:alpha="0.3"/>
+                    android:alpha="0.4"/>
             <TextView
                     android:id="@+id/project_item_description_difficulty"
                     android:layout_height="wrap_content"
@@ -61,7 +62,7 @@
                     android:textColor="@android:color/white"
                     android:text="@string/project_item_text_description_difficult"
                     android:textSize="@dimen/project_item_text_description"
-                    android:alpha="0.3"/>
+                    android:alpha="0.4"/>
         </LinearLayout>
         <LinearLayout
                 android:layout_width="match_parent"
@@ -75,14 +76,14 @@
                     android:layout_width="wrap_content"
                     android:textColor="@android:color/white"
                     android:text="@string/project_item_text_description_project"
-                    android:alpha="0.3"
+                    android:alpha="0.4"
                     android:textSize="@dimen/project_item_text_description"/>
             <TextView
                     android:id="@+id/project_item_description_led_count"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:textColor="@android:color/white"
-                    android:alpha="0.3"
+                    android:alpha="0.4"
                     android:textSize="@dimen/project_item_text_description"
                     android:text="@string/project_item_text_description_led"/>
             <TextView
@@ -90,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:text="@string/project_item_text_description_sound"
-                    android:alpha="0.3"
+                    android:alpha="0.4"
                     android:textSize="@dimen/project_item_text_description"
                     android:textColor="@android:color/white"/>
             <TextView
@@ -99,22 +100,31 @@
                     android:layout_width="wrap_content"
                     android:textColor="@android:color/white"
                     android:text="@string/project_item_text_description_autoplay"
-                    android:alpha="0.3"
+                    android:alpha="0.4"
                     android:textSize="@dimen/project_item_text_description"/>
 
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="16dp"
-            android:layout_height="16dp" >
-
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/project_item_description_play"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/play_play"
+            android:scaleType="centerCrop"/>
 
     </LinearLayout>
 
         <RelativeLayout
+                android:id="@+id/project_item_background"
             android:layout_width="match_parent"
             android:layout_height="@dimen/project_item_height"
             android:background="@color/default_app_color">
+
+            <ProgressBar
+                    android:id="@+id/project_item_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:progressDrawable="@drawable/project_item_progress"/>
 
             <TextView
                     android:id="@+id/project_item_title"
@@ -189,7 +199,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:paddingHorizontal="8dp"
                     android:visibility="visible"
                     android:background="@color/project_status_good"/>
 
@@ -197,21 +206,20 @@
                       android:id="@+id/project_item_status_led_view"
                       android:layout_height="match_parent"
                       android:layout_weight="1"
-                      android:paddingHorizontal="8dp"
+                      android:layout_marginHorizontal="2dp"
                       android:background="@color/project_status_bad"/>
 
                 <View android:layout_width="match_parent"
                       android:id="@+id/project_item_status_sound_view"
                       android:layout_height="match_parent"
                       android:layout_weight="1"
-                      android:paddingHorizontal="8dp"
+                      android:layout_marginRight="2dp"
                       android:background="@color/project_status_useless"/>
 
                 <View android:layout_width="match_parent"
                       android:id="@+id/project_item_status_autoplay_view"
                       android:layout_height="match_parent"
                       android:layout_weight="1"
-                      android:paddingHorizontal="8dp"
                       android:background="@color/project_status_good"/>
             </LinearLayout>
         </RelativeLayout>

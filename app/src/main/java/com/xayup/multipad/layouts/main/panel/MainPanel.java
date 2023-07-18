@@ -1,16 +1,20 @@
 package com.xayup.multipad.layouts.main.panel;
 
+import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.provider.Settings;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
 import com.xayup.debug.Debug;
@@ -41,6 +45,7 @@ public abstract class MainPanel {
     protected SkinAdapter mSkinAdapter;
     protected AlertDialog windowShow;
     protected ProjectListAdapter mProjectItem;
+    protected ValueAnimator vAnimatior;
 
     protected Animation out;
     protected Animation in;
@@ -51,7 +56,7 @@ public abstract class MainPanel {
     public abstract KeyLED getKeyLEDInstance();
     public abstract Pad getPadInstance();
     public abstract List<Project> getProjects();
-    public abstract void loadProject(Project project);
+    public abstract void loadProject(Project project, ProgressBar progressBar);
 
     public MainPanel(Context context){
         this.context = context;
@@ -207,8 +212,17 @@ public abstract class MainPanel {
             for(int i = 0; i < mProjectItem.getCount(); i++) {
                 View item = mProjectItem.getView(i, null, null);
                 projects_page_layout.addView(item);
-                item.setOnClickListener(view -> {
-                    loadProject(mProjectItem.getItem(projects_page_layout.indexOfChild(view)));
+                item.findViewById(R.id.project_item_background).setOnClickListener(view -> {
+                    View descriptions = item.findViewById(R.id.project_item_description_background);
+                    vAnimatior = (ViewDraw.getMargin(descriptions, ViewDraw.MARGIN_TOP) > 0) ?
+                            ValueAnimator.ofInt(view.getLayoutParams().height, 0) :
+                            ValueAnimator.ofInt(0, view.getLayoutParams().height);
+                    vAnimatior.addUpdateListener((valueAnimator -> ViewDraw.setMargins(descriptions, 0, (int) valueAnimator.getAnimatedValue(), 0, 0)));
+                    vAnimatior.setDuration((long) (500 * Settings.Global.getFloat(context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f)));
+                    vAnimatior.start();
+                    View play = descriptions.findViewById(R.id.project_item_description_play);
+                    play.setOnClickListener((view_play)-> loadProject(
+                            mProjectItem.getItem(projects_page_layout.indexOfChild(item)), view.findViewById(R.id.project_item_progress)));
                 });
             }
             showThis(right_scroll);
@@ -279,9 +293,61 @@ public abstract class MainPanel {
         windowShow.getWindow().setLayout(GlobalConfigs.display_width/2, WindowManager.LayoutParams.MATCH_PARENT);
         windowShow.getWindow().setGravity(Gravity.END);
         windowShow.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        windowShow.setOnCancelListener(dialogInterface -> home());
     }
 
+    public static class ViewDraw {
 
+        public static final int MARGIN_LEFT = 0;
+        public static final int MARGIN_TOP = 1;
+        public static final int MARGIN_RIGHT = 2;
+        public static final int MARGIN_BOTTOM = 3;
+
+        /**
+         * <a href=https://stackoverflow.com/a/4472612>Original code from here</a>
+         * @param v View
+         * @param l Left margin (px)
+         * @param t Top margin (px)
+         * @param r Right margin (px)
+         * @param b Bottom margin (px)
+         */
+        public static void setMargins (View v, int l, int t, int r, int b) {
+            if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+                p.setMargins(l, t, r, b);
+                v.requestLayout();
+            }
+        }
+
+        /**
+         * @param v View
+         * @param type Get margin from
+         * @return View margin, else -1.
+         */
+        public static int getMargin (View v, int type) {
+            if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                switch (type){
+                    case MARGIN_LEFT: {
+                        return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).getMarginStart();
+                    }
+                    case MARGIN_TOP: {
+                        return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).topMargin;
+                    }
+                    case MARGIN_RIGHT: {
+                        return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).getMarginEnd();
+                    }
+                    case MARGIN_BOTTOM: {
+                        return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).bottomMargin;
+                    }
+                }
+            }
+            return -1;
+        }
+    }
+
+    public void home(){
+        Ui.Touch.touchAndRelease(project_tab);
+    }
 
     protected void hideThis(View view){
         view.startAnimation(out);
@@ -302,6 +368,5 @@ public abstract class MainPanel {
 
     public void showPanel(){
         windowShow.show();
-        Ui.Touch.touchAndRelease(project_tab);
     }
 }

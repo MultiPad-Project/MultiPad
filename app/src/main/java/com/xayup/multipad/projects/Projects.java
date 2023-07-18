@@ -55,7 +55,6 @@ public class Projects implements ProjectIndexes {
                 } else {
                     project.setTitle("...");
                     project.setProducerName("...");
-
                 }
                 // KeyLED op
                 if (types[TYPE_KEYLED_FOLDERS] || types[FLAG_KEYLED_COUNT]) {
@@ -71,11 +70,11 @@ public class Projects implements ProjectIndexes {
 
                 // Sound op
                 if (types[TYPE_SAMPLE_FOLDER] || types[FLAG_SAMPLE_COUNT]) {
-                    project.setSamplePath(path + File.separator + "sounds");
-                    project.setKeySoundPath(path + File.separator + "keysound");
+                    project.setSamplePath(folder + File.separator + "sounds");
+                    project.setKeySoundPath(folder + File.separator + "keysound");
                     if (project.getSamplePath().exists()) {
                         if (types[FLAG_SAMPLE_COUNT]) {
-                            project.setSampleCount(project.getKeySoundPath().list().length);
+                            project.setSampleCount(project.getSamplePath().list().length);
                         }
                     } else project.setSamplePath(null);
                     if (!project.getKeySoundPath().exists()) project.setKeySoundPath(null);
@@ -83,7 +82,7 @@ public class Projects implements ProjectIndexes {
 
                 // Difficulty op
                 if (types[TYPE_AUTOPLAY_FILE] || types[FLAG_AUTOPLAY_DIFICULTY]) {
-                    project.setAutoplayPath(path + File.separator + "autoplay");
+                    project.setAutoplayPath(folder + File.separator + "autoplay");
                     if (project.getAutoplayPath().exists()) {
                         if (types[FLAG_AUTOPLAY_DIFICULTY]) project.setDifficulty("--/10");
                         if (!types[TYPE_AUTOPLAY_FILE]) project.setAutoplayPath(null);

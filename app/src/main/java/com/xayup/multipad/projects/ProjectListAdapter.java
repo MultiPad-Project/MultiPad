@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.xayup.multipad.R;
 
@@ -50,6 +51,8 @@ public class ProjectListAdapter extends BaseAdapter {
 
             TextView producerName = p2.findViewById(R.id.project_item_author);
             TextView title = p2.findViewById(R.id.project_item_title);
+            ProgressBar progress = p2.findViewById(R.id.project_item_progress);
+            progress.setProgress(0);
         // Description
             TextView description_date = p2.findViewById(R.id.project_item_description_date);
             TextView description_size = p2.findViewById(R.id.project_item_description_size);
@@ -66,10 +69,18 @@ public class ProjectListAdapter extends BaseAdapter {
 
             Project project = getItem(p1);
             if(project != null) {
+                progress.setProgress((project.loaded() ? 100 : 0));
                 title.setText(project.getTitle());
                 producerName.setText(project.getProducerName());
             // Set status view and Description
-                description_project_status.setText(applyStatusColor(project_status, project.getState()));
+                description_project_status.setText(
+                        context.getString(R.string.project_item_text_description_project).concat(" " + applyStatusColor(
+                        project_status,
+                        (project.getKeySoundPath() == null && project.getKeyLedPath(0) == null) ?
+                                ProjectIndexes.PROJECT_STATE_USELESS :
+                                (project.getKeySoundPath() == null || project.getKeyLedPath(0) == null) ?
+                                        ProjectIndexes.PROJECT_STATE_BAD : ProjectIndexes.PROJECT_STATE_GOOD
+                        )));
                 boolean autoplay = project.getAutoplayPath() != null;
                 applyStatusColor(autoplay_status, autoplay ?
                         ProjectIndexes.PROJECT_STATE_GOOD : ProjectIndexes.PROJECT_STATE_USELESS);
@@ -78,12 +89,14 @@ public class ProjectListAdapter extends BaseAdapter {
                 applyStatusColor(sound_status, project.getKeySoundPath() != null ?
                         ProjectIndexes.PROJECT_STATE_GOOD : ProjectIndexes.PROJECT_STATE_USELESS);
 
-                description_date.setText("--/--/----");
-                description_size.setText("0mb");
-                description_autoplay_exists.setText(autoplay ? context.getString(R.string.yes) : context.getString(R.string.no));
-                description_difficult.setText("--/10");
-                description_led_count.setText("00");
-                description_sound_count.setText("--/--/----");
+                description_date.setText(context.getString(R.string.project_item_text_description_date).concat(" " + "--/--/----"));
+                description_size.setText(context.getString(R.string.project_item_text_description_size).concat(" " + "0mb"));
+                description_autoplay_exists.setText(
+                        context.getString(R.string.project_item_text_description_autoplay).concat(" " + (autoplay ?
+                                context.getString(R.string.yes) : context.getString(R.string.no))));
+                description_difficult.setText(context.getString(R.string.project_item_text_description_difficult).concat(" " + "--/10"));
+                description_led_count.setText(context.getString(R.string.project_item_text_description_led).concat(" " + "00"));
+                description_sound_count.setText(context.getString(R.string.project_item_text_description_sound).concat(" " + "--/--/----"));
             }
         }
         return p2;

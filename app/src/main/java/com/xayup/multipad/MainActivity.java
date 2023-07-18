@@ -1,5 +1,7 @@
 package com.xayup.multipad;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.*;
 import android.content.*;
 import android.hardware.usb.UsbManager;
@@ -7,7 +9,9 @@ import android.os.*;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import com.xayup.multipad.configs.GlobalConfigs;
 
 import com.xayup.multipad.layouts.loadscreen.LoadScreen;
@@ -22,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends Activity {
-    private final Activity context = this;
+    private Activity context;
     protected final byte INTENT_PLAY_PADS = 0;
 
     protected LoadScreen mLoadScreen;
@@ -48,6 +52,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         ACTION_USB_PERMISSION = this.getPackageName()+".USB_PERMISSION";
+        this.context = this;
         this.makeActivity();
     }
 
@@ -82,6 +87,8 @@ public class MainActivity extends Activity {
 
         View floating_button = findViewById(R.id.main_floating_menu_button);
 
+        new PlayPads(context, context.findViewById(R.id.main_pads_to_add));
+
         mMainPanel = new MainPanel(context) {
             @Override
             public void onExit() { MainActivity.super.onBackPressed(); }
@@ -102,8 +109,22 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void loadProject(Project project) {
+            public void loadProject(Project project, ProgressBar progressBar) {
                 Toast.makeText(context, project.getTitle(), Toast.LENGTH_SHORT).show();
+                ValueAnimator progress_test = ValueAnimator.ofInt(0, 100);
+                progress_test.addUpdateListener(valueAnimator -> progressBar.setProgress((int) valueAnimator.getAnimatedValue()));
+                progress_test.setDuration(5000);
+                progress_test.start();
+                progress_test.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(@NonNull Animator animator) { }
+                    @Override
+                    public void onAnimationEnd(@NonNull Animator animator) { project.loaded = true; }
+                    @Override
+                    public void onAnimationCancel(@NonNull Animator animator) { }
+                    @Override
+                    public void onAnimationRepeat(@NonNull Animator animator) { }
+                });
             }
 
 
@@ -122,11 +143,14 @@ public class MainActivity extends Activity {
                 types[mProjects.FLAG_TITLE] = true;
                 types[mProjects.FLAG_PRODUCER_NAME] = true;
                 types[mProjects.TYPE_AUTOPLAY_FILE] = true;
+                types[mProjects.FLAG_AUTOPLAY_DIFICULTY] = true;
                 types[mProjects.TYPE_KEYLED_FOLDERS] = true;
+                types[mProjects.FLAG_KEYLED_COUNT] = true;
                 types[mProjects.TYPE_SAMPLE_FOLDER] = true;
-                types[mProjects.FLAG_ITEM_AUTOPLAY_DIFFICULTY] = true;
+                types[mProjects.FLAG_SAMPLE_COUNT] = true;
                 mProjects.readProjectsPath(rootFolder, types);
                 mMainPanel.updates();
+                mMainPanel.home();
                 hideSplash(() -> mMainPanel.showPanel());
                 splash.removeCallbacks(this);
             }

@@ -6,13 +6,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.*;
 import android.net.*;
-import android.os.*;
 import android.provider.MediaStore;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -34,9 +32,9 @@ import java.util.*;
 
 public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
-    public Activity context = this;
+    public Activity context;
 
-    LoadScreen mLoadScreen;
+    //LoadScreen mLoadScreen;
     PadPressCall mPadPress;
     PadPressCall mPadRelease;
     PlayPadsOptions mPlayPadsOptions;
@@ -52,23 +50,12 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             onLayoutSwitchTouch,
             onWatermarkTouch;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        // TODO: Implement this method
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.playpads);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        XayUpFunctions.hideSystemBars(getWindow());
-        ViewGroup rootView = findViewById(R.id.layoutbackground);
-        mLoadScreen = new LoadScreen(this, rootView);
-        mLoadScreen.show(0);
-        rootView.post(
-                () -> {
-                    GlobalConfigs.display_height = rootView.getMeasuredHeight();
-                    GlobalConfigs.display_width = rootView.getMeasuredWidth();
-                });
+    public PlayPads(Activity context, ViewGroup pads_to_add) {
+        this.context = context;
+        //mLoadScreen = new LoadScreen(this, rootView);
+        //mLoadScreen.show(0);
         new LoadConfigs();
-        new CreateUi(this);
+        new CreateUi(context, pads_to_add);
     }
 
     class LoadConfigs extends GlobalConfigs.PlayPadsConfigs {
@@ -86,10 +73,10 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
     }
 
     class CreateUi extends Project implements PadInterface {
-        private final RelativeLayout root_pads;
+        private final RelativeLayout pads_to_add;
         protected Pad pad;
 
-        public CreateUi(Activity context) {
+        public CreateUi(Activity context, ViewGroup pads_to_add) {
             /*Set pads functions*/
             onPadTouch = onPadTouch();
             onChainTouch = onChainTouch();
@@ -105,11 +92,11 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             loadProject(context, getLoadingProject());
             /*Create Pads Layout*/
             pad = new Pad(context, padInteraction());
-            (this.root_pads = context.findViewById(R.id.contAllPads)).post(
+            (this.pads_to_add = (RelativeLayout) pads_to_add).post(
                     () -> {
                         /*Get display size from MATCH_PARENT view*/
-                        int h = root_pads.getMeasuredHeight();
-                        int w = root_pads.getMeasuredWidth();
+                        int h = this.pads_to_add.getMeasuredHeight();
+                        int w = this.pads_to_add.getMeasuredWidth();
 
                         /*Make new Pads object*/
                         pad.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
@@ -122,7 +109,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         bParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
                         /*Add Pads to scene*/
-                        root_pads.addView(virtual_launchpad, bParams);
+                        this.pads_to_add.addView(virtual_launchpad, bParams);
 
                         /*Get Pads grid params and set new values (Size)*/
                         ViewGroup.LayoutParams rLayout = pad.getActivePads().getGridPads().getLayoutParams();
@@ -158,7 +145,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                 }
                 @Override
                 public void onStartReadFile(String file_name) {
-                    context.runOnUiThread(() -> mLoadScreen.updatedText(context.getString(R.string.reading) + ": " + file_name));
+                    //context.runOnUiThread(() -> mLoadScreen.updatedText(context.getString(R.string.reading) + ": " + file_name));
                 }
                 @Override
                 public void onFileError(String file_name, int line, String cause) {
@@ -189,21 +176,11 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                     }
                     if (mKeySounds != null) mPadPress.calls.add(mKeySounds);
 
-                    /* Hide Load Screen */
+                    // Hide Load Screen
                     if (project_loaded_problems.size() > 0) {
-                        mLoadScreen.showErrorsList(
-                                project_loaded_problems,
-                                (view) -> {
-                                    mLoadScreen.OnEndAnimation(
-                                            () -> {
-                                                mLoadScreen.remove();
-                                                mLoadScreen = null;
-                                            });
-                                    mLoadScreen.hide(300);
-                                    view.setOnClickListener(null);
-                                });
+                        //Get project problems
                     } else {
-                        context.runOnUiThread(() -> mLoadScreen.hide(500));
+                        //context.runOnUiThread(() -> mLoadScreen.hide(500));
                     }
                     context.runOnUiThread(
                             () -> mPlayPadsOptions =
