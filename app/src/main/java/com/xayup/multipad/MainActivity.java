@@ -18,12 +18,12 @@ import com.xayup.multipad.layouts.loadscreen.LoadScreen;
 import com.xayup.multipad.layouts.main.panel.MainPanel;
 import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.Projects;
-import com.xayup.multipad.pads.Pad;
+import com.xayup.multipad.pads.Pads;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
+import com.xayup.multipad.projects.thread.LoadProject;
 
 import java.io.*;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends Activity {
     private Activity context;
@@ -87,11 +87,11 @@ public class MainActivity extends Activity {
 
         View floating_button = findViewById(R.id.main_floating_menu_button);
 
-        new PlayPads(context, context.findViewById(R.id.main_pads_to_add));
+        PlayPads mPlayPads = new PlayPads(context, context.findViewById(R.id.main_pads_to_add));
 
         mMainPanel = new MainPanel(context) {
             @Override
-            public void onExit() { MainActivity.super.onBackPressed(); }
+            public void onExit() { killApp(); }
 
             @Override
             public KeyLED getKeyLEDInstance() {
@@ -99,7 +99,7 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public Pad getPadInstance() {
+            public Pads getPadInstance() {
                 return null;
             }
 
@@ -110,24 +110,32 @@ public class MainActivity extends Activity {
 
             @Override
             public void loadProject(Project project, ProgressBar progressBar) {
-                Toast.makeText(context, project.getTitle(), Toast.LENGTH_SHORT).show();
-                ValueAnimator progress_test = ValueAnimator.ofInt(0, 100);
-                progress_test.addUpdateListener(valueAnimator -> progressBar.setProgress((int) valueAnimator.getAnimatedValue()));
-                progress_test.setDuration(5000);
-                progress_test.start();
-                progress_test.addListener(new Animator.AnimatorListener() {
+                project.loadProject(context, new LoadProject.LoadingProject() {
                     @Override
-                    public void onAnimationStart(@NonNull Animator animator) { }
+                    public void onStartLoadProject() {
+                        progressBar.setProgress(0);
+                        progressBar.setMax(
+                                ((project.keysound_path != null) ? 1 +project.sample_count : 0)
+                                        + project.keyled_count + ((project.autoplay_path != null) ? 1 : 0)
+                        );
+                    }
+
                     @Override
-                    public void onAnimationEnd(@NonNull Animator animator) { project.loaded = true; }
+                    public void onStartReadFile(String file_name) {
+                        progressBar.incrementProgressBy(1);
+                    }
+
                     @Override
-                    public void onAnimationCancel(@NonNull Animator animator) { }
+                    public void onFileError(String file_name, int line, String cause) {
+                        progressBar.incrementProgressBy(1);
+                    }
+
                     @Override
-                    public void onAnimationRepeat(@NonNull Animator animator) { }
+                    public void onFinishLoadProject() {
+                        progressBar.setProgress(progressBar.getMax());
+                    }
                 });
             }
-
-
         };
         floating_button.setOnClickListener((v) -> mMainPanel.showPanel());
 
@@ -192,6 +200,11 @@ public class MainActivity extends Activity {
                     }
                 }
             };
+
+    public void killApp(){
+        this.finishAffinity();
+        System.exit(0);
+    }
 
     @Override
     public void onBackPressed() { mMainPanel.showPanel(); }

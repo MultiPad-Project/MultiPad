@@ -8,21 +8,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import com.xayup.multipad.R;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.pads.Render.PadSkinData;
+import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.skin.SkinManager;
 import com.xayup.multipad.skin.SkinProperties;
 import com.xayup.multipad.skin.SkinSupport;
 
 import java.util.*;
 
-public class Pad {
+public class Pads {
     protected Activity context;
-    protected Map<String, List<Pads>> mGridViews;
+    protected Map<String, List<PadGrid>> mGridViews;
     public SkinManager mSkinManager;
     protected PadInteraction mPadInteraction;
-    protected Pads active_pad = null;
+    protected PadGrid active_pad = null;
     protected View.OnTouchListener resize_touch;
     protected View.OnTouchListener rotate_touch;
     protected View.OnTouchListener move_touch;
@@ -38,7 +40,7 @@ public class Pad {
         int LAYOUT_MATRIX_MODE = 3;
     }
 
-    public Pad(Context context, PadInteraction mPadInteraction) {
+    public Pads(Context context, PadInteraction mPadInteraction) {
         this.context = (Activity) context;
         this.mPadInteraction = mPadInteraction;
         this.mSkinManager = new SkinManager();
@@ -53,31 +55,31 @@ public class Pad {
      * @param columns : columns count.
      */
     public void newPads(String skin_package, int rows, int columns) {
-        Pads pads = new Pads(SkinManager.getSkinProperties(context, skin_package), rows, columns);
-        pads.setId(mGridViews.size());
-        pads.setName("pad_" + pads.getId());
-        active_pad = pads;
+        PadGrid padGrid = new PadGrid(SkinManager.getSkinProperties(context, skin_package), rows, columns);
+        padGrid.setId(mGridViews.size());
+        padGrid.setName("pad_" + padGrid.getId());
+        active_pad = padGrid;
     }
 
     public void setEditMode(boolean enable){
-        for(List<Pads> listPads : mGridViews.values()){
-            for(Pads mPads : listPads){
+        for(List<PadGrid> listPads : mGridViews.values()){
+            for(PadGrid mPadGrid : listPads){
                 if(enable) {
-                    context.getLayoutInflater().inflate(R.layout.pads_editor_view, mPads.getRootPads(), true);
+                    context.getLayoutInflater().inflate(R.layout.pads_editor_view, mPadGrid.getRootPads(), true);
                 } else {
-                    mPads.getRootPads().removeViewAt(mPads.getRootPads().getChildCount()-1);
+                    mPadGrid.getRootPads().removeViewAt(mPadGrid.getRootPads().getChildCount()-1);
                 }
             }
         }
     }
     
-    public List<Pads> getPadsWithIndex(int index){
+    public List<PadGrid> getPadsWithIndex(int index){
         return mGridViews.get(String.valueOf(index));
     }
 
-    public List<Pads> getAllPadsList(){
-        List<Pads> tmp = new ArrayList<>();
-        for(List<Pads> list: mGridViews.values()){
+    public List<PadGrid> getAllPadsList(){
+        List<PadGrid> tmp = new ArrayList<>();
+        for(List<PadGrid> list: mGridViews.values()){
             tmp.addAll(list);
         }
         return tmp;
@@ -87,7 +89,7 @@ public class Pad {
      * Isso retorna a Pads ativa (Que será definido pelo usuário ou quando uma nova Pads é criada)
      * @return um Objeto Pads atual
      */
-    public Pads getActivePads(){
+    public PadGrid getActivePads(){
         return active_pad;
     }
 
@@ -146,23 +148,33 @@ public class Pad {
         };
     }
 
-    public class Pads implements PadsLayoutInterface, SkinSupport {
+    public class PadGrid implements PadsLayoutInterface, SkinSupport {
+        protected Project current_project;
         protected String name;
         public int layout_mode;
         protected SkinProperties mSkinProperties;
         protected PadSkinData mSkinData;
-        protected ViewGroup mRootPads;
+        protected ImageView pad_background;
+        protected RelativeLayout mRootPads;
+        protected RelativeLayout pads_settings_overlay;
         protected GridLayout mGrid;
         protected int lp_id;
+        protected Object[][][] pads;
 
-        public Pads(SkinProperties skin, int rows, int columns) {
+        public PadGrid(SkinProperties skin, int rows, int columns) {
             this.mSkinProperties = skin;
             this.mSkinData = new PadSkinData();
-            this.mRootPads = new MakePads(context, rows, columns).make();
-            this.mGrid = (GridLayout) mRootPads.getChildAt(1);
+
+            this.mGrid = new MakePads(context).make(rows, columns).getGrid();
+            this.pad_background = new ImageView(context);
+            this.pad_background.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            (this.mRootPads = new RelativeLayout(context)).addView(pad_background, new ViewGroup.LayoutParams(-1, -1));
+            this.mRootPads.addView(this.mGrid, new ViewGroup.LayoutParams(-1, -1));
+            this.pads_settings_overlay = new RelativeLayout(context);
+            this.mRootPads.addView(this.pads_settings_overlay, new ViewGroup.LayoutParams(-1, -1));
+
             this.layout_mode = PadLayoutMode.LAYOUT_PRO_MODE;
             this.lp_id = 0;
-            setPadsFunctions();
             applySkin(this.mSkinProperties);
         }
 
@@ -192,19 +204,21 @@ public class Pad {
             Objects.requireNonNull(mGridViews.get(String.valueOf(lp_id))).remove(this);
         }
 
-        protected void setPadsFunctions() {
-            forAllPads(
-                    (pad) -> {
-                        pad.setOnTouchListener(mPadInteraction.onPadClick(pad));
-                    });
+        public void setProject(Project project){
+            this.current_project = project;
         }
 
-        public void forAllPads(Operator ops) {
+
+        public void forAllPads(ForAllPads fap) {
             for (int i = 0; i < mGrid.getChildCount(); i++) {
                 if (mGrid.getChildAt(i) instanceof ViewGroup) {
-                    ops.run((ViewGroup) mGrid.getChildAt(i));
+                    fap.run((ViewGroup) mGrid.getChildAt(i));
                 }
             }
+        }
+
+        public RelativeLayout getPadsSettingsOverlay(){
+            return pads_settings_overlay;
         }
 
         @Override
@@ -213,7 +227,7 @@ public class Pad {
         }
 
         @Override
-        public ViewGroup getRootPads() {
+        public RelativeLayout getRootPads() {
             return mRootPads;
         }
 
@@ -291,7 +305,7 @@ public class Pad {
         }
     }
 
-    protected interface Operator {
+    protected interface ForAllPads {
         void run(ViewGroup view);
     }
 }

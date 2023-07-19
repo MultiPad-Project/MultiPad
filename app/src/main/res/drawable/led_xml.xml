@@ -1,15 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:bottom="14px"
-          android:left="14px"
-          android:right="14px"
-          android:top="14px"
-          android:height="180px"
-          android:width="180px"
-            android:id="@+id/led">
-        <shape>
-            <solid android:color="@android:color/transparent" />
-            <corners android:radius="20px" />
-        </shape>
-    </item>
-</layer-list>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="180.0px"
+        android:height="180.0px"
+        android:tint="#00000000"
+        android:viewportWidth="180.0"
+        android:viewportHeight="180.0">
+    <path
+            android:fillColor="#FFFFFFFF"
+            android:strokeLineJoin="miter"
+            android:fillType="nonZero"
+            android:strokeLineCap="square"
+            android:pathData="M25.20,10.80L154.80,10.80A14.40 14.40 0 0 1 169.20,25.20L169.20,154.80A14.40 14.40 0 0 1 154.80,169.20L25.20,169.20A14.40 14.40 0 0 1 10.80,154.80L10.80,25.20A14.40 14.40 0 0 1 25.20,10.80z"/>
+</vector>

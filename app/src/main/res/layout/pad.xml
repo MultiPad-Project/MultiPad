@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:clickable="false"
         android:scaleType="fitXY"
-        android:src="@drawable/phantom_xml"
+        android:src="@drawable/phantom"
         android:id="@+id/phantom" />
 
     <TextView

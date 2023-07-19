@@ -1,8 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/led">
-        <shape>
-            <solid android:color="@android:color/transparent" />
-        </shape>
-    </item>
-</layer-list>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="2.0px"
+        android:height="2.0px"
+        android:tint="#00000000"
+        android:viewportWidth="1.0"
+        android:viewportHeight="1.0">
+    <path
+            android:fillColor="#FF000000"
+            android:strokeLineJoin="miter"
+            android:fillType="nonZero"
+            android:strokeLineCap="square"
+            android:pathData="M0.00,0.00L1.00,0.00L1.00,1.00L0.00,1.00z"/>
+</vector>

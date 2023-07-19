@@ -51,7 +51,7 @@ public class GlobalConfigs {
         public String table_path = DefaultConfigs.MULTIPAD_PATH;
         /* Widgets */
         public VerticalSeekBar progressAutoplay;
-        public Button stopRecAutoplay;
+        public static Button stopRecAutoplay;
     }
 
     public interface DefaultConfigs {

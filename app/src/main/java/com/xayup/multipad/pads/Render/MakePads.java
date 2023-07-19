@@ -3,17 +3,14 @@ package com.xayup.multipad.pads.Render;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.xayup.debug.XLog;
 import com.xayup.multipad.R;
-import com.xayup.multipad.pads.Pad;
 import com.xayup.multipad.pads.PadInterface;
-import com.xayup.utils.Utils;
 
 public class MakePads {
     protected Activity context;
@@ -124,9 +121,7 @@ public class MakePads {
         };
     }
 
-    /**
-     *
-     */
+
     public static class PadID {
         public static int getGridIndexFromXY(int grid_columns, int row, int colum) {
             return (grid_columns * row) + colum;
@@ -210,44 +205,63 @@ public class MakePads {
         }
     }
 
-    public MakePads(Context context, int rows, int columns) {
-        this.context = (Activity) context;
-        this.rows = rows;
-        this.colums = columns;
-        chain_top_matrix = new Matrix();
-        chain_bottom_matrix = new Matrix();
-    }
-
     public MakePads(Context context) {
         this.context = (Activity) context;
     }
 
+    public class Pads {
+        protected GridLayout mGrid;
+        protected byte VIEW = 0;
+        protected byte LED = 1;
+        protected byte ID = 2;
+        protected Object[][][] pads;
+        private Pads(int grid_row, int grid_colum){
+            this.pads = new Object[grid_row][grid_colum][3];
+            this.mGrid = new GridLayout(context);
+        }
+        private void add(int row, int colum, View pad){
+            mPadParams =
+                    new GridLayout.LayoutParams(
+                            GridLayout.spec(row, GridLayout.FILL, 1f),
+                            GridLayout.spec(colum, GridLayout.FILL, 1f));
+            mPadParams.height = 0;
+            mPadParams.width = 0;
+            mGrid.addView(pad, mPadParams);
+            if(pad.getVisibility() == View.VISIBLE) {
+                pads[row][colum][VIEW] = pad;
+                pads[row][colum][LED] = ((ImageView) pad.findViewById(R.id.led)).getDrawable();
+                pads[row][colum][ID] = Integer.parseInt(String.valueOf(row) + colum);
+            }
+        }
+        public GridLayout getGrid(){
+            return mGrid;
+        }
+        public View getPadView(int row, int colum){
+            return (View) pads[row][colum][VIEW];
+        }
+        public Drawable getLedDrawable(int row, int colum){
+            return (Drawable) pads[row][colum][LED];
+        }
+        public int getId(int row, int colum){
+            return (int) pads[row][colum][ID];
+        }
+        public void setLedColor(int row, int colum, int android_color){
+            ((Drawable) pads[row][colum][LED]).setTint(android_color);
+        }
+    }
+
     /**
      * Make new Grid
-     * @return Container with one Grid rowsXcolumns
+     * @return Pads class
      */
-    public ViewGroup make() {
+    public Pads make(int rows, int columns) {
         View led;
-        ImageView btn, btn_, phantom, playbg;
+        ImageView btn, btn_, phantom;
         TextView touch_map;
-        RelativeLayout grid_root = new RelativeLayout(context);
-        GridLayout mGrid = new GridLayout(context);
-        playbg = new ImageView(context);
-        playbg.setScaleType(ImageView.ScaleType.CENTER);
-        RelativeLayout.LayoutParams rLayout = new RelativeLayout.LayoutParams(-1, -1);
-        grid_root.addView(playbg, rLayout);
-        rLayout = new RelativeLayout.LayoutParams(-2, -2);
-        rLayout.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        grid_root.addView(mGrid, rLayout);
+        Pads mPads = new Pads(rows, columns);
         for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < colums; c++) {
+            for (int c = 0; c < columns; c++) {
                 View pad;
-                mPadParams =
-                        new GridLayout.LayoutParams(
-                                GridLayout.spec(r, GridLayout.FILL, 1f),
-                                GridLayout.spec(c, GridLayout.FILL, 1f));
-                mPadParams.height = 0;
-                mPadParams.width = 0;
                 if ((r == 0 && c == 0) || (r == 9 && c == 0) || (r == 9 && c == 9)) {
                     pad = new View(context);
                     pad.setVisibility(View.INVISIBLE);
@@ -293,9 +307,9 @@ public class MakePads {
                     led.setTag(PadInfo.PadInfoIdentifier.LED);
                     pad.setId(PadID.assign(r, c));
                 }
-                mGrid.addView(pad, mPadParams);
+                mPads.add(r, c, pad);
             }
         }
-        return grid_root;
+        return mPads;
     }
 }

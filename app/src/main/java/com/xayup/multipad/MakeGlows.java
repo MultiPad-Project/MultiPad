@@ -1,15 +1,13 @@
 package com.xayup.multipad;
 
 import android.app.Activity;
-import android.media.Image;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.xayup.multipad.configs.GlobalConfigs;
-import com.xayup.multipad.pads.Pad;
-import com.xayup.multipad.pads.Render.MakePads;
-import java.util.ArrayList;
+import com.xayup.multipad.pads.Pads;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +46,7 @@ public class MakeGlows {
 		centerPad = padWH/2;
 		posicao_inicial = ((screenW - screenH) / 2) + ((screenH - GlobalConfigs.display_height) / 2);
 		int pos_init = posicao_inicial;
-		if (layout_mode == Pad.PadLayoutMode.LAYOUT_MK2_MODE) {
+		if (layout_mode == Pads.PadLayoutMode.LAYOUT_MK2_MODE) {
 			pos_init -= padWH;
 		}
 		inicial_pos_x = pos_init + centerPad;
@@ -198,7 +196,7 @@ public class MakeGlows {
 					}
 					System.out.println(skip);
 					if (!skip) {
-						if (layout_mode != Pad.PadLayoutMode.LAYOUT_MK2_MODE && (key == "1" || key == "91"))
+						if (layout_mode != Pads.PadLayoutMode.LAYOUT_MK2_MODE && (key == "1" || key == "91"))
 							to_x += padWH;
 						glows.get(key).setVisibility(View.GONE);
 						glows.get(key).getLayoutParams().height = radius;

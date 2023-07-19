@@ -4,7 +4,6 @@ import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -24,7 +23,7 @@ import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.ProjectListAdapter;
-import com.xayup.multipad.pads.Pad;
+import com.xayup.multipad.pads.Pads;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.skin.SkinAdapter;
 import com.xayup.multipad.skin.SkinManager;
@@ -38,7 +37,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public abstract class MainPanel {
     protected Context context;
@@ -54,7 +52,7 @@ public abstract class MainPanel {
 
     public abstract void onExit();
     public abstract KeyLED getKeyLEDInstance();
-    public abstract Pad getPadInstance();
+    public abstract Pads getPadInstance();
     public abstract List<Project> getProjects();
     public abstract void loadProject(Project project, ProgressBar progressBar);
 
@@ -249,20 +247,20 @@ public abstract class MainPanel {
                     OptionsItem apply_for_all = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                     apply_for_all.setTitle(context.getString(R.string.list_skin_apply_for_all));
                     apply_for_all.setOnClick((view1)->{
-                        List<Pad.Pads> list_pads = getPadInstance().getAllPadsList();
+                        List<Pads.PadGrid> list_pads = getPadInstance().getAllPadsList();
                         while(!list_pads.isEmpty()) {
                             list_pads.remove(0).applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                         }
                     });
-                    List<Pad.Pads> list_pads = getPadInstance().getAllPadsList();
+                    List<Pads.PadGrid> list_pads = getPadInstance().getAllPadsList();
                     while(!list_pads.isEmpty()) {
-                        Pad.Pads pads = list_pads.remove(0);
+                        Pads.PadGrid padGrid = list_pads.remove(0);
                         OptionsItem pads_item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
-                        pads_item.setTitle(pads.getName());
-                        pads_item.setTag(pads);
+                        pads_item.setTitle(padGrid.getName());
+                        pads_item.setTag(padGrid);
                         page.putOption(pads_item);
                         pads_item.setOnClick((view1)->{
-                            pads.applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
+                            padGrid.applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                         });
                     }
 

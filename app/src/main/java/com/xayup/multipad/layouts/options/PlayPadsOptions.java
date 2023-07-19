@@ -16,7 +16,7 @@ import com.xayup.debug.XLog;
 import com.xayup.multipad.R;
 import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
-import com.xayup.multipad.pads.Pad;
+import com.xayup.multipad.pads.Pads;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.skin.SkinAdapter;
 import com.xayup.multipad.skin.SkinManager;
@@ -52,7 +52,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
     /*Abstracts*/
     public abstract void onExit();
     public abstract KeyLED getKeyLEDInstance();
-    public abstract Pad getPadInstance();
+    public abstract Pads getPadInstance();
 
     /*Pages*/
     public OptionsPage skin_page;
@@ -109,21 +109,21 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
                 OptionsItem apply_for_all = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                 apply_for_all.setTitle(context.getString(R.string.list_skin_apply_for_all));
                 apply_for_all.setOnClick((view)->{
-                    List<Pad.Pads> list_pads = getPadInstance().getAllPadsList();
+                    List<Pads.PadGrid> list_pads = getPadInstance().getAllPadsList();
                     while(!list_pads.isEmpty()) {
                         list_pads.remove(0).applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                     }
                     list_pads = null;
                 });
-                List<Pad.Pads> list_pads = getPadInstance().getAllPadsList();
+                List<Pads.PadGrid> list_pads = getPadInstance().getAllPadsList();
                 while(!list_pads.isEmpty()) {
-                    Pad.Pads pads = list_pads.remove(0);
+                    Pads.PadGrid padGrid = list_pads.remove(0);
                     OptionsItem pads_item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
-                    pads_item.setTitle(pads.getName());
-                    pads_item.setTag(pads);
+                    pads_item.setTitle(padGrid.getName());
+                    pads_item.setTag(padGrid);
                     page.putOption(pads_item);
                     pads_item.setOnClick((view)->{
-                        pads.applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
+                        padGrid.applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                     });
                 }
 
@@ -280,13 +280,13 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
             pads_list.setVisibility(View.GONE);
             new_pads.setVisibility(View.VISIBLE);
             grid_pads_page.clear();
-            List<Pad.Pads> pads_list = getPadInstance().getAllPadsList();
-            while(!pads_list.isEmpty()){
-                Pad.Pads pads = pads_list.remove(0);
+            List<Pads.PadGrid> padGrid_list = getPadInstance().getAllPadsList();
+            while(!padGrid_list.isEmpty()){
+                Pads.PadGrid padGrid = padGrid_list.remove(0);
                 OptionsItem item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
-                item.setTitle(pads.getName());
-                item.setDescription(String.valueOf(pads.getId()));
-                item.setOnClick(padsConfigItemOnClick(pads));
+                item.setTitle(padGrid.getName());
+                item.setDescription(String.valueOf(padGrid.getId()));
+                item.setOnClick(padsConfigItemOnClick(padGrid));
                 grid_pads_page.putOption(item);
             }
             switchTo(EXIT_PAGE_PAD_GRIDS, false);
@@ -418,13 +418,13 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
         create();
     }
 
-    protected View.OnClickListener padsConfigItemOnClick(Pad.Pads pads){
+    protected View.OnClickListener padsConfigItemOnClick(Pads.PadGrid padGrid){
         return (view)->{
             FluctuateOptionsView pad_op = new FluctuateOptionsView(context);
             OptionsPage pad_op_page = pad_op.getPage(pad_op.newPage(context.getString(R.string.alert_exit_options)));
 
             /*Page UI definitions*/
-            pad_op.setTitle(pads.getName());
+            pad_op.setTitle(padGrid.getName());
             pad_op.getBackButton().setVisibility(View.GONE);
 
             /*Create and Place Pads Options*/
