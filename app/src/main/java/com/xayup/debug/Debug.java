@@ -53,7 +53,7 @@ public class Debug {
     }
 
     public static StringBuilder genAppLog() throws IOException {
-        Process process = Runtime.getRuntime().exec("logcat -d");
+        Process process = Runtime.getRuntime().exec("logcat -d --pid=" + android.os.Process.myPid());
         BufferedReader br = new BufferedReader(new InputStreamReader((process.getInputStream())));
         String line;
         StringBuilder log = new StringBuilder();

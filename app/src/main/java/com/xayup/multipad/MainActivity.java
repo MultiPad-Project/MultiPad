@@ -1,7 +1,5 @@
 package com.xayup.multipad;
 
-import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.app.*;
 import android.content.*;
 import android.hardware.usb.UsbManager;
@@ -10,17 +8,21 @@ import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
-import android.widget.Toast;
-import androidx.annotation.NonNull;
+import com.xayup.debug.XLog;
 import com.xayup.multipad.configs.GlobalConfigs;
 
 import com.xayup.multipad.layouts.loadscreen.LoadScreen;
 import com.xayup.multipad.layouts.main.panel.MainPanel;
+import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.Projects;
-import com.xayup.multipad.pads.Pads;
+import com.xayup.multipad.pads.GridPads;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.projects.thread.LoadProject;
+import com.xayup.ui.options.FluctuateOptionsView;
+import com.xayup.ui.options.OptionsItem;
+import com.xayup.ui.options.OptionsItemInterface;
+import com.xayup.ui.options.OptionsPage;
 
 import java.io.*;
 import java.util.List;
@@ -88,7 +90,7 @@ public class MainActivity extends Activity {
         View floating_button = findViewById(R.id.main_floating_menu_button);
 
         PlayPads mPlayPads = new PlayPads(context, context.findViewById(R.id.main_pads_to_add));
-
+        defaultPadClick(mPlayPads.getPads().getActivePads());
         mMainPanel = new MainPanel(context) {
             @Override
             public void onExit() { killApp(); }
@@ -99,7 +101,7 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public Pads getPadInstance() {
+            public GridPads getPadInstance() {
                 return null;
             }
 
@@ -110,31 +112,36 @@ public class MainActivity extends Activity {
 
             @Override
             public void loadProject(Project project, ProgressBar progressBar) {
-                project.loadProject(context, new LoadProject.LoadingProject() {
-                    @Override
-                    public void onStartLoadProject() {
-                        progressBar.setProgress(0);
-                        progressBar.setMax(
-                                ((project.keysound_path != null) ? 1 +project.sample_count : 0)
-                                        + project.keyled_count + ((project.autoplay_path != null) ? 1 : 0)
-                        );
-                    }
+                if(project.getStatus() == Project.STATUS_UNLOADED) {
+                    project.loadProject(context, new LoadProject.LoadingProject() {
+                        @Override
+                        public void onStartLoadProject() {
+                            progressBar.setProgress(0);
+                            progressBar.setMax(
+                                    ((project.keysound_path != null) ? 1 + project.sample_count : 0)
+                                            + project.keyled_count + ((project.autoplay_path != null) ? 1 : 0));
+                            project.setStatus(Project.STATUS_LOADING);
+                        }
 
-                    @Override
-                    public void onStartReadFile(String file_name) {
-                        progressBar.incrementProgressBy(1);
-                    }
+                        @Override
+                        public void onStartReadFile(String file_name) {
+                            progressBar.incrementProgressBy(1);
+                        }
 
-                    @Override
-                    public void onFileError(String file_name, int line, String cause) {
-                        progressBar.incrementProgressBy(1);
-                    }
+                        @Override
+                        public void onFileError(String file_name, int line, String cause) {
+                            progressBar.incrementProgressBy(1);
+                        }
 
-                    @Override
-                    public void onFinishLoadProject() {
-                        progressBar.setProgress(progressBar.getMax());
-                    }
-                });
+                        @Override
+                        public void onFinishLoadProject() {
+                            progressBar.setProgress(progressBar.getMax());
+                            project.setStatus(Project.STATUS_LOADED);
+                        }
+                    });
+                } else if (project.getStatus() == Project.STATUS_LOADED){
+                    // Project loaded
+                }
             }
         };
         floating_button.setOnClickListener((v) -> mMainPanel.showPanel());
@@ -165,6 +172,48 @@ public class MainActivity extends Activity {
         };
         splash.post(onPost);
 
+    }
+
+    public void defaultPadClick(GridPads.PadGrid active_pad){
+        active_pad.forAllPads((pad, mPadGrid) -> {
+            XLog.e("defaultPadClick", "Grid Childs count " + active_pad.getGridPads().getChildCount());
+            XLog.e("defaultPadClick", "Pad type " + ((MakePads.PadInfo) pad.getTag()).getType());
+            if(((MakePads.PadInfo) pad.getTag()).getType() == MakePads.PadInfo.PadInfoIdentifier.PAD_LOGO){
+                pad.setOnTouchListener((pad_view, event) -> {
+                    pad_view.performClick();
+                    if(event.getAction() == MotionEvent.ACTION_DOWN){
+                        FluctuateOptionsView window = new FluctuateOptionsView(context);
+                        //Home page
+                        OptionsPage home_page = window.getPage(window.newPage(mPadGrid.getName()));
+                        OptionsPage projects_loaded = window.getPage(window.newPage("Use the project"));
+                        //Get loaded projects
+                        for(Project project : mProjects.projects){
+                            if(project.getStatus() == Project.STATUS_LOADED){
+                                OptionsItem project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                                project_item.setTitle(project.getTitle());
+                                project_item.setDescription(project.getProducerName());
+                                projects_loaded.putOption(project_item);
+                                project_item.setOnClick((item_view) -> {
+                                    active_pad.setProject(project);
+                                });
+                            }
+                        }
+                        //Home page options
+                        OptionsItem set_current_project = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_ARROW);
+                        set_current_project.setTitle("Use the project");
+                        set_current_project.setOnClick((item_view) -> {
+                            window.switchTo(projects_loaded.getPageIndex(), false,
+                                    (int)(context.getResources().getInteger(R.integer.swipe_animation_velocity) * Ui.getSettingsAnimationScale(context)));
+                        });
+                        home_page.putOption(set_current_project);
+                        window.switchTo(0, false, 0);
+                        window.show();
+                        return true;
+                    }
+                    return false;
+                });
+            }
+        });
     }
 
     protected void hideSplash(Runnable after_hide) {

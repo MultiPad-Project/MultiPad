@@ -23,7 +23,7 @@ import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.ProjectListAdapter;
-import com.xayup.multipad.pads.Pads;
+import com.xayup.multipad.pads.GridPads;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.skin.SkinAdapter;
 import com.xayup.multipad.skin.SkinManager;
@@ -52,7 +52,7 @@ public abstract class MainPanel {
 
     public abstract void onExit();
     public abstract KeyLED getKeyLEDInstance();
-    public abstract Pads getPadInstance();
+    public abstract GridPads getPadInstance();
     public abstract List<Project> getProjects();
     public abstract void loadProject(Project project, ProgressBar progressBar);
 
@@ -247,14 +247,14 @@ public abstract class MainPanel {
                     OptionsItem apply_for_all = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                     apply_for_all.setTitle(context.getString(R.string.list_skin_apply_for_all));
                     apply_for_all.setOnClick((view1)->{
-                        List<Pads.PadGrid> list_pads = getPadInstance().getAllPadsList();
+                        List<GridPads.PadGrid> list_pads = getPadInstance().getAllPadsList();
                         while(!list_pads.isEmpty()) {
                             list_pads.remove(0).applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                         }
                     });
-                    List<Pads.PadGrid> list_pads = getPadInstance().getAllPadsList();
+                    List<GridPads.PadGrid> list_pads = getPadInstance().getAllPadsList();
                     while(!list_pads.isEmpty()) {
-                        Pads.PadGrid padGrid = list_pads.remove(0);
+                        GridPads.PadGrid padGrid = list_pads.remove(0);
                         OptionsItem pads_item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                         pads_item.setTitle(padGrid.getName());
                         pads_item.setTag(padGrid);

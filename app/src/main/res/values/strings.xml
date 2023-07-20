@@ -169,4 +169,6 @@
     <string name="reading">Reading</string>
     <string name="grid_pads_title">Pads List</string>
 
+    <!--Texts-->
+    <string name="none">None</string>
 </resources>

@@ -10,7 +10,7 @@ import com.xayup.multipad.projects.project.keysounds.KeySounds;
 import java.io.File;
 import java.util.*;
 
-public class LoadProject implements Runnable {
+public abstract class LoadProject implements Runnable {
 
     protected Activity context;
     protected Project mProject;
@@ -20,6 +20,8 @@ public class LoadProject implements Runnable {
     protected List<File[]> ledT2;
     protected byte total_threads = 2;
     protected byte ended_threads = 0;
+
+    public abstract void onFinish();
 
     public interface LoadingProject {
         public void onStartLoadProject();
@@ -126,6 +128,7 @@ public class LoadProject implements Runnable {
             ledT2 = null;
         }
         mLoadingProject.onFinishLoadProject();
+        onFinish();
     }
 
     protected void ledRead(List<File[]> led_files) {

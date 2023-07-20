@@ -69,7 +69,7 @@ public class ProjectListAdapter extends BaseAdapter {
 
             Project project = getItem(p1);
             if(project != null) {
-                progress.setProgress((project.loaded() ? 100 : 0));
+                progress.setProgress((project.getStatus() == Project.STATUS_LOADED ? 100 : 0));
                 title.setText(project.getTitle());
                 producerName.setText(project.getProducerName());
             // Set status view and Description

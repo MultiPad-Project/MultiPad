@@ -1,6 +1,8 @@
 package com.xayup.multipad.projects;
 
 import android.content.Context;
+import com.xayup.multipad.pads.PadPressCall;
+import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.projects.project.autoplay.AutoPlay;
 import com.xayup.multipad.projects.thread.LoadProject;
@@ -11,6 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Project implements ProjectIndexes {
+    public static final byte STATUS_UNLOADED = 0;
+    public static final byte STATUS_LOADED = 1;
+    public static final byte STATUS_LOADING = 2;
+
+    protected byte status;
 
     public String title, producerName, difficulty;
     public File path, info_path, sample_path, autoplay_path, keysound_path;
@@ -22,12 +29,14 @@ public class Project implements ProjectIndexes {
     public KeySounds mKeySounds;
     public KeyLED mKeyLED;
     public AutoPlay mAutoPlay;
+    protected PadPressCall mPadPress;
 
     public List<String> project_loaded_problems;
 
     public Project(){
         this.keyleds_paths = new ArrayList<>();
         this.project_loaded_problems = new ArrayList<>();
+        this.status = STATUS_UNLOADED;
     }
 
     protected void setTitle(String title){ this.title = title; }
@@ -43,6 +52,10 @@ public class Project implements ProjectIndexes {
     protected void setSampleCount(int sample_count){ this.sample_count = sample_count; }
     protected void setState(byte state){ this.state = state; }
 
+    public void setStatus(byte STATUS){
+        this.status = STATUS;
+    }
+
     public String getTitle(){ return title; }
     public String getProducerName(){ return producerName; }
     public String getDifficulty(){ return difficulty; }
@@ -56,9 +69,37 @@ public class Project implements ProjectIndexes {
     public int getSampleCount(){ return sample_count; }
     public byte getState(){ return state; }
 
-    /// TEST ///
-    public boolean loaded = false;
-    public boolean loaded(){ return loaded; } ///TESTE///mKeyLED != null || mKeySounds != null; }
+    public byte getStatus(){
+        return status;
+    }
+
+    public void onLoaded(){
+        if(keysound_path != null || keyled_count > 0){
+            mPadPress = new PadPressCall();
+            if(keysound_path != null){
+                mPadPress.calls.add(mKeySounds);
+            }
+            if(keyled_count > 0){
+                mPadPress.calls.add(mKeyLED);
+                mKeyLED.setToShowLed((int x, int y, int real_color, int lp_index) -> {
+
+                    });
+            }
+            if(autoplay_path != null){
+                mPadPress.calls.add(mAutoPlay);
+            }
+        }
+    }
+
+    public void callPress(MakePads.ChainInfo chain, MakePads.PadInfo pad){
+        if(mPadPress != null) this.mPadPress.call(chain, pad);
+    }
+    public void callRelease(MakePads.ChainInfo chain, MakePads.PadInfo pad){
+
+    }
+    public PadPressCall getPadPress(){
+        return mPadPress;
+    }
 
     /**
      * Feche este projeto e libere memoria
@@ -66,6 +107,15 @@ public class Project implements ProjectIndexes {
     public void release(){
 
     }
+    
+    public void loadProject(Context context, LoadProject.LoadingProject mLoadingProject){
+        project_loaded_problems = new ArrayList<>();
+        new LoadProject(context, mLoadingProject, this){
+            @Override
+            public void onFinish() { onLoaded(); }
+        };
+    }
+
     public interface AutoPlayInterface {
         public boolean isRunning();
         public boolean startAutoPlay();
@@ -79,11 +129,6 @@ public class Project implements ProjectIndexes {
         public float advanceAutoPlay();
 
         public float regressAutoPlay();
-    }
-    
-    public void loadProject(Context context, LoadProject.LoadingProject mLoadingProject){
-        project_loaded_problems = new ArrayList<>();
-        new LoadProject(context, mLoadingProject, this);
     }
 
     public interface KeyLEDInterface {

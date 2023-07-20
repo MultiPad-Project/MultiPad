@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OptionsPage extends Options {
+    private byte index;
     protected String title;
     protected LinearLayout page;
     protected ScrollView scroll;
@@ -47,6 +48,14 @@ public class OptionsPage extends Options {
         page.removeAllViews();
         optionsList.clear();
     }
+
+    public byte getPageIndex(){
+        return index;
+    }
+    public void setPageIndex(byte index){
+        this.index = index;
+    }
+
 
     @Override
     public void onUpdatedList(){

@@ -1,5 +1,7 @@
 package com.xayup.multipad;
 
+import android.content.Context;
+import android.provider.Settings;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,5 +19,8 @@ public class Ui {
             touch(view);
             release(view);
         }
+    }
+    public static float getSettingsAnimationScale(Context context){
+        return Settings.Global.getFloat(context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
     }
 }

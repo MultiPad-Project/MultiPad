@@ -86,7 +86,7 @@ public class MakePads {
 
         public int getRow(){ return row; }
         public int getColum(){ return colum; }
-        public int getType(){ return type; }
+        public byte getType(){ return type; }
 
         public void setRow(byte row){ this.row = row; }
         public void setColum(byte colum){ this.colum = colum; }

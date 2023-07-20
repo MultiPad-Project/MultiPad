@@ -19,11 +19,10 @@ import com.xayup.multipad.skin.SkinSupport;
 
 import java.util.*;
 
-public class Pads {
+public class GridPads {
     protected Activity context;
     protected Map<String, List<PadGrid>> mGridViews;
     public SkinManager mSkinManager;
-    protected PadInteraction mPadInteraction;
     protected PadGrid active_pad = null;
     protected View.OnTouchListener resize_touch;
     protected View.OnTouchListener rotate_touch;
@@ -40,9 +39,8 @@ public class Pads {
         int LAYOUT_MATRIX_MODE = 3;
     }
 
-    public Pads(Context context, PadInteraction mPadInteraction) {
+    public GridPads(Context context) {
         this.context = (Activity) context;
-        this.mPadInteraction = mPadInteraction;
         this.mSkinManager = new SkinManager();
         this.current_chain = new MakePads.ChainInfo(1, 9);
         mGridViews = new HashMap<>();
@@ -159,13 +157,14 @@ public class Pads {
         protected RelativeLayout pads_settings_overlay;
         protected GridLayout mGrid;
         protected int lp_id;
-        protected Object[][][] pads;
+        protected MakePads.Pads mPads;
 
         public PadGrid(SkinProperties skin, int rows, int columns) {
             this.mSkinProperties = skin;
             this.mSkinData = new PadSkinData();
 
-            this.mGrid = new MakePads(context).make(rows, columns).getGrid();
+            this.mGrid = (this.mPads = new MakePads(context).make(rows, columns)).getGrid();
+
             this.pad_background = new ImageView(context);
             this.pad_background.setScaleType(ImageView.ScaleType.CENTER_CROP);
             (this.mRootPads = new RelativeLayout(context)).addView(pad_background, new ViewGroup.LayoutParams(-1, -1));
@@ -178,6 +177,10 @@ public class Pads {
             applySkin(this.mSkinProperties);
         }
 
+        public void setForAllPadInteraction(PadInteraction padInteraction){
+            forAllPads((pad, mPadGrid) -> pad.setOnTouchListener(padInteraction.onPadClick(pad, mPadGrid)));
+        }
+
         protected void setId(int id){
             if(mGridViews.get(String.valueOf(lp_id)) != null) mGridViews.get(String.valueOf(lp_id)).remove(this);
             if(mGridViews.get(String.valueOf(id)) != null){
@@ -186,6 +189,10 @@ public class Pads {
                 mGridViews.put(String.valueOf(id), new ArrayList<>(List.of(this)));
             }
             lp_id = id;
+        }
+
+        public MakePads.Pads getPads(){
+            return mPads;
         }
 
         public int getId(){
@@ -207,12 +214,13 @@ public class Pads {
         public void setProject(Project project){
             this.current_project = project;
         }
+        public Project getProject(){ return this.current_project; }
 
 
         public void forAllPads(ForAllPads fap) {
             for (int i = 0; i < mGrid.getChildCount(); i++) {
                 if (mGrid.getChildAt(i) instanceof ViewGroup) {
-                    fap.run((ViewGroup) mGrid.getChildAt(i));
+                    fap.run((ViewGroup) mGrid.getChildAt(i), this);
                 }
             }
         }
@@ -243,10 +251,9 @@ public class Pads {
                     mSkinProperties,
                     mSkinData,
                     (skin) -> {
-                        ((ImageView) mRootPads.getChildAt(0))
-                                .setImageDrawable(mSkinData.draw_playbg);
+                        ((ImageView) mRootPads.getChildAt(0)).setImageDrawable(mSkinData.draw_playbg);
                         forAllPads(
-                                (pad) -> {
+                                (pad, mPadGrid) -> {
                                     for (int ii = 0; ii < pad.getChildCount(); ii++) {
                                         View view = pad.getChildAt(ii);
                                         if(view.getTag() == null) continue;
@@ -305,7 +312,7 @@ public class Pads {
         }
     }
 
-    protected interface ForAllPads {
-        void run(ViewGroup view);
+    public interface ForAllPads {
+        void run(ViewGroup view, PadGrid mPadGrid);
     }
 }

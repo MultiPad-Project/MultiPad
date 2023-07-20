@@ -16,7 +16,7 @@ import com.xayup.debug.XLog;
 import com.xayup.multipad.R;
 import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
-import com.xayup.multipad.pads.Pads;
+import com.xayup.multipad.pads.GridPads;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.skin.SkinAdapter;
 import com.xayup.multipad.skin.SkinManager;
@@ -52,7 +52,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
     /*Abstracts*/
     public abstract void onExit();
     public abstract KeyLED getKeyLEDInstance();
-    public abstract Pads getPadInstance();
+    public abstract GridPads getPadInstance();
 
     /*Pages*/
     public OptionsPage skin_page;
@@ -109,15 +109,15 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
                 OptionsItem apply_for_all = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                 apply_for_all.setTitle(context.getString(R.string.list_skin_apply_for_all));
                 apply_for_all.setOnClick((view)->{
-                    List<Pads.PadGrid> list_pads = getPadInstance().getAllPadsList();
+                    List<GridPads.PadGrid> list_pads = getPadInstance().getAllPadsList();
                     while(!list_pads.isEmpty()) {
                         list_pads.remove(0).applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                     }
                     list_pads = null;
                 });
-                List<Pads.PadGrid> list_pads = getPadInstance().getAllPadsList();
+                List<GridPads.PadGrid> list_pads = getPadInstance().getAllPadsList();
                 while(!list_pads.isEmpty()) {
-                    Pads.PadGrid padGrid = list_pads.remove(0);
+                    GridPads.PadGrid padGrid = list_pads.remove(0);
                     OptionsItem pads_item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                     pads_item.setTitle(padGrid.getName());
                     pads_item.setTag(padGrid);
@@ -251,7 +251,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
             configs.setVisibility(View.GONE);
             color_table.setVisibility(View.GONE);
             pads_list.setVisibility(View.GONE);
-            switchTo(EXIT_PAGE_CONFIGS, false);
+            //switchTo(EXIT_PAGE_CONFIGS, false);
         });
 
         /*Back Button*/
@@ -260,7 +260,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
                 case EXIT_PAGE_CONFIGS:
                 case EXIT_PAGE_LIST_COLOR_TABLE:
                 case EXIT_PAGE_PAD_GRIDS:
-                    switchTo(EXIT_PAGE_LISTSKIN, true);
+              //      switchTo(EXIT_PAGE_LISTSKIN, true);
                     color_table.setVisibility(View.VISIBLE);
                     configs.setVisibility(View.VISIBLE);
                     pads_list.setVisibility(View.VISIBLE);
@@ -280,16 +280,16 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
             pads_list.setVisibility(View.GONE);
             new_pads.setVisibility(View.VISIBLE);
             grid_pads_page.clear();
-            List<Pads.PadGrid> padGrid_list = getPadInstance().getAllPadsList();
+            List<GridPads.PadGrid> padGrid_list = getPadInstance().getAllPadsList();
             while(!padGrid_list.isEmpty()){
-                Pads.PadGrid padGrid = padGrid_list.remove(0);
+                GridPads.PadGrid padGrid = padGrid_list.remove(0);
                 OptionsItem item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                 item.setTitle(padGrid.getName());
                 item.setDescription(String.valueOf(padGrid.getId()));
                 item.setOnClick(padsConfigItemOnClick(padGrid));
                 grid_pads_page.putOption(item);
             }
-            switchTo(EXIT_PAGE_PAD_GRIDS, false);
+           // switchTo(EXIT_PAGE_PAD_GRIDS, false);
         });
 
         /*Add bottom buttons*/
@@ -308,7 +308,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
             color_table.setVisibility(View.GONE);
             pads_list.setVisibility(View.GONE);
             color_table_page.clear();
-            switchTo(EXIT_PAGE_LIST_COLOR_TABLE, false);
+           // switchTo(EXIT_PAGE_LIST_COLOR_TABLE, false);
             File root = new File(GlobalConfigs.DefaultConfigs.COLOR_TABLE_PATH);
             if(root.exists()) for(File file : root.listFiles()){
                 OptionsItem item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
@@ -418,7 +418,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
         create();
     }
 
-    protected View.OnClickListener padsConfigItemOnClick(Pads.PadGrid padGrid){
+    protected View.OnClickListener padsConfigItemOnClick(GridPads.PadGrid padGrid){
         return (view)->{
             FluctuateOptionsView pad_op = new FluctuateOptionsView(context);
             OptionsPage pad_op_page = pad_op.getPage(pad_op.newPage(context.getString(R.string.alert_exit_options)));

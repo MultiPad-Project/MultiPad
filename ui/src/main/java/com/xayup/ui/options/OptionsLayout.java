@@ -36,7 +36,7 @@ public class OptionsLayout {
     }
 
 
-    public void switchTo(int page_index, boolean back) {
+    public void switchTo(int page_index, boolean back, int duration) {
         if (back) {
             flipper.setInAnimation(context, R.anim.move_in_to_right);
             flipper.setOutAnimation(context, R.anim.move_out_to_right);
@@ -44,6 +44,8 @@ public class OptionsLayout {
             flipper.setInAnimation(context, R.anim.move_in_to_left);
             flipper.setOutAnimation(context, R.anim.move_out_to_left);
         }
+        flipper.getInAnimation().setDuration(duration);
+        flipper.getOutAnimation().setDuration(duration);
         setTitle(flipper_pages.get(page_index).getTitle());
         flipper.setDisplayedChild(page_index);
     }
@@ -57,8 +59,8 @@ public class OptionsLayout {
         if(flipper_pages.add(page)){
             page.setTitle(title);
             flipper.addView(page.getPageView());
-            setTitle(title);
-            return flipper_pages.size()-1;
+            page.setPageIndex((byte)(flipper_pages.size()-1));
+            return page.getPageIndex();
         }
         return -1;
     }
@@ -71,7 +73,8 @@ public class OptionsLayout {
     public int addPage(OptionsPage page){
         if(flipper_pages.add(page)){
             flipper.addView(page.getPageView());
-            return flipper_pages.size()-1;
+            page.setPageIndex((byte) (flipper_pages.size()-1));
+            return page.getPageIndex();
         }
         return -1;
     }

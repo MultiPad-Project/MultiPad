@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class Projects implements ProjectIndexes {
-    
-    public boolean[] flags;
-
     public List<Project> projects = null;
 
     /**
