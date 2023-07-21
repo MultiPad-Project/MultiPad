@@ -23,7 +23,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
     //LoadScreen mLoadScreen;
     protected RelativeLayout pads_to_add;
-    protected GridPads gridPads;
+    protected GridPadsReceptor gridPadsReceptor;
 
     protected OnTouchListener onPadTouch,
             onChainTouch,
@@ -71,10 +71,244 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
         onWatermarkTouch = onWatermarkTouch();
          */
         // Create Pads Layout
-        gridPads = new GridPads(context);
+        gridPadsReceptor = new GridPadsReceptor(context){
+            @Override
+            public boolean onTheButtonSign(PadGrid grid, MakePads.PadInfo pad, MotionEvent event) {
+                View v = grid.getPads().getPadView(pad.getRow(), pad.getColum());
+                if (pad.getRow() == 0) {
+                    switch (pad.getColum()) {
+                        case 1:
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN:
+                                {
+                                    gridPadsReceptor.watermark_press = !gridPadsReceptor.watermark_press;
+                                    if (gridPadsReceptor.watermark_press) v.findViewById(R.id.btn_).setAlpha(1f);
+                                    else v.findViewById(R.id.btn_).setAlpha(0f);
+                                    return true;
+                                }
+                            }
+                            return false;
+                        case 2:
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN:
+                                {
+                                    if(grid.getProject().getPadPress() != null && grid.getProject().getKeyLED() != null) {
+                                        if (grid.getProject().getPadPress().calls.contains(grid.getProject().getKeyLED())) {
+                                            grid.getProject().getPadPress().calls.remove(grid.getProject().getKeyLED());
+                                            if (grid.getProject().getKeySounds() != null) {
+                                                grid.getProject().getPadPress().calls.remove(grid.getProject().getKeySounds());
+                                                grid.getProject().getKeySounds().stopAll();
+                                            }
+                                            v.findViewById(R.id.btn_).setAlpha(0f);
+                                        } else {
+                                            grid.getProject().getPadPress().calls.add(grid.getProject().getKeyLED());
+                                            if (grid.getProject().getKeySounds() != null)
+                                                grid.getProject().getPadPress().calls.add(grid.getProject().getKeySounds());
+                                            v.findViewById(R.id.btn_).setAlpha(1f);
+                                        }
+                                    }
+                                    return true;
+                                }
+                            }
+                            return false;
+                        case 3:
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN:
+                                {
+                                    if (grid.getProject().getAutoPlay() != null) {
+                                        if (grid.getProject().getAutoPlay().isRunning()) {
+                                            grid.getProject().getAutoPlay().stopAutoPlay();
+                                            v.findViewById(R.id.btn_).setAlpha(0f);
+                                            // Disable control
+                                            /////// TEMPORARY ///////
+                                            ViewGroup a = gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 4)); a.removeView(a.getChildAt(a.getChildCount()-1));
+                                            ViewGroup b = gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 5)); b.removeView(b.getChildAt(b.getChildCount()-1));
+                                            ViewGroup c = gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 6)); c.removeView(c.getChildAt(c.getChildCount()-1));
+
+                                        } else {
+                                            grid.getProject().getAutoPlay().startAutoPlay(new AutoPlay.AutoPlayChanges() {
+                                                @Override
+                                                public View getViewShowPracticalMark(int r, int c) {
+                                                    return gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(r, c)).findViewById(R.id.btn_);
+                                                }
+
+                                                @Override
+                                                public View getPadToTouch(int r, int c) {
+                                                    return gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(r, c));
+                                                }
+
+                                                @Override
+                                                public MakePads.ChainInfo getCurrentChainProperties() {
+                                                    return gridPadsReceptor.current_chain;
+                                                }
+
+                                                @Override
+                                                public PadSkinData getSkinData() {
+                                                    return gridPadsReceptor.getActivePads().getSkinData();
+                                                }
+
+                                                @Override
+                                                public void onStopped(PadPressCallInterface call) {
+                                                    if(grid.getProject().getPadPress() != null) {
+                                                        grid.getProject().getPadPress().calls.remove(call);
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onStarted(PadPressCallInterface call) {
+                                                    if(grid.getProject().getPadPress() != null) {
+                                                        grid.getProject().getPadPress().calls.add(call);
+                                                    }
+                                                }
+                                            });
+                                            v.findViewById(R.id.btn_).setAlpha(1f);
+                                            // Enable control
+                                            /////// TEMPORARY ///////
+                                            ImageView a = new ImageView(context); a.setImageDrawable(context.getDrawable(R.drawable.play_prev)); a.setRotation(90f);
+                                            ImageView b = new ImageView(context); b.setImageDrawable(context.getDrawable(R.drawable.play_pause)); b.setRotation(90f);
+                                            ImageView c = new ImageView(context); c.setImageDrawable(context.getDrawable(R.drawable.play_prev)); c.setScaleX(-1f); c.setRotation(90f);
+                                            ((ViewGroup) gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 4))).addView(a, new ViewGroup.LayoutParams(-1, -1));
+                                            ((ViewGroup) gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 5))).addView(b, new ViewGroup.LayoutParams(-1, -1));
+                                            ((ViewGroup) gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 6))).addView(c, new ViewGroup.LayoutParams(-1, -1));
+                                        }
+                                    }
+                                    return true;
+                                }
+                            }
+                            return false;
+                        case 4:
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN:
+                                {
+                                    if (grid.getProject().getAutoPlay() != null && grid.getProject().getAutoPlay().isRunning()) {
+                                        grid.getProject().getAutoPlay().regressAutoPlay();
+                                        v.findViewById(R.id.btn_).setAlpha(1f);
+                                    }
+                                    return true;
+                                }
+                                case MotionEvent.ACTION_UP: {
+                                    v.findViewById(R.id.btn_).setAlpha(0f);
+                                    return true;
+                                }
+                            }
+                            return false;
+                        case 5:
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN: {
+                                    if (grid.getProject().getAutoPlay() != null && grid.getProject().getAutoPlay().isRunning()) {
+                                        v.findViewById(R.id.btn_).setAlpha(1f);
+                                        if (grid.getProject().getAutoPlay().isPaused()) {
+                                            grid.getProject().getAutoPlay().resumeAutoPlay();
+                                        } else {
+                                            grid.getProject().getAutoPlay().pauseAutoPlay(2);
+                                        }
+                                    }
+                                    return true;
+                                }
+                                case MotionEvent.ACTION_UP: {
+                                    v.findViewById(R.id.btn_).setAlpha(0f);
+                                    return true;
+                                }
+                            }
+                            return false;
+                        case 6:
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN: {
+                                    if (grid.getProject().getAutoPlay() != null && grid.getProject().getAutoPlay().isRunning()) {
+                                        v.findViewById(R.id.btn_).setAlpha(1f);
+                                        grid.getProject().getAutoPlay().advanceAutoPlay();
+                                    }
+                                    return true;
+                                }
+                                case MotionEvent.ACTION_UP: {
+                                    v.findViewById(R.id.btn_).setAlpha(0f);
+                                    return true;
+                                }
+                            }
+                            return false;
+                        case 7:
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN: {
+                                    v.findViewById(R.id.btn_).setAlpha(1f);
+                                    return true;
+                                }
+                                case MotionEvent.ACTION_UP: {
+                                    v.findViewById(R.id.btn_).setAlpha(0f);
+                                    return true;
+                                }
+                            }
+                            return false;
+                        case 8:
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN: {
+                                    gridPadsReceptor.watermark = !gridPadsReceptor.watermark;
+                                    if (gridPadsReceptor.watermark) {
+                                        v.findViewById(R.id.btn_).setAlpha(1f);
+                                    } else {
+                                        v.findViewById(R.id.btn_).setAlpha(0f);
+                                    }
+                                }
+                            }
+                            return false;
+                    }
+                } else if (pad.getType() == MakePads.PadInfo.PadInfoIdentifier.CHAIN) {
+                        XLog.v("Chain press", "X: " + pad.getRow() + ",Y: " + pad.getColum());
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN: {
+                                gridPadsReceptor.getActivePads().getGridPads().findViewById(gridPadsReceptor.current_chain.getId()).findViewById(R.id.btn_).setAlpha(0f);
+                                boolean chain_changed = gridPadsReceptor.current_chain.getMc() != ((MakePads.ChainInfo) pad).getMc();
+                                if(grid.getProject() != null) {
+                                    if (grid.getProject().getKeySounds() != null && chain_changed)
+                                        grid.getProject().getKeySounds().resetSequencer();
+                                    if (grid.getProject().getKeyLED() != null && chain_changed)
+                                        grid.getProject().getKeyLED().resetSequence();
+
+                                    grid.getProject().callPress(gridPadsReceptor.current_chain, pad);
+                                }
+                                gridPadsReceptor.current_chain.setCurrentChain(pad.getRow(), pad.getColum());
+                                // After set this chain to current chain
+                                gridPadsReceptor.getActivePads().getGridPads().findViewById(gridPadsReceptor.current_chain.getId()).findViewById(R.id.btn_).setAlpha(1f);
+                                return true;
+                            }
+                            case MotionEvent.ACTION_UP: {
+                                //padGrid.getProject().mPadRelease.call(gridPads.current_chain, mChainInfo);
+                                return true;
+                            }
+                        }
+                        return false;
+                } else if (pad.getType() == MakePads.PadInfo.PadInfoIdentifier.PAD) {
+                        XLog.v("Pad press", "X: " + pad.getRow() + ",Y: " + pad.getColum());
+                        if(grid.getProject() == null) return false;
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:{
+                                grid.getProject().callPress(gridPadsReceptor.current_chain, pad);
+                                if(gridPadsReceptor.watermark_press) {
+                                    if (grid.getSkinData().draw_btn_ != null)
+                                        v.findViewById(R.id.btn_).setAlpha(1f);
+                                    else
+                                        grid.getPads().setLedColor(pad.getRow(), pad.getColum(), grid.getSkinData().draw_btn__color);
+                                }
+                                return true;
+                            }
+                            case MotionEvent.ACTION_UP: {
+                                if(gridPadsReceptor.watermark_press) {
+                                    if (grid.getSkinData().draw_btn_ != null)
+                                        v.findViewById(R.id.btn_).setAlpha(0f);
+                                    else
+                                        grid.getPads().setLedColor(pad.getRow(), pad.getColum(), 0);
+                                }
+                                return true;
+                            }
+                        }
+
+                        return false;
+                }
+                return false;
+            }
+        };
         // Make new Pads object
-        gridPads.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
-        gridPads.getActivePads().setForAllPadInteraction(padInteraction());
+        gridPadsReceptor.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
+        //gridPadsReceptor.getActivePads().setForAllPadInteraction(padInteraction());
         (this.pads_to_add = (RelativeLayout) pads_to_add).post(
                 () -> {
                     // Get display size from MATCH_PARENT view
@@ -83,7 +317,7 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
 
                     // Get View from Pads
-                    ViewGroup virtual_launchpad = gridPads.getActivePads().getContainer(); //Background
+                    ViewGroup virtual_launchpad = gridPadsReceptor.getActivePads().getContainer(); //Background
 
                     // Prepare Params after add Pads to scene
                     RelativeLayout.LayoutParams bParams = new RelativeLayout.LayoutParams(w/2, w/2);
@@ -101,16 +335,16 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                     */
                     /*Setup actives*/
                     /*Current Chain*/
-                    gridPads.getActivePads().getGridPads().findViewById(
-                            MakePads.PadID.getId(gridPads.current_chain.getRow(), gridPads.current_chain.getColum())).findViewById(R.id.press).setAlpha(1f);
+                    gridPadsReceptor.getActivePads().getGridPads().findViewById(
+                            MakePads.PadID.getId(gridPadsReceptor.current_chain.getRow(), gridPadsReceptor.current_chain.getColum())).findViewById(R.id.btn_).setAlpha(1f);
 
                     /*LEDs*/
-                    gridPads.getActivePads().getGridPads().findViewById(
-                            MakePads.PadID.getId(0, 2)).findViewById(R.id.press).setAlpha(1f);
+                    gridPadsReceptor.getActivePads().getGridPads().findViewById(
+                            MakePads.PadID.getId(0, 2)).findViewById(R.id.btn_).setAlpha(1f);
 
                     /*Actives Watermark*/
-                    gridPads.getActivePads().getGridPads().findViewById(
-                            MakePads.PadID.getId(0, 8)).findViewById(R.id.press).setAlpha(1f);
+                    gridPadsReceptor.getActivePads().getGridPads().findViewById(
+                            MakePads.PadID.getId(0, 8)).findViewById(R.id.btn_).setAlpha(1f);
                 });
     }
 
@@ -125,9 +359,9 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                             {
-                                gridPads.watermark_press = !gridPads.watermark_press;
-                                if (gridPads.watermark_press) v.findViewById(R.id.press).setAlpha(1f);
-                                else v.findViewById(R.id.press).setAlpha(0f);
+                                gridPadsReceptor.watermark_press = !gridPadsReceptor.watermark_press;
+                                if (gridPadsReceptor.watermark_press) v.findViewById(R.id.btn_).setAlpha(1f);
+                                else v.findViewById(R.id.btn_).setAlpha(0f);
                                 return true;
                             }
                         }
@@ -139,19 +373,19 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                             {
-                                if(padGrid.getProject().getPadPress() != null && padGrid.getProject().mKeyLED != null) {
-                                    if (padGrid.getProject().getPadPress().calls.contains(padGrid.getProject().mKeyLED)) {
-                                        padGrid.getProject().getPadPress().calls.remove(padGrid.getProject().mKeyLED);
-                                        if (padGrid.getProject().mKeySounds != null) {
-                                            padGrid.getProject().getPadPress().calls.remove(padGrid.getProject().mKeySounds);
-                                            padGrid.getProject().mKeySounds.stopAll();
+                                if(padGrid.getProject().getPadPress() != null && padGrid.getProject().getKeyLED() != null) {
+                                    if (padGrid.getProject().getPadPress().calls.contains(padGrid.getProject().getKeyLED())) {
+                                        padGrid.getProject().getPadPress().calls.remove(padGrid.getProject().getKeyLED());
+                                        if (padGrid.getProject().getKeySounds() != null) {
+                                            padGrid.getProject().getPadPress().calls.remove(padGrid.getProject().getKeySounds());
+                                            padGrid.getProject().getKeySounds().stopAll();
                                         }
-                                        v.findViewById(R.id.press).setAlpha(0f);
+                                        v.findViewById(R.id.btn_).setAlpha(0f);
                                     } else {
-                                        padGrid.getProject().getPadPress().calls.add(padGrid.getProject().mKeyLED);
-                                        if (padGrid.getProject().mKeySounds != null)
-                                            padGrid.getProject().getPadPress().calls.add(padGrid.getProject().mKeySounds);
-                                        v.findViewById(R.id.press).setAlpha(1f);
+                                        padGrid.getProject().getPadPress().calls.add(padGrid.getProject().getKeyLED());
+                                        if (padGrid.getProject().getKeySounds() != null)
+                                            padGrid.getProject().getPadPress().calls.add(padGrid.getProject().getKeySounds());
+                                        v.findViewById(R.id.btn_).setAlpha(1f);
                                     }
                                 }
                                 return true;
@@ -164,36 +398,36 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                             {
-                                if (padGrid.getProject().mAutoPlay != null) {
-                                    if (padGrid.getProject().mAutoPlay.isRunning()) {
-                                        padGrid.getProject().mAutoPlay.stopAutoPlay();
-                                        v.findViewById(R.id.press).setAlpha(0f);
+                                if (padGrid.getProject().getAutoPlay() != null) {
+                                    if (padGrid.getProject().getAutoPlay().isRunning()) {
+                                        padGrid.getProject().getAutoPlay().stopAutoPlay();
+                                        v.findViewById(R.id.btn_).setAlpha(0f);
                                         // Disable control
                                         /////// TEMPORARY ///////
-                                        ViewGroup a = gridPads.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 4)); a.removeView(a.getChildAt(a.getChildCount()-1));
-                                        ViewGroup b = gridPads.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 5)); b.removeView(b.getChildAt(b.getChildCount()-1));
-                                        ViewGroup c = gridPads.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 6)); c.removeView(c.getChildAt(c.getChildCount()-1));
+                                        ViewGroup a = gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 4)); a.removeView(a.getChildAt(a.getChildCount()-1));
+                                        ViewGroup b = gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 5)); b.removeView(b.getChildAt(b.getChildCount()-1));
+                                        ViewGroup c = gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 6)); c.removeView(c.getChildAt(c.getChildCount()-1));
 
                                     } else {
-                                        padGrid.getProject().mAutoPlay.startAutoPlay(new AutoPlay.AutoPlayChanges() {
+                                        padGrid.getProject().getAutoPlay().startAutoPlay(new AutoPlay.AutoPlayChanges() {
                                             @Override
                                             public View getViewShowPracticalMark(int r, int c) {
-                                                return gridPads.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(r, c)).findViewById(R.id.press);
+                                                return gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(r, c)).findViewById(R.id.btn_);
                                             }
 
                                             @Override
                                             public View getPadToTouch(int r, int c) {
-                                                return gridPads.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(r, c));
+                                                return gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(r, c));
                                             }
 
                                             @Override
                                             public MakePads.ChainInfo getCurrentChainProperties() {
-                                                return gridPads.current_chain;
+                                                return gridPadsReceptor.current_chain;
                                             }
 
                                             @Override
                                             public PadSkinData getSkinData() {
-                                                return gridPads.getActivePads().getSkinData();
+                                                return gridPadsReceptor.getActivePads().getSkinData();
                                             }
 
                                             @Override
@@ -210,15 +444,15 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                                                 }
                                             }
                                         });
-                                        v.findViewById(R.id.press).setAlpha(1f);
+                                        v.findViewById(R.id.btn_).setAlpha(1f);
                                         // Enable control
                                         /////// TEMPORARY ///////
                                         ImageView a = new ImageView(context); a.setImageDrawable(context.getDrawable(R.drawable.play_prev)); a.setRotation(90f);
                                         ImageView b = new ImageView(context); b.setImageDrawable(context.getDrawable(R.drawable.play_pause)); b.setRotation(90f);
                                         ImageView c = new ImageView(context); c.setImageDrawable(context.getDrawable(R.drawable.play_prev)); c.setScaleX(-1f); c.setRotation(90f);
-                                        ((ViewGroup) gridPads.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 4))).addView(a, new ViewGroup.LayoutParams(-1, -1));
-                                        ((ViewGroup) gridPads.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 5))).addView(b, new ViewGroup.LayoutParams(-1, -1));
-                                        ((ViewGroup) gridPads.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 6))).addView(c, new ViewGroup.LayoutParams(-1, -1));
+                                        ((ViewGroup) gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 4))).addView(a, new ViewGroup.LayoutParams(-1, -1));
+                                        ((ViewGroup) gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 5))).addView(b, new ViewGroup.LayoutParams(-1, -1));
+                                        ((ViewGroup) gridPadsReceptor.getActivePads().getGridPads().findViewById(MakePads.PadID.getId(0, 6))).addView(c, new ViewGroup.LayoutParams(-1, -1));
                                     }
                                 }
                                 return true;
@@ -231,14 +465,14 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                             {
-                                if (padGrid.getProject().mAutoPlay != null && padGrid.getProject().mAutoPlay.isRunning()) {
-                                    padGrid.getProject().mAutoPlay.regressAutoPlay();
-                                    v.findViewById(R.id.press).setAlpha(1f);
+                                if (padGrid.getProject().getAutoPlay() != null && padGrid.getProject().getAutoPlay().isRunning()) {
+                                    padGrid.getProject().getAutoPlay().regressAutoPlay();
+                                    v.findViewById(R.id.btn_).setAlpha(1f);
                                 }
                                 return true;
                             }
                             case MotionEvent.ACTION_UP: {
-                                v.findViewById(R.id.press).setAlpha(0f);
+                                v.findViewById(R.id.btn_).setAlpha(0f);
                                 return true;
                             }
                         }
@@ -249,18 +483,18 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                             {
-                                if (padGrid.getProject().mAutoPlay != null && padGrid.getProject().mAutoPlay.isRunning()) {
-                                    v.findViewById(R.id.press).setAlpha(1f);
-                                    if (padGrid.getProject().mAutoPlay.isPaused()) {
-                                        padGrid.getProject().mAutoPlay.resumeAutoPlay();
+                                if (padGrid.getProject().getAutoPlay() != null && padGrid.getProject().getAutoPlay().isRunning()) {
+                                    v.findViewById(R.id.btn_).setAlpha(1f);
+                                    if (padGrid.getProject().getAutoPlay().isPaused()) {
+                                        padGrid.getProject().getAutoPlay().resumeAutoPlay();
                                     } else {
-                                        padGrid.getProject().mAutoPlay.pauseAutoPlay(2);
+                                        padGrid.getProject().getAutoPlay().pauseAutoPlay(2);
                                     }
                                 }
                                 return true;
                             }
                             case MotionEvent.ACTION_UP: {
-                                v.findViewById(R.id.press).setAlpha(0f);
+                                v.findViewById(R.id.btn_).setAlpha(0f);
                                 return true;
                             }
                         }
@@ -271,14 +505,14 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                             {
-                                if (padGrid.getProject().mAutoPlay != null && padGrid.getProject().mAutoPlay.isRunning()) {
-                                    v.findViewById(R.id.press).setAlpha(1f);
-                                    padGrid.getProject().mAutoPlay.advanceAutoPlay();
+                                if (padGrid.getProject().getAutoPlay() != null && padGrid.getProject().getAutoPlay().isRunning()) {
+                                    v.findViewById(R.id.btn_).setAlpha(1f);
+                                    padGrid.getProject().getAutoPlay().advanceAutoPlay();
                                 }
                                 return true;
                             }
                             case MotionEvent.ACTION_UP: {
-                                v.findViewById(R.id.press).setAlpha(0f);
+                                v.findViewById(R.id.btn_).setAlpha(0f);
                                 return true;
                             }
                         }
@@ -289,11 +523,11 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                             {
-                                v.findViewById(R.id.press).setAlpha(1f);
+                                v.findViewById(R.id.btn_).setAlpha(1f);
                                 return true;
                             }
                             case MotionEvent.ACTION_UP: {
-                                v.findViewById(R.id.press).setAlpha(0f);
+                                v.findViewById(R.id.btn_).setAlpha(0f);
                                 return true;
                             }
                         }
@@ -304,11 +538,11 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                             {
-                                gridPads.watermark = !gridPads.watermark;
-                                if (gridPads.watermark) {
-                                    v.findViewById(R.id.press).setAlpha(1f);
+                                gridPadsReceptor.watermark = !gridPadsReceptor.watermark;
+                                if (gridPadsReceptor.watermark) {
+                                    v.findViewById(R.id.btn_).setAlpha(1f);
                                 } else {
-                                    v.findViewById(R.id.press).setAlpha(0f);
+                                    v.findViewById(R.id.btn_).setAlpha(0f);
                                 }
                             }
                         }
@@ -322,16 +556,18 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                     v.performClick();
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN: {
-                            gridPads.getActivePads().getGridPads().findViewById(gridPads.current_chain.getId()).findViewById(R.id.press).setAlpha(0f);
-                            boolean chain_changed = gridPads.current_chain.getMc() != mChainInfo.getMc();
-                            if(padGrid.getProject().mKeySounds != null && chain_changed) padGrid.getProject().mKeySounds.resetSequencer();
-                            if(padGrid.getProject().mKeyLED != null && chain_changed) padGrid.getProject().mKeyLED.resetSequence();
+                            gridPadsReceptor.getActivePads().getGridPads().findViewById(gridPadsReceptor.current_chain.getId()).findViewById(R.id.btn_).setAlpha(0f);
+                            boolean chain_changed = gridPadsReceptor.current_chain.getMc() != mChainInfo.getMc();
+                            if (padGrid.getProject().getKeySounds() != null && chain_changed)
+                                padGrid.getProject().getKeySounds().resetSequencer();
+                            if (padGrid.getProject().getKeyLED() != null && chain_changed)
+                                padGrid.getProject().getKeyLED().resetSequence();
 
-                            padGrid.getProject().callPress(gridPads.current_chain, mChainInfo);
+                            padGrid.getProject().callPress(gridPadsReceptor.current_chain, mChainInfo);
 
-                            gridPads.current_chain.setCurrentChain(mChainInfo.getRow(), mChainInfo.getColum());
+                            gridPadsReceptor.current_chain.setCurrentChain(mChainInfo.getRow(), mChainInfo.getColum());
                             // After set this chain to current chain
-                            gridPads.getActivePads().getGridPads().findViewById(gridPads.current_chain.getId()).findViewById(R.id.press).setAlpha(1f);
+                            gridPadsReceptor.getActivePads().getGridPads().findViewById(gridPadsReceptor.current_chain.getId()).findViewById(R.id.btn_).setAlpha(1f);
                             return true;
                         }
                         case MotionEvent.ACTION_UP: {
@@ -347,13 +583,13 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                     v.performClick();
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:{
-                            padGrid.getProject().callPress(gridPads.current_chain, mPadInfo);
-                            if(gridPads.watermark_press) v.findViewById(R.id.press).setAlpha(1f);
+                            padGrid.getProject().callPress(gridPadsReceptor.current_chain, mPadInfo);
+                            if(gridPadsReceptor.watermark_press) v.findViewById(R.id.btn_).setAlpha(1f);
                             return true;
                         }
                         case MotionEvent.ACTION_UP: {
                             //mPadRelease.call(gridPads.current_chain, mPadInfo);
-                            if(gridPads.watermark_press) v.findViewById(R.id.press).setAlpha(0f);
+                            if(gridPadsReceptor.watermark_press) v.findViewById(R.id.btn_).setAlpha(0f);
                             return true;
                         }
                     }
@@ -365,17 +601,17 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
         };
     }
 
-    public GridPads getPads(){
-        return gridPads;
+    public GridPadsReceptor getPads(){
+        return gridPadsReceptor;
     }
 
     public void addNewGrid(){
-        gridPads.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
-        gridPads.getActivePads().setForAllPadInteraction(padInteraction());
+        gridPadsReceptor.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
+        //gridPadsReceptor.getActivePads().setForAllPadInteraction(padInteraction());
         RelativeLayout.LayoutParams bParams = new RelativeLayout.LayoutParams(GlobalConfigs.display_height, GlobalConfigs.display_height);
         bParams.addRule(RelativeLayout.CENTER_VERTICAL);
         bParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        pads_to_add.addView(gridPads.getActivePads().getContainer(), bParams);
+        pads_to_add.addView(gridPadsReceptor.getActivePads().getContainer(), bParams);
     }
 
     /*

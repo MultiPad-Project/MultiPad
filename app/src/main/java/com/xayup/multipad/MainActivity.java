@@ -4,10 +4,14 @@ import android.app.*;
 import android.content.*;
 import android.hardware.usb.UsbManager;
 import android.os.*;
+import android.text.InputType;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.configs.GlobalConfigs;
 
@@ -16,7 +20,7 @@ import com.xayup.multipad.layouts.main.panel.MainPanel;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.Projects;
-import com.xayup.multipad.pads.GridPads;
+import com.xayup.multipad.pads.GridPadsReceptor;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.projects.thread.LoadProject;
 import com.xayup.ui.options.FluctuateOptionsView;
@@ -101,7 +105,7 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public GridPads getPadInstance() {
+            public GridPadsReceptor getPadInstance() {
                 return mPlayPads.getPads();
             }
 
@@ -181,23 +185,23 @@ public class MainActivity extends Activity {
 
     }
 
-    public KeyLED.ToShowLed onToShowLed(GridPads pads){
+    public KeyLED.ToShowLed onToShowLed(GridPadsReceptor pads){
         return (int row, int colum, int android_color, int lp_index) -> {
-            List<GridPads.PadGrid> padGrids = pads.getPadsWithIndex(lp_index);
+            List<String> padGrids = pads.getPadsWithId(lp_index);
             if(padGrids != null) {
-                for (GridPads.PadGrid padGrid : padGrids) {
-                    padGrid.led(row, colum, android_color);
+                for(String padGrid : padGrids){
+                    pads.getGridByName(padGrid).led(row, colum, android_color);
                 }
             }
         };
     }
 
-    public void defaultPadClick(GridPads.PadGrid active_pad){
+    public void defaultPadClick(GridPadsReceptor.PadGrid active_pad){
         active_pad.forAllPads((pad, mPadGrid) -> {
             XLog.e("defaultPadClick", "Grid Childs count " + active_pad.getGridPads().getChildCount());
-            XLog.e("defaultPadClick", "Pad type " + ((MakePads.PadInfo) pad.getTag()).getType());
-            if(((MakePads.PadInfo) pad.getTag()).getType() == MakePads.PadInfo.PadInfoIdentifier.PAD_LOGO){
-                pad.setOnTouchListener((pad_view, event) -> {
+            XLog.e("defaultPadClick", "Pad type " + pad.getType());
+            if(pad.getType() == MakePads.PadInfo.PadInfoIdentifier.PAD_LOGO){
+                active_pad.getPads().getPadView(pad.getRow(), pad.getColum()).setOnTouchListener((pad_view, event) -> {
                     pad_view.performClick();
                     if(event.getAction() == MotionEvent.ACTION_DOWN){
                         FluctuateOptionsView window = new FluctuateOptionsView(context);
@@ -218,12 +222,42 @@ public class MainActivity extends Activity {
                         }
                         //Home page options
                         OptionsItem set_current_project = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_ARROW);
+                        home_page.putOption(set_current_project);
                         set_current_project.setTitle("Use the project");
+                        set_current_project.setDescription("Choose which of the loaded projects this grid will interact with");
                         set_current_project.setOnClick((item_view) -> {
                             window.switchTo(projects_loaded.getPageIndex(), false,
                                     (int)(context.getResources().getInteger(R.integer.swipe_animation_velocity) * Ui.getSettingsAnimationScale(context)));
                         });
-                        home_page.putOption(set_current_project);
+                        OptionsItem set_id = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                        home_page.putOption(set_id);
+                        set_id.setTitle("Set grid id");
+                        set_id.setDescription("The grid id will be used with the leds. Set to 0 to use the main project leds.");
+                        set_id.setOnClick(set_id_view -> {
+                            View dialog_layout = context.getLayoutInflater().inflate(R.layout.dialog_with_edittext, null);
+                            AlertDialog dialog = new AlertDialog.Builder(context).setView(dialog_layout).create();
+                            Button btn1 = dialog_layout.findViewById(R.id.dwe_btn1);
+                            Button btn2 = dialog_layout.findViewById(R.id.dwe_btn2);
+                            EditText edt1 = dialog_layout.findViewById(R.id.dwe_editText);
+                            edt1.setText(String.valueOf(active_pad.getId()));
+                            edt1.setInputType(InputType.TYPE_CLASS_NUMBER);
+                            btn1.setVisibility(View.VISIBLE);
+                            btn1.setText(context.getString(R.string.ok));
+                            btn1.setOnClickListener((b_v) -> {
+                                if(edt1.getText().length() > 0) {
+                                    active_pad.setId(Integer.parseInt(edt1.getText().toString()));
+                                    dialog.dismiss();
+                                } else {
+                                    Toast.makeText(context, "Incorrect", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            btn2.setVisibility(View.VISIBLE);
+                            btn2.setText(context.getString(R.string.cancel));
+                            btn2.setOnClickListener((b_v) -> {
+                                dialog.dismiss();
+                            });
+                            dialog.show();
+                        });
                         window.switchTo(0, false, 0);
                         window.show();
                         return true;

@@ -1,6 +1,7 @@
 package com.xayup.multipad.projects;
 
 import android.content.Context;
+import com.xayup.multipad.pads.GridPadsReceptor;
 import com.xayup.multipad.pads.PadPressCall;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
@@ -17,6 +18,8 @@ public class Project implements ProjectIndexes {
     public static final byte STATUS_LOADED = 1;
     public static final byte STATUS_LOADING = 2;
 
+    //Identifier
+    protected int project_id;
     protected byte status;
 
     public String title, producerName, difficulty;
@@ -29,7 +32,6 @@ public class Project implements ProjectIndexes {
     public KeySounds mKeySounds;
     public KeyLED mKeyLED;
     public AutoPlay mAutoPlay;
-    protected PadPressCall mPadPress;
 
     public List<String> project_loaded_problems;
 
@@ -73,51 +75,33 @@ public class Project implements ProjectIndexes {
         return status;
     }
 
-    public void onLoaded(){
-        if(keysound_path != null || keyled_count > 0){
-            mPadPress = new PadPressCall();
-            if(mKeySounds != null){
-                mPadPress.calls.add(mKeySounds);
-            }
-            if(mKeyLED != null){
-                mPadPress.calls.add(mKeyLED);
-            }
-            if(mAutoPlay != null){
-                mPadPress.calls.add(mAutoPlay);
-            }
-        }
-    }
-
-    public void callPress(MakePads.ChainInfo chain, MakePads.PadInfo pad){
-        if(mPadPress != null) this.mPadPress.call(chain, pad);
-    }
-    public void callRelease(MakePads.ChainInfo chain, MakePads.PadInfo pad){
-
-    }
-    public PadPressCall getPadPress(){
-        return mPadPress;
+    public void loadProject(Context context, LoadProject.LoadingProject mLoadingProject){
+        project_loaded_problems = new ArrayList<>();
+        new LoadProject(context, mLoadingProject, this){
+            @Override
+            public void onFinish() {}
+        };
     }
 
     /**
      * Feche este projeto e libere memoria
      */
-    public void release(){
-
-    }
+    public void release(){}
 
     // Sets
     public void setOnShowLedRequest(KeyLED.ToShowLed toShowLed){
         mKeyLED.setToShowLed(toShowLed);
     }
-    
-    public void loadProject(Context context, LoadProject.LoadingProject mLoadingProject){
-        project_loaded_problems = new ArrayList<>();
-        new LoadProject(context, mLoadingProject, this){
-            @Override
-            public void onFinish() { onLoaded(); }
-        };
+
+    public void setProjectId(int id){
+        this.project_id = id;
     }
 
+    public int getProjectId(){
+        return this.project_id;
+    }
+
+    //Interfaces
     public interface AutoPlayInterface {
         public boolean isRunning();
         public boolean startAutoPlay();

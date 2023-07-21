@@ -23,7 +23,7 @@ import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.ProjectListAdapter;
-import com.xayup.multipad.pads.GridPads;
+import com.xayup.multipad.pads.GridPadsReceptor;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.skin.SkinAdapter;
 import com.xayup.multipad.skin.SkinManager;
@@ -52,7 +52,7 @@ public abstract class MainPanel {
 
     public abstract void onExit();
     public abstract KeyLED getKeyLEDInstance();
-    public abstract GridPads getPadInstance();
+    public abstract GridPadsReceptor getPadInstance();
     public abstract List<Project> getProjects();
     public abstract void addNewGrid();
     public abstract void loadProject(Project project, ProgressBar progressBar);
@@ -250,14 +250,14 @@ public abstract class MainPanel {
                     OptionsItem apply_for_all = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                     apply_for_all.setTitle(context.getString(R.string.list_skin_apply_for_all));
                     apply_for_all.setOnClick((view1)->{
-                        List<GridPads.PadGrid> list_pads = getPadInstance().getAllPadsList();
+                        List<GridPadsReceptor.PadGrid> list_pads = getPadInstance().getAllPadsList();
                         while(!list_pads.isEmpty()) {
                             list_pads.remove(0).applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                         }
                     });
-                    List<GridPads.PadGrid> list_pads = getPadInstance().getAllPadsList();
+                    List<GridPadsReceptor.PadGrid> list_pads = getPadInstance().getAllPadsList();
                     while(!list_pads.isEmpty()) {
-                        GridPads.PadGrid padGrid = list_pads.remove(0);
+                        GridPadsReceptor.PadGrid padGrid = list_pads.remove(0);
                         OptionsItem pads_item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                         pads_item.setTitle(padGrid.getName());
                         pads_item.setTag(padGrid);
@@ -279,7 +279,7 @@ public abstract class MainPanel {
             right_scroll.removeAllViews();
             right_scroll.addView(grids_page.getPageView());
             grids_page.clear();
-            List<GridPads.PadGrid> padGrids = getPadInstance().getAllPadsList();
+            List<GridPadsReceptor.PadGrid> padGrids = getPadInstance().getAllPadsList();
             OptionsItem add_new = new OptionsItem(context, OptionsItem.TYPE_SIMPLE_WITH_ARROW);
             add_new.setTitle("Add new");
             ((ImageView) add_new.getItemView().findViewById(com.xayup.ui.R.id.options_item_identify_arrow)).setImageResource(R.drawable.icon_plus);
@@ -287,24 +287,24 @@ public abstract class MainPanel {
                 addNewGrid();
             });
             grids_page.putOption(add_new);
-            for(GridPads.PadGrid padGrid : padGrids){
+            for(GridPadsReceptor.PadGrid padGrid : padGrids){
                 OptionsItem item = new OptionsItem(context, OptionsItemInterface.TYPE_CENTER_WITH_IMAGE);
                 item.setTitle(padGrid.getName());
                 item.setDescription(String.valueOf(padGrid.getId()));
                 switch(padGrid.getLayoutMode()){
-                    case GridPads.PadLayoutMode.LAYOUT_PRO_MODE: {
+                    case GridPadsReceptor.PadLayoutMode.LAYOUT_PRO_MODE: {
                         item.setImg(context.getDrawable(R.drawable.lp_pro));
                         break;
                     }
-                    case GridPads.PadLayoutMode.LAYOUT_MK2_MODE: {
+                    case GridPadsReceptor.PadLayoutMode.LAYOUT_MK2_MODE: {
                         item.setImg(context.getDrawable(R.drawable.lp_mk2));
                         break;
                     }
-                    case GridPads.PadLayoutMode.LAYOUT_UNIPAD_MODE: {
+                    case GridPadsReceptor.PadLayoutMode.LAYOUT_UNIPAD_MODE: {
                         item.setImg(context.getDrawable(R.drawable.lp_pro_mk3));
                         break;
                     }
-                    case GridPads.PadLayoutMode.LAYOUT_MATRIX_MODE: {
+                    case GridPadsReceptor.PadLayoutMode.LAYOUT_MATRIX_MODE: {
                         item.setImg(context.getDrawable(R.drawable.lp_x));
                         break;
                     }

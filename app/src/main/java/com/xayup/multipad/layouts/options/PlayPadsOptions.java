@@ -16,7 +16,7 @@ import com.xayup.debug.XLog;
 import com.xayup.multipad.R;
 import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
-import com.xayup.multipad.pads.GridPads;
+import com.xayup.multipad.pads.GridPadsReceptor;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.skin.SkinAdapter;
 import com.xayup.multipad.skin.SkinManager;
@@ -52,7 +52,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
     /*Abstracts*/
     public abstract void onExit();
     public abstract KeyLED getKeyLEDInstance();
-    public abstract GridPads getPadInstance();
+    public abstract GridPadsReceptor getPadInstance();
 
     /*Pages*/
     public OptionsPage skin_page;
@@ -109,15 +109,15 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
                 OptionsItem apply_for_all = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                 apply_for_all.setTitle(context.getString(R.string.list_skin_apply_for_all));
                 apply_for_all.setOnClick((view)->{
-                    List<GridPads.PadGrid> list_pads = getPadInstance().getAllPadsList();
+                    List<GridPadsReceptor.PadGrid> list_pads = getPadInstance().getAllPadsList();
                     while(!list_pads.isEmpty()) {
                         list_pads.remove(0).applySkin(SkinManager.getSkinProperties(context, skin_properties.package_name));
                     }
                     list_pads = null;
                 });
-                List<GridPads.PadGrid> list_pads = getPadInstance().getAllPadsList();
+                List<GridPadsReceptor.PadGrid> list_pads = getPadInstance().getAllPadsList();
                 while(!list_pads.isEmpty()) {
-                    GridPads.PadGrid padGrid = list_pads.remove(0);
+                    GridPadsReceptor.PadGrid padGrid = list_pads.remove(0);
                     OptionsItem pads_item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                     pads_item.setTitle(padGrid.getName());
                     pads_item.setTag(padGrid);
@@ -280,9 +280,9 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
             pads_list.setVisibility(View.GONE);
             new_pads.setVisibility(View.VISIBLE);
             grid_pads_page.clear();
-            List<GridPads.PadGrid> padGrid_list = getPadInstance().getAllPadsList();
+            List<GridPadsReceptor.PadGrid> padGrid_list = getPadInstance().getAllPadsList();
             while(!padGrid_list.isEmpty()){
-                GridPads.PadGrid padGrid = padGrid_list.remove(0);
+                GridPadsReceptor.PadGrid padGrid = padGrid_list.remove(0);
                 OptionsItem item = new OptionsItem(context, OptionsItem.TYPE_SIMPLE);
                 item.setTitle(padGrid.getName());
                 item.setDescription(String.valueOf(padGrid.getId()));
@@ -418,7 +418,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
         create();
     }
 
-    protected View.OnClickListener padsConfigItemOnClick(GridPads.PadGrid padGrid){
+    protected View.OnClickListener padsConfigItemOnClick(GridPadsReceptor.PadGrid padGrid){
         return (view)->{
             FluctuateOptionsView pad_op = new FluctuateOptionsView(context);
             OptionsPage pad_op_page = pad_op.getPage(pad_op.newPage(context.getString(R.string.alert_exit_options)));

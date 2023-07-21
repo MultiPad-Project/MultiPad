@@ -9,19 +9,24 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import com.xayup.multipad.R;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.pads.Render.PadSkinData;
 import com.xayup.multipad.projects.Project;
+import com.xayup.multipad.projects.project.autoplay.AutoPlay;
+import com.xayup.multipad.projects.project.keyled.KeyLED;
+import com.xayup.multipad.projects.project.keysounds.KeySounds;
 import com.xayup.multipad.skin.SkinManager;
 import com.xayup.multipad.skin.SkinProperties;
 import com.xayup.multipad.skin.SkinSupport;
 
 import java.util.*;
 
-public class GridPads {
+public abstract class GridPadsReceptor {
     protected Activity context;
-    protected Map<String, List<PadGrid>> mGridViews;
+    protected Map<Integer, List<String>> project_use_grid; //Get grid by project id
+    protected Map<String, PadGrid> grids; //Get grid by name
+    protected Map<Integer, List<String>> grid_ids; //Get grid by ID
+
     public SkinManager mSkinManager;
     protected PadGrid active_pad = null;
     protected View.OnTouchListener resize_touch;
@@ -39,12 +44,22 @@ public class GridPads {
         byte LAYOUT_MATRIX_MODE = 3;
     }
 
-    public GridPads(Context context) {
+    public GridPadsReceptor(Context context) {
         this.context = (Activity) context;
         this.mSkinManager = new SkinManager();
         this.current_chain = new MakePads.ChainInfo(1, 9);
-        mGridViews = new HashMap<>();
+        this.grids = new HashMap<>();
+        this.grid_ids = new HashMap<>();
+        this.project_use_grid = new HashMap<>();
     }
+
+    /**
+     * Chamado quando algum botão é clicado em uma determinada grade
+     * @param grid a grade do botão.
+     * @param pad o botão
+     * @param event o evento de toque
+     */
+    public abstract boolean onTheButtonSign(PadGrid grid, MakePads.PadInfo pad, MotionEvent event);
 
     /**
      * Make new Pads Object. Get this or last created pad with getActivePads()
@@ -54,33 +69,22 @@ public class GridPads {
      */
     public void newPads(String skin_package, int rows, int columns) {
         PadGrid padGrid = new PadGrid(SkinManager.getSkinProperties(context, skin_package), rows, columns);
-        padGrid.setId(mGridViews.size());
-        padGrid.setName("pad_" + padGrid.getId());
+        padGrid.setName("Grid_" + grids.size());
+        padGrid.setId(0);
+        grids.put(padGrid.getName(), padGrid);
         active_pad = padGrid;
     }
-
-    public void setEditMode(boolean enable){
-        for(List<PadGrid> listPads : mGridViews.values()){
-            for(PadGrid mPadGrid : listPads){
-                if(enable) {
-                    context.getLayoutInflater().inflate(R.layout.pads_editor_view, mPadGrid.getRootPads(), true);
-                } else {
-                    mPadGrid.getRootPads().removeViewAt(mPadGrid.getRootPads().getChildCount()-1);
-                }
-            }
-        }
-    }
     
-    public List<PadGrid> getPadsWithIndex(int index){
-        return mGridViews.get(String.valueOf(index));
+    public List<String> getPadsWithId(int id){
+        return grid_ids.get(id);
+    }
+    public PadGrid getGridByName(String name){
+        return grids.get(name);
     }
 
     public List<PadGrid> getAllPadsList(){
-        List<PadGrid> tmp = new ArrayList<>();
-        for(List<PadGrid> list: mGridViews.values()){
-            tmp.addAll(list);
-        }
-        return tmp;
+
+        return new ArrayList<>(grids.values());
     }
 
     /**
@@ -147,7 +151,7 @@ public class GridPads {
     }
 
     public class PadGrid implements PadsLayoutInterface, SkinSupport {
-        protected Project current_project;
+        protected CurrentProject current_project;
         protected String name;
         protected byte layout_mode;
         protected SkinProperties mSkinProperties;
@@ -163,6 +167,7 @@ public class GridPads {
         public PadGrid(SkinProperties skin, int rows, int columns) {
             this.mSkinProperties = skin;
             this.mSkinData = new PadSkinData();
+            this.current_project = new CurrentProject();
 
             this.mGrid = (this.mPads = new MakePads(context).make(rows, columns)).getGrid();
 
@@ -180,67 +185,76 @@ public class GridPads {
             this.layout_mode = PadLayoutMode.LAYOUT_PRO_MODE;
             this.lp_id = 0;
             applySkin(this.mSkinProperties);
+            forAllPads(
+                (pad, mPadGrid) -> mPadGrid.getPads().getPadView(pad.getRow(), pad.getColum()).setOnTouchListener(
+                    (pad_view, event) -> {
+                        pad_view.performClick();
+                        return onTheButtonSign(
+                            mPadGrid, pad, event
+                        );
+                    }
+                )
+            );
         }
 
-        public void setForAllPadInteraction(PadInteraction padInteraction){
-            forAllPads((pad, mPadGrid) -> pad.setOnTouchListener(padInteraction.onPadClick(pad, mPadGrid)));
-        }
-
-        protected void setId(int id){
-            if(mGridViews.get(String.valueOf(lp_id)) != null) mGridViews.get(String.valueOf(lp_id)).remove(this);
-            if(mGridViews.get(String.valueOf(id)) != null){
-                Objects.requireNonNull(mGridViews.get(String.valueOf(id))).add(this);
-            } else {
-                mGridViews.put(String.valueOf(id), new ArrayList<>(List.of(this)));
-            }
-            lp_id = id;
-        }
-
+        //// INTERACTION ////
         public void led(int row, int colum, int android_color){
             mPads.setLedColor(row, colum, android_color);
         }
 
-        public MakePads.Pads getPads(){
-            return mPads;
+        //// INFORMATION'S ////
+        public MakePads.Pads getPads(){ return mPads; }
+        public int getId(){ return this.lp_id; }
+        public void setName(String name){ this.name = name; }
+        public String getName(){ return this.name; }
+        public void setId(int id){
+            if(grid_ids.get(lp_id) != null) grid_ids.get(lp_id).remove(name);
+            if(grid_ids.get(id) != null){
+                Objects.requireNonNull(grid_ids.get(id)).add(name);
+            } else {
+                grid_ids.put(id, new ArrayList<>(List.of(name)));
+            }
+            lp_id = id;
         }
 
-        public int getId(){
-            return this.lp_id;
-        }
-
-        public void setName(String name){
-            this.name = name;
-        }
-
-        public String getName(){
-            return this.name;
-        }
-
+        //// MANAGER ////
         public void removeThis(){
-            Objects.requireNonNull(mGridViews.get(String.valueOf(lp_id))).remove(this);
+            Objects.requireNonNull(grid_ids.get(lp_id)).remove(name);
         }
-
-        public void setProject(Project project){
-            this.current_project = project;
-        }
-        public Project getProject(){ return this.current_project; }
-
         public void forAllPads(ForAllPads fap) {
             for (int i = 0; i < mGrid.getChildCount(); i++) {
-                if (mGrid.getChildAt(i) instanceof ViewGroup) {
-                    fap.run((ViewGroup) mGrid.getChildAt(i), this);
+                if (mGrid.getChildAt(i).getTag() instanceof MakePads.PadInfo) {
+                    fap.run((MakePads.PadInfo) mGrid.getChildAt(i).getTag(), this);
                 }
             }
         }
 
+        //// PROJECT ////
+        public void setProject(Project project){
+            this.current_project.setProject(project);
+            if(project_use_grid.containsKey(project.getProjectId())){
+                project_use_grid.get(project.getProjectId()).add(name);
+            } else {
+                project_use_grid.put(project.getProjectId(), new ArrayList<>(List.of(name)));
+            }
+        }
+        public CurrentProject getProject(){ return this.current_project; }
+        public void removeProject(){
+            if(this.current_project.getProject() != null) {
+                project_use_grid.get(current_project.getProject().getProjectId()).remove(this.getName());
+                this.current_project.setProject(null);
+            }
+        }
+
+        //// LAYOUT ////
         public byte getLayoutMode(){
             return layout_mode;
         }
 
+        //// CONTAINERS ////
         public RelativeLayout getContainer(){
             return this.container;
         }
-
         public RelativeLayout getPadsSettingsOverlay(){
             return pads_settings_overlay;
         }
@@ -269,7 +283,8 @@ public class GridPads {
                     (skin) -> {
                         ((ImageView) mRootPads.getChildAt(0)).setImageDrawable(mSkinData.draw_playbg);
                         forAllPads(
-                                (pad, mPadGrid) -> {
+                                (padInfo, padGrid) -> {
+                                    ViewGroup pad = ((ViewGroup) padGrid.getPads().getPadView(padInfo.getRow(), padInfo.getColum()));
                                     for (int ii = 0; ii < pad.getChildCount(); ii++) {
                                         View view = pad.getChildAt(ii);
                                         if(view.getTag() == null) continue;
@@ -303,6 +318,7 @@ public class GridPads {
                                                     ((ImageView) view)
                                                             .setImageDrawable(
                                                                     mSkinData.draw_phantom_);
+                                                    padGrid.getPads().getLed(padInfo.getRow(), padInfo.getColum()).setImageDrawable(mSkinData.draw_phantom__led);
                                                     break;
                                                 }
                                             case MakePads.PadInfo.PadInfoIdentifier.CHAIN_LED:
@@ -311,6 +327,7 @@ public class GridPads {
                                                     ((ImageView) view)
                                                             .setImageDrawable(
                                                                     mSkinData.draw_chainled);
+                                                    padGrid.getPads().getLed(padInfo.getRow(), padInfo.getColum()).setImageDrawable(mSkinData.draw_chain_led);
                                                     break;
                                                 }
                                             case MakePads.PadInfo.PadInfoIdentifier.LOGO:
@@ -326,9 +343,49 @@ public class GridPads {
                     });
             return false;
         }
+
+        public class CurrentProject{
+            protected PadPressCall mPadPress;
+            protected Project project;
+
+            public void setProject(Project project){
+                this.project = project;
+                if(project.keysound_path != null || project.keyled_count > 0){
+                    this.mPadPress = new PadPressCall();
+                    if(project.mKeySounds != null){
+                        mPadPress.calls.add(project.mKeySounds);
+                    }
+                    if(project.mKeyLED != null){
+                        mPadPress.calls.add(project.mKeyLED);
+                    }
+                    if(project.mAutoPlay != null){
+                        mPadPress.calls.add(project.mAutoPlay);
+                    }
+                }
+            }
+            public Project getProject(){
+                return this.project;
+            }
+            public AutoPlay getAutoPlay(){
+                return (project != null) ? project.mAutoPlay : null;
+            }
+            public KeyLED getKeyLED(){
+                return (project != null) ? project.mKeyLED : null;
+            }
+            public KeySounds getKeySounds(){
+                return (project != null) ? project.mKeySounds : null;
+            }
+            public void callPress(MakePads.ChainInfo chain, MakePads.PadInfo pad){
+                if(mPadPress != null) mPadPress.call(chain, pad);
+            }
+            public PadPressCall getPadPress(){
+                return (project != null) ? mPadPress: null;
+            }
+
+        }
     }
 
     public interface ForAllPads {
-        void run(ViewGroup view, PadGrid mPadGrid);
+        void run(MakePads.PadInfo padInfo, PadGrid padGrid);
     }
 }

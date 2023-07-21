@@ -14,7 +14,7 @@
 	<color name="material_green_100">#fff5f5f5</color>
 <!--MultiPad-->
 	<color name="default_app_color">#FF0C1721</color>
-	
+
 	<!--Project item-->
 	<color name="project_status_good">#35FF86</color>
 	<color name="project_status_bad">#ECFF3F</color>
@@ -28,7 +28,8 @@
 	<color name="accent_material_dark">#ffffffff</color>
 	<color name="background_item_clicked">#12FFFFFF</color>
 	<color name="view_divider_color">#20FFFFFF</color>
-	<color name="pad_press_color">#FFFFFFFF</color>
+	<!--Skin-->
+	<color name="btn__color">#FFEEEEEE</color>
 	<color name="autoplay_practical_1">#FF00FF00</color>
 	<color name="autoplay_practical_2">#FF00FFFF</color>
 

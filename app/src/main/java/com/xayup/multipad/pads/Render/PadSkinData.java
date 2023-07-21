@@ -1,5 +1,6 @@
 package com.xayup.multipad.pads.Render;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -9,10 +10,12 @@ import com.xayup.multipad.skin.SkinData;
 
 public class PadSkinData implements SkinData {
     public int color_autoplay_practical_1,
-            color_autoplay_practical_2;
+            color_autoplay_practical_2,
+            draw_btn__color;
     public Drawable draw_phantom_,
             draw_phantom,
-            draw_pad_led,
+            draw_phantom_led,
+            draw_phantom__led,
             draw_chain_led,
             draw_chainled,
             draw_btn,
@@ -20,6 +23,7 @@ public class PadSkinData implements SkinData {
             draw_playbg,
             draw_logo;
     
+    @SuppressLint("DiscouragedApi")
     @Override
     public void loadFromResources(Context context, String skin_package_name){
         /*Get Resource from skin_package_name*/
@@ -29,7 +33,6 @@ public class PadSkinData implements SkinData {
 
         draw_chainled = res.getDrawable(res.getIdentifier("chainled", "drawable", skin_package_name), null);
         draw_btn = res.getDrawable(res.getIdentifier("btn", "drawable", skin_package_name), null);
-        draw_btn_ = res.getDrawable(res.getIdentifier("btn_", "drawable", skin_package_name), null);
 
         //// Exclusive ////
         int tmp_id = res.getIdentifier("phantom_xml", "drawable", skin_package_name);
@@ -40,9 +43,13 @@ public class PadSkinData implements SkinData {
         tmp_id = (tmp_id == 0) ? res.getIdentifier("phantom_", "drawable", skin_package_name) : tmp_id;
         draw_phantom_ = res.getDrawable(tmp_id, null);
 
-        tmp_id = res.getIdentifier("led_xml", "drawable", skin_package_name);
+        tmp_id = res.getIdentifier("phantom_led_xml", "drawable", skin_package_name);
         tmp_id = (tmp_id == 0) ? res.getIdentifier("led_old_xml", "drawable", context.getPackageName()) : tmp_id;
-        draw_pad_led = res.getDrawable(tmp_id, null);
+        draw_phantom_led = res.getDrawable(tmp_id, null);
+
+        tmp_id = res.getIdentifier("phantom__led_xml", "drawable", skin_package_name);
+        tmp_id = (tmp_id == 0) ? res.getIdentifier("led_old_xml", "drawable", context.getPackageName()) : tmp_id;
+        draw_phantom__led = res.getDrawable(tmp_id, null);
 
         tmp_id = res.getIdentifier("chain_led_xml", "drawable", skin_package_name);
         tmp_id = (tmp_id == 0) ? res.getIdentifier("led_old_xml", "drawable", context.getPackageName()) : tmp_id;
@@ -56,6 +63,15 @@ public class PadSkinData implements SkinData {
         draw_logo = (tmp_id == 0) ?
                 context.getResources().getDrawable(context.getResources().getIdentifier("applogo", "drawable", context.getPackageName()), null) :
                 res.getDrawable(tmp_id, null);
+
+        if((tmp_id = res.getIdentifier("btn_", "drawable", skin_package_name)) != 0){
+            draw_btn_ = res.getDrawable(tmp_id, null);
+            draw_btn__color = -1;
+        } else if ((tmp_id = res.getIdentifier("btn__color", "color", skin_package_name)) != 0
+                || (tmp_id = res.getIdentifier("btn__color", "color", context.getPackageName())) != 0){
+            draw_btn__color = res.getColor(tmp_id, null);
+            draw_btn_ = null;
+        }
 
         //Color Resource
         tmp_id = res.getIdentifier("autoplay_practical_1", "color", skin_package_name);

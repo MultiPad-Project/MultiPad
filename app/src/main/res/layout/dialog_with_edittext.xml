@@ -17,8 +17,6 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/dwe_title"
-		android:digits="0123456789"
-		android:inputType="number"
 		android:textColor="@color/secondary_text_material_dark" />
 
     <Button

@@ -98,6 +98,7 @@ public class ProjectListAdapter extends BaseAdapter {
                 description_led_count.setText(context.getString(R.string.project_item_text_description_led).concat(" " + "00"));
                 description_sound_count.setText(context.getString(R.string.project_item_text_description_sound).concat(" " + "--/--/----"));
             }
+            project.setProjectId(p1);
         }
         return p2;
     }

@@ -9,13 +9,13 @@
         android:layout_width="match_parent"
         android:clickable="false"
         android:scaleType="fitXY"
-        android:id="@+id/pad" />
+        android:id="@+id/btn" />
 
     <ImageView
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:clickable="false"
-        android:src="@drawable/led_xml"
+        android:src="@drawable/phantom_led_xml"
         android:id="@+id/led" />
 
     <ImageView
@@ -24,7 +24,7 @@
         android:clickable="false"
         android:scaleType="fitXY"
         android:alpha="0.0"
-        android:id="@+id/press" />
+        android:id="@+id/btn_" />
 
     <ImageView
         android:layout_height="match_parent"

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
@@ -216,6 +215,7 @@ public class MakePads {
         protected byte VIEW = 0;
         protected byte LED = 1;
         protected byte ID = 2;
+        protected byte BTN = 2;
         protected Object[][][] pads;
         private Pads(int grid_row, int grid_colum){
             this.pads = new Object[grid_row][grid_colum][3];
@@ -233,6 +233,7 @@ public class MakePads {
                 pads[row][colum][VIEW] = pad;
                 pads[row][colum][LED] = pad.findViewById(R.id.led);
                 pads[row][colum][ID] = Integer.parseInt(String.valueOf(row) + colum);
+                pads[row][colum][BTN] = pad.findViewById(R.id.btn);
             }
         }
         public GridLayout getGrid(){
@@ -249,7 +250,11 @@ public class MakePads {
         }
         public void setLedColor(int row, int colum, int android_color){
             XLog.e("Try show led", "");
-            getLed(row, colum).getDrawable().setColorFilter(android_color, PorterDuff.Mode.SRC_IN);
+            if(android_color == 0){
+                getLed(row, colum).getDrawable().setTintList(null);
+            } else {
+                getLed(row, colum).getDrawable().setTint(android_color);
+            }
         }
     }
 
@@ -271,8 +276,8 @@ public class MakePads {
                     pad.setTag("");
                 } else {
                     pad = context.getLayoutInflater().inflate(R.layout.pad, null, false);
-                    btn = pad.findViewById(R.id.pad);
-                    btn_ = pad.findViewById(R.id.press);
+                    btn = pad.findViewById(R.id.btn);
+                    btn_ = pad.findViewById(R.id.btn_);
                     phantom = pad.findViewById(R.id.phantom);
                     led = pad.findViewById(R.id.led);
                     touch_map = pad.findViewById(R.id.touch_map);
@@ -287,19 +292,19 @@ public class MakePads {
                             pad.setTag(new ChainInfo((byte) r, (byte) c));
                             if (r == 0) { pad.setRotation(-90); }
                             else if (r == 9) { pad.setRotation(90); }
-                            else if (c == 0) { phantom.setScaleX(phantom.getScaleX() * -1); }
+                            else if (c == 0) { pad.setScaleX(phantom.getScaleX() * -1); }
                         }
                     } else {
                         pad.setTag(new PadInfo((byte) r, (byte) c, PadInfo.PadInfoIdentifier.PAD));
                         if ((r == 4 || r == 5) && (c == 4 || c == 5)) {
                             phantom.setTag(PadInfo.PadInfoIdentifier.PHANTOM_);
                             if (r == 4 && c == 5) {
-                                phantom.setScaleX(phantom.getScaleX() * -1);
+                                pad.setScaleX(phantom.getScaleX() * -1);
                             } else if (r == 5 && c == 4) {
-                                phantom.setScaleY(phantom.getScaleY() * -1);
+                                pad.setScaleY(phantom.getScaleY() * -1);
                             } else if (r == 5 && c == 5) {
-                                phantom.setScaleX(phantom.getScaleX() * -1);
-                                phantom.setScaleY(phantom.getScaleY() * -1);
+                                pad.setScaleX(phantom.getScaleX() * -1);
+                                pad.setScaleY(phantom.getScaleY() * -1);
                             }
                         } else {
                             phantom.setTag(PadInfo.PadInfoIdentifier.PHANTOM);
