@@ -53,6 +53,25 @@
                     android:background="@drawable/lp_x"/>
             </LinearLayout>
             <LinearLayout
+                    android:id="@+id/main_panel_tab_grids"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical|end">
+                <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:textSize="12sp"
+                        android:layout_marginEnd="8dp"
+                        android:paddingHorizontal="8dp"
+                        android:background="@drawable/background_round"
+                        android:backgroundTint="#999999"
+                        android:text="@string/main_panel_left_tab_grids" android:textColor="#263238"/>
+                <View
+                        android:layout_height="@dimen/main_panel_tab_left_icon_height"
+                        android:layout_width="@dimen/main_panel_tab_left_icon_width"
+                    android:background="@drawable/lp_x"/>
+            </LinearLayout>
+            <LinearLayout
                     android:id="@+id/main_panel_tab_settings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

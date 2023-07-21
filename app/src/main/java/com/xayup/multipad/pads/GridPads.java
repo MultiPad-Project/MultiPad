@@ -33,10 +33,10 @@ public class GridPads {
     public boolean watermark = true;
 
     public interface PadLayoutMode {
-        int LAYOUT_PRO_MODE = 0;
-        int LAYOUT_MK2_MODE = 1;
-        int LAYOUT_UNIPAD_MODE = 2;
-        int LAYOUT_MATRIX_MODE = 3;
+        byte LAYOUT_PRO_MODE = 0;
+        byte LAYOUT_MK2_MODE = 1;
+        byte LAYOUT_UNIPAD_MODE = 2;
+        byte LAYOUT_MATRIX_MODE = 3;
     }
 
     public GridPads(Context context) {
@@ -149,10 +149,11 @@ public class GridPads {
     public class PadGrid implements PadsLayoutInterface, SkinSupport {
         protected Project current_project;
         protected String name;
-        public int layout_mode;
+        protected byte layout_mode;
         protected SkinProperties mSkinProperties;
         protected PadSkinData mSkinData;
         protected ImageView pad_background;
+        protected RelativeLayout container;
         protected RelativeLayout mRootPads;
         protected RelativeLayout pads_settings_overlay;
         protected GridLayout mGrid;
@@ -172,6 +173,10 @@ public class GridPads {
             this.pads_settings_overlay = new RelativeLayout(context);
             this.mRootPads.addView(this.pads_settings_overlay, new ViewGroup.LayoutParams(-1, -1));
 
+            this.container = new RelativeLayout(context);
+            container.addView(this.mRootPads);
+            container.setLayoutParams(new ViewGroup.LayoutParams(-2, -2));
+
             this.layout_mode = PadLayoutMode.LAYOUT_PRO_MODE;
             this.lp_id = 0;
             applySkin(this.mSkinProperties);
@@ -189,6 +194,10 @@ public class GridPads {
                 mGridViews.put(String.valueOf(id), new ArrayList<>(List.of(this)));
             }
             lp_id = id;
+        }
+
+        public void led(int row, int colum, int android_color){
+            mPads.setLedColor(row, colum, android_color);
         }
 
         public MakePads.Pads getPads(){
@@ -216,13 +225,20 @@ public class GridPads {
         }
         public Project getProject(){ return this.current_project; }
 
-
         public void forAllPads(ForAllPads fap) {
             for (int i = 0; i < mGrid.getChildCount(); i++) {
                 if (mGrid.getChildAt(i) instanceof ViewGroup) {
                     fap.run((ViewGroup) mGrid.getChildAt(i), this);
                 }
             }
+        }
+
+        public byte getLayoutMode(){
+            return layout_mode;
+        }
+
+        public RelativeLayout getContainer(){
+            return this.container;
         }
 
         public RelativeLayout getPadsSettingsOverlay(){

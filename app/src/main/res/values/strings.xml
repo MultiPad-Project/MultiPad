@@ -13,6 +13,7 @@
     <!--Main menu-->
     <string name="main_panel_left_tab_projects">Projects</string>
     <string name="main_panel_left_tab_skins">Skins</string>
+    <string name="main_panel_left_tab_grids">Grids</string>
     <string name="main_panel_left_tab_settings">Settings</string>
     <string name="main_panel_left_tab_about">About</string>
     <!--Main Items-->

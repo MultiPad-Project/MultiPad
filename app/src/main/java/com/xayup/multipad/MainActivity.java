@@ -102,12 +102,18 @@ public class MainActivity extends Activity {
 
             @Override
             public GridPads getPadInstance() {
-                return null;
+                return mPlayPads.getPads();
             }
 
             @Override
             public List<Project> getProjects() {
                 return mProjects.projects;
+            }
+
+            @Override
+            public void addNewGrid() {
+                mPlayPads.addNewGrid();
+                defaultPadClick(mPlayPads.getPads().getActivePads());
             }
 
             @Override
@@ -137,6 +143,7 @@ public class MainActivity extends Activity {
                         public void onFinishLoadProject() {
                             progressBar.setProgress(progressBar.getMax());
                             project.setStatus(Project.STATUS_LOADED);
+                            project.setOnShowLedRequest(onToShowLed(mPlayPads.getPads()));
                         }
                     });
                 } else if (project.getStatus() == Project.STATUS_LOADED){
@@ -172,6 +179,17 @@ public class MainActivity extends Activity {
         };
         splash.post(onPost);
 
+    }
+
+    public KeyLED.ToShowLed onToShowLed(GridPads pads){
+        return (int row, int colum, int android_color, int lp_index) -> {
+            List<GridPads.PadGrid> padGrids = pads.getPadsWithIndex(lp_index);
+            if(padGrids != null) {
+                for (GridPads.PadGrid padGrid : padGrids) {
+                    padGrid.led(row, colum, android_color);
+                }
+            }
+        };
     }
 
     public void defaultPadClick(GridPads.PadGrid active_pad){

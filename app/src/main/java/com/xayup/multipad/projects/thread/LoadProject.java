@@ -127,8 +127,8 @@ public abstract class LoadProject implements Runnable {
             ledT2.clear();
             ledT2 = null;
         }
-        mLoadingProject.onFinishLoadProject();
         onFinish();
+        mLoadingProject.onFinishLoadProject();
     }
 
     protected void ledRead(List<File[]> led_files) {

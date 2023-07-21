@@ -76,16 +76,13 @@ public class Project implements ProjectIndexes {
     public void onLoaded(){
         if(keysound_path != null || keyled_count > 0){
             mPadPress = new PadPressCall();
-            if(keysound_path != null){
+            if(mKeySounds != null){
                 mPadPress.calls.add(mKeySounds);
             }
-            if(keyled_count > 0){
+            if(mKeyLED != null){
                 mPadPress.calls.add(mKeyLED);
-                mKeyLED.setToShowLed((int x, int y, int real_color, int lp_index) -> {
-
-                    });
             }
-            if(autoplay_path != null){
+            if(mAutoPlay != null){
                 mPadPress.calls.add(mAutoPlay);
             }
         }
@@ -106,6 +103,11 @@ public class Project implements ProjectIndexes {
      */
     public void release(){
 
+    }
+
+    // Sets
+    public void setOnShowLedRequest(KeyLED.ToShowLed toShowLed){
+        mKeyLED.setToShowLed(toShowLed);
     }
     
     public void loadProject(Context context, LoadProject.LoadingProject mLoadingProject){

@@ -83,20 +83,22 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
 
                     // Get View from Pads
-                    ViewGroup virtual_launchpad = gridPads.getActivePads().getRootPads(); //Background
+                    ViewGroup virtual_launchpad = gridPads.getActivePads().getContainer(); //Background
 
                     // Prepare Params after add Pads to scene
-                    RelativeLayout.LayoutParams bParams = new RelativeLayout.LayoutParams(h, h);
-                    bParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+                    RelativeLayout.LayoutParams bParams = new RelativeLayout.LayoutParams(w/2, w/2);
+                    /// TEST //// bParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+                    bParams.addRule(RelativeLayout.CENTER_VERTICAL);
+                    bParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 
                     // Add Pads to scene
                     this.pads_to_add.addView(virtual_launchpad, bParams);
 
-                    /*Get Pads grid params and set new values (Size)*/
+                    /*/ Get Pads grid params and set new values (Size)
                     ViewGroup.LayoutParams rLayout = gridPads.getActivePads().getGridPads().getLayoutParams();
                     rLayout.height = h;
                     rLayout.width = h;
-
+                    */
                     /*Setup actives*/
                     /*Current Chain*/
                     gridPads.getActivePads().getGridPads().findViewById(
@@ -365,6 +367,15 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
 
     public GridPads getPads(){
         return gridPads;
+    }
+
+    public void addNewGrid(){
+        gridPads.newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
+        gridPads.getActivePads().setForAllPadInteraction(padInteraction());
+        RelativeLayout.LayoutParams bParams = new RelativeLayout.LayoutParams(GlobalConfigs.display_height, GlobalConfigs.display_height);
+        bParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        bParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        pads_to_add.addView(gridPads.getActivePads().getContainer(), bParams);
     }
 
     /*

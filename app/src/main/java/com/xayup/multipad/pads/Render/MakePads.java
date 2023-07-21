@@ -3,12 +3,14 @@ package com.xayup.multipad.pads.Render;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Matrix;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.xayup.debug.XLog;
 import com.xayup.multipad.R;
 import com.xayup.multipad.pads.PadInterface;
 
@@ -229,7 +231,7 @@ public class MakePads {
             mGrid.addView(pad, mPadParams);
             if(pad.getVisibility() == View.VISIBLE) {
                 pads[row][colum][VIEW] = pad;
-                pads[row][colum][LED] = ((ImageView) pad.findViewById(R.id.led)).getDrawable();
+                pads[row][colum][LED] = pad.findViewById(R.id.led);
                 pads[row][colum][ID] = Integer.parseInt(String.valueOf(row) + colum);
             }
         }
@@ -239,14 +241,15 @@ public class MakePads {
         public View getPadView(int row, int colum){
             return (View) pads[row][colum][VIEW];
         }
-        public Drawable getLedDrawable(int row, int colum){
-            return (Drawable) pads[row][colum][LED];
+        public ImageView getLed(int row, int colum){
+            return (ImageView) pads[row][colum][LED];
         }
         public int getId(int row, int colum){
             return (int) pads[row][colum][ID];
         }
         public void setLedColor(int row, int colum, int android_color){
-            ((Drawable) pads[row][colum][LED]).setTint(android_color);
+            XLog.e("Try show led", "");
+            getLed(row, colum).getDrawable().setColorFilter(android_color, PorterDuff.Mode.SRC_IN);
         }
     }
 

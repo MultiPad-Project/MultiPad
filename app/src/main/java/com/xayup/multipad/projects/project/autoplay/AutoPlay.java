@@ -1,6 +1,7 @@
 package com.xayup.multipad.projects.project.autoplay;
 
 import android.app.Activity;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
@@ -117,11 +118,9 @@ public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, P
     protected void setPractical_request(View view, int level){
         context.runOnUiThread( ()-> {
             view.setAlpha(1f);
-            Drawable draw = view.getBackground();
-            draw.setTint((level == 0) ?
+            ((ImageView) view).setColorFilter((level == 0) ?
                     mAutoPlayChanges.getSkinData().color_autoplay_practical_1:
-                    mAutoPlayChanges.getSkinData().color_autoplay_practical_2);
-            ((ImageView) view).setImageDrawable(draw);
+                    mAutoPlayChanges.getSkinData().color_autoplay_practical_2, PorterDuff.Mode.SRC_IN);
         });
     }
 

@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
-public class KeyLED extends Project
-        implements MapData, Project.KeyLEDInterface, PadPressCallInterface, Runnable {
+public class KeyLED implements MapData, Project.KeyLEDInterface, PadPressCallInterface, Runnable {
     protected Activity context;
     protected LedMap mLedMap;
     protected AtomicBoolean running;
