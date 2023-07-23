@@ -278,7 +278,6 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                         return false;
                 } else if (pad.getType() == MakePads.PadInfo.PadInfoIdentifier.PAD) {
                         XLog.v("Pad press", "X: " + pad.getRow() + ",Y: " + pad.getColum());
-                        if(grid.getProject() == null) return false;
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:{
                                 grid.getProject().callPress(gridPadsReceptor.current_chain, pad);
@@ -315,7 +314,6 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                     int h = this.pads_to_add.getMeasuredHeight();
                     int w = this.pads_to_add.getMeasuredWidth();
 
-
                     // Get View from Pads
                     ViewGroup virtual_launchpad = gridPadsReceptor.getActivePads().getContainer(); //Background
 
@@ -335,19 +333,17 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                     */
                     /*Setup actives*/
                     /*Current Chain*/
-                    gridPadsReceptor.getActivePads().getGridPads().findViewById(
-                            MakePads.PadID.getId(gridPadsReceptor.current_chain.getRow(), gridPadsReceptor.current_chain.getColum())).findViewById(R.id.btn_).setAlpha(1f);
+                    gridPadsReceptor.getActivePads().getPads().getPadView(
+                            gridPadsReceptor.current_chain.getRow(), gridPadsReceptor.current_chain.getColum()).findViewById(R.id.btn_).setAlpha(1f);
 
                     /*LEDs*/
-                    gridPadsReceptor.getActivePads().getGridPads().findViewById(
-                            MakePads.PadID.getId(0, 2)).findViewById(R.id.btn_).setAlpha(1f);
+                    gridPadsReceptor.getActivePads().getPads().getPadView(0, 2).findViewById(R.id.btn_).setAlpha(1f);
 
                     /*Actives Watermark*/
-                    gridPadsReceptor.getActivePads().getGridPads().findViewById(
-                            MakePads.PadID.getId(0, 8)).findViewById(R.id.btn_).setAlpha(1f);
+                    gridPadsReceptor.getActivePads().getPads().getPadView(0, 8).findViewById(R.id.btn_).setAlpha(1f);
                 });
     }
-
+/*
     protected PadInteraction padInteraction() {
         XLog.v("PAD INTERACTION", "");
         return (view, padGrid) -> {
@@ -584,12 +580,18 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:{
                             padGrid.getProject().callPress(gridPadsReceptor.current_chain, mPadInfo);
-                            if(gridPadsReceptor.watermark_press) v.findViewById(R.id.btn_).setAlpha(1f);
+                            if(gridPadsReceptor.watermark_press){
+                                padGrid.getPads().getPadView(mPadInfo.getRow(), mPadInfo.getColum()).findViewById(R.id.btn_).setAlpha(1f);
+                                //v.findViewById(R.id.btn_).setAlpha(1f);
+                            }
                             return true;
                         }
                         case MotionEvent.ACTION_UP: {
                             //mPadRelease.call(gridPads.current_chain, mPadInfo);
-                            if(gridPadsReceptor.watermark_press) v.findViewById(R.id.btn_).setAlpha(0f);
+                            if(gridPadsReceptor.watermark_press){
+                                padGrid.getPads().getPadView(mPadInfo.getRow(), mPadInfo.getColum()).findViewById(R.id.btn_).setAlpha(1f);
+                                //v.findViewById(R.id.btn_).setAlpha(0f);
+                            }
                             return true;
                         }
                     }
@@ -600,6 +602,8 @@ public class PlayPads extends Activity implements PlayPadsOptionsInterface {
             return null;
         };
     }
+
+ */
 
     public GridPadsReceptor getPads(){
         return gridPadsReceptor;

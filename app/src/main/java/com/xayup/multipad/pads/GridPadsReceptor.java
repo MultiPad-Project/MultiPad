@@ -190,9 +190,7 @@ public abstract class GridPadsReceptor {
                 (pad, mPadGrid) -> mPadGrid.getPads().getPadView(pad.getRow(), pad.getColum()).setOnTouchListener(
                     (pad_view, event) -> {
                         pad_view.performClick();
-                        return onTheButtonSign(
-                            mPadGrid, pad, event
-                        );
+                        return onTheButtonSign(mPadGrid, pad, event);
                     }
                 )
             );
@@ -321,7 +319,7 @@ public abstract class GridPadsReceptor {
                                                     ((ImageView) view)
                                                             .setImageDrawable(
                                                                     mSkinData.draw_phantom_);
-                                                    padGrid.getPads().getLed(padInfo.getRow(), padInfo.getColum()).setImageDrawable(mSkinData.draw_phantom__led);
+                                                    padGrid.getPads().getLed(padInfo.getRow(), padInfo.getColum()).setImageDrawable(mSkinData.draw_phantom__led.mutate().getConstantState().newDrawable());
                                                     break;
                                                 }
                                             case MakePads.PadInfo.PadInfoIdentifier.CHAIN_LED:
@@ -330,7 +328,7 @@ public abstract class GridPadsReceptor {
                                                     ((ImageView) view)
                                                             .setImageDrawable(
                                                                     mSkinData.draw_chainled);
-                                                    padGrid.getPads().getLed(padInfo.getRow(), padInfo.getColum()).setImageDrawable(mSkinData.draw_chain_led);
+                                                    padGrid.getPads().getLed(padInfo.getRow(), padInfo.getColum()).setImageDrawable(mSkinData.draw_chain_led.mutate().getConstantState().newDrawable());
                                                     break;
                                                 }
                                             case MakePads.PadInfo.PadInfoIdentifier.LOGO:
