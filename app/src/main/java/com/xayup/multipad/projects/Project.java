@@ -17,6 +17,7 @@ public class Project implements ProjectIndexes {
     public static final byte STATUS_UNLOADED = 0;
     public static final byte STATUS_LOADED = 1;
     public static final byte STATUS_LOADING = 2;
+    public static final byte STATUS_BROKEN = 3;
 
     //Identifier
     protected int project_id;
@@ -28,16 +29,8 @@ public class Project implements ProjectIndexes {
     public byte state = 0;
     public List<File> keyleds_paths;
 
-    // Project Opened
-    public KeySounds mKeySounds;
-    public KeyLED mKeyLED;
-    public AutoPlay mAutoPlay;
-
-    public List<String> project_loaded_problems;
-
     public Project(){
         this.keyleds_paths = new ArrayList<>();
-        this.project_loaded_problems = new ArrayList<>();
         this.status = STATUS_UNLOADED;
     }
 
@@ -73,24 +66,6 @@ public class Project implements ProjectIndexes {
 
     public byte getStatus(){
         return status;
-    }
-
-    public void loadProject(Context context, LoadProject.LoadingProject mLoadingProject){
-        project_loaded_problems = new ArrayList<>();
-        new LoadProject(context, mLoadingProject, this){
-            @Override
-            public void onFinish() {}
-        };
-    }
-
-    /**
-     * Feche este projeto e libere memoria
-     */
-    public void release(){}
-
-    // Sets
-    public void setOnShowLedRequest(KeyLED.ToShowLed toShowLed){
-        mKeyLED.setToShowLed(toShowLed);
     }
 
     public void setProjectId(int id){

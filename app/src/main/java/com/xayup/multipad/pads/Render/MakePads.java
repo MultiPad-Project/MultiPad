@@ -314,8 +314,8 @@ public class MakePads {
                     btn_.setTag(PadInfo.PadInfoIdentifier.BTN_);
                     led.setTag(PadInfo.PadInfoIdentifier.LED);
                     pad.setId(PadID.assign(r, c));
+                    mPads.add(r, c, pad);
                 }
-                mPads.add(r, c, pad);
             }
         }
         return mPads;

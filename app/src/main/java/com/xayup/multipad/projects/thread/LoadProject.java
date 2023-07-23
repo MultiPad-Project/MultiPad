@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.projects.Project;
+import com.xayup.multipad.projects.ProjectManager;
 import com.xayup.multipad.projects.project.autoplay.AutoPlay;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.projects.project.keysounds.KeySounds;
@@ -13,7 +14,7 @@ import java.util.*;
 public abstract class LoadProject implements Runnable {
 
     protected Activity context;
-    protected Project mProject;
+    protected ProjectManager projectManager;
     protected LoadingProject mLoadingProject;
     /* For Read Leds */
     protected List<File[]> ledT1;
@@ -33,9 +34,9 @@ public abstract class LoadProject implements Runnable {
         public void onFinishLoadProject();
     }
 
-    public LoadProject(Context context, LoadingProject mLoadingProject, Project mProject) {
+    public LoadProject(Context context, LoadingProject mLoadingProject, ProjectManager projectManager) {
         this.context = (Activity) context;
-        this.mProject = mProject;
+        this.projectManager = projectManager;
         this.mLoadingProject = mLoadingProject;
         new Thread(getRunnale()).start();
     }
@@ -50,32 +51,23 @@ public abstract class LoadProject implements Runnable {
     public void run() {
         mLoadingProject.onStartLoadProject();
         XLog.e("Try read", "Readings...");
-        XLog.v(
-                "Projects Files Load: ",
-                mProject.sample_path
-                        + ", "
-                        + mProject.keyleds_paths
-                        + ", "
-                        + mProject.autoplay_path
-                        + ", "
-                        + mProject.keysound_path);
-        if (mProject.keysound_path != null && mProject.sample_path != null) {
+        if (projectManager.getProject().keysound_path != null && projectManager.getProject().sample_path != null) {
             XLog.e("Try read keysound/samples", "Readings...");
-            mProject.mKeySounds = new KeySounds(context);
-            mProject.mKeySounds.parse(
-                    mProject.keysound_path, mProject.sample_path, mLoadingProject);
+            projectManager.keySoundsInstance(context);
+            projectManager.getKeySounds().parse(
+                    projectManager.getProject().keysound_path, projectManager.getProject().sample_path, mLoadingProject);
         }
-        if (mProject.autoplay_path != null) {
+        if (projectManager.getProject().autoplay_path != null) {
             XLog.e("Try read autoplay", "Readings...");
-            mProject.mAutoPlay = new AutoPlay(context);
-            mProject.mAutoPlay.parse(mProject.autoplay_path, mLoadingProject);
+            projectManager.autoPlayInstance(context);
+            projectManager.getAutoPlay().parse(projectManager.getProject().autoplay_path, mLoadingProject);
         }
-        if (mProject.keyleds_paths != null) {
+        if (projectManager.getProject().keyleds_paths != null) {
             XLog.e("Try read keyleds", "Readings...");
             List<List<File>> keyled_folders = new ArrayList<>(); //Cada lista será uma pasta e em cada "Pasta" terá os arquivos, já ordenados
             List<File[]> led_file_name_equals = new ArrayList<>();
 
-            for(File paths : mProject.keyleds_paths){
+            for(File paths : projectManager.getProject().keyleds_paths){
                 List<File> led_files = new ArrayList<>(Arrays.asList(Objects.requireNonNull(paths.listFiles())));
                 keyled_folders.add(led_files);
             }
@@ -98,7 +90,7 @@ public abstract class LoadProject implements Runnable {
             }
             keyled_folders.clear();
             Collections.sort(led_file_name_equals, (File[] af1, File[] af2) -> {return af1[0].getName().compareTo(af2[0].getName());});
-            mProject.mKeyLED = new KeyLED(context);
+            projectManager.keyLEDInstance(context);
             ledT1 = new ArrayList<>();
             ledT2 = new ArrayList<>();
             total_threads = 2;
@@ -133,7 +125,7 @@ public abstract class LoadProject implements Runnable {
 
     protected void ledRead(List<File[]> led_files) {
         for (File[] led : led_files) {
-            mProject.mKeyLED.parse(led, mLoadingProject);
+            projectManager.getKeyLED().parse(led, mLoadingProject);
         }
     }
 }

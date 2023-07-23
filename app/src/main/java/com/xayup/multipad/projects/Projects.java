@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class Projects implements ProjectIndexes {
-    public List<Project> projects = null;
+    protected List<ProjectManager> projects = null;
 
     /**
      * Isto fará a leitura dos projetos.
@@ -87,20 +87,19 @@ public class Projects implements ProjectIndexes {
                 }
 
                 if(project.getKeyLedPath(0) != null || project.getKeyLedPath(0) != null || project.getInfoPath() != null) {
-                    projects.add(project);
+                    projects.add(new ProjectManager(project));
                 }
             }
             if (projects.size() > 0){
                 // Alphabetic order
-                Collections.sort(projects, (m1, m2) -> m1.getTitle().compareToIgnoreCase(m2.getTitle()));
+                Collections.sort(projects, (m1, m2) -> m1.getProject().getTitle().compareToIgnoreCase(m2.getProject().getTitle()));
             } else {
                 projects = null;
             }
         }
     }
 
-    public Project getProject(int index_list){
-        return projects.get(index_list);
+    public List<ProjectManager> getProjects(){
+        return projects;
     }
-
 }

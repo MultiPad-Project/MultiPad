@@ -19,10 +19,10 @@ import java.util.Objects;
 
 public class ProjectListAdapter extends BaseAdapter {
 
-    protected List<Project> projects;
+    protected List<ProjectManager> projects;
     protected Context context;
 
-    public ProjectListAdapter(Context context, List<Project> projects) {
+    public ProjectListAdapter(Context context, List<ProjectManager> projects) {
         this.context = context;
         this.projects = projects;
     }
@@ -39,7 +39,7 @@ public class ProjectListAdapter extends BaseAdapter {
     public int getCount() { return projects.size(); }
 
     @Override
-    public Project getItem(int p1) { return projects.get(p1); }
+    public ProjectManager getItem(int p1) { return projects.get(p1); }
 
     @Override
     public long getItemId(int p1) { return p1; }
@@ -67,8 +67,9 @@ public class ProjectListAdapter extends BaseAdapter {
             View sound_status = p2.findViewById(R.id.project_item_status_sound_view);
             View autoplay_status = p2.findViewById(R.id.project_item_status_autoplay_view);
 
-            Project project = getItem(p1);
-            if(project != null) {
+            ProjectManager projectManager = getItem(p1);
+            if(projectManager != null) {
+                Project project = projectManager.getProject();
                 progress.setProgress((project.getStatus() == Project.STATUS_LOADED ? 100 : 0));
                 title.setText(project.getTitle());
                 producerName.setText(project.getProducerName());
@@ -98,7 +99,6 @@ public class ProjectListAdapter extends BaseAdapter {
                 description_led_count.setText(context.getString(R.string.project_item_text_description_led).concat(" " + "00"));
                 description_sound_count.setText(context.getString(R.string.project_item_text_description_sound).concat(" " + "--/--/----"));
             }
-            project.setProjectId(p1);
         }
         return p2;
     }

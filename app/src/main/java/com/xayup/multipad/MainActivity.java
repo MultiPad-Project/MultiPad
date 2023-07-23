@@ -19,6 +19,7 @@ import com.xayup.multipad.layouts.loadscreen.LoadScreen;
 import com.xayup.multipad.layouts.main.panel.MainPanel;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.projects.Project;
+import com.xayup.multipad.projects.ProjectManager;
 import com.xayup.multipad.projects.Projects;
 import com.xayup.multipad.pads.GridPadsReceptor;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
@@ -110,8 +111,8 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public List<Project> getProjects() {
-                return mProjects.projects;
+            public List<ProjectManager> getProjects() {
+                return mProjects.getProjects();
             }
 
             @Override
@@ -121,16 +122,16 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void loadProject(Project project, ProgressBar progressBar) {
-                if(project.getStatus() == Project.STATUS_UNLOADED) {
-                    project.loadProject(context, new LoadProject.LoadingProject() {
+            public void loadProject(ProjectManager projectManager, ProgressBar progressBar) {
+                if(projectManager.getProject().getStatus() == Project.STATUS_UNLOADED) {
+                    projectManager.loadProject(context, new LoadProject.LoadingProject() {
                         @Override
                         public void onStartLoadProject() {
                             progressBar.setProgress(0);
                             progressBar.setMax(
-                                    ((project.keysound_path != null) ? 1 + project.sample_count : 0)
-                                            + project.keyled_count + ((project.autoplay_path != null) ? 1 : 0));
-                            project.setStatus(Project.STATUS_LOADING);
+                                    ((projectManager.getProject().keysound_path != null) ? 1 + projectManager.getProject().sample_count : 0)
+                                            + projectManager.getProject().keyled_count + ((projectManager.getProject().autoplay_path != null) ? 1 : 0));
+                            projectManager.getProject().setStatus(Project.STATUS_LOADING);
                         }
 
                         @Override
@@ -146,18 +147,17 @@ public class MainActivity extends Activity {
                         @Override
                         public void onFinishLoadProject() {
                             progressBar.setProgress(progressBar.getMax());
-                            project.setStatus(Project.STATUS_LOADED);
-                            project.setOnShowLedRequest(onToShowLed(mPlayPads.getPads()));
+                            projectManager.getProject().setStatus(Project.STATUS_LOADED);
                         }
                     });
-                } else if (project.getStatus() == Project.STATUS_LOADED){
+                } else if (projectManager.getProject().getStatus() == Project.STATUS_LOADED){
                     // Project loaded
                 }
             }
         };
         floating_button.setOnClickListener((v) -> mMainPanel.showPanel());
 
-        // Ready project after render
+        // Read project after render
         Runnable onPost = new Runnable() {
             @Override
             public void run() {
@@ -185,17 +185,6 @@ public class MainActivity extends Activity {
 
     }
 
-    public KeyLED.ToShowLed onToShowLed(GridPadsReceptor pads){
-        return (int row, int colum, int android_color, int lp_index) -> {
-            List<String> padGrids = pads.getPadsWithId(lp_index);
-            if(padGrids != null) {
-                for(String padGrid : padGrids){
-                    pads.getGridByName(padGrid).led(row, colum, android_color);
-                }
-            }
-        };
-    }
-
     public void defaultPadClick(GridPadsReceptor.PadGrid active_pad){
         active_pad.forAllPads((pad, mPadGrid) -> {
             XLog.e("defaultPadClick", "Grid Childs count " + active_pad.getGridPads().getChildCount());
@@ -209,14 +198,21 @@ public class MainActivity extends Activity {
                         OptionsPage home_page = window.getPage(window.newPage(mPadGrid.getName()));
                         OptionsPage projects_loaded = window.getPage(window.newPage("Use the project"));
                         //Get loaded projects
-                        for(Project project : mProjects.projects){
-                            if(project.getStatus() == Project.STATUS_LOADED){
+                        OptionsItem none_project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                        none_project_item.setTitle("None");
+                        projects_loaded.putOption(none_project_item);
+                        none_project_item.setOnClick((item_view) -> {
+                            if(active_pad.getProject().getProjectManager() != null)
+                                active_pad.getProject().getProjectManager().removeGrid(active_pad);
+                        });
+                        for(ProjectManager projectManager : mProjects.getProjects()){
+                            if(projectManager.getProject().getStatus() == Project.STATUS_LOADED){
                                 OptionsItem project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                                project_item.setTitle(project.getTitle());
-                                project_item.setDescription(project.getProducerName());
+                                project_item.setTitle(projectManager.getProject().getTitle());
+                                project_item.setDescription(projectManager.getProject().getProducerName());
                                 projects_loaded.putOption(project_item);
                                 project_item.setOnClick((item_view) -> {
-                                    active_pad.setProject(project);
+                                    active_pad.setProject(projectManager);
                                 });
                             }
                         }

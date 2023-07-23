@@ -24,6 +24,7 @@ import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.ProjectListAdapter;
 import com.xayup.multipad.pads.GridPadsReceptor;
+import com.xayup.multipad.projects.ProjectManager;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.skin.SkinAdapter;
 import com.xayup.multipad.skin.SkinManager;
@@ -53,9 +54,9 @@ public abstract class MainPanel {
     public abstract void onExit();
     public abstract KeyLED getKeyLEDInstance();
     public abstract GridPadsReceptor getPadInstance();
-    public abstract List<Project> getProjects();
+    public abstract List<ProjectManager> getProjects();
     public abstract void addNewGrid();
-    public abstract void loadProject(Project project, ProgressBar progressBar);
+    public abstract void loadProject(ProjectManager project, ProgressBar progressBar);
 
     public MainPanel(Context context){
         this.context = context;
@@ -204,6 +205,7 @@ public abstract class MainPanel {
         View panel = LayoutInflater.from(context).inflate(R.layout.main_panel, null);
         ScrollView right_scroll = panel.findViewById(R.id.main_panel_right_scroll);
 
+        //PROJECTS
         (project_tab = panel.findViewById(R.id.main_panel_tab_projects)).setOnClickListener((v)->{
             hideThis(right_scroll);
             right_scroll.removeAllViews();
@@ -213,18 +215,24 @@ public abstract class MainPanel {
             for(int i = 0; i < mProjectItem.getCount(); i++) {
                 View item = mProjectItem.getView(i, null, null);
                 projects_page_layout.addView(item);
-                item.findViewById(R.id.project_item_background).setOnClickListener(view -> {
-                    View descriptions = item.findViewById(R.id.project_item_description_background);
-                    vAnimatior = (ViewDraw.getMargin(descriptions, ViewDraw.MARGIN_TOP) > 0) ?
-                            ValueAnimator.ofInt(view.getLayoutParams().height, 0) :
-                            ValueAnimator.ofInt(0, view.getLayoutParams().height);
-                    vAnimatior.addUpdateListener((valueAnimator -> ViewDraw.setMargins(descriptions, 0, (int) valueAnimator.getAnimatedValue(), 0, 0)));
-                    vAnimatior.setDuration((long) (500 * Settings.Global.getFloat(context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f)));
-                    vAnimatior.start();
-                    View play = descriptions.findViewById(R.id.project_item_description_play);
-                    play.setOnClickListener((view_play)-> loadProject(
-                            mProjectItem.getItem(projects_page_layout.indexOfChild(item)), view.findViewById(R.id.project_item_progress)));
-                });
+                View description_view = item.findViewById(R.id.project_item_background);
+                if(mProjectItem.getItem(i).getProject().getStatus() != Project.STATUS_BROKEN) {
+                    description_view.setOnClickListener(view -> {
+                        View descriptions = item.findViewById(R.id.project_item_description_background);
+                        vAnimatior = (ViewDraw.getMargin(descriptions, ViewDraw.MARGIN_TOP) > 0) ?
+                                ValueAnimator.ofInt(view.getLayoutParams().height, 0) :
+                                ValueAnimator.ofInt(0, view.getLayoutParams().height);
+                        vAnimatior.addUpdateListener((valueAnimator -> ViewDraw.setMargins(descriptions, 0, (int) valueAnimator.getAnimatedValue(), 0, 0)));
+                        vAnimatior.setDuration((long) (500 * Settings.Global.getFloat(context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f)));
+                        vAnimatior.start();
+                        View play = descriptions.findViewById(R.id.project_item_description_play);
+                        play.setOnClickListener((view_play) -> loadProject(
+                                mProjectItem.getItem(projects_page_layout.indexOfChild(item)), view.findViewById(R.id.project_item_progress)));
+                    });
+                } else {
+                    // A descrição do projeto é inútil se o projeto estiver quebrado, então é melhor remover
+                    projects_page_layout.removeView(description_view);
+                }
             }
             showThis(right_scroll);
         });

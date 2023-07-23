@@ -9,9 +9,11 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import com.xayup.debug.XLog;
 import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.multipad.pads.Render.PadSkinData;
 import com.xayup.multipad.projects.Project;
+import com.xayup.multipad.projects.ProjectManager;
 import com.xayup.multipad.projects.project.autoplay.AutoPlay;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.projects.project.keysounds.KeySounds;
@@ -49,7 +51,6 @@ public abstract class GridPadsReceptor {
         this.mSkinManager = new SkinManager();
         this.current_chain = new MakePads.ChainInfo(1, 9);
         this.grids = new HashMap<>();
-        this.grid_ids = new HashMap<>();
         this.project_use_grid = new HashMap<>();
     }
 
@@ -208,13 +209,19 @@ public abstract class GridPadsReceptor {
         public void setName(String name){ this.name = name; }
         public String getName(){ return this.name; }
         public void setId(int id){
+            /*
             if(grid_ids.get(lp_id) != null) grid_ids.get(lp_id).remove(name);
             if(grid_ids.get(id) != null){
                 Objects.requireNonNull(grid_ids.get(id)).add(name);
             } else {
                 grid_ids.put(id, new ArrayList<>(List.of(name)));
             }
-            lp_id = id;
+            */
+            if(current_project.getProjectManager() != null){
+                current_project.getProjectManager().removeGrid(this);
+                lp_id = id;
+                current_project.getProjectManager().addGrid(this);
+            } else { lp_id = id; }
         }
 
         //// MANAGER ////
@@ -230,19 +237,15 @@ public abstract class GridPadsReceptor {
         }
 
         //// PROJECT ////
-        public void setProject(Project project){
-            this.current_project.setProject(project);
-            if(project_use_grid.containsKey(project.getProjectId())){
-                project_use_grid.get(project.getProjectId()).add(name);
-            } else {
-                project_use_grid.put(project.getProjectId(), new ArrayList<>(List.of(name)));
-            }
+        public void setProject(ProjectManager projectManager){
+            this.current_project.setProjectManager(projectManager);
+            this.current_project.getProjectManager().addGrid(this);
         }
         public CurrentProject getProject(){ return this.current_project; }
         public void removeProject(){
-            if(this.current_project.getProject() != null) {
-                project_use_grid.get(current_project.getProject().getProjectId()).remove(this.getName());
-                this.current_project.setProject(null);
+            if(this.current_project.getProjectManager() != null) {
+                this.current_project.getProjectManager().removeGrid(this);
+                this.current_project.setProjectManager(null);
             }
         }
 
@@ -345,41 +348,34 @@ public abstract class GridPadsReceptor {
         }
 
         public class CurrentProject{
-            protected PadPressCall mPadPress;
-            protected Project project;
+            protected ProjectManager projectManager;
 
-            public void setProject(Project project){
-                this.project = project;
-                if(project.keysound_path != null || project.keyled_count > 0){
-                    this.mPadPress = new PadPressCall();
-                    if(project.mKeySounds != null){
-                        mPadPress.calls.add(project.mKeySounds);
-                    }
-                    if(project.mKeyLED != null){
-                        mPadPress.calls.add(project.mKeyLED);
-                    }
-                    if(project.mAutoPlay != null){
-                        mPadPress.calls.add(project.mAutoPlay);
-                    }
-                }
+            public void setProjectManager(ProjectManager projectManager){
+                this.projectManager = projectManager;
             }
-            public Project getProject(){
-                return this.project;
+            public ProjectManager getProjectManager(){
+                return this.projectManager;
             }
             public AutoPlay getAutoPlay(){
-                return (project != null) ? project.mAutoPlay : null;
+                return (projectManager != null) ? projectManager.getAutoPlay() : null;
             }
             public KeyLED getKeyLED(){
-                return (project != null) ? project.mKeyLED : null;
+                return (projectManager != null) ? projectManager.getKeyLED() : null;
             }
             public KeySounds getKeySounds(){
-                return (project != null) ? project.mKeySounds : null;
+                return (projectManager != null) ? projectManager.getKeySounds() : null;
             }
             public void callPress(MakePads.ChainInfo chain, MakePads.PadInfo pad){
-                if(mPadPress != null) mPadPress.call(chain, pad);
+                if(getPadPress() != null) projectManager.getPadPressCall().call(chain, pad);
             }
             public PadPressCall getPadPress(){
-                return (project != null) ? mPadPress: null;
+                if (projectManager != null) {
+                    XLog.e("getCallPress: CurrentProject", "Success");
+                    return projectManager.getPadPressCall();
+                } else {
+                    XLog.e("getCallPress: CurrentProject", "Error");
+                    return null;
+                }
             }
 
         }
