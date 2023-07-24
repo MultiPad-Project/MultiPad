@@ -294,7 +294,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
 
         /*Add bottom buttons*/
         new_pads.setOnClickListener((new_pads_button)->{
-            getPadInstance().newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
+            //getPadInstance().newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10);
             OptionsItem new_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
             new_item.setTitle(getPadInstance().getActivePads().getName());
             new_item.setDescription(String.valueOf(getPadInstance().getActivePads().getId()));
@@ -308,7 +308,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
             color_table.setVisibility(View.GONE);
             pads_list.setVisibility(View.GONE);
             color_table_page.clear();
-           // switchTo(EXIT_PAGE_LIST_COLOR_TABLE, false);
+            // switchTo(EXIT_PAGE_LIST_COLOR_TABLE, false);
             File root = new File(GlobalConfigs.DefaultConfigs.COLOR_TABLE_PATH);
             if(root.exists()) for(File file : root.listFiles()){
                 OptionsItem item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
@@ -316,7 +316,7 @@ public abstract class PlayPadsOptions extends FluctuateOptionsView {
                 item.setTitle((format_index == -1) ? file.getName() : file.getName().replace(file.getName().substring(format_index), ""));
                 item.setOnClick((view1)->{
                     XLog.v("Color Table name", file.getName());
-                    getKeyLEDInstance().setColorTable(file);
+                    //getKeyLEDInstance().setColorTable(file);
                 });
                 color_table_page.putOption(item);
             }

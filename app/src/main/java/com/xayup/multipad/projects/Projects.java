@@ -11,7 +11,7 @@ import java.util.*;
 
 public class Projects implements ProjectIndexes {
     protected List<ProjectManager> projects = null;
-
+    protected List<ProjectManager> projects_loaded = null;
     /**
      * Isto fará a leitura dos projetos.
      * @param path pasta onde estão os projetos
@@ -21,7 +21,8 @@ public class Projects implements ProjectIndexes {
         if(path == null) return;
         File[] folders = path.listFiles();
         if (folders != null && folders.length > 0) {
-            projects = new ArrayList<>();
+            if(projects != null) return;
+            else projects = new ArrayList<>();
             for (File folder : folders) {
                 Project project = new Project();
                 project.setInfoPath(folder + File.separator + "info");
@@ -85,21 +86,30 @@ public class Projects implements ProjectIndexes {
                         if (!types[TYPE_AUTOPLAY_FILE]) project.setAutoplayPath(null);
                     } else project.setAutoplayPath(null);
                 }
-
-                if(project.getKeyLedPath(0) != null || project.getKeyLedPath(0) != null || project.getInfoPath() != null) {
+                if((project.getKeyLedPath(0) != null || project.getKeyLedPath(0) != null || project.getInfoPath() != null)) {
                     projects.add(new ProjectManager(project));
                 }
             }
             if (projects.size() > 0){
                 // Alphabetic order
-                Collections.sort(projects, (m1, m2) -> m1.getProject().getTitle().compareToIgnoreCase(m2.getProject().getTitle()));
+                alphabeticOrder(projects);
             } else {
                 projects = null;
             }
         }
     }
 
+    public void alphabeticOrder(List<ProjectManager> list){
+        Collections.sort(list, (m1, m2) -> m1.getProject().getTitle().compareToIgnoreCase(m2.getProject().getTitle()));
+    }
+
     public List<ProjectManager> getProjects(){
         return projects;
     }
+    public List<ProjectManager> getLoadedProjects(){ return projects_loaded; }
+    public void addLoadedProject(ProjectManager project){
+        if(projects_loaded == null) projects_loaded = new ArrayList<>();
+        projects_loaded.add(project);
+    }
+    public void removeLoadedProject(ProjectManager project){ if(projects_loaded != null) projects_loaded.remove(project); }
 }

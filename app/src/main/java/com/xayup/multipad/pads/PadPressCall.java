@@ -18,9 +18,9 @@ public class PadPressCall implements  PadPressCallInterface {
     }
 
     @Override
-    public boolean call(MakePads.ChainInfo chain, MakePads.PadInfo pad) {
+    public boolean call(GridPadsReceptor.PadGrid padGrid, MakePads.PadInfo padInfo) {
         success = 0;
-        for (PadPressCallInterface mCall : calls) success += (mCall != null && mCall.call(chain, pad)) ? 1 : 0;
+        for (PadPressCallInterface mCall : calls) success += (mCall != null && mCall.call(padGrid, padInfo)) ? 1 : 0;
         return success > 0;
     }
 }

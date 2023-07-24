@@ -8,6 +8,7 @@ import com.xayup.multipad.pads.PadPressCall;
 import com.xayup.multipad.projects.project.autoplay.AutoPlay;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.projects.project.keysounds.KeySounds;
+import com.xayup.multipad.projects.thread.KeyLedThread;
 import com.xayup.multipad.projects.thread.LoadProject;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ProjectManager {
+public class ProjectManager implements KeyLedThread.ShowLed {
     protected Project project;
     protected Map<Integer, List<GridPadsReceptor.PadGrid>> grids;
     protected PadPressCall padPressCall;
@@ -58,12 +59,15 @@ public class ProjectManager {
                 padPressCall = new PadPressCall();
                 if(mKeyLED != null) {
                     XLog.e("onFinish(): KeyLED", "Instanced");
+                    /*
                     mKeyLED.setToShowLed((row, colum, android_color, lp_index) -> {
                         List<GridPadsReceptor.PadGrid> padGrids = getGridsFromId(lp_index);
                         if(padGrids != null) for(GridPadsReceptor.PadGrid padGrid : padGrids){
                             padGrid.led(row, colum, android_color);
                         }
                     });
+
+                     */
                     padPressCall.calls.add(mKeyLED);
                 }
                 if(mKeySounds != null){
@@ -87,7 +91,7 @@ public class ProjectManager {
         return padPressCall;
     }
 
-    public void keyLEDInstance(Context context){ mKeyLED = new KeyLED((Activity) context); }
+    public void keyLEDInstance(Context context){ mKeyLED = new KeyLED(); }
     public void autoPlayInstance(Context context){ mAutoPlay = new AutoPlay((Activity) context); }
     public void keySoundsInstance(Context context){ mKeySounds = new KeySounds((Activity) context); }
 
@@ -96,4 +100,14 @@ public class ProjectManager {
      */
     public void release(){}
 
+    @Override
+    public void onShowLed(int row, int colum, int color, int grid_id) {
+        XLog.v("ProjectManager", "On Show Led");
+        List<GridPadsReceptor.PadGrid> grids = getGridsFromId(grid_id);
+        if(grids != null){
+            for(GridPadsReceptor.PadGrid grid : grids){
+                grid.led(row, colum, color);
+            }
+        }
+    }
 }

@@ -155,6 +155,7 @@
     <string name="pads_cfg_size">Pads size</string>
     <string name="layer_cfg_size">Layer width/height</string>
     <string name="color_table_title">Color Table</string>
+    <string name="color_table_subtitle">Load a color table for this grid. Tables must be in /MultiPad/LCT</string>
     <string name="default_color_table">Using the standard color table</string>
   
     <string name="usb_midi">USBs/MIDIs</string>

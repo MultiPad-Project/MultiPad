@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.VerticalSeekBar;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.Ui;
+import com.xayup.multipad.pads.GridPadsReceptor;
 import com.xayup.multipad.projects.thread.LoadProject;
 import com.xayup.multipad.pads.PadPressCallInterface;
 import com.xayup.multipad.pads.Render.MakePads;
@@ -215,9 +216,9 @@ public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, P
         this.mAutoPlayChanges = autoPlayChanges;
         this.autoplay_index = 0;
         (mThread = new Thread(this)).start();
-        mAutoPlayChanges.onStarted(callInterface = (chain, pad)->{
+        mAutoPlayChanges.onStarted(callInterface = (padGrid, padInfo)->{
             if(isPaused()){
-                checkFramePractical(pad);
+                checkFramePractical(padInfo);
             }
             return true;
         });
@@ -311,7 +312,7 @@ public class AutoPlay implements Project.AutoPlayInterface, MapData, Runnable, P
     }
 
     @Override
-    public boolean call(MakePads.ChainInfo chain, MakePads.PadInfo pad) {
+    public boolean call(GridPadsReceptor.PadGrid padGrid, MakePads.PadInfo padInfo) {
         return startAutoPlay();
     }
 

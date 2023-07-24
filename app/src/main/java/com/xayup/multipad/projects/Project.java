@@ -93,9 +93,9 @@ public class Project implements ProjectIndexes {
     }
 
     public interface KeyLEDInterface {
-        public boolean showLed(int chain, int x, int y);
+        public boolean showLed(int chain, int x, int y, int id);
 
-        public boolean breakLed(int chain, int x, int y);
+        public boolean breakLed(int chain, int x, int y, int id);
 
         public boolean breakAll();
     }

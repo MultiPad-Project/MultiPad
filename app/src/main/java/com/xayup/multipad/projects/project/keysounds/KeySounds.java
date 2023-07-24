@@ -3,6 +3,7 @@ package com.xayup.multipad.projects.project.keysounds;
 import android.app.Activity;
 import android.content.Context;
 import com.xayup.debug.XLog;
+import com.xayup.multipad.pads.GridPadsReceptor;
 import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.thread.LoadProject;
 import com.xayup.multipad.pads.PadPressCallInterface;
@@ -45,7 +46,7 @@ public class KeySounds implements Project.SoundInterface, PadPressCallInterface 
     }
 
     @Override
-    public boolean call(MakePads.ChainInfo chain, MakePads.PadInfo pad) {
-        return playSound(chain.getMc(), pad.getRow(), pad.getColum());
+    public boolean call(GridPadsReceptor.PadGrid padGrid, MakePads.PadInfo padInfo) {
+        return playSound(padGrid.getCurrentChain().getMc(), padInfo.getRow(), padInfo.getColum());
     }
 }

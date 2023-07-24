@@ -17,6 +17,7 @@ import com.xayup.multipad.projects.ProjectManager;
 import com.xayup.multipad.projects.project.autoplay.AutoPlay;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.projects.project.keysounds.KeySounds;
+import com.xayup.multipad.projects.thread.KeyLedThread;
 import com.xayup.multipad.skin.SkinManager;
 import com.xayup.multipad.skin.SkinProperties;
 import com.xayup.multipad.skin.SkinSupport;
@@ -28,6 +29,7 @@ public abstract class GridPadsReceptor {
     protected Map<Integer, List<String>> project_use_grid; //Get grid by project id
     protected Map<String, PadGrid> grids; //Get grid by name
     protected Map<Integer, List<String>> grid_ids; //Get grid by ID
+    protected KeyLedThread keyLedThread;
 
     public SkinManager mSkinManager;
     protected PadGrid active_pad = null;
@@ -51,7 +53,7 @@ public abstract class GridPadsReceptor {
         this.mSkinManager = new SkinManager();
         this.current_chain = new MakePads.ChainInfo(1, 9);
         this.grids = new HashMap<>();
-        this.project_use_grid = new HashMap<>();
+        (this.keyLedThread = new KeyLedThread()).loop();
     }
 
     /**
@@ -62,18 +64,35 @@ public abstract class GridPadsReceptor {
      */
     public abstract boolean onTheButtonSign(PadGrid grid, MakePads.PadInfo pad, MotionEvent event);
 
+    public abstract void onGridCreated(PadGrid padGrid);
+    public abstract void onGridDeleted();
+
     /**
      * Make new Pads Object. Get this or last created pad with getActivePads()
      * @param skin_package : SKin name to get and set on the Pads
      * @param rows : rows count
      * @param columns : columns count.
      */
-    public void newPads(String skin_package, int rows, int columns) {
+    public void newPads(String skin_package, int rows, int columns, int[] color_table) {
         PadGrid padGrid = new PadGrid(SkinManager.getSkinProperties(context, skin_package), rows, columns);
         padGrid.setName("Grid_" + grids.size());
         padGrid.setId(0);
         grids.put(padGrid.getName(), padGrid);
         active_pad = padGrid;
+        padGrid.setColors(color_table);
+        onGridCreated(active_pad);
+    }
+
+    /**
+     * Chame isto sempre que o estado de um projeto for alterado
+     * @param projectManager o projeto a qual o estado foi recém alterado
+     */
+    public void notifyProject(ProjectManager projectManager){
+        if(projectManager.getProject().getStatus() == Project.STATUS_LOADED) {
+            keyLedThread.addCallback(projectManager);
+        } else {
+            keyLedThread.removeCallback(projectManager);
+        }
     }
     
     public List<String> getPadsWithId(int id){
@@ -152,6 +171,7 @@ public abstract class GridPadsReceptor {
     }
 
     public class PadGrid implements PadsLayoutInterface, SkinSupport {
+        protected MakePads.ChainInfo current_chain;
         protected CurrentProject current_project;
         protected String name;
         protected byte layout_mode;
@@ -164,11 +184,14 @@ public abstract class GridPadsReceptor {
         protected GridLayout mGrid;
         protected int lp_id;
         protected MakePads.Pads mPads;
+        protected int[] colors;
 
         public PadGrid(SkinProperties skin, int rows, int columns) {
             this.mSkinProperties = skin;
             this.mSkinData = new PadSkinData();
             this.current_project = new CurrentProject();
+
+            this.current_chain = new MakePads.ChainInfo(1, 9);
 
             this.mGrid = (this.mPads = new MakePads(context).make(rows, columns)).getGrid();
 
@@ -196,12 +219,19 @@ public abstract class GridPadsReceptor {
             );
         }
 
+        public void setColors(int[] colors){ this.colors = colors; }
+        public int[] getColors(){ return this.colors; }
+
         //// INTERACTION ////
-        public void led(int row, int colum, int android_color){
-            mPads.setLedColor(row, colum, android_color);
+        public void led(int row, int colum, int color){
+            mPads.setLedColor(row, colum, (color > colors.length) ? color: colors[color]);
         }
 
         //// INFORMATION'S ////
+        public MakePads.ChainInfo getCurrentChain() {
+            return current_chain;
+        }
+
         public MakePads.Pads getPads(){ return mPads; }
         public int getId(){ return this.lp_id; }
         public void setName(String name){ this.name = name; }
@@ -363,8 +393,11 @@ public abstract class GridPadsReceptor {
             public KeySounds getKeySounds(){
                 return (projectManager != null) ? projectManager.getKeySounds() : null;
             }
-            public void callPress(MakePads.ChainInfo chain, MakePads.PadInfo pad){
-                if(getPadPress() != null) projectManager.getPadPressCall().call(chain, pad);
+            public void callPress(PadGrid padGrid, MakePads.PadInfo pad){
+                if(getPadPress() != null) projectManager.getPadPressCall().call(padGrid, pad);
+            }
+            public int getId(){
+                return (projectManager == null) ? -1: projectManager.getProject().getProjectId();
             }
             public PadPressCall getPadPress(){
                 if (projectManager != null) {

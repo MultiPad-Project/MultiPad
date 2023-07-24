@@ -8,10 +8,7 @@ import android.text.InputType;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.widget.*;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.configs.GlobalConfigs;
 
@@ -22,6 +19,7 @@ import com.xayup.multipad.projects.Project;
 import com.xayup.multipad.projects.ProjectManager;
 import com.xayup.multipad.projects.Projects;
 import com.xayup.multipad.pads.GridPadsReceptor;
+import com.xayup.multipad.projects.project.keyled.Colors;
 import com.xayup.multipad.projects.project.keyled.KeyLED;
 import com.xayup.multipad.projects.thread.LoadProject;
 import com.xayup.ui.options.FluctuateOptionsView;
@@ -33,6 +31,7 @@ import java.io.*;
 import java.util.List;
 
 public class MainActivity extends Activity {
+    public View content_view_root;
     private Activity context;
     protected final byte INTENT_PLAY_PADS = 0;
 
@@ -54,10 +53,15 @@ public class MainActivity extends Activity {
 
     protected Projects mProjects;
 
+    protected Colors colors;
+
+    PlayPads mPlayPads;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        this.content_view_root = findViewById(R.id.main_activity);
         ACTION_USB_PERMISSION = this.getPackageName()+".USB_PERMISSION";
         this.context = this;
         this.makeActivity();
@@ -87,83 +91,18 @@ public class MainActivity extends Activity {
 
         if (!rootFolder.exists()) rootFolder.mkdirs();
 
-        ViewGroup container = findViewById(R.id.main_container);
         ViewGroup splash = findViewById(R.id.splash);
 
-        //registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
-
-        View floating_button = findViewById(R.id.main_floating_menu_button);
-
-        PlayPads mPlayPads = new PlayPads(context, context.findViewById(R.id.main_pads_to_add));
-        defaultPadClick(mPlayPads.getPads().getActivePads());
-        mMainPanel = new MainPanel(context) {
-            @Override
-            public void onExit() { killApp(); }
-
-            @Override
-            public KeyLED getKeyLEDInstance() {
-                return null;
-            }
-
-            @Override
-            public GridPadsReceptor getPadInstance() {
-                return mPlayPads.getPads();
-            }
-
-            @Override
-            public List<ProjectManager> getProjects() {
-                return mProjects.getProjects();
-            }
-
-            @Override
-            public void addNewGrid() {
-                mPlayPads.addNewGrid();
-                defaultPadClick(mPlayPads.getPads().getActivePads());
-            }
-
-            @Override
-            public void loadProject(ProjectManager projectManager, ProgressBar progressBar) {
-                if(projectManager.getProject().getStatus() == Project.STATUS_UNLOADED) {
-                    projectManager.loadProject(context, new LoadProject.LoadingProject() {
-                        @Override
-                        public void onStartLoadProject() {
-                            progressBar.setProgress(0);
-                            progressBar.setMax(
-                                    ((projectManager.getProject().keysound_path != null) ? 1 + projectManager.getProject().sample_count : 0)
-                                            + projectManager.getProject().keyled_count + ((projectManager.getProject().autoplay_path != null) ? 1 : 0));
-                            projectManager.getProject().setStatus(Project.STATUS_LOADING);
-                        }
-
-                        @Override
-                        public void onStartReadFile(String file_name) {
-                            progressBar.incrementProgressBy(1);
-                        }
-
-                        @Override
-                        public void onFileError(String file_name, int line, String cause) {
-                            progressBar.incrementProgressBy(1);
-                        }
-
-                        @Override
-                        public void onFinishLoadProject() {
-                            progressBar.setProgress(progressBar.getMax());
-                            projectManager.getProject().setStatus(Project.STATUS_LOADED);
-                        }
-                    });
-                } else if (projectManager.getProject().getStatus() == Project.STATUS_LOADED){
-                    // Project loaded
-                }
-            }
-        };
-        floating_button.setOnClickListener((v) -> mMainPanel.showPanel());
-
         // Read project after render
-        Runnable onPost = new Runnable() {
+        splash.post(new Runnable() {
             @Override
             public void run() {
-                GlobalConfigs.display_height = splash.getMeasuredHeight();
-                GlobalConfigs.display_width = splash.getMeasuredWidth();
+                GlobalConfigs.display_height = content_view_root.getMeasuredHeight();
+                GlobalConfigs.display_width = content_view_root.getMeasuredWidth();
+                XLog.v("Extract", "Default color tables");
+                colors = new Colors(context);
 
+                XLog.v("Projects", "Reading");
                 mProjects = new Projects();
                 boolean[] types = new boolean[mProjects.FLAG_SIZE];
                 types[mProjects.FLAG_TITLE] = true;
@@ -175,14 +114,93 @@ public class MainActivity extends Activity {
                 types[mProjects.TYPE_SAMPLE_FOLDER] = true;
                 types[mProjects.FLAG_SAMPLE_COUNT] = true;
                 mProjects.readProjectsPath(rootFolder, types);
+
+                //registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
+
+                View floating_button = findViewById(R.id.main_floating_menu_button);
+
+                XLog.v("Grid", "Make default grid");
+                mPlayPads = new PlayPads(context, context.findViewById(R.id.main_pads_to_add));
+                newGrid();
+                defaultPadClick(mPlayPads.getPads().getActivePads());
+
+                mMainPanel = new MainPanel(context) {
+                    @Override
+                    public void onExit() { killApp(); }
+
+                    @Override
+                    public KeyLED getKeyLEDInstance() {
+                        return null;
+                    }
+
+                    @Override
+                    public GridPadsReceptor getPadInstance() {
+                        return mPlayPads.getPads();
+                    }
+
+                    @Override
+                    public List<ProjectManager> getProjects() {
+                        return mProjects.getProjects();
+                    }
+
+                    @Override
+                    public void addNewGrid() {
+                        newGrid();
+                        defaultPadClick(mPlayPads.getPads().getActivePads());
+                    }
+
+                    @Override
+                    public void loadProject(ProjectManager projectManager, ProgressBar progressBar) {
+                        if(projectManager.getProject().getStatus() == Project.STATUS_UNLOADED) {
+                            projectManager.loadProject(context, new LoadProject.LoadingProject() {
+                                @Override
+                                public void onStartLoadProject() {
+                                    progressBar.setProgress(0);
+                                    progressBar.setMax(
+                                            ((projectManager.getProject().keysound_path != null) ? 1 + projectManager.getProject().sample_count : 0)
+                                                    + projectManager.getProject().keyled_count + ((projectManager.getProject().autoplay_path != null) ? 1 : 0));
+                                    projectManager.getProject().setStatus(Project.STATUS_LOADING);
+                                }
+
+                                @Override
+                                public void onStartReadFile(String file_name) {
+                                    progressBar.incrementProgressBy(1);
+                                }
+
+                                @Override
+                                public void onFileError(String file_name, int line, String cause) {
+                                    progressBar.incrementProgressBy(1);
+                                }
+
+                                @Override
+                                public void onFinishLoadProject() {
+                                    progressBar.setProgress(progressBar.getMax());
+                                    projectManager.getProject().setStatus(Project.STATUS_LOADED);
+                                    mPlayPads.getPads().notifyProject(projectManager);
+                                    mProjects.addLoadedProject(projectManager);
+                                    mProjects.alphabeticOrder(mProjects.getLoadedProjects());
+                                }
+                            });
+                        } else if (projectManager.getProject().getStatus() == Project.STATUS_LOADED){
+                            // Project loaded
+                        }
+                    }
+                };
                 mMainPanel.updates();
                 mMainPanel.home();
+
+                floating_button.setOnClickListener((v) -> mMainPanel.showPanel());
+
                 hideSplash(() -> mMainPanel.showPanel());
                 splash.removeCallbacks(this);
             }
-        };
-        splash.post(onPost);
+        });
+    }
 
+    public void newGrid(){
+        RelativeLayout container = this.findViewById(R.id.main_container);
+        mPlayPads.getPads().newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10, colors.getDefaultTable());
+        container.addView(mPlayPads.getPads().getActivePads().getContainer(), new ViewGroup.LayoutParams(GlobalConfigs.display_height, GlobalConfigs.display_height));
     }
 
     public void defaultPadClick(GridPadsReceptor.PadGrid active_pad){
@@ -193,38 +211,42 @@ public class MainActivity extends Activity {
                 active_pad.getPads().getPadView(pad.getRow(), pad.getColum()).setOnTouchListener((pad_view, event) -> {
                     pad_view.performClick();
                     if(event.getAction() == MotionEvent.ACTION_DOWN){
+                        int page_switch_duration = (int)(context.getResources().getInteger(R.integer.swipe_animation_velocity) * Ui.getSettingsAnimationScale(context));
                         FluctuateOptionsView window = new FluctuateOptionsView(context);
                         //Home page
                         OptionsPage home_page = window.getPage(window.newPage(mPadGrid.getName()));
                         OptionsPage projects_loaded = window.getPage(window.newPage("Use the project"));
-                        //Get loaded projects
-                        OptionsItem none_project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                        none_project_item.setTitle("None");
-                        projects_loaded.putOption(none_project_item);
-                        none_project_item.setOnClick((item_view) -> {
-                            if(active_pad.getProject().getProjectManager() != null)
-                                active_pad.getProject().getProjectManager().removeGrid(active_pad);
-                        });
-                        for(ProjectManager projectManager : mProjects.getProjects()){
-                            if(projectManager.getProject().getStatus() == Project.STATUS_LOADED){
-                                OptionsItem project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                                project_item.setTitle(projectManager.getProject().getTitle());
-                                project_item.setDescription(projectManager.getProject().getProducerName());
-                                projects_loaded.putOption(project_item);
-                                project_item.setOnClick((item_view) -> {
-                                    active_pad.setProject(projectManager);
-                                });
-                            }
-                        }
+                        OptionsPage color_table_page = window.getPage(window.newPage(context.getString(R.string.color_table_title)));
+
                         //Home page options
                         OptionsItem set_current_project = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_ARROW);
                         home_page.putOption(set_current_project);
                         set_current_project.setTitle("Use the project");
                         set_current_project.setDescription("Choose which of the loaded projects this grid will interact with");
                         set_current_project.setOnClick((item_view) -> {
-                            window.switchTo(projects_loaded.getPageIndex(), false,
-                                    (int)(context.getResources().getInteger(R.integer.swipe_animation_velocity) * Ui.getSettingsAnimationScale(context)));
+                            projects_loaded.clear();
+                            //Get loaded projects
+                            OptionsItem none_project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                            none_project_item.setTitle("None");
+                            projects_loaded.putOption(none_project_item);
+                            none_project_item.setOnClick((item) -> {
+                                if(active_pad.getProject().getProjectManager() != null)
+                                    active_pad.getProject().getProjectManager().removeGrid(active_pad);
+                            });
+                            if(mProjects.getLoadedProjects() != null) {
+                                for (ProjectManager projectManager : mProjects.getLoadedProjects()) {
+                                    OptionsItem project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                                    project_item.setTitle(projectManager.getProject().getTitle());
+                                    project_item.setDescription(projectManager.getProject().getProducerName());
+                                    projects_loaded.putOption(project_item);
+                                    project_item.setOnClick((item) -> {
+                                        active_pad.setProject(projectManager);
+                                    });
+                                }
+                            }
+                            window.switchTo(projects_loaded.getPageIndex(), false, page_switch_duration);
                         });
+
                         OptionsItem set_id = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
                         home_page.putOption(set_id);
                         set_id.setTitle("Set grid id");
@@ -254,6 +276,37 @@ public class MainActivity extends Activity {
                             });
                             dialog.show();
                         });
+
+                        OptionsItem set_color_table = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_ARROW);
+                        home_page.putOption(set_color_table);
+                        set_color_table.setTitle(context.getString(R.string.color_table_title));
+                        set_color_table.setDescription(context.getString(R.string.color_table_subtitle));
+                        set_color_table.setOnClick(v -> {
+                            color_table_page.clear();
+                            // switchTo(EXIT_PAGE_LIST_COLOR_TABLE, false);
+                            File root = new File(GlobalConfigs.DefaultConfigs.COLOR_TABLE_PATH);
+                            if(root.exists()) for(File file : root.listFiles()){
+                                OptionsItem item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                                byte format_index = (byte) file.getName().lastIndexOf(".");
+                                item.setTitle((format_index == -1) ?
+                                        file.getName() :
+                                        file.getName().replace(file.getName().substring(format_index), ""));
+                                item.setOnClick((view1)->{
+                                    XLog.v("Color Table name", file.getName());
+                                    active_pad.setColors(colors.getTable(file));
+                                });
+                                color_table_page.putOption(item);
+                            }
+                            window.switchTo(color_table_page.getPageIndex(), false, page_switch_duration);
+                        });
+
+                        //Back button
+                        window.getBackButton().setOnClickListener(v -> {
+                            int page = window.getCurrentPageIndex();
+                            if (page == projects_loaded.getPageIndex() || page == color_table_page.getPageIndex()){
+                                window.switchTo(home_page.getPageIndex(), true, page_switch_duration);
+                            }
+                        });
                         window.switchTo(0, false, 0);
                         window.show();
                         return true;
@@ -277,7 +330,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void onAnimationRepeat(Animation animation) { }
                 }
-        );;
+        );
     }
 
     private final BroadcastReceiver usbReceiver =

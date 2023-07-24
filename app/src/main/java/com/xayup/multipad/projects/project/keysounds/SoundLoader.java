@@ -118,7 +118,7 @@ public class SoundLoader {
   }
 
   public boolean useSynchronizeSample(SoundPlayer sample){
-    boolean use_synchronize_samples = true;
+    boolean use_synchronize_samples = false;
     if(!use_synchronize_samples) return false;
     SoundPlayer last_sound;
     if(current_players.size() > 0
