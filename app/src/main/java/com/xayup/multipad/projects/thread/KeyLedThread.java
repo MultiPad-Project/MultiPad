@@ -89,6 +89,7 @@ public class KeyLedThread implements Runnable, MapData {
                                     delays.remove(l);
                                     delays.add(l, new int[]{frame[FRAME_VALUE]});
                                 } else {
+                                    XLog.v("KeyLedThread: Thread", String.valueOf(callbacks.size()));
                                     for(ShowLed showLed : callbacks) {
                                         showLed.onShowLed(
                                                 frame[FRAME_PAD_X],

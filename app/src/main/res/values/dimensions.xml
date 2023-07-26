@@ -21,6 +21,13 @@
     <dimen name="project_item_text_status">10sp</dimen>
     <dimen name="project_item_text_description">12sp</dimen>
 
-
+    <!--Floating Window Resize Grid-->
+    <dimen name="floating_window_resize_grid_height">250dp</dimen>
+    <dimen name="floating_window_resize_grid_width">350dp</dimen>
+    <dimen name="floating_window_resize_grid_bar_height">60dp</dimen>
+    <dimen name="floating_window_resize_grid_header_button">22dp</dimen>
+    <dimen name="floating_window_resize_grid_bars_padding">3dp</dimen>
+    <dimen name="floating_window_resize_grid_title_size">18sp</dimen>
+    <dimen name="floating_window_resize_grid_bars_text_size">16sp</dimen>
 
 </resources>

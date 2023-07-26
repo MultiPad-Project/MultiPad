@@ -34,7 +34,7 @@ public class KeyLED implements MapData, Project.KeyLEDInterface, PadPressCallInt
         XLog.v("Try show led", "");
         KeyLEDData ledData = mLedMap.getLedData(chain, x, y);
         if (ledData != null && ledData.length() > 0) {
-            if(keyLedThread != null) keyLedThread.addLed(Arrays.asList(ledData.getFrames()), id);
+            if(keyLedThread != null) keyLedThread.addLed(new ArrayList<>(List.of(ledData.getFrames())), id);
             XLog.v("Success show led", "");
             return true;
         }

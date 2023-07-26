@@ -90,6 +90,7 @@ public abstract class GridPadsReceptor {
     public void notifyProject(ProjectManager projectManager){
         if(projectManager.getProject().getStatus() == Project.STATUS_LOADED) {
             keyLedThread.addCallback(projectManager);
+            if(projectManager.getKeyLED() != null) projectManager.getKeyLED().setKeyLedThread(keyLedThread);
         } else {
             keyLedThread.removeCallback(projectManager);
         }
@@ -102,10 +103,9 @@ public abstract class GridPadsReceptor {
         return grids.get(name);
     }
 
-    public List<PadGrid> getAllPadsList(){
+    public List<PadGrid> getAllPadsList(){ return new ArrayList<>(grids.values()); }
+    public List<String> getAllPadsNameList(){ return new ArrayList<>(grids.keySet()); }
 
-        return new ArrayList<>(grids.values());
-    }
 
     /**
      * Isso retorna a Pads ativa (Que será definido pelo usuário ou quando uma nova Pads é criada)

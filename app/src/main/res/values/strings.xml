@@ -85,7 +85,16 @@
     <string name="cop">Copied to the clipboard!</string>
     <string name="exitcrash">Close app</string>
     <string name="msg_after_crash">Open it again and copy the log. Please send it to @XayUp</string>
-    
+
+    <!--Floating Window Resize Grid-->
+    <string name="floating_window_resize_grid_width">Width:</string>
+    <string name="floating_window_resize_grid_height">Height:</string>
+    <string name="floating_window_resize_grid_rotation">Rotation:</string>
+    <string name="floating_window_resize_grid_x_position">Position X:</string>
+    <string name="floating_window_resize_grid_y_position">Position Y:</string>
+    <string name="floating_window_resize_grid_part_grid">Grid</string>
+    <string name="floating_window_resize_grid_part_pads">Pads</string>
+
     <string name="invalid_led_color">Color led invalid:</string>
     <string name="warning">Warning!</string>
     <string name="invalid_keyled">Invalid KeyLed:</string>

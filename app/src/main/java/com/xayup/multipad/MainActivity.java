@@ -12,6 +12,7 @@ import android.widget.*;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.configs.GlobalConfigs;
 
+import com.xayup.multipad.layouts.grid.FloatingWindowGridResize;
 import com.xayup.multipad.layouts.loadscreen.LoadScreen;
 import com.xayup.multipad.layouts.main.panel.MainPanel;
 import com.xayup.multipad.pads.Render.MakePads;
@@ -192,15 +193,25 @@ public class MainActivity extends Activity {
                 floating_button.setOnClickListener((v) -> mMainPanel.showPanel());
 
                 hideSplash(() -> mMainPanel.showPanel());
+
+                FloatingWindowGridResize gridResizer = new FloatingWindowGridResize(context, context.findViewById(R.id.main_container)) {
+                    @Override
+                    public GridPadsReceptor getGridPadsReceptor() {
+                        return mPlayPads.getPads();
+                    }
+                };
+
+                gridResizer.show();
+
                 splash.removeCallbacks(this);
             }
         });
     }
 
     public void newGrid(){
-        RelativeLayout container = this.findViewById(R.id.main_container);
+        RelativeLayout to_add = this.findViewById(R.id.main_pads_to_add);
         mPlayPads.getPads().newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10, colors.getDefaultTable());
-        container.addView(mPlayPads.getPads().getActivePads().getContainer(), new ViewGroup.LayoutParams(GlobalConfigs.display_height, GlobalConfigs.display_height));
+        to_add.addView(mPlayPads.getPads().getActivePads().getContainer(), new ViewGroup.LayoutParams(GlobalConfigs.display_height, GlobalConfigs.display_height));
     }
 
     public void defaultPadClick(GridPadsReceptor.PadGrid active_pad){

@@ -1,59 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="@dimen/floating_window_resize_grid_width"
-        android:layout_height="@dimen/floating_window_resize_grid_height"
-        android:background="@color/floating_window_resize_grid_background"
-        android:orientation="vertical">
-    <LinearLayout
+              android:layout_width="@dimen/floating_window_resize_grid_width"
+              android:layout_height="@dimen/floating_window_resize_grid_height"
+              android:background="@color/floating_window_resize_grid_background"
+              android:orientation="vertical">
+    <RelativeLayout
             android:id="@+id/floating_window_resize_grid_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/floating_window_resize_grid_header"
-            android:gravity="end|center_vertical">
-        <RelativeLayout
+            android:background="@color/floating_window_resize_grid_header">
+        <TextView
+                android:id="@+id/floating_window_resize_grid_header_title"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_marginStart="18dp"
-                android:layout_weight="1" >
-            <Spinner android:id="@+id/floating_window_resize_grid_header_spinner"
-                     android:layout_height="wrap_content"
-                     android:layout_width="match_parent"
-                     android:alpha="0"
-                     android:backgroundTint="@android:color/white"
-                     android:textColor="@android:color/white" />
-            <TextView
-                    android:id="@+id/flutuant_window_resize_grid_header_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    android:clickable="false"
-                    android:textSize="@dimen/floating_window_resize_grid_title_size"
-                    android:text="Grid_1"/>
-        </RelativeLayout>
-
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:clickable="false"
+                android:layout_centerVertical="true"
+                android:textSize="@dimen/floating_window_resize_grid_title_size"
+                android:paddingStart="18dp"
+                android:text="Grid_1"/>
+        <Spinner android:id="@+id/floating_window_resize_grid_header_spinner"
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:alpha="0"
+                 android:backgroundTint="@android:color/white"
+                 android:paddingStart="18dp"
+                 android:layout_centerVertical="true"
+                 android:textColor="@android:color/white"/>
         <View
                 android:id="@+id/floating_window_resize_grid_minimize"
                 android:background="@drawable/minimize_icon"
                 android:backgroundTint="@android:color/white"
                 android:layout_margin="6dp"
+                android:layout_centerVertical="true"
                 android:layout_width="@dimen/floating_window_resize_grid_header_button"
-                android:layout_height="@dimen/floating_window_resize_grid_header_button" />
+                android:layout_height="@dimen/floating_window_resize_grid_header_button"
+                android:layout_toStartOf="@+id/floating_window_resize_grid_close"/>
         <View
                 android:id="@+id/floating_window_resize_grid_close"
                 android:background="@drawable/close_icon"
                 android:backgroundTint="@android:color/white"
                 android:layout_margin="6dp"
+                android:layout_centerVertical="true"
                 android:layout_width="@dimen/floating_window_resize_grid_header_button"
-                android:layout_height="@dimen/floating_window_resize_grid_header_button" />
+                android:layout_height="@dimen/floating_window_resize_grid_header_button"
+                android:layout_alignParentEnd="true"/>
 
+    </RelativeLayout>
+    <LinearLayout
+            android:id="@+id/floating_window_grid_resize_change_part"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+        <TextView
+                android:layout_weight="1"
+                android:id="@+id/floating_window_resize_grid_part_grid_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/floating_window_resize_grid_bars_text_size"
+                android:gravity="center"
+                android:text="@string/floating_window_resize_grid_part_grid"/>
+        <Switch
+                android:id="@+id/floating_window_grid_resize_part_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"/>
+        <TextView
+                android:layout_weight="1"
+                android:id="@+id/floating_window_resize_grid_part_pads_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:alpha="0.4"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/floating_window_resize_grid_bars_text_size"
+                android:text="@string/floating_window_resize_grid_part_pads"/>
     </LinearLayout>
     <RelativeLayout
             android:layout_weight="1"
             android:id="@+id/floating_window_resize_grid_width_container"
             android:layout_width="wrap_content"
             android:padding="@dimen/floating_window_resize_grid_bars_padding"
-            android:layout_below="@id/floating_window_resize_grid_header"
             android:layout_height="wrap_content">
         <SeekBar
                 android:id="@+id/floating_window_resize_grid_width"
@@ -67,10 +96,10 @@
                 android:paddingEnd="0px"
                 android:layout_centerInParent="true"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:progressDrawable="@drawable/project_item_progress" />
+                android:progressDrawable="@drawable/project_item_progress"/>
         <TextView
                 android:layout_centerInParent="true"
-                android:id="@+id/flutuant_window_resize_grid_width_text"
+                android:id="@+id/floating_window_resize_grid_width_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
@@ -82,8 +111,7 @@
             android:id="@+id/floating_window_resize_grid_height_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/floating_window_resize_grid_bars_padding"
-            android:layout_below="@id/floating_window_resize_grid_width_container">
+            android:padding="@dimen/floating_window_resize_grid_bars_padding">
         <SeekBar
                 android:id="@+id/floating_window_resize_grid_height"
                 android:layout_width="match_parent"
@@ -96,14 +124,15 @@
                 android:paddingEnd="0px"
                 android:layout_centerInParent="true"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:progressDrawable="@drawable/project_item_progress" />
+                android:progressDrawable="@drawable/project_item_progress"/>
         <TextView
                 android:id="@+id/floating_window_resize_grid_height_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/floating_window_resize_grid_bars_text_size"
                 android:textColor="@android:color/white"
-                android:text="Height: 780px" android:layout_centerInParent="true"/>
+                android:text="Height: 780px"
+                android:layout_centerInParent="true"/>
     </RelativeLayout>
     <RelativeLayout
             android:layout_weight="1"
@@ -123,7 +152,7 @@
                 android:paddingEnd="0px"
                 android:layout_centerInParent="true"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:progressDrawable="@drawable/project_item_progress" />
+                android:progressDrawable="@drawable/project_item_progress"/>
         <TextView
                 android:layout_centerInParent="true"
                 android:id="@+id/floating_window_resize_grid_rotation_text"
@@ -132,6 +161,62 @@
                 android:textSize="@dimen/floating_window_resize_grid_bars_text_size"
                 android:textColor="@android:color/white"
                 android:text="Rotation: 0º"/>
+    </RelativeLayout>
+    <RelativeLayout
+            android:layout_weight="1"
+            android:id="@+id/floating_window_resize_grid_x_position_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/floating_window_resize_grid_bars_padding">
+        <SeekBar
+                android:id="@+id/floating_window_resize_grid_x_position"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/floating_window_resize_grid_bar_height"
+                android:maxHeight="@dimen/floating_window_resize_grid_bar_height"
+                android:thumb="@null"
+                android:splitTrack="false"
+                android:progress="40"
+                android:paddingStart="0px"
+                android:paddingEnd="0px"
+                android:layout_centerInParent="true"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:progressDrawable="@drawable/project_item_progress"/>
+        <TextView
+                android:layout_centerInParent="true"
+                android:id="@+id/floating_window_resize_grid_x_position_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/floating_window_resize_grid_bars_text_size"
+                android:textColor="@android:color/white"
+                android:text="Position X: 0"/>
+    </RelativeLayout>
+    <RelativeLayout
+            android:layout_weight="1"
+            android:id="@+id/floating_window_resize_grid_y_position_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/floating_window_resize_grid_bars_padding">
+        <SeekBar
+                android:id="@+id/floating_window_resize_grid_y_position"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/floating_window_resize_grid_bar_height"
+                android:maxHeight="@dimen/floating_window_resize_grid_bar_height"
+                android:thumb="@null"
+                android:splitTrack="false"
+                android:progress="40"
+                android:paddingStart="0px"
+                android:paddingEnd="0px"
+                android:layout_centerInParent="true"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:progressDrawable="@drawable/project_item_progress"/>
+        <TextView
+                android:layout_centerInParent="true"
+                android:id="@+id/floating_window_resize_grid_y_position_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/floating_window_resize_grid_bars_text_size"
+                android:textColor="@android:color/white"
+                android:text="Position Y: 0"/>
     </RelativeLayout>
 
 </LinearLayout>
