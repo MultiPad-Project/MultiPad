@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/main_pane_tab_text_background_color" />
+    <corners android:topRightRadius="@dimen/main_panel_tab_text_background_corners_radius"
+             android:bottomLeftRadius="@dimen/main_panel_tab_text_background_corners_radius"
+             android:bottomRightRadius="@dimen/main_panel_tab_text_background_corners_radius" />
+
+
+</shape>

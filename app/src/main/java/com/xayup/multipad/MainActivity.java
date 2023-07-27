@@ -125,6 +125,12 @@ public class MainActivity extends Activity {
                 newGrid();
                 defaultPadClick(mPlayPads.getPads().getActivePads());
 
+                FloatingWindowGridResize gridResizer = new FloatingWindowGridResize(context, context.findViewById(R.id.main_container)) {
+                    @Override
+                    public GridPadsReceptor getGridPadsReceptor() { return mPlayPads.getPads(); }
+
+                };
+
                 mMainPanel = new MainPanel(context) {
                     @Override
                     public void onExit() { killApp(); }
@@ -160,30 +166,30 @@ public class MainActivity extends Activity {
                                     progressBar.setMax(
                                             ((projectManager.getProject().keysound_path != null) ? 1 + projectManager.getProject().sample_count : 0)
                                                     + projectManager.getProject().keyled_count + ((projectManager.getProject().autoplay_path != null) ? 1 : 0));
-                                    projectManager.getProject().setStatus(Project.STATUS_LOADING);
-                                }
-
+                                    projectManager.getProject().setStatus(Project.STATUS_LOADING); }
                                 @Override
-                                public void onStartReadFile(String file_name) {
-                                    progressBar.incrementProgressBy(1);
-                                }
-
+                                public void onStartReadFile(String file_name) { progressBar.incrementProgressBy(1); }
                                 @Override
-                                public void onFileError(String file_name, int line, String cause) {
-                                    progressBar.incrementProgressBy(1);
-                                }
-
+                                public void onFileError(String file_name, int line, String cause) { progressBar.incrementProgressBy(1);  }
                                 @Override
                                 public void onFinishLoadProject() {
                                     progressBar.setProgress(progressBar.getMax());
                                     projectManager.getProject().setStatus(Project.STATUS_LOADED);
                                     mPlayPads.getPads().notifyProject(projectManager);
                                     mProjects.addLoadedProject(projectManager);
-                                    mProjects.alphabeticOrder(mProjects.getLoadedProjects());
-                                }
-                            });
-                        } else if (projectManager.getProject().getStatus() == Project.STATUS_LOADED){
-                            // Project loaded
+                                    mProjects.alphabeticOrder(mProjects.getLoadedProjects()); }
+                             });
+                        } else if (projectManager.getProject().getStatus() == Project.STATUS_LOADED){ // Project loaded
+                        }
+                    }
+                    @Override
+                    public void showGridResize(boolean show) {
+                        if(show){
+                            gridResizer.show();
+                            GlobalConfigs.floating_window_grid_resize_visible = true;
+                        } else {
+                            gridResizer.hide();
+                            GlobalConfigs.floating_window_grid_resize_visible = false;
                         }
                     }
                 };
@@ -193,15 +199,6 @@ public class MainActivity extends Activity {
                 floating_button.setOnClickListener((v) -> mMainPanel.showPanel());
 
                 hideSplash(() -> mMainPanel.showPanel());
-
-                FloatingWindowGridResize gridResizer = new FloatingWindowGridResize(context, context.findViewById(R.id.main_container)) {
-                    @Override
-                    public GridPadsReceptor getGridPadsReceptor() {
-                        return mPlayPads.getPads();
-                    }
-                };
-
-                gridResizer.show();
 
                 splash.removeCallbacks(this);
             }

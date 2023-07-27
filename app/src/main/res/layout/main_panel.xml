@@ -2,118 +2,213 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
+              android:padding="12dp"
               android:layout_height="match_parent">
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toStartOf="@+id/main_panel_right_tabs"
+            android:orientation="vertical">
+        <LinearLayout
+                android:id="@+id/main_panel_left_grid_resize_background"
+                android:paddingEnd="6dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/main_panel_tab_text_background">
+            <CheckBox
+                    android:id="@+id/main_panel_left_grid_resize_checkbox"
+                    android:layout_width="wrap_content"
+                    android:color="@android:color/white"
+                    android:buttonTint="@android:color/white"
+                    android:clickable="false"
+                    android:alpha="0.7"
+                    android:layout_height="wrap_content" />
+            <TextView
+                    android:id="@+id/main_panel_left_grid_resize_text"
+                    android:gravity="center_vertical"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:text="Show grid resizer"/>
+        </LinearLayout>
+        <LinearLayout
+                android:id="@+id/main_panel_left_aa_background"
+                android:paddingRight="6dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/main_panel_tab_text_background">
+            <CheckBox
+                    android:id="@+id/main_panel_left_aa_checkbox"
+                    android:layout_width="wrap_content"
+                    android:color="@android:color/white"
+                    android:buttonTint="@android:color/white"
+                    android:alpha="0.7"
+                    android:clickable="false"
+                    android:layout_height="wrap_content" />
+            <TextView
+                    android:id="@+id/main_panel_left_aa_text"
+                    android:gravity="center_vertical"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:text="AA"/>
+        </LinearLayout>
+
+    </LinearLayout>
     <!--Left Tabs-->
-    <ScrollView
+    <LinearLayout
+            android:id="@+id/main_panel_right_tabs"
+            android:layout_toStartOf="@+id/main_panel_right_scroll"
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/main_panel_left_scroll">
-        <LinearLayout
+            android:gravity="end" >
+        <ScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="end">
+                android:id="@+id/main_panel_left_scroll">
             <LinearLayout
-                    android:id="@+id/main_panel_tab_projects"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical|end">
-                <TextView
-                        android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="end">
+                <LinearLayout
+                        android:id="@+id/main_panel_tab_projects"
                         android:layout_width="wrap_content"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:layout_marginEnd="8dp"
-                        android:paddingHorizontal="8dp"
-                        android:background="@drawable/background_round"
-                        android:backgroundTint="#999999"
-                        android:text="@string/main_panel_left_tab_projects" android:textColor="#263238"/>
-                <View
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|end">
+                    <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:textSize="12sp"
+                            android:layout_marginEnd="8dp"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="@android:color/white"
+                            android:background="@drawable/main_panel_tab_text_background"
+                            android:textStyle="bold"
+                            android:text="@string/main_panel_left_tab_projects"/>
+                    <ImageView
+                        android:layout_height="@dimen/main_panel_tab_left_icon_height"
+                        android:layout_width="@dimen/main_panel_tab_left_icon_width"
+                        android:background="@drawable/main_panel_tab_icon_background_0"/>
+                </LinearLayout>
+                <LinearLayout
+                        android:id="@+id/main_panel_tab_skins"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|end">
+                    <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:textSize="12sp"
+                            android:layout_marginEnd="8dp"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="@android:color/white"
+                            android:background="@drawable/main_panel_tab_text_background"
+                            android:textStyle="bold"
+                            android:text="@string/main_panel_left_tab_skins"
+                            />
+                    <ImageView
+                            android:layout_height="@dimen/main_panel_tab_left_icon_height"
+                            android:layout_width="@dimen/main_panel_tab_left_icon_width"
+                            android:background="@drawable/main_panel_tab_icon_background_1"/>
+                </LinearLayout>
+                <LinearLayout
+                        android:id="@+id/main_panel_tab_grids"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|end">
+                    <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:textSize="12sp"
+                            android:layout_marginEnd="8dp"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="@android:color/white"
+                            android:background="@drawable/main_panel_tab_text_background"
+                            android:textStyle="bold"
+                            android:text="@string/main_panel_left_tab_grids" />
+                    <ImageView
+                            android:layout_height="@dimen/main_panel_tab_left_icon_height"
+                            android:layout_width="@dimen/main_panel_tab_left_icon_width"
+                            android:background="@drawable/main_panel_tab_icon_background_1"/>
+                </LinearLayout>
+                <LinearLayout
+                        android:id="@+id/main_panel_tab_settings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|end">
+                    <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:textSize="12sp"
+                            android:layout_marginEnd="8dp"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="@android:color/white"
+                            android:background="@drawable/main_panel_tab_text_background"
+                            android:textStyle="bold"
+                            android:text="@string/main_panel_left_tab_settings" />
+                    <ImageView
+                            android:layout_height="@dimen/main_panel_tab_left_icon_height"
+                            android:layout_width="@dimen/main_panel_tab_left_icon_width"
+                            android:background="@drawable/main_panel_tab_icon_background_1"/>
+                </LinearLayout>
+                <LinearLayout
+                        android:id="@+id/main_panel_tab_about"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|end">
+                    <TextView
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:textSize="12sp"
+                            android:layout_marginEnd="8dp"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="@android:color/white"
+                            android:background="@drawable/main_panel_tab_text_background"
+                            android:textStyle="bold"
+                            android:text="@string/main_panel_left_tab_about" />
+                    <ImageView
+                            android:layout_height="@dimen/main_panel_tab_left_icon_height"
+                            android:layout_width="@dimen/main_panel_tab_left_icon_width"
+                            android:background="@drawable/main_panel_tab_icon_background_1"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+        <LinearLayout
+                android:id="@+id/main_panel_tab_exit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|end">
+            <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textSize="12sp"
+                    android:layout_marginEnd="8dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/main_panel_tab_text_background"
+                    android:textStyle="bold"
+                    android:text="@string/main_panel_left_tab_exit" />
+            <ImageView
                     android:layout_height="@dimen/main_panel_tab_left_icon_height"
                     android:layout_width="@dimen/main_panel_tab_left_icon_width"
-                    android:background="@drawable/lp_x"/>
-            </LinearLayout>
-            <LinearLayout
-                    android:id="@+id/main_panel_tab_skins"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical|end">
-                <TextView
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:textSize="12sp"
-                        android:layout_marginEnd="8dp"
-                        android:paddingHorizontal="8dp"
-                        android:background="@drawable/background_round"
-                        android:backgroundTint="#999999"
-                        android:text="@string/main_panel_left_tab_skins" android:textColor="#263238"/>
-                <View
-                        android:layout_height="@dimen/main_panel_tab_left_icon_height"
-                        android:layout_width="@dimen/main_panel_tab_left_icon_width"
-                    android:background="@drawable/lp_x"/>
-            </LinearLayout>
-            <LinearLayout
-                    android:id="@+id/main_panel_tab_grids"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical|end">
-                <TextView
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:textSize="12sp"
-                        android:layout_marginEnd="8dp"
-                        android:paddingHorizontal="8dp"
-                        android:background="@drawable/background_round"
-                        android:backgroundTint="#999999"
-                        android:text="@string/main_panel_left_tab_grids" android:textColor="#263238"/>
-                <View
-                        android:layout_height="@dimen/main_panel_tab_left_icon_height"
-                        android:layout_width="@dimen/main_panel_tab_left_icon_width"
-                    android:background="@drawable/lp_x"/>
-            </LinearLayout>
-            <LinearLayout
-                    android:id="@+id/main_panel_tab_settings"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical|end">
-                <TextView
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:textSize="12sp"
-                        android:layout_marginEnd="8dp"
-                        android:paddingHorizontal="8dp"
-                        android:background="@drawable/background_round"
-                        android:backgroundTint="#999999"
-                        android:text="@string/main_panel_left_tab_settings" android:textColor="#263238"/>
-                <View
-                        android:layout_height="@dimen/main_panel_tab_left_icon_height"
-                        android:layout_width="@dimen/main_panel_tab_left_icon_width"
-                    android:background="@drawable/lp_x"/>
-            </LinearLayout>
-            <LinearLayout
-                    android:id="@+id/main_panel_tab_about"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical|end">
-                <TextView
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:textSize="12sp"
-                        android:layout_marginEnd="8dp"
-                        android:paddingHorizontal="8dp"
-                        android:background="@drawable/background_round"
-                        android:backgroundTint="#999999"
-                        android:text="@string/main_panel_left_tab_about" android:textColor="#263238"/>
-                <View
-                        android:layout_height="@dimen/main_panel_tab_left_icon_height"
-                        android:layout_width="@dimen/main_panel_tab_left_icon_width"
-                    android:background="@drawable/lp_x"/>
-            </LinearLayout>
+                    android:background="@drawable/main_panel_tab_icon_background_2"/>
         </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
     <ScrollView
-            android:layout_toRightOf="@+id/main_panel_left_scroll"
-            android:layout_width="match_parent"
+            android:background="@drawable/main_panel_scroll_background"
+            android:layout_width="@dimen/main_panel_width"
             android:layout_height="match_parent"
             android:id="@+id/main_panel_right_scroll"
             android:layout_alignParentEnd="true">

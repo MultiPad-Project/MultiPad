@@ -201,10 +201,12 @@ public abstract class GridPadsReceptor {
             this.mRootPads.addView(this.mGrid, new ViewGroup.LayoutParams(-1, -1));
             this.pads_settings_overlay = new RelativeLayout(context);
             this.mRootPads.addView(this.pads_settings_overlay, new ViewGroup.LayoutParams(-1, -1));
+            //this.mRootPads.setClipChildren(false);
 
             this.container = new RelativeLayout(context);
-            container.addView(this.mRootPads);
-            container.setLayoutParams(new ViewGroup.LayoutParams(-2, -2));
+            this.container.addView(this.mRootPads);
+            this.container.setLayoutParams(new ViewGroup.LayoutParams(-2, -2));
+            //this.container.setClipChildren(false);
 
             this.layout_mode = PadLayoutMode.LAYOUT_PRO_MODE;
             this.lp_id = 0;
@@ -395,6 +397,14 @@ public abstract class GridPadsReceptor {
             }
             public void callPress(PadGrid padGrid, MakePads.PadInfo pad){
                 if(getPadPress() != null) projectManager.getPadPressCall().call(padGrid, pad);
+            }
+            public void setCurrentChain(int row, int colum){
+                if(getProjectManager() != null){
+                    List<PadGrid> padGrids = getProjectManager().getGridsFromId(getId());
+                    if(padGrids != null) for(PadGrid padGrid : padGrids){
+                        padGrid.getCurrentChain().setCurrentChain(row, colum);
+                    }
+                }
             }
             public int getId(){
                 return (projectManager == null) ? -1: projectManager.getProject().getProjectId();

@@ -12,10 +12,7 @@ import android.provider.Settings;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.ScrollView;
-import android.widget.Toast;
+import android.widget.*;
 import com.xayup.debug.Debug;
 import com.xayup.multipad.R;
 import com.xayup.multipad.Ui;
@@ -46,6 +43,8 @@ public abstract class MainPanel {
     protected ProjectListAdapter mProjectItem;
     protected ValueAnimator vAnimatior;
 
+    protected View panel;
+
     protected Animation out;
     protected Animation in;
 
@@ -57,6 +56,7 @@ public abstract class MainPanel {
     public abstract List<ProjectManager> getProjects();
     public abstract void addNewGrid();
     public abstract void loadProject(ProjectManager project, ProgressBar progressBar);
+    public abstract void showGridResize(boolean show);
 
     public MainPanel(Context context){
         this.context = context;
@@ -202,7 +202,7 @@ public abstract class MainPanel {
         // DEBUG //
         item_crash.setOnClick(v -> { throw new RuntimeException("Crash app (TEST)"); });
 
-        View panel = LayoutInflater.from(context).inflate(R.layout.main_panel, null);
+        panel = LayoutInflater.from(context).inflate(R.layout.main_panel, null);
         ScrollView right_scroll = panel.findViewById(R.id.main_panel_right_scroll);
 
         //PROJECTS
@@ -336,10 +336,21 @@ public abstract class MainPanel {
             showThis(right_scroll);
         });
 
+        panel.findViewById(R.id.main_panel_tab_exit).setOnClickListener(v -> {
+            onExit();
+        });
+
+        // LEFT OPTIONS
+        panel.findViewById(R.id.main_panel_left_grid_resize_background).setOnClickListener(v -> {
+            ((CheckBox) panel.findViewById(R.id.main_panel_left_grid_resize_checkbox)).setChecked(
+                    !GlobalConfigs.floating_window_grid_resize_visible );
+            showGridResize(!GlobalConfigs.floating_window_grid_resize_visible);
+        });
+
+
         AlertDialog.Builder window = new AlertDialog.Builder(context);
         window.setView(panel);
         windowShow = window.create();
-        windowShow.getWindow().setLayout(GlobalConfigs.display_width/2, WindowManager.LayoutParams.MATCH_PARENT);
         windowShow.getWindow().setGravity(Gravity.END);
         windowShow.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         windowShow.setOnCancelListener(dialogInterface -> home());
@@ -376,18 +387,10 @@ public abstract class MainPanel {
         public static int getMargin (View v, int type) {
             if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
                 switch (type){
-                    case MARGIN_LEFT: {
-                        return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).getMarginStart();
-                    }
-                    case MARGIN_TOP: {
-                        return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).topMargin;
-                    }
-                    case MARGIN_RIGHT: {
-                        return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).getMarginEnd();
-                    }
-                    case MARGIN_BOTTOM: {
-                        return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).bottomMargin;
-                    }
+                    case MARGIN_LEFT: { return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).getMarginStart(); }
+                    case MARGIN_TOP: { return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).topMargin; }
+                    case MARGIN_RIGHT: { return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).getMarginEnd(); }
+                    case MARGIN_BOTTOM: { return ((ViewGroup.MarginLayoutParams) v.getLayoutParams()).bottomMargin; }
                 }
             }
             return -1;
@@ -415,7 +418,13 @@ public abstract class MainPanel {
         mProjectItem = new ProjectListAdapter(context, getProjects());
     }
 
+    public void updateOptions(){
+        ((CheckBox) panel.findViewById(R.id.main_panel_left_grid_resize_checkbox)).setChecked(GlobalConfigs.floating_window_grid_resize_visible);
+    }
+
     public void showPanel(){
+        updateOptions();
         windowShow.show();
+        windowShow.getWindow().setLayout(GlobalConfigs.display_width, WindowManager.LayoutParams.MATCH_PARENT);
     }
 }

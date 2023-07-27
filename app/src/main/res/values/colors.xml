@@ -17,6 +17,9 @@
 	<color name="default_app_color_secondary">#FFFF00AE</color>
 	<color name="default_app_color_tertiary">#FF00FEFF</color>
 
+<!--Main Panel-->
+	<color name="main_pane_tab_text_background_color">#161E30</color>
+
 <!--Floating Window Size Grid-->
 	<color name="floating_window_resize_grid_header">#005B5C</color>
 	<color name="floating_window_resize_grid_background">#101A23</color>

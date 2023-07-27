@@ -16,6 +16,7 @@
     <string name="main_panel_left_tab_grids">Grids</string>
     <string name="main_panel_left_tab_settings">Settings</string>
     <string name="main_panel_left_tab_about">About</string>
+    <string name="main_panel_left_tab_exit">Exit</string>
     <!--Main Items-->
     <string name="item_gen_log_file">Generate log file</string>
     <string name="item_gen_log_file_subtitle">The generated file will be saved in /MultiPad.</string>
@@ -92,8 +93,13 @@
     <string name="floating_window_resize_grid_rotation">Rotation:</string>
     <string name="floating_window_resize_grid_x_position">Position X:</string>
     <string name="floating_window_resize_grid_y_position">Position Y:</string>
+    <string name="floating_window_resize_grid_padding">Padding:</string>
     <string name="floating_window_resize_grid_part_grid">Grid</string>
     <string name="floating_window_resize_grid_part_pads">Pads</string>
+    <string name="floating_window_resize_grid_get_data_copy">Copy data</string>
+    <string name="floating_window_resize_grid_get_data_paste">Paste data</string>
+    <string name="floating_window_resize_grid_get_data_save">Save data</string>
+    <string name="floating_window_resize_grid_get_data_past_error_message">No data has been copied yet</string>
 
     <string name="invalid_led_color">Color led invalid:</string>
     <string name="warning">Warning!</string>

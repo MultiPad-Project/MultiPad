@@ -24,6 +24,8 @@ public class GlobalConfigs {
     public static boolean use_unipad_folder = false;
     public static String color_table_file_dir = "";
 
+    public static boolean floating_window_grid_resize_visible = false;
+
     /* Persistent */
 
     // PlayPads

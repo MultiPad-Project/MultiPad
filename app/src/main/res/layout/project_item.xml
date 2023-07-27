@@ -11,7 +11,7 @@
         android:layout_height="@dimen/project_item_description_height"
         android:layout_width="match_parent"
         android:alpha="0.7"
-        android:background="@color/default_app_color"
+        android:background="@color/main_pane_tab_text_background_color"
         android:padding="4dp">
 
         <LinearLayout
@@ -117,7 +117,7 @@
                 android:id="@+id/project_item_background"
             android:layout_width="match_parent"
             android:layout_height="@dimen/project_item_height"
-            android:background="@color/default_app_color">
+            android:background="@color/main_pane_tab_text_background_color">
 
             <ProgressBar
                     android:id="@+id/project_item_progress"
