@@ -213,8 +213,6 @@ public class MainActivity extends Activity {
 
     public void defaultPadClick(GridPadsReceptor.PadGrid active_pad){
         active_pad.forAllPads((pad, mPadGrid) -> {
-            XLog.e("defaultPadClick", "Grid Childs count " + active_pad.getGridPads().getChildCount());
-            XLog.e("defaultPadClick", "Pad type " + pad.getType());
             if(pad.getType() == MakePads.PadInfo.PadInfoIdentifier.PAD_LOGO){
                 active_pad.getPads().getPadView(pad.getRow(), pad.getColum()).setOnTouchListener((pad_view, event) -> {
                     pad_view.performClick();

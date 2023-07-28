@@ -226,17 +226,17 @@ public class PlayPads implements PlayPadsOptionsInterface {
                         XLog.v("Chain press", "X: " + padInfo.getRow() + ",Y: " + padInfo.getColum());
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN: {
-                                boolean sicronized_chains_project = true;
-                                if(sicronized_chains_project){
-
-                                } else {
-
-                                }
                                 boolean chain_changed = padGrid.getCurrentChain().getMc() != ((MakePads.ChainInfo) padInfo).getMc();
-                                if(padGrid.getProject() != null) {
-                                    if (padGrid.getProject().getKeySounds() != null && chain_changed)
+                                if(chain_changed) {
+                                    boolean synchronized_chains_project = true;
+                                    if (synchronized_chains_project) {
+                                        padGrid.getProject().setCurrentChain(padInfo.getRow(), padInfo.getColum());
+                                    } else {
+                                        padGrid.setCurrentChain(padInfo.getRow(), padInfo.getColum());
+                                    }
+                                    if (padGrid.getProject().getKeySounds() != null)
                                         padGrid.getProject().getKeySounds().resetSequencer();
-                                    if (padGrid.getProject().getKeyLED() != null && chain_changed)
+                                    if (padGrid.getProject().getKeyLED() != null)
                                         padGrid.getProject().getKeyLED().resetSequence();
 
                                     padGrid.getProject().callPress(padGrid, padInfo);

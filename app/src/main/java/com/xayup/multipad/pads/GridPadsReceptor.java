@@ -185,6 +185,8 @@ public abstract class GridPadsReceptor {
         protected int lp_id;
         protected MakePads.Pads mPads;
         protected int[] colors;
+        protected byte inverse_x;
+        protected byte inverse_y;
 
         public PadGrid(SkinProperties skin, int rows, int columns) {
             this.mSkinProperties = skin;
@@ -208,6 +210,9 @@ public abstract class GridPadsReceptor {
             this.container.setLayoutParams(new ViewGroup.LayoutParams(-2, -2));
             //this.container.setClipChildren(false);
 
+            this.inverse_x = 0;
+            this.inverse_y = 0;
+
             this.layout_mode = PadLayoutMode.LAYOUT_PRO_MODE;
             this.lp_id = 0;
             applySkin(this.mSkinProperties);
@@ -226,7 +231,7 @@ public abstract class GridPadsReceptor {
 
         //// INTERACTION ////
         public void led(int row, int colum, int color){
-            mPads.setLedColor(row, colum, (color > colors.length) ? color: colors[color]);
+            mPads.setLedColor(row, colum, (color < 0) ? color: colors[color]);
         }
 
         //// INFORMATION'S ////
@@ -264,6 +269,15 @@ public abstract class GridPadsReceptor {
                     fap.run((MakePads.PadInfo) mGrid.getChildAt(i).getTag(), this);
                 }
             }
+        }
+        public void setCurrentChain(int row, int colum){
+            //Disable old chain
+            this.getPads().getPadInfo(current_chain.getRow(), current_chain.getColum()).markAsActivated(false);
+            this.led(current_chain.getRow(), current_chain.getColum(), 0);
+            //Enable new chain
+            this.current_chain.setCurrentChain(row, colum);
+            this.getPads().getPadInfo(current_chain.getRow(), current_chain.getColum()).markAsActivated(true);
+            this.led(current_chain.getRow(), current_chain.getColum(), 0);
         }
 
         //// PROJECT ////
@@ -404,6 +418,8 @@ public abstract class GridPadsReceptor {
                     if(padGrids != null) for(PadGrid padGrid : padGrids){
                         padGrid.getCurrentChain().setCurrentChain(row, colum);
                     }
+                } else {
+                    getCurrentChain().setCurrentChain(row, colum);
                 }
             }
             public int getId(){

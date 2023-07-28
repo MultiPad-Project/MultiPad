@@ -73,6 +73,8 @@ public class MakePads {
         protected byte colum;
         protected byte type;
 
+        protected boolean activated;
+
         /**
          * Make PadInfo with:
          * @param row .
@@ -83,6 +85,7 @@ public class MakePads {
             this.row = row;
             this.colum = colum;
             this.type = type;
+            this.activated = false;
         }
 
         public int getRow(){ return row; }
@@ -94,6 +97,9 @@ public class MakePads {
         public void setType(byte type){ this.type = type; }
 
         public int getId(){ return PadID.getId(row, colum); }
+
+        public void markAsActivated(boolean mark){ this.activated = mark; }
+        public boolean isActivated(){ return this.activated; }
     }
 
     public static class ChainInfo extends PadInfo {
@@ -107,6 +113,11 @@ public class MakePads {
             }
         }
 
+        /**
+         * Only change chain info
+         * @param row chain row
+         * @param colum chain colum
+         */
         public void setCurrentChain(int row, int colum){
             setMc(row, colum);
             setRow((byte) row);
@@ -212,17 +223,17 @@ public class MakePads {
 
     public class Pads {
         protected GridLayout mGrid;
-        protected byte VIEW = 0;
-        protected byte LED = 1;
-        protected byte ID = 2;
-        protected byte BTN = 3;
+        protected byte PAD_INFO = 0;
+        protected byte VIEW = 1;
+        protected byte LED = 2;
+        protected byte ID = 3;
+        protected byte BTN = 4;
         protected Object[][][] pads;
         private Pads(int grid_row, int grid_colum){
-            this.pads = new Object[grid_row][grid_colum][4];
+            this.pads = new Object[grid_row][grid_colum][5];
             this.mGrid = new GridLayout(context);
         }
         private void add(int row, int colum, View pad){
-            XLog.e("add(): Pads", "Row " + row + " Colum " + colum + " Pad " + pad.getId());
             mPadParams =
                     new GridLayout.LayoutParams(
                             GridLayout.spec(row, GridLayout.FILL, 1f),
@@ -230,7 +241,8 @@ public class MakePads {
             mPadParams.height = 0;
             mPadParams.width = 0;
             mGrid.addView(pad, mPadParams);
-            if(pad.getVisibility() == View.VISIBLE) {
+            if(pad.getTag() instanceof PadInfo) {
+                pads[row][colum][PAD_INFO] = pad.getTag();
                 pads[row][colum][VIEW] = pad;
                 pads[row][colum][LED] = pad.findViewById(R.id.led);
                 pads[row][colum][ID] = Integer.parseInt(String.valueOf(row) + colum);
@@ -251,12 +263,17 @@ public class MakePads {
         public int getId(int row, int colum){
             return (int) pads[row][colum][ID];
         }
+        public PadInfo getPadInfo(int row, int colum){
+            return (PadInfo) pads[row][colum][PAD_INFO];
+        }
         public void setLedColor(int row, int colum, int android_color){
             XLog.e("Try show led", "");
-            if(android_color == 0){
-                getLed(row, colum).getDrawable().setTintList(null);
-            } else {
-                getLed(row, colum).getDrawable().setTint(android_color);
+            if(!getPadInfo(row, colum).isActivated()) {
+                if (android_color == 0) {
+                    getLed(row, colum).getDrawable().setTintList(null);
+                } else {
+                    getLed(row, colum).getDrawable().setTint(android_color);
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.xayup.multipad.projects.project.keyled;
 
+import android.graphics.Color;
 import android.util.Log;
 import com.google.common.io.Files;
 import com.xayup.debug.XLog;
@@ -104,32 +105,35 @@ public class KeyLEDReader implements MapData {
                             if (chars[1].equalsIgnoreCase("l")) {
                                 pad_x = 0;
                                 pad_y = 9;
-                                value = Integer.parseInt(chars[3]);
-                            } else if (chars[1].matches("[m|M][c|C]|\\*")) {
-                                int mc = Integer.parseInt(chars[2]);
-                                if (mc > 24) {
-                                    pad_x = 33 - mc;
-                                    pad_y = 0;
-                                } else if (mc > 16) {
-                                    pad_x = 9;
-                                    pad_y = 25 - mc;
-                                } else if (mc > 8) {
-                                    pad_x = mc - 8;
-                                    pad_y = 9;
-                                } else {
-                                    pad_x = 0;
-                                    pad_y = mc;
-                                }
-                                value = Integer.parseInt(chars[4]);
+                                value = (chars[2].matches("(\\d|[a-f]|[A-F]){6}")) ?
+                                        Color.parseColor("#"+chars[2]) : Integer.parseInt(chars[3]);
                             } else {
-                                pad_x = Integer.parseInt(chars[1]);
-                                pad_y = Integer.parseInt(chars[2]);
-                                value = Integer.parseInt(chars[4]);
+                                if (chars[1].matches("[m|M][c|C]|\\*")) {
+                                    int mc = Integer.parseInt(chars[2]);
+                                    if (mc > 24) {
+                                        pad_x = 33 - mc;
+                                        pad_y = 0;
+                                    } else if (mc > 16) {
+                                        pad_x = 9;
+                                        pad_y = 25 - mc;
+                                    } else if (mc > 8) {
+                                        pad_x = mc - 8;
+                                        pad_y = 9;
+                                    } else {
+                                        pad_x = 0;
+                                        pad_y = mc;
+                                    }
+                                } else {
+                                    pad_x = Integer.parseInt(chars[1]);
+                                    pad_y = Integer.parseInt(chars[2]);
+                                }
+                                value = (chars[3].matches("(\\d|[a-f]|[A-F]){6}")) ?
+                                        Color.parseColor("#"+chars[3]) : Integer.parseInt(chars[4]);
                             }
                             ledData.putFrame(type, value, pad_x, pad_y, i);
                         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e){
                             mLoadingProject.onFileError(file_name, line, "Invalid Led Format: " + line_string);
-                            Log.e(String.valueOf(Arrays.toString(chars)), e.getStackTrace()[0].toString());
+                            Log.e(String.valueOf(Arrays.toString(chars)), e.toString());
                         }
                         line++;
                     }
