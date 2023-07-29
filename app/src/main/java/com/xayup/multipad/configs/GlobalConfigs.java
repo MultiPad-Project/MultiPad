@@ -47,6 +47,8 @@ public class GlobalConfigs {
         public static boolean slideMode;
         public static boolean hide_buttoms_b;
         public static boolean glow_enabled;
+        public static boolean reverse_rows = false;
+        public static boolean reverse_columns = false;
         public static String skin_package = "com.xayup.multipad";
         public static String current_table = "EyeDrop_default.ct";
         public static String default_table_name = "EyeDrop_default.ct";

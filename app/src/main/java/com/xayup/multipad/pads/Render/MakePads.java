@@ -1,5 +1,6 @@
 package com.xayup.multipad.pads.Render;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Matrix;
@@ -223,14 +224,18 @@ public class MakePads {
 
     public class Pads {
         protected GridLayout mGrid;
+        protected byte rows;
+        protected byte columns;
         protected byte PAD_INFO = 0;
         protected byte VIEW = 1;
         protected byte LED = 2;
         protected byte ID = 3;
         protected byte BTN = 4;
         protected Object[][][] pads;
-        private Pads(int grid_row, int grid_colum){
-            this.pads = new Object[grid_row][grid_colum][5];
+        private Pads(byte grid_rows, byte grid_columns){
+            this.rows = grid_rows;
+            this.columns = grid_columns;
+            this.pads = new Object[grid_rows][grid_columns][5];
             this.mGrid = new GridLayout(context);
         }
         private void add(int row, int colum, View pad){
@@ -249,31 +254,21 @@ public class MakePads {
                 pads[row][colum][BTN] = pad.findViewById(R.id.btn);
             }
         }
+        public byte getRows(){ return rows; }
+        public byte getColumns(){ return columns; }
+
         public GridLayout getGrid(){
             return mGrid;
         }
-        public View getPadView(int row, int colum){
-            XLog.e("getPadView: Pads", "Row: " + row + " Colum: " + colum);
+        public View getPadView(int row, int colum){ return (View) pads[row][colum][VIEW]; }
+        public ImageView getLed(int row, int colum){ return (ImageView) pads[row][colum][LED]; }
+        public int getId(int row, int colum){ return (int) pads[row][colum][ID]; }
+        public PadInfo getPadInfo(int row, int colum){ return (PadInfo) pads[row][colum][PAD_INFO]; }
 
-            return mGrid.getChildAt(PadID.getGridIndexFromXY(mGrid.getColumnCount(), row, colum));//(View) pads[row][colum][VIEW];
-        }
-        public ImageView getLed(int row, int colum){
-            return getPadView(row, colum).findViewById(R.id.led);//(ImageView) pads[row][colum][LED];
-        }
-        public int getId(int row, int colum){
-            return (int) pads[row][colum][ID];
-        }
-        public PadInfo getPadInfo(int row, int colum){
-            return (PadInfo) pads[row][colum][PAD_INFO];
-        }
         public void setLedColor(int row, int colum, int android_color){
-            XLog.e("Try show led", "");
-            if(!getPadInfo(row, colum).isActivated()) {
-                if (android_color == 0) {
-                    getLed(row, colum).getDrawable().setTintList(null);
-                } else {
-                    getLed(row, colum).getDrawable().setTint(android_color);
-                }
+            PadInfo padInfo = getPadInfo(row, colum);
+            if(padInfo != null && !padInfo.isActivated()) {
+                getLed(row, colum).getDrawable().setTint(android_color);
             }
         }
     }
@@ -282,20 +277,21 @@ public class MakePads {
      * Make new Grid
      * @return Pads class
      */
-    public Pads make(int rows, int columns) {
+    @SuppressLint("InflateParams")
+    public Pads make(byte rows, byte columns) {
         View led;
         ImageView btn, btn_, phantom;
         TextView touch_map;
         Pads mPads = new Pads(rows, columns);
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < columns; c++) {
+        for (byte r = 0; r < rows; r++) {
+            for (byte c = 0; c < columns; c++) {
                 View pad;
                 if ((r == 0 && c == 0) || (r == 9 && c == 0) || (r == 9 && c == 9)) {
                     pad = new View(context);
                     pad.setVisibility(View.INVISIBLE);
                     pad.setTag("");
                 } else {
-                    pad = context.getLayoutInflater().inflate(R.layout.pad, null, false);
+                    pad = context.getLayoutInflater().inflate(R.layout.pad, null);
                     btn = pad.findViewById(R.id.btn);
                     btn_ = pad.findViewById(R.id.btn_);
                     phantom = pad.findViewById(R.id.phantom);
@@ -304,18 +300,18 @@ public class MakePads {
                     touch_map.setTag(PadInfo.PadInfoIdentifier.TOUCH_MAP);
                     if (r == 0 || r == 9 || c == 0 || c == 9) {
                         if (r == 0 && c == 9) {
-                            pad.setTag(new PadInfo((byte) r, (byte) c, PadInfo.PadInfoIdentifier.PAD_LOGO));
+                            pad.setTag(new PadInfo(r, c, PadInfo.PadInfoIdentifier.PAD_LOGO));
                             phantom.setTag(PadInfo.PadInfoIdentifier.LOGO);
                         } else {
                             /*CHAIN*/
                             phantom.setTag(PadInfo.PadInfoIdentifier.CHAIN_LED);
-                            pad.setTag(new ChainInfo((byte) r, (byte) c));
+                            pad.setTag(new ChainInfo(r, c));
                             if (r == 0) { pad.setRotation(-90); }
                             else if (r == 9) { pad.setRotation(90); }
                             else if (c == 0) { pad.setScaleX(pad.getScaleX() * -1); }
                         }
                     } else {
-                        pad.setTag(new PadInfo((byte) r, (byte) c, PadInfo.PadInfoIdentifier.PAD));
+                        pad.setTag(new PadInfo(r, c, PadInfo.PadInfoIdentifier.PAD));
                         if ((r == 4 || r == 5) && (c == 4 || c == 5)) {
                             phantom.setTag(PadInfo.PadInfoIdentifier.PHANTOM_);
                             if (r == 4 && c == 5) {

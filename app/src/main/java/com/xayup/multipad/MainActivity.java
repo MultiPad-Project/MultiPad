@@ -192,6 +192,11 @@ public class MainActivity extends Activity {
                             GlobalConfigs.floating_window_grid_resize_visible = false;
                         }
                     }
+
+                    @Override
+                    public void onGriditemClick(GridPadsReceptor.PadGrid padGrid) {
+                        padGridMenu(padGrid);
+                    }
                 };
                 mMainPanel.updates();
                 mMainPanel.home();
@@ -207,7 +212,7 @@ public class MainActivity extends Activity {
 
     public void newGrid(){
         RelativeLayout to_add = this.findViewById(R.id.main_pads_to_add);
-        mPlayPads.getPads().newPads(GlobalConfigs.PlayPadsConfigs.skin_package, 10, 10, colors.getDefaultTable());
+        mPlayPads.getPads().newPads(GlobalConfigs.PlayPadsConfigs.skin_package, (byte) 10, (byte) 10, colors.getDefaultTable());
         to_add.addView(mPlayPads.getPads().getActivePads().getContainer(), new ViewGroup.LayoutParams(GlobalConfigs.display_height, GlobalConfigs.display_height));
     }
 
@@ -217,110 +222,141 @@ public class MainActivity extends Activity {
                 active_pad.getPads().getPadView(pad.getRow(), pad.getColum()).setOnTouchListener((pad_view, event) -> {
                     pad_view.performClick();
                     if(event.getAction() == MotionEvent.ACTION_DOWN){
-                        int page_switch_duration = (int)(context.getResources().getInteger(R.integer.swipe_animation_velocity) * Ui.getSettingsAnimationScale(context));
-                        FluctuateOptionsView window = new FluctuateOptionsView(context);
-                        //Home page
-                        OptionsPage home_page = window.getPage(window.newPage(mPadGrid.getName()));
-                        OptionsPage projects_loaded = window.getPage(window.newPage("Use the project"));
-                        OptionsPage color_table_page = window.getPage(window.newPage(context.getString(R.string.color_table_title)));
-
-                        //Home page options
-                        OptionsItem set_current_project = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_ARROW);
-                        home_page.putOption(set_current_project);
-                        set_current_project.setTitle("Use the project");
-                        set_current_project.setDescription("Choose which of the loaded projects this grid will interact with");
-                        set_current_project.setOnClick((item_view) -> {
-                            projects_loaded.clear();
-                            //Get loaded projects
-                            OptionsItem none_project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                            none_project_item.setTitle("None");
-                            projects_loaded.putOption(none_project_item);
-                            none_project_item.setOnClick((item) -> {
-                                if(active_pad.getProject().getProjectManager() != null)
-                                    active_pad.getProject().getProjectManager().removeGrid(active_pad);
-                            });
-                            if(mProjects.getLoadedProjects() != null) {
-                                for (ProjectManager projectManager : mProjects.getLoadedProjects()) {
-                                    OptionsItem project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                                    project_item.setTitle(projectManager.getProject().getTitle());
-                                    project_item.setDescription(projectManager.getProject().getProducerName());
-                                    projects_loaded.putOption(project_item);
-                                    project_item.setOnClick((item) -> {
-                                        active_pad.setProject(projectManager);
-                                    });
-                                }
-                            }
-                            window.switchTo(projects_loaded.getPageIndex(), false, page_switch_duration);
-                        });
-
-                        OptionsItem set_id = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                        home_page.putOption(set_id);
-                        set_id.setTitle("Set grid id");
-                        set_id.setDescription("The grid id will be used with the leds. Set to 0 to use the main project leds.");
-                        set_id.setOnClick(set_id_view -> {
-                            View dialog_layout = context.getLayoutInflater().inflate(R.layout.dialog_with_edittext, null);
-                            AlertDialog dialog = new AlertDialog.Builder(context).setView(dialog_layout).create();
-                            Button btn1 = dialog_layout.findViewById(R.id.dwe_btn1);
-                            Button btn2 = dialog_layout.findViewById(R.id.dwe_btn2);
-                            EditText edt1 = dialog_layout.findViewById(R.id.dwe_editText);
-                            edt1.setText(String.valueOf(active_pad.getId()));
-                            edt1.setInputType(InputType.TYPE_CLASS_NUMBER);
-                            btn1.setVisibility(View.VISIBLE);
-                            btn1.setText(context.getString(R.string.ok));
-                            btn1.setOnClickListener((b_v) -> {
-                                if(edt1.getText().length() > 0) {
-                                    active_pad.setId(Integer.parseInt(edt1.getText().toString()));
-                                    dialog.dismiss();
-                                } else {
-                                    Toast.makeText(context, "Incorrect", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            btn2.setVisibility(View.VISIBLE);
-                            btn2.setText(context.getString(R.string.cancel));
-                            btn2.setOnClickListener((b_v) -> {
-                                dialog.dismiss();
-                            });
-                            dialog.show();
-                        });
-
-                        OptionsItem set_color_table = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_ARROW);
-                        home_page.putOption(set_color_table);
-                        set_color_table.setTitle(context.getString(R.string.color_table_title));
-                        set_color_table.setDescription(context.getString(R.string.color_table_subtitle));
-                        set_color_table.setOnClick(v -> {
-                            color_table_page.clear();
-                            // switchTo(EXIT_PAGE_LIST_COLOR_TABLE, false);
-                            File root = new File(GlobalConfigs.DefaultConfigs.COLOR_TABLE_PATH);
-                            if(root.exists()) for(File file : root.listFiles()){
-                                OptionsItem item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
-                                byte format_index = (byte) file.getName().lastIndexOf(".");
-                                item.setTitle((format_index == -1) ?
-                                        file.getName() :
-                                        file.getName().replace(file.getName().substring(format_index), ""));
-                                item.setOnClick((view1)->{
-                                    XLog.v("Color Table name", file.getName());
-                                    active_pad.setColors(colors.getTable(file));
-                                });
-                                color_table_page.putOption(item);
-                            }
-                            window.switchTo(color_table_page.getPageIndex(), false, page_switch_duration);
-                        });
-
-                        //Back button
-                        window.getBackButton().setOnClickListener(v -> {
-                            int page = window.getCurrentPageIndex();
-                            if (page == projects_loaded.getPageIndex() || page == color_table_page.getPageIndex()){
-                                window.switchTo(home_page.getPageIndex(), true, page_switch_duration);
-                            }
-                        });
-                        window.switchTo(0, false, 0);
-                        window.show();
+                        padGridMenu(mPadGrid);
                         return true;
                     }
                     return false;
                 });
             }
         });
+    }
+
+    public void padGridMenu(GridPadsReceptor.PadGrid padGrid){
+        int page_switch_duration = (int)(context.getResources().getInteger(R.integer.swipe_animation_velocity) * Ui.getSettingsAnimationScale(context));
+        FluctuateOptionsView window = new FluctuateOptionsView(context);
+        //Home page
+        OptionsPage home_page = window.getPage(window.newPage(padGrid.getName()));
+        OptionsPage projects_loaded = window.getPage(window.newPage(context.getString(R.string.pad_grid_menu_choose_project_title)));
+        OptionsPage color_table_page = window.getPage(window.newPage(context.getString(R.string.pad_grid_menu_project_settings_title)));
+        OptionsPage project_settings_page = window.getPage(window.newPage(context.getString(R.string.pad_grid_menu_project_settings_title)));
+
+        //Home page options
+        OptionsItem set_current_project = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_ARROW);
+        home_page.putOption(set_current_project);
+        set_current_project.setTitle(context.getString(R.string.pad_grid_menu_choose_project_title));
+        set_current_project.setDescription(context.getString(R.string.pad_grid_menu_choose_project_description));
+        set_current_project.setOnClick((item_view) -> {
+            projects_loaded.clear();
+            //Get loaded projects
+            OptionsItem none_project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+            none_project_item.setTitle(context.getString(R.string.none));
+            projects_loaded.putOption(none_project_item);
+            none_project_item.setOnClick((item) -> {
+                if(padGrid.getProject().getProjectManager() != null)
+                    padGrid.getProject().getProjectManager().removeGrid(padGrid);
+            });
+            if(mProjects.getLoadedProjects() != null) {
+                for (ProjectManager projectManager : mProjects.getLoadedProjects()) {
+                    OptionsItem project_item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                    project_item.setTitle(projectManager.getProject().getTitle());
+                    project_item.setDescription(projectManager.getProject().getProducerName());
+                    projects_loaded.putOption(project_item);
+                    project_item.setOnClick((item) -> {
+                        padGrid.setProject(projectManager);
+                    });
+                }
+            }
+            window.switchTo(projects_loaded.getPageIndex(), false, page_switch_duration);
+        });
+
+        OptionsItem set_id = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+        home_page.putOption(set_id);
+        set_id.setTitle(context.getString(R.string.pad_grid_menu_change_the_id_title));
+        set_id.setDescription(context.getString(R.string.pad_grid_menu_change_the_id_description));
+        set_id.setOnClick(set_id_view -> {
+            View dialog_layout = context.getLayoutInflater().inflate(R.layout.dialog_with_edittext, null);
+            AlertDialog dialog = new AlertDialog.Builder(context).setView(dialog_layout).create();
+            Button btn1 = dialog_layout.findViewById(R.id.dwe_btn1);
+            Button btn2 = dialog_layout.findViewById(R.id.dwe_btn2);
+            EditText edt1 = dialog_layout.findViewById(R.id.dwe_editText);
+            edt1.setText(String.valueOf(padGrid.getId()));
+            edt1.setInputType(InputType.TYPE_CLASS_NUMBER);
+            btn1.setVisibility(View.VISIBLE);
+            btn1.setText(context.getString(R.string.ok));
+            btn1.setOnClickListener((b_v) -> {
+                if(edt1.getText().length() > 0) {
+                    padGrid.setId(Integer.parseInt(edt1.getText().toString()));
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(context, "Incorrect", Toast.LENGTH_SHORT).show();
+                }
+            });
+            btn2.setVisibility(View.VISIBLE);
+            btn2.setText(context.getString(R.string.cancel));
+            btn2.setOnClickListener((b_v) -> {
+                dialog.dismiss();
+            });
+            dialog.show();
+        });
+
+        OptionsItem set_color_table = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_ARROW);
+        home_page.putOption(set_color_table);
+        set_color_table.setTitle(context.getString(R.string.pad_grid_menu_choose_color_table_title));
+        set_color_table.setDescription(context.getString(R.string.pad_grid_menu_choose_color_table_description));
+        set_color_table.setOnClick(v -> {
+            color_table_page.clear();
+            // switchTo(EXIT_PAGE_LIST_COLOR_TABLE, false);
+            File root = new File(GlobalConfigs.DefaultConfigs.COLOR_TABLE_PATH);
+            if(root.exists()) for(File file : root.listFiles()){
+                OptionsItem item = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE);
+                byte format_index = (byte) file.getName().lastIndexOf(".");
+                item.setTitle((format_index == -1) ?
+                        file.getName() :
+                        file.getName().replace(file.getName().substring(format_index), ""));
+                item.setOnClick((view1)->{
+                    XLog.v("Color Table name", file.getName());
+                    padGrid.setColors(colors.getTable(file));
+                });
+                color_table_page.putOption(item);
+            }
+            window.switchTo(color_table_page.getPageIndex(), false, page_switch_duration);
+        });
+        OptionsItem project_settings = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_ARROW);
+        home_page.putOption(project_settings);
+        project_settings.setTitle(context.getString(R.string.pad_grid_menu_project_settings_title));
+        project_settings.setDescription(context.getString(R.string.pad_grid_menu_project_settings_description));
+        project_settings.setOnClick(v -> {
+            project_settings_page.clear();
+            OptionsItem reverse_rows = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_CHECKBOX);
+            OptionsItem reverse_columns = new OptionsItem(context, OptionsItemInterface.TYPE_SIMPLE_WITH_CHECKBOX);
+            reverse_rows.setTitle("Reverse rows");
+            reverse_columns.setTitle("Reverse columns");
+            reverse_rows.setChecked(padGrid.isReversedRow());
+            reverse_columns.setChecked(padGrid.isReversedColum());
+            reverse_rows.setOnClick(item_view -> {
+                reverse_rows.setChecked(!reverse_rows.getCheckBox().isChecked());
+                padGrid.reverseRow(reverse_rows.getCheckBox().isChecked());
+            });
+            reverse_columns.setOnClick(item_view -> {
+                reverse_columns.setChecked(!reverse_columns.getCheckBox().isChecked());
+                padGrid.reverseColum(reverse_columns.getCheckBox().isChecked());
+            });
+            project_settings_page.putOption(reverse_rows);
+            project_settings_page.putOption(reverse_columns);
+            window.switchTo(project_settings_page.getPageIndex(), false, page_switch_duration);
+        });
+
+        //Back button
+        window.getBackButton().setOnClickListener(v -> {
+            int page = window.getCurrentPageIndex();
+            if (page == projects_loaded.getPageIndex() ||
+                    page == color_table_page.getPageIndex() ||
+                    page == project_settings_page.getPageIndex()){
+                window.switchTo(home_page.getPageIndex(), true, page_switch_duration);
+            }
+        });
+        window.switchTo(0, false, 0);
+        window.show();
     }
 
     protected void hideSplash(Runnable after_hide) {

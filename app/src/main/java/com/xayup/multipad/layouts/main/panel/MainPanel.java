@@ -57,6 +57,7 @@ public abstract class MainPanel {
     public abstract void addNewGrid();
     public abstract void loadProject(ProjectManager project, ProgressBar progressBar);
     public abstract void showGridResize(boolean show);
+    public abstract void onGriditemClick(GridPadsReceptor.PadGrid padGrid);
 
     public MainPanel(Context context){
         this.context = context;
@@ -237,6 +238,7 @@ public abstract class MainPanel {
             showThis(right_scroll);
         });
 
+        //SKINS
         panel.findViewById(R.id.main_panel_tab_skins).setOnClickListener((v)->{
             hideThis(right_scroll);
             right_scroll.removeAllViews();
@@ -282,6 +284,7 @@ public abstract class MainPanel {
             showThis(right_scroll);
         });
 
+        //GRIDS
         panel.findViewById(R.id.main_panel_tab_grids).setOnClickListener(v -> {
             hideThis(right_scroll);
             right_scroll.removeAllViews();
@@ -289,16 +292,17 @@ public abstract class MainPanel {
             grids_page.clear();
             List<GridPadsReceptor.PadGrid> padGrids = getPadInstance().getAllPadsList();
             OptionsItem add_new = new OptionsItem(context, OptionsItem.TYPE_SIMPLE_WITH_ARROW);
-            add_new.setTitle("Add new");
+            add_new.setTitle("+ Add new");
             ((ImageView) add_new.getItemView().findViewById(com.xayup.ui.R.id.options_item_identify_arrow)).setImageResource(R.drawable.icon_plus);
             add_new.setOnClick(add_new_view -> {
                 addNewGrid();
-            });
+                v.callOnClick(); });
             grids_page.putOption(add_new);
             for(GridPadsReceptor.PadGrid padGrid : padGrids){
                 OptionsItem item = new OptionsItem(context, OptionsItemInterface.TYPE_CENTER_WITH_IMAGE);
                 item.setTitle(padGrid.getName());
                 item.setDescription(String.valueOf(padGrid.getId()));
+                item.setOnClick(grid_item -> onGriditemClick(padGrid));
                 switch(padGrid.getLayoutMode()){
                     case GridPadsReceptor.PadLayoutMode.LAYOUT_PRO_MODE: {
                         item.setImg(context.getDrawable(R.drawable.lp_pro));
@@ -346,7 +350,6 @@ public abstract class MainPanel {
                     !GlobalConfigs.floating_window_grid_resize_visible );
             showGridResize(!GlobalConfigs.floating_window_grid_resize_visible);
         });
-
 
         AlertDialog.Builder window = new AlertDialog.Builder(context);
         window.setView(panel);
@@ -397,9 +400,7 @@ public abstract class MainPanel {
         }
     }
 
-    public void home(){
-        Ui.Touch.touchAndRelease(project_tab);
-    }
+    public void home(){ project_tab.callOnClick(); }
 
     protected void hideThis(View view){
         view.startAnimation(out);
@@ -425,6 +426,6 @@ public abstract class MainPanel {
     public void showPanel(){
         updateOptions();
         windowShow.show();
-        windowShow.getWindow().setLayout(GlobalConfigs.display_width, WindowManager.LayoutParams.MATCH_PARENT);
+        windowShow.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
     }
 }

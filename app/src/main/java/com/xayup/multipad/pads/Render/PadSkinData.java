@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 
 import android.graphics.drawable.Drawable;
+import com.xayup.multipad.R;
 import com.xayup.multipad.skin.SkinData;
 
 public class PadSkinData implements SkinData {
@@ -21,7 +22,8 @@ public class PadSkinData implements SkinData {
             draw_btn,
             draw_btn_,
             draw_playbg,
-            draw_logo;
+            draw_logo,
+            draw_logo_led;
     
     @SuppressLint("DiscouragedApi")
     @Override
@@ -44,16 +46,16 @@ public class PadSkinData implements SkinData {
         draw_phantom_ = res.getDrawable(tmp_id, null);
 
         tmp_id = res.getIdentifier("phantom_led_xml", "drawable", skin_package_name);
-        tmp_id = (tmp_id == 0) ? res.getIdentifier("led_old_xml", "drawable", context.getPackageName()) : tmp_id;
-        draw_phantom_led = res.getDrawable(tmp_id, null);
+        draw_phantom_led = (tmp_id == 0) ? context.getDrawable(R.drawable.led_old_xml) :
+                res.getDrawable(tmp_id, null);
 
         tmp_id = res.getIdentifier("phantom__led_xml", "drawable", skin_package_name);
-        tmp_id = (tmp_id == 0) ? res.getIdentifier("led_old_xml", "drawable", context.getPackageName()) : tmp_id;
-        draw_phantom__led = res.getDrawable(tmp_id, null);
+        draw_phantom__led = (tmp_id == 0) ? context.getDrawable(R.drawable.led_old_xml):
+                res.getDrawable(tmp_id, null);
 
         tmp_id = res.getIdentifier("chain_led_xml", "drawable", skin_package_name);
-        tmp_id = (tmp_id == 0) ? res.getIdentifier("led_old_xml", "drawable", context.getPackageName()) : tmp_id;
-        draw_chain_led = res.getDrawable(tmp_id, null);
+        draw_chain_led = (tmp_id == 0) ? context.getDrawable(R.drawable.led_old_xml):
+                res.getDrawable(tmp_id, null);
 
         tmp_id = res.getIdentifier("playbg_pro", "drawable", skin_package_name);
         draw_playbg = res.getDrawable((tmp_id == 0) ? res.getIdentifier("playbg", "drawable", skin_package_name) : tmp_id, null);
@@ -61,27 +63,33 @@ public class PadSkinData implements SkinData {
         tmp_id = res.getIdentifier("applogo", "drawable", skin_package_name);
         if(tmp_id == 0){ tmp_id = res.getIdentifier("logo", "drawable", skin_package_name); }
         draw_logo = (tmp_id == 0) ?
-                context.getResources().getDrawable(context.getResources().getIdentifier("applogo", "drawable", context.getPackageName()), null) :
+                context.getDrawable(R.drawable.applogo) :
                 res.getDrawable(tmp_id, null);
 
-        if((tmp_id = res.getIdentifier("btn_", "drawable", skin_package_name)) != 0){
+        tmp_id = res.getIdentifier("applogo_led_xml", "drawable", skin_package_name);
+        draw_logo_led = (tmp_id == 0) ? context.getDrawable(R.drawable.led_old_xml) :
+                res.getDrawable(tmp_id, null);
+
+        if ((tmp_id = res.getIdentifier("btn__color", "color", skin_package_name)) != 0){
+            draw_btn__color = res.getColor(tmp_id, null);
+            draw_btn_ = null;
+        } else if((tmp_id = res.getIdentifier("btn_", "drawable", skin_package_name)) != 0){
             draw_btn_ = res.getDrawable(tmp_id, null);
             draw_btn__color = -1;
-        } else if ((tmp_id = res.getIdentifier("btn__color", "color", skin_package_name)) != 0
-                || (tmp_id = res.getIdentifier("btn__color", "color", context.getPackageName())) != 0){
-            draw_btn__color = res.getColor(tmp_id, null);
+        } else {
+            draw_btn__color = context.getColor(R.color.btn__color);
             draw_btn_ = null;
         }
 
         //Color Resource
         tmp_id = res.getIdentifier("autoplay_practical_1", "color", skin_package_name);
         color_autoplay_practical_1 = (tmp_id == 0) ?
-                context.getResources().getColor(context.getResources().getIdentifier("autoplay_practical_1", "color", context.getPackageName()), null) :
+                context.getColor(R.color.autoplay_practical_1) :
                 res.getColor(tmp_id, null);
 
         tmp_id = res.getIdentifier("autoplay_practical_2", "color", skin_package_name);
         color_autoplay_practical_2 = (tmp_id == 0) ?
-                context.getResources().getColor(context.getResources().getIdentifier("autoplay_practical_2", "color", context.getPackageName()), null) :
+                context.getColor(R.color.autoplay_practical_2) :
                 res.getColor(tmp_id, null);
     }
 }

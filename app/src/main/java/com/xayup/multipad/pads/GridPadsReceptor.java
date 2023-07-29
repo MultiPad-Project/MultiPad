@@ -73,7 +73,7 @@ public abstract class GridPadsReceptor {
      * @param rows : rows count
      * @param columns : columns count.
      */
-    public void newPads(String skin_package, int rows, int columns, int[] color_table) {
+    public void newPads(String skin_package, byte rows, byte columns, int[] color_table) {
         PadGrid padGrid = new PadGrid(SkinManager.getSkinProperties(context, skin_package), rows, columns);
         padGrid.setName("Grid_" + grids.size());
         padGrid.setId(0);
@@ -111,64 +111,7 @@ public abstract class GridPadsReceptor {
      * Isso retorna a Pads ativa (Que será definido pelo usuário ou quando uma nova Pads é criada)
      * @return um Objeto Pads atual
      */
-    public PadGrid getActivePads(){
-        return active_pad;
-    }
-
-    public View.OnTouchListener getResize_touch(){
-        return new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
-                    int h = view.getLayoutParams().height;
-                    int w = view.getLayoutParams().width;
-                    view.getRootView().getLayoutParams().height = h - (int) motionEvent.getY();
-                    view.getRootView().getLayoutParams().width = w - (int) motionEvent.getX();
-                    return true;
-                }
-                return false;
-            }
-        };
-    }
-
-    public View.OnTouchListener getRotate_touch(){
-        return new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(motionEvent.getAction() == MotionEvent.ACTION_MOVE){
-
-                    return true;
-                }
-                return false;
-            }
-        };
-    }
-
-    public View.OnTouchListener getMove_touch(){
-        return new View.OnTouchListener() {
-            int x;
-            int y;
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch(motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN: {
-                        x = (int) motionEvent.getX();
-                        y = (int) motionEvent.getY();
-                        return true;
-                    }
-                    case MotionEvent.ACTION_MOVE: {
-                        view.setTranslationX(view.getTranslationX() + (motionEvent.getX() - x));
-                        view.setTranslationY(view.getTranslationY() + (motionEvent.getY() - y));
-                        return true;
-                    }
-                }
-                return false;
-            }
-        };
-    }
+    public PadGrid getActivePads(){ return active_pad; }
 
     public class PadGrid implements PadsLayoutInterface, SkinSupport {
         protected MakePads.ChainInfo current_chain;
@@ -185,10 +128,10 @@ public abstract class GridPadsReceptor {
         protected int lp_id;
         protected MakePads.Pads mPads;
         protected int[] colors;
-        protected byte inverse_x;
-        protected byte inverse_y;
+        protected boolean reverse_colum;
+        protected boolean reverse_row;
 
-        public PadGrid(SkinProperties skin, int rows, int columns) {
+        public PadGrid(SkinProperties skin, byte rows, byte columns) {
             this.mSkinProperties = skin;
             this.mSkinData = new PadSkinData();
             this.current_project = new CurrentProject();
@@ -210,8 +153,8 @@ public abstract class GridPadsReceptor {
             this.container.setLayoutParams(new ViewGroup.LayoutParams(-2, -2));
             //this.container.setClipChildren(false);
 
-            this.inverse_x = 0;
-            this.inverse_y = 0;
+            this.reverse_row = false;
+            this.reverse_colum = false;
 
             this.layout_mode = PadLayoutMode.LAYOUT_PRO_MODE;
             this.lp_id = 0;
@@ -231,7 +174,10 @@ public abstract class GridPadsReceptor {
 
         //// INTERACTION ////
         public void led(int row, int colum, int color){
-            mPads.setLedColor(row, colum, (color < 0) ? color: colors[color]);
+            mPads.setLedColor(
+                    (reverse_row) ? 9 + (row * (-1)) : row,
+                    (reverse_colum) ? 9 + (colum * (-1)) : colum,
+                    (color < 0) ? color: colors[color]);
         }
 
         //// INFORMATION'S ////
@@ -243,6 +189,12 @@ public abstract class GridPadsReceptor {
         public int getId(){ return this.lp_id; }
         public void setName(String name){ this.name = name; }
         public String getName(){ return this.name; }
+        public boolean isReversedRow(){ return reverse_row; }
+        public boolean isReversedColum(){ return reverse_colum; }
+
+        public void reverseRow(boolean inverse){ this.reverse_row = inverse; }
+        public void reverseColum(boolean inverse){ this.reverse_colum = inverse; }
+
         public void setId(int id){
             /*
             if(grid_ids.get(lp_id) != null) grid_ids.get(lp_id).remove(name);
@@ -357,6 +309,7 @@ public abstract class GridPadsReceptor {
                                                     ((ImageView) view)
                                                             .setImageDrawable(
                                                                     mSkinData.draw_phantom);
+                                                    padGrid.getPads().getLed(padInfo.getRow(), padInfo.getColum()).setImageDrawable(mSkinData.draw_phantom_led.mutate().getConstantState().newDrawable());
                                                     break;
                                                 }
                                             case MakePads.PadInfo.PadInfoIdentifier.PHANTOM_:
@@ -382,6 +335,7 @@ public abstract class GridPadsReceptor {
                                                     ((ImageView) view).setImageDrawable(null);
                                                     ((ImageView) view)
                                                             .setImageDrawable(mSkinData.draw_logo);
+                                                    padGrid.getPads().getLed(padInfo.getRow(), padInfo.getColum()).setImageDrawable(mSkinData.draw_logo_led.mutate().getConstantState().newDrawable());
                                                     break;
                                                 }
                                         }
