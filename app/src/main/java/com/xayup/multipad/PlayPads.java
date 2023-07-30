@@ -258,21 +258,19 @@ public class PlayPads implements PlayPadsOptionsInterface {
                             case MotionEvent.ACTION_DOWN:{
                                 padGrid.getProject().callPress(padGrid, padInfo);
                                 if(gridPadsReceptor.watermark_press) {
-                                    if (padGrid.getSkinData().draw_btn_ != null)
-                                        v.findViewById(R.id.btn_).setAlpha(1f);
-                                    else
+                                    if (padGrid.getSkinData().draw_btn_ != null) v.findViewById(R.id.btn_).setAlpha(1f);
+                                    else {
                                         padGrid.getPads().setLedColor(padInfo.getRow(), padInfo.getColum(), padGrid.getSkinData().draw_btn__color);
-                                        padInfo.markAsActivated(true);
+                                        padInfo.markAsActivated(true); }
                                 }
                                 return true;
                             }
                             case MotionEvent.ACTION_UP: {
                                 if(gridPadsReceptor.watermark_press) {
-                                    if (padGrid.getSkinData().draw_btn_ != null)
-                                        v.findViewById(R.id.btn_).setAlpha(0f);
-                                    else
+                                    if (padGrid.getSkinData().draw_btn_ != null) v.findViewById(R.id.btn_).setAlpha(0f);
+                                    else {
                                         padInfo.markAsActivated(false);
-                                        padGrid.getPads().setLedColor(padInfo.getRow(), padInfo.getColum(), 0);
+                                        padGrid.getPads().setLedColor(padInfo.getRow(), padInfo.getColum(), 0); }
                                 }
                                 return true;
                             }

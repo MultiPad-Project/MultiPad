@@ -20,6 +20,13 @@ public class KeyLEDReader implements MapData {
         return line.matches("");
     }
 
+    public int findColorValue(String[] chars, int offset){
+        offset--;
+        return (chars[offset].matches("(\\d|[a-f]|[A-F]){6}")) ?
+                (chars[offset].matches("0{0,6}") ? 0 : Color.parseColor("#FF"+chars[offset]))
+                : Integer.parseInt(chars[offset+1]);
+    }
+
     public void read(File[] leds, KeyLEDMap map, LoadProject.LoadingProject mLoadingProject) {
         if (leds != null){
             String file_name = "";
@@ -105,8 +112,7 @@ public class KeyLEDReader implements MapData {
                             if (chars[1].equalsIgnoreCase("l")) {
                                 pad_x = 0;
                                 pad_y = 9;
-                                value = (chars[2].matches("(\\d|[a-f]|[A-F]){6}")) ?
-                                        Color.parseColor("#"+chars[2]) : Integer.parseInt(chars[3]);
+                                value = findColorValue(chars, 4);
                             } else {
                                 if (chars[1].matches("[m|M][c|C]|\\*")) {
                                     int mc = Integer.parseInt(chars[2]);
@@ -127,13 +133,12 @@ public class KeyLEDReader implements MapData {
                                     pad_x = Integer.parseInt(chars[1]);
                                     pad_y = Integer.parseInt(chars[2]);
                                 }
-                                value = (chars[3].matches("(\\d|[a-f]|[A-F]){6}")) ?
-                                        Color.parseColor("#"+chars[3]) : Integer.parseInt(chars[4]);
+                                value = findColorValue(chars, 4);
                             }
                             ledData.putFrame(type, value, pad_x, pad_y, i);
                         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e){
                             mLoadingProject.onFileError(file_name, line, "Invalid Led Format: " + line_string);
-                            Log.e(String.valueOf(Arrays.toString(chars)), e.toString());
+                            Log.e(Arrays.toString(chars), e.toString());
                         }
                         line++;
                     }
