@@ -142,8 +142,10 @@ public class UsbDeviceActivity extends Activity {
                                             bytes[numBytes++] = (byte) 41;
                                             bytes[numBytes++] = (byte) 2;
                                             bytes[numBytes++] = (byte) 12;
-                                            bytes[numBytes++] = (byte) 0;
-                                            bytes[numBytes++] = (byte) 127;
+
+                                            bytes[numBytes++] = (byte) 14;
+                                            bytes[numBytes++] = (byte) 1; // Programmer Mode
+
                                             bytes[numBytes++] = (byte) 247;
                                             inPort = 0;
                                             outPort = 0;
@@ -402,23 +404,39 @@ public class UsbDeviceActivity extends Activity {
 
         public void onSend(byte[] data, int offset, int count, long timestamp) throws IOException {
             final int channel = (data[0] & 0xFF);
-            final int Note = (data[1] & 0xFF);
-            final int buttom = (data[2] & 0xFF);
-            if (data[1] == (byte) 0x80 + (channel - 1) || data[1] == (byte) 0x90 + (channel - 1)) {
+            final int note = (data[1] & 0xFF);
+            final int button = (data[2] & 0xFF);
+            runOnUiThread(() -> Toast.makeText(context,
+                    "Channel: " + channel +
+                    ", Note: " + note +
+                    ", Button: " + button, 0).show());
+            if (note >= 0x80) {
                 final int ACTION =
-                        (data[1] == 0x80 + (channel - 1))
+                        (note < 0x90 || (data[3] & 0xFF) == 0)
                                 ? MotionEvent.ACTION_UP
                                 : MotionEvent.ACTION_DOWN;
+                runOnUiThread(
+                        () -> {
+                            try {
+                                PlayPads.grids
+                                        .get("grid_1")
+                                        .findViewById(rowProgramMode(button, true))
+                                        .dispatchTouchEvent(
+                                                MotionEvent.obtain(0, 0, ACTION, 0, 0, 0));
+                            } catch (NullPointerException n) {
+                                Toast.makeText(context, n.toString(), 0).show();
+                            }
+                        });
+                /*
                 if (MidiStaticVars.device != null) {
-                    if (((Note > 128 && Note <= 144) | (Note >= 176 & Note <= 178))
+                    if (((note > 128 && note <= 144) | (note >= 176 & note <= 178))
                             && (data[3] & 0xFF) > 0) {
                         runOnUiThread(
                                 () -> {
-                                    Toast.makeText(context, "buttom" + buttom, 0).show();
                                     try {
                                         PlayPads.grids
                                                 .get("grid_1")
-                                                .findViewById(rowProgramMode(buttom, true))
+                                                .findViewById(rowProgramMode(button, true))
                                                 .dispatchTouchEvent(
                                                         MotionEvent.obtain(0, 0, ACTION, 0, 0, 0));
                                     } catch (NullPointerException n) {
@@ -427,6 +445,8 @@ public class UsbDeviceActivity extends Activity {
                                 });
                     }
                 }
+
+                 */
             }
         }
     }

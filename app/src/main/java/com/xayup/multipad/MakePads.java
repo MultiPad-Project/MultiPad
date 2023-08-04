@@ -510,6 +510,7 @@ public class MakePads {
 
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
+
                             if (PlayPads.recAutoplay) {
                                 AutoplayRecFunc.autoPlayRecord(view.getId());
                             }
@@ -523,7 +524,7 @@ public class MakePads {
                                         Integer.parseInt(PlayPads.chainId + "" + view.getId()));
                             }
 
-                            if (PlayPads.slideMode) {
+                            if (PlayPads.slideMode && motionEvent.getDeviceId() != 100) {
                                 slidePad.put(view.getId(), new HashMap<Integer, Integer>());
                                 slidePad.get(view.getId()).put(SLIDE_LIMIT_X, 0);
                                 slidePad.get(view.getId()).put(SLIDE_LIMIT_Y, 0);
@@ -532,85 +533,75 @@ public class MakePads {
                             playSound(view);
                             return true;
                         case MotionEvent.ACTION_UP:
-                            if (PlayPads.pressLed) {
-                                PlayPads.padPressAlpha = 0.0f;
-                                view.findViewById(R.id.press).setAlpha(PlayPads.padPressAlpha);
-                            }
-                            if (PlayPads.slideMode)
+                            if (PlayPads.slideMode && motionEvent.getDeviceId() != 100)
                                 view =
                                         context.findViewById(
                                                 slidePad.get(view.getId()).get(SLIDE_PAD_ATUAL));
-                            if ((PlayPads.autoPlayThread == null)
-                                    || !((String) PlayPads.chainSl + "9" + view.getId())
-                                            .equals("" + PlayPads.autoPlayThread.padWaiting))
-                                view.findViewById(R.id.press).setAlpha(0.0f);
-                            // Stop led 0 looper
-                            try {
-                                PlayPads.threadMap
-                                        .get(PlayPads.chainSl + view.getId())
-                                        .stopZeroLooper();
-                            } catch (NullPointerException n) {
-                                Log.e("Stop zero looper", n.getStackTrace()[0].toString());
-                            }
-                            if (PlayPads.keySound == null) {
+                            if(view != null) {
+                                if (PlayPads.pressLed) {
+                                    PlayPads.padPressAlpha = 0.0f;
+                                    view.findViewById(R.id.press).setAlpha(PlayPads.padPressAlpha);
+                                }
 
-                            } else {
-
+                                if ((PlayPads.autoPlayThread == null)
+                                        || !((String) PlayPads.chainSl + "9" + view.getId())
+                                        .equals("" + PlayPads.autoPlayThread.padWaiting))
+                                    view.findViewById(R.id.press).setAlpha(0.0f);
+                                // Stop led 0 looper
+                                try {
+                                    PlayPads.threadMap
+                                            .get(PlayPads.chainSl + view.getId())
+                                            .stopZeroLooper();
+                                } catch (NullPointerException n) {
+                                    Log.e("Stop zero looper", n.getStackTrace()[0].toString());
+                                }
                             }
                             break;
                         case MotionEvent.ACTION_MOVE:
                             if (PlayPads.slideMode) {
-                                float x = motionEvent.getX();
-                                float y = motionEvent.getY();
-                                int slidelimit_x = slidePad.get(view.getId()).get(SLIDE_LIMIT_X);
-                                int slidelimit_y = slidePad.get(view.getId()).get(SLIDE_LIMIT_Y);
-                                int padAtual = slidePad.get(view.getId()).get(SLIDE_PAD_ATUAL);
-                                int olderPadAtual = padAtual;
-                                int padWH = PlayPads.padWH;
-                                if ((x > slidelimit_x + padWH || x < slidelimit_x)
-                                        || (y > slidelimit_y + padWH || y < slidelimit_y)) {
-                                    if ((PlayPads.autoPlayThread == null)
-                                            || !((String) PlayPads.chainSl + "9" + view.getId())
-                                                    .equals(
-                                                            ""
-                                                                    + PlayPads.autoPlayThread
-                                                                            .padWaiting))
-                                        context.findViewById(padAtual)
-                                                .findViewById(R.id.press)
-                                                .setAlpha(0.0f);
-                                    // if(x > slidelimit_x+padWH || x < slidelimit_x)
-                                    if (x > slidelimit_x + padWH) {
-                                        padAtual += 1;
-                                        slidelimit_x += padWH;
-                                    } else if (x < slidelimit_x) {
-                                        padAtual -= 1;
-                                        slidelimit_x -= padWH;
-                                    }
-                                    // if(y > slidelimit_y+padWH || y < slidelimit_y)
-                                    if (y > slidelimit_y + padWH) {
-                                        padAtual += 10;
-                                        slidelimit_y += padWH;
-                                    } else if (y < slidelimit_y) {
-                                        padAtual -= 10;
-                                        slidelimit_y -= padWH;
-                                    }
+                                try {
+                                    float x = motionEvent.getX();
+                                    float y = motionEvent.getY();
+                                    int slidelimit_x = slidePad.get(view.getId()).get(SLIDE_LIMIT_X);
+                                    int slidelimit_y = slidePad.get(view.getId()).get(SLIDE_LIMIT_Y);
+                                    int padAtual = slidePad.get(view.getId()).get(SLIDE_PAD_ATUAL);
+                                    int oldPad = padAtual;
+                                    int padWH = PlayPads.padWH;
+                                    if ((x > slidelimit_x + padWH || x < slidelimit_x)
+                                            || (y > slidelimit_y + padWH || y < slidelimit_y)) {
+                                        context.findViewById(oldPad).dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0, 1, 0, 1, 1, 100, 0));
+                                        if (x > slidelimit_x + padWH) {
+                                            padAtual += 1;
+                                            slidelimit_x += padWH;
+                                        } else if (x < slidelimit_x) {
+                                            padAtual -= 1;
+                                            slidelimit_x -= padWH;
+                                        }
+                                        if (y > slidelimit_y + padWH) {
+                                            padAtual += 10;
+                                            slidelimit_y += padWH;
+                                        } else if (y < slidelimit_y) {
+                                            padAtual -= 10;
+                                            slidelimit_y -= padWH;
+                                        }
 
-                                    slidePad.get(view.getId()).put(SLIDE_PAD_ATUAL, padAtual);
-                                    slidePad.get(view.getId()).put(SLIDE_LIMIT_X, slidelimit_x);
-                                    slidePad.get(view.getId()).put(SLIDE_LIMIT_Y, slidelimit_y);
+                                        slidePad.get(view.getId()).put(SLIDE_PAD_ATUAL, padAtual);
+                                        slidePad.get(view.getId()).put(SLIDE_LIMIT_X, slidelimit_x);
+                                        slidePad.get(view.getId()).put(SLIDE_LIMIT_Y, slidelimit_y);
 
-                                    int w = layoutpads.getLayoutParams().width;
-                                    int ww = (MainActivity.width / 2) - (w / 2);
-                                    if (!(motionEvent.getRawX() < ww
-                                                    || motionEvent.getRawX() > ww + w)
-                                            && !(padAtual == 90
-                                                    || padAtual == 99
-                                                    || padAtual == 9
-                                                    || padAtual == 0)) {
-                                        view = context.findViewById(padAtual);
-                                        playSound(view);
+                                        int w = layoutpads.getLayoutParams().width;
+                                        int ww = (MainActivity.width / 2) - (w / 2);
+                                        if (!(motionEvent.getRawX() < ww
+                                                || motionEvent.getRawX() > ww + w)
+                                                && !(padAtual == 90
+                                                || padAtual == 99
+                                                || padAtual == 9
+                                                || padAtual == 0)) {
+                                            view = context.findViewById(padAtual);
+                                            view.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0, 1, 0, 1, 1, 100, 0));
+                                        }
                                     }
-                                }
+                                } catch (NullPointerException ignore){}
                             }
                             break;
                     }
