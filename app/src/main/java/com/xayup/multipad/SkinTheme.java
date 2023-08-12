@@ -68,14 +68,19 @@ public class SkinTheme {
 			} catch (Resources.NotFoundException nfr) {
 				bgDrawable = skinRes.getDrawable(skinRes.getIdentifier("playbg", "drawable", packageName));
 			}
+			int tmp_res_id;
 			setDrawables(
-				skinRes.getDrawable(skinRes.getIdentifier("phantom_", "drawable", packageName)),	//phantomCenter
-				skinRes.getDrawable(skinRes.getIdentifier("phantom", "drawable", packageName)),	//phantom
-				skinRes.getDrawable(skinRes.getIdentifier("chainled", "drawable", packageName)),	//chain
-				skinRes.getDrawable(skinRes.getIdentifier("btn", "drawable", packageName)),	//btn
-				skinRes.getDrawable(skinRes.getIdentifier("btn_", "drawable", packageName)),	//btn_
+				skinRes.getDrawable(skinRes.getIdentifier("phantom_", "drawable", packageName), null),	//phantomCenter
+				skinRes.getDrawable(skinRes.getIdentifier("phantom", "drawable", packageName), null),	//phantom
+				skinRes.getDrawable(skinRes.getIdentifier("chainled", "drawable", packageName), null),	//chain
+				skinRes.getDrawable(skinRes.getIdentifier("btn", "drawable", packageName), null),	//btn
+				skinRes.getDrawable(skinRes.getIdentifier("btn_", "drawable", packageName), null),	//btn_
 				bgDrawable,						 //playbg
-				skinRes.getDrawable(skinRes.getIdentifier("logo", "drawable", packageName)));   //logo
+						(tmp_res_id = skinRes.getIdentifier("logo", "drawable", packageName)) == 0
+								? (tmp_res_id = skinRes.getIdentifier("custom_logo", "drawable", packageName)) == 0
+									? context.getDrawable(R.drawable.customlogo)
+									: skinRes.getDrawable(tmp_res_id, null)
+								: skinRes.getDrawable(tmp_res_id, null));   //logo
 			return true;
 		} catch (PackageManager.NameNotFoundException nnfe) {
 			return false;
