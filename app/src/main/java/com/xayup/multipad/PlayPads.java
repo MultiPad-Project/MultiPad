@@ -1,73 +1,54 @@
 package com.xayup.multipad;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.AsyncTaskLoader;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.*;
-import android.graphics.drawable.Drawable;
 import android.icu.math.BigDecimal;
 import android.media.*;
 import android.net.*;
 import android.os.*;
 import android.provider.MediaStore;
-import android.service.autofill.OnClickAction;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.util.Log;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VerticalSeekBar;
 import android.widget.ViewFlipper;
-import android.widget.ViewSwitcher;
 
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
+import com.xayup.multipad.pads.Render.MakePads;
 
-import com.xayup.multipad.ThreadLed;
 import java.io.*;
-import java.security.spec.MGF1ParameterSpec;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 
 public class PlayPads extends Activity {
 
-  public static String chainSl = "1";
+  public Context context;
+
+  public static String currentChainMC = "1";
   public static String getCurrentPath;
 
-  Color cor;
 
-  Readers filter = new Readers();
-
-  public static Map<String, List<MediaItem>> keySound;
-  public static Map<String, List<Integer>> keySoundPool;
-  public static Map<Integer, String> toChainPool;
-  public static Map<String, Integer> streamsPool;
   public static Map<String, MediaPlayer> padPlayer;
   public static Map<Integer, Integer> soundrpt;
   public static Map<String, Integer> ledrpt;
@@ -82,8 +63,7 @@ public class PlayPads extends Activity {
 
   public static int otherChain;
   public static int oldPad;
-  public static int perAutoPlay;
-  public static int chainId;
+  public static int currentChainId;
   public static int padWH;
   public static int
       display_height; // MainActivity.height;//Default MainActivity.height, ou ponha um valor
@@ -103,9 +83,9 @@ public class PlayPads extends Activity {
   private final int EXIT_PAGE_LIST_COLOR_TABLE = 3;
   private final int EXIT_PAGE_PAD_GRIDS = 4;
 
-  public static float watermark, padPressAlpha, glowIntensity, glowChainIntensity;
+  public static float watermark, padPressAlpha;
+  public static int glowPadIntensity, glowChainIntensity;
 
-  public static boolean mk2;
   public static boolean autoPlayCheck;
   public static boolean spamSounds;
   public static boolean spamLeds;
@@ -118,20 +98,15 @@ public class PlayPads extends Activity {
 
   public static List<String> autoPlay;
   public static List<String> invalid_formats;
-  //	public static List<Integer> ledOcuped;
 
-  // public static SoundPool soundPool;
-  public static MakePads makepad;
-  public static Thread ledOn;
-  public static Runnable runLed;
+  public com.xayup.multipad.pads.Render.MakePads makepad;
+  public com.xayup.multipad.pads.Render.MakePads.Pads mPads;
   public static AutoPlayFunc autoPlayThread;
   public static KeyLedColors ledFunc;
-  public static MakeGlows glows;
   public static SoundLoader mSoundLoader;
 
-  private static Button stopRecAutoplay;
 
-  boolean lodedSkin = false;
+  private static Button stopRecAutoplay;
 
   private boolean hide_buttoms_b;
   private boolean layer_decoration;
@@ -142,30 +117,46 @@ public class PlayPads extends Activity {
   public static boolean recAutoplay;
   public static boolean useSoundPool;
 
+  public ImageView playBgimg;
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     // TODO: Implement this method
     super.onCreate(savedInstanceState);
     setContentView(R.layout.playpads);
+    this.context = this;
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     XayUpFunctions.hideSystemBars(getWindow());
     varInstance();
-    SkinTheme.varInstance(true);
+    SkinTheme.varInstance();
     getCurrentPath = getIntent().getExtras().getString("currentPath");
-    new GetFilesTask(this).getFiles();
+    new GetFilesTask(this){
+      @Override
+      protected void onPostExecute() {
+        Handler handler = new Handler(context.getMainLooper());
+        handler.post(new Runnable() {
+          @Override
+          public void run() {
+            end(context, time);
+            handler.removeCallbacks(this);
+          }
+        });
+        super.onPostExecute();
+      }
+    }.getFiles();
   }
 
   public void varInstance() {
 
-    padPlayer = new HashMap<String, MediaPlayer>();
-    soundrpt = new HashMap<Integer, Integer>();
-    ledrpt = new HashMap<String, Integer>();
-    fileProj = new HashMap<String, File>();
-    exoplayers = new HashMap<String, ExoPlayer>();
-    chainClickable = new HashMap<String, Integer>();
+    padPlayer = new HashMap<>();
+    soundrpt = new HashMap<>();
+    ledrpt = new HashMap<>();
+    fileProj = new HashMap<>();
+    exoplayers = new HashMap<>();
+    chainClickable = new HashMap<>();
 
     ledFiles = null;
-    invalid_formats = new ArrayList<String>();
+    invalid_formats = new ArrayList<>();
 
     // Get app data
     SharedPreferences app_config = getSharedPreferences("app_configs", MODE_PRIVATE);
@@ -192,52 +183,25 @@ public class PlayPads extends Activity {
     oldPad = 0;
     watermark = 1.0f;
     padPressAlpha = 0.0f;
-    chainId = 19;
+    currentChainId = 19;
     padWH = display_height / 10;
-    glowChainIntensity = app_config.getFloat("glowChainIntensity", 0.6f);
-    glowIntensity = app_config.getFloat("glowPadIntensity", 0.9f);
+    try {
+      glowChainIntensity = app_config.getInt("glowChainIntensity", 60);
+      glowPadIntensity = app_config.getInt("glowPadIntensity", 90);
+    } catch (RuntimeException ignored){
+      glowChainIntensity = 10 * Integer.parseInt(String.valueOf(app_config.getFloat("glowChainIntensity", 0.6f)).replace(".",""));
+      glowPadIntensity = 10 * Integer.parseInt(String.valueOf(app_config.getFloat("glowPadIntensity", 0.9f)).replace(".",""));
+      app_config.edit().putInt("glowChainIntensity", glowChainIntensity).putInt("glowPadIntensity", glowPadIntensity).apply();
+    }
     glowPadRadius = app_config.getInt("glowPadRadius", 180);
     glowChainRadius = app_config.getInt("glowChainRadius", 160);
 
     autoPlayCheck = false;
-    mk2 = false;
     stopAll = false;
     pressLed = false;
 
-    SkinTheme.playBgimg = findViewById(R.id.playbgimg);
-  }
-
-  private boolean checkLine(String line, String fileName) {
-    line = line.replace(" ", "");
-    switch (line.substring(0, 1)) {
-      case "o":
-        boolean ye;
-        if (line.contains("mc")) {
-          ye = line.matches("[on]{1,2}mc[0-3]?[0-9]a\\d{1,3}");
-
-        } else {
-          ye = line.matches("[on]{1,2}[1-8]{2}a\\d{1,3}");
-        }
-        if (ye) {
-          if (Integer.parseInt(line.substring(line.indexOf("a") + 1)) > 127) {
-            invalid_formats.add(
-                getString(R.string.invalid_led_color)
-                    + " "
-                    + line.substring(line.indexOf("a") + 1)
-                    + ", File: "
-                    + fileName);
-          }
-          return true;
-        } else {
-          return false;
-        }
-      case "f":
-        return line.matches("[off]{1,3}[1-8]{2}");
-      case "d":
-        return line.matches("\\w\\d+");
-      default:
-        return false;
-    }
+    playBgimg = findViewById(R.id.playbgimg);
+    playBgimg.setOnClickListener((view) -> mPads.switchLayout());
   }
 
   public void exitPads() {
@@ -246,52 +210,56 @@ public class PlayPads extends Activity {
       autoPlayCheck = false;
       autoPlayThread.exit();
     }
-    SkinTheme.inplayPads = false;
     if (have_sounds) mSoundLoader.release();
     if (ledFiles != null) {
       ledFiles.clear();
       ledFiles = null;
     }
-    glows = null;
   }
 
-  public static void end(Activity context, long time_duration) {
+  @SuppressLint("SetTextI18n")
+  public void end(Context context, long time_duration) {
     int min = (int) TimeUnit.MILLISECONDS.toMinutes(time_duration);
     int sec = (int) TimeUnit.MILLISECONDS.toSeconds(time_duration);
     AlertDialog.Builder alertInvalidFiles = new AlertDialog.Builder(context);
     if (!invalid_formats.isEmpty()) {
-      View alertDiagView = context.getLayoutInflater().inflate(R.layout.project_warnings, null);
+      View alertDiagView = LayoutInflater.from(context).inflate(R.layout.project_warnings, null);
       ((ListView) alertDiagView.findViewById(R.id.warning_list))
           .setAdapter(
-              new ArrayAdapter(context, android.R.layout.simple_list_item_1, invalid_formats));
+              new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, invalid_formats));
       ((TextView) alertDiagView.findViewById(R.id.warning_time))
           .setText("Time: " + min + "m " + sec + "s");
       alertInvalidFiles.setView(alertDiagView);
     } else {
       alertInvalidFiles.setMessage("Time: " + min + "m " + sec + "s");
     }
-    XayUpFunctions.showDiagInFullscreen(alertInvalidFiles.create());
-    if (ledFiles != null) {
-      ledFunc = new KeyLedColors();
-    }
-    makepad =
-        new MakePads(
-            getCurrentPath, R.id.contAllPads, /*MainActivity.height*/ display_height, context);
-    makepad.makePadInLayout();
-    makepad.changeChainPlayable();
-    makepad = null;
-    SkinTheme.playBgimg.setImageDrawable(SkinTheme.playBg);
+
+    if (ledFiles != null) { PlayPads.ledFunc = new KeyLedColors(); }
+
+    makepad = new com.xayup.multipad.pads.Render.MakePads(context);
+    mPads = makepad.make((byte) 10, (byte) 10, new MakePads.OnPadCreated() {
+      @Override
+      public void padCreated(RelativeLayout pad) {
+        View layer = pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_);
+        layer.setAlpha(0f);
+        if(pad.getTag() instanceof MakePads.ChainInfo) layer.setBackgroundColor(Color.WHITE);
+      }
+    });
+
+    new ConfigurePads(context).configure(mPads);
+    updateSkin();
+    //Render Grid
+    RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(MainActivity.height, MainActivity.height);
+    param.addRule(RelativeLayout.CENTER_IN_PARENT);
+    ((RelativeLayout) ((Activity) context).findViewById(R.id.layoutbackground)).addView(
+            mPads.getGrid(), param);
+    //Render Glows
+    mPads.getGlows().changeCfg(glowPadRadius, glowPadIntensity, false);
+    mPads.getGlows().changeCfg(glowChainRadius, glowChainIntensity, true);
     if (glowEf) {
-      glows =
-          new MakeGlows(
-              context,
-              padWH,
-              glowPadRadius,
-              glowChainRadius,
-              MainActivity.width,
-              MainActivity.height);
-      glows.setOnGlows();
+      mPads.getGlows().setOnGlows();
     }
+
     if (progressAutoplay != null) { // nao remova se nao quiser problemas%
       progressAutoplay.setOnSeekBarChangeListener(
           new SeekBar.OnSeekBarChangeListener() {
@@ -302,7 +270,9 @@ public class PlayPads extends Activity {
             public void onStartTrackingTouch(SeekBar arg0) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar arg0) {}
+            public void onStopTrackingTouch(SeekBar arg0) {
+              XayUpFunctions.clearLeds(context, mPads);
+            }
           });
     }
     stopRecAutoplay.setOnClickListener(
@@ -317,6 +287,66 @@ public class PlayPads extends Activity {
             stopRecAutoplay.setVisibility(View.GONE);
           }
         });
+    //Show dialog
+    XayUpFunctions.showDiagInFullscreen(alertInvalidFiles.create());
+  }
+
+  /**
+   *
+   * @param pad_info_type < 0 for all pad
+   * @param pad_info_layer_type layer type identifier
+   * @param imgdata Image type Bitmap
+   */
+  public void setPadLayerSkin(int pad_info_type, int pad_info_layer_type, Bitmap imgdata){
+    for(int i = mPads.getGrid().getChildCount()-1; !(i < 0); i--){
+      View view = mPads.getGrid().getChildAt(i);
+      if(view instanceof ViewGroup) {
+        ViewGroup pad = (ViewGroup) view;
+        if (pad_info_type == -1 || pad.getTag().equals(pad_info_layer_type)) {
+          for (int p = pad.getChildCount() - 1; !(p < 0); p--) {
+            View layer = pad.getChildAt(p);
+            if (layer.getTag().equals(pad_info_layer_type)) {
+              ((ImageView) layer).setImageBitmap(imgdata);
+              p = -1; // Exit this loop
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Após usar .loadSkin(), será necessário usar isto para aplicar a skin.
+   */
+  public void updateSkin(){
+    mPads.forAllChildInstance(-1, (pad, padInfo) -> {
+      Log.v("updateSkin", padInfo.getRow() + " " + padInfo.getColum());
+      if (padInfo.getType() == MakePads.PadType.CHAIN) {
+          if (SkinTheme.chain != null) {
+            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(SkinTheme.chain);
+            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.led);
+            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(null);
+            pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.INVISIBLE);
+          } else {
+            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(SkinTheme.btn);
+            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.btn_);
+            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(SkinTheme.chainled);
+            pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.VISIBLE);
+          }
+        } else if(padInfo.getType() != MakePads.PadType.NONE){
+          ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(SkinTheme.btn);
+          ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.btn_);
+          if (padInfo.getType() == MakePads.PadType.PAD){
+            try{
+              ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM)).setImageDrawable(SkinTheme.phantom);
+            } catch (NullPointerException n){
+              ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM_)).setImageDrawable(SkinTheme.phantom_);}
+          } else if (padInfo.getType() == MakePads.PadType.PAD_LOGO){
+            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.LOGO)).setImageDrawable(SkinTheme.customLogo);
+          }
+        }
+    });
+    playBgimg.setImageDrawable(SkinTheme.playBg);
   }
 
   @Override
@@ -337,36 +367,37 @@ public class PlayPads extends Activity {
           overlay.setVisibility(View.VISIBLE);
           break;
         case PICK_PHANTOM_IMG:
-          for (int i = 0; i < SkinTheme.pads.size(); i++) {
-            SkinTheme.pads.get(i).setImageBitmap(imgdata);
-          }
-          break;
-        case PICK_BTN_IMG:
-          for (int i = 0; i < SkinTheme.btnlist.size(); i++) {
-            SkinTheme.btnlist.get(i).setImageBitmap(imgdata);
-          }
+          setPadLayerSkin(
+                  MakePads.PadType.PAD,
+                  MakePads.PadInfo.PadLayerType.PHANTOM, imgdata);
           break;
         case PICK_PHANTOMC_IMG:
-          for (int i = 0; i < SkinTheme.padsCenter.size(); i++) {
-            SkinTheme.padsCenter.get(i).setImageBitmap(imgdata);
-          }
+          setPadLayerSkin(
+                  MakePads.PadType.PAD,
+                  MakePads.PadInfo.PadLayerType.PHANTOM_, imgdata);
           break;
         case PICK_LOGO_IMG:
-          ((ImageView) PlayPads.this.findViewById(9).findViewById(R.id.phantom))
-              .setImageBitmap(imgdata);
-          break;
-        case PICK_BACKGROUND_IMG:
-          ((ImageView) PlayPads.this.findViewById(R.id.playbgimg)).setImageBitmap(imgdata);
+          setPadLayerSkin(
+                  MakePads.PadType.PAD_LOGO,
+                  MakePads.PadInfo.PadLayerType.LOGO, imgdata);
           break;
         case PICK_CHAIN_IMG:
-          for (int i = 0; i < SkinTheme.chainsled.size(); i++) {
-            SkinTheme.chainsled.get(i).setImageBitmap(imgdata);
-          }
+          setPadLayerSkin(
+                  MakePads.PadType.CHAIN,
+                  MakePads.PadInfo.PadLayerType.CHAIN_LED, imgdata);
           break;
         case PICK_LOGO_BG_IMG:
-          ((ImageView) PlayPads.this.findViewById(9).findViewById(R.id.pad))
-              .setImageBitmap(imgdata);
+          setPadLayerSkin(
+                  MakePads.PadType.PAD_LOGO,
+                  MakePads.PadInfo.PadLayerType.BTN, imgdata);
           break;
+        case PICK_BTN_IMG:
+          setPadLayerSkin(-1, MakePads.PadInfo.PadLayerType.BTN, imgdata);
+          break;
+        case PICK_BACKGROUND_IMG:
+          playBgimg.setImageBitmap(imgdata);
+          break;
+
       }
     }
   }
@@ -377,7 +408,7 @@ public class PlayPads extends Activity {
     swit.showNext();
   }
 
-  public void switShowbyIndex(ViewFlipper swit, boolean Previous, int page) {
+  public void switShowByIndex(ViewFlipper swit, boolean Previous, int page) {
     if (Previous) {
       swit.setInAnimation(PlayPads.this, R.anim.move_in_to_right);
       swit.setOutAnimation(PlayPads.this, R.anim.move_out_to_right);
@@ -401,7 +432,7 @@ public class PlayPads extends Activity {
     // Select Skin page
     ListView listSkins = onExitDialog.findViewById(R.id.alertExitListSkins);
     TextView barTitle = onExitDialog.findViewById(R.id.alertExitTitle);
-    ViewFlipper swit = onExitDialog.findViewById(R.id.exitMenuSwitcher);
+    ViewFlipper flipper = onExitDialog.findViewById(R.id.exitMenuSwitcher);
 
     // Color table page
     ListView color_table_files = onExitDialog.findViewById(R.id.alertExit_list_color_table);
@@ -447,8 +478,8 @@ public class PlayPads extends Activity {
     if (glowEf) glow_cfg_show.setAlpha(1.0f);
     glow_cfg_check.setChecked(ifglow_cfg_show);
     glow_check.setChecked(glowEf);
-    SkinTheme getSkinList = new SkinTheme(PlayPads.this, listSkins, true);
-    getSkinList.getSkinsTheme();
+    SkinTheme getSkinList = new SkinTheme(PlayPads.this, listSkins);
+    getSkinList.updateListSkin();
     sound_spam.setChecked(spamSounds);
     hide_check.setChecked(hide_buttoms_b);
     decoration_show.setChecked(layer_decoration);
@@ -459,6 +490,12 @@ public class PlayPads extends Activity {
     if (layer_decoration) alertExit_layout_decoration_item.setAlpha(1.0f);
     item_customHeight.setAlpha(1.0f);
     SharedPreferences.Editor save_cfg = getSharedPreferences("app_configs", MODE_PRIVATE).edit();
+    //List skin
+    listSkins.setOnItemClickListener((adapter, view, pos, id)-> {
+      SkinTheme.loadSkin(context, ((PackageInfo) adapter.getItemAtPosition(pos)).packageName);
+      updateSkin();
+    });
+
     // Ir para a pagina de configuraçoes
     exit_config.setOnClickListener(
         new Button.OnClickListener() {
@@ -466,7 +503,7 @@ public class PlayPads extends Activity {
           public void onClick(View arg0) {
             barTitle.setText(getString(R.string.alert_exit_options));
             exit_config.setVisibility(View.GONE);
-            switShowbyIndex(swit, false, EXIT_PAGE_CONFIGS);
+            switShowByIndex(flipper, false, EXIT_PAGE_CONFIGS);
           }
         });
     // botao voltar
@@ -474,27 +511,27 @@ public class PlayPads extends Activity {
         new View.OnClickListener() {
           @Override
           public void onClick(View arg0) {
-            switch (swit.getDisplayedChild()) {
+            switch (flipper.getDisplayedChild()) {
               case EXIT_PAGE_LISTSKIN:
                 break;
               case EXIT_PAGE_CONFIGS:
-                switShowbyIndex(swit, true, EXIT_PAGE_LISTSKIN);
+                switShowByIndex(flipper, true, EXIT_PAGE_LISTSKIN);
                 barTitle.setText(getString(R.string.alert_exit_title));
                 exit_config.setVisibility(View.VISIBLE);
                 break;
               case EXIT_PAGE_UI_IMG_SELECTOR:
-                switShowbyIndex(swit, true, EXIT_PAGE_CONFIGS);
+                switShowByIndex(flipper, true, EXIT_PAGE_CONFIGS);
                 barTitle.setText(getString(R.string.alert_exit_options));
                 break;
               case EXIT_PAGE_LIST_COLOR_TABLE:
-                switShowbyIndex(swit, true, EXIT_PAGE_LISTSKIN);
+                switShowByIndex(flipper, true, EXIT_PAGE_LISTSKIN);
                 barTitle.setText(getString(R.string.alert_exit_title));
                 color_table.setVisibility(View.VISIBLE);
                 default_color_table.setVisibility(View.GONE);
                 exit_config.setVisibility(View.VISIBLE);
                 break;
               case EXIT_PAGE_PAD_GRIDS:
-                switShowbyIndex(swit, true, EXIT_PAGE_LISTSKIN);
+                switShowByIndex(flipper, true, EXIT_PAGE_LISTSKIN);
                 barTitle.setText(getString(R.string.alert_exit_title));
                 color_table.setVisibility(View.VISIBLE);
                 exit_config.setVisibility(View.VISIBLE);
@@ -544,7 +581,7 @@ public class PlayPads extends Activity {
             barTitle.setText(getString(R.string.color_table_title));
             color_table.setVisibility(View.GONE);
             default_color_table.setVisibility(View.VISIBLE);
-            switShowbyIndex(swit, false, EXIT_PAGE_LIST_COLOR_TABLE);
+            switShowByIndex(flipper, false, EXIT_PAGE_LIST_COLOR_TABLE);
             color_table_files.setAdapter(Readers.listColorTable(getApplicationContext()));
             color_table_files.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
@@ -670,7 +707,7 @@ public class PlayPads extends Activity {
                         startActivityForResult(get_image_from_gallery, PICK_BTN_IMG);
                       }
                     });
-            switShowbyIndex(swit, false, EXIT_PAGE_UI_IMG_SELECTOR);
+            switShowByIndex(flipper, false, EXIT_PAGE_UI_IMG_SELECTOR);
             barTitle.setText(getString(R.string.ui_img_select_title));
           }
         });
@@ -681,10 +718,8 @@ public class PlayPads extends Activity {
           @Override
           public void onClick(View arg0) {
             if (spamSounds) {
-              spamSounds = false;
-              sound_spam.setChecked(spamSounds);
+              sound_spam.setChecked(spamSounds = false);
             } else {
-              sound_spam.setChecked(false);
               AlertDialog.Builder spam_alert = new AlertDialog.Builder(PlayPads.this);
               spam_alert.setCancelable(false);
               spam_alert.setMessage(R.string.sound_spam_dialog);
@@ -693,8 +728,7 @@ public class PlayPads extends Activity {
                   new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                      spamSounds = true;
-                      sound_spam.setChecked(spamSounds);
+                      sound_spam.setChecked(spamSounds = true);
                     }
                   });
               spam_alert.setNegativeButton(R.string.no, null);
@@ -709,12 +743,12 @@ public class PlayPads extends Activity {
           public void onClick(View arg0) {
             if (hide_check.isChecked()) {
               hide_check.setChecked(false);
-              XayUpFunctions.hidePC(View.VISIBLE);
+              XayUpFunctions.changePadsPhantomLayerVisibility(mPads.getGrid(), View.VISIBLE);
               hide_buttoms_b = false;
             } else {
               hide_check.setChecked(true);
               hide_buttoms_b = true;
-              XayUpFunctions.hidePC(View.GONE);
+              XayUpFunctions.changePadsPhantomLayerVisibility(mPads.getGrid(), View.INVISIBLE);
             }
           }
         });
@@ -731,7 +765,7 @@ public class PlayPads extends Activity {
               slideMode = true;
             }
             save_cfg.putBoolean("slideMode", slideMode);
-            save_cfg.commit();
+            save_cfg.apply();
           }
         });
     // record to autoplay
@@ -756,32 +790,19 @@ public class PlayPads extends Activity {
         new View.OnClickListener() {
           @Override
           public void onClick(View arg0) {
-            if (glowEf) {
+            if (mPads.getGlows().isEnabled()) {
               glow_check.setChecked(false);
               glow_cfg_show.setAlpha(0.6f);
-              glows.setOffGlows();
+              mPads.getGlows().setOffGlows();
               glowEf = false;
             } else {
               glow_check.setChecked(true);
               glow_cfg_show.setAlpha(1.0f);
-              if (glows == null) {
-                System.out.println("make new");
-                glows =
-                    new MakeGlows(
-                        PlayPads.this,
-                        padWH,
-                        glowPadRadius,
-                        glowChainRadius,
-                        MainActivity.width,
-                        MakePads.layoutpads.getLayoutParams().height);
-                glows.setOnGlows();
-              } else {
-                glows.setOnGlows();
-              }
+              mPads.getGlows().setOnGlows();
               glowEf = true;
             }
             save_cfg.putBoolean("glowEf", glowEf);
-            save_cfg.commit();
+            save_cfg.apply();
           }
         });
     // Show glow configs (if Show Glows Effect is enabled)
@@ -790,7 +811,7 @@ public class PlayPads extends Activity {
           @Override
           public void onClick(View arg0) {
             final View glow_cfg_window = PlayPads.this.findViewById(R.id.glow_cfg_window);
-            if (glowEf)
+            if (mPads.getGlows().isEnabled())
               if (ifglow_cfg_show) {
                 glow_cfg_window.setVisibility(View.GONE);
                 glow_cfg_check.setChecked(false);
@@ -807,15 +828,19 @@ public class PlayPads extends Activity {
                 // set data and functions
 
                 EditText radius = glow_cfg_window.findViewById(R.id.glow_config_edit_radius);
-                radius.setText("" + glows.radius(changeChainGlows));
+                radius.setText(String.valueOf(changeChainGlows ? mPads.getGlows().chainRadius() : mPads.getGlows().padRadius()));
                 glow_cfg_window
                     .findViewById(R.id.glow_cfg_r_minus)
                     .setOnClickListener(
                         new Button.OnClickListener() {
                           @Override
                           public void onClick(View v) {
-                            radius.setText(
-                                "" + (Integer.parseInt(radius.getText().toString()) - 1));
+                            if(changeChainGlows) {
+                              mPads.getGlows().changeCfg(mPads.getGlows().chainRadius() - 1, mPads.getGlows().chainIntensity(), changeChainGlows);
+                              radius.setText(String.valueOf(glowChainRadius = mPads.getGlows().chainRadius())); }
+                            else {
+                              mPads.getGlows().changeCfg(mPads.getGlows().padRadius()-1, mPads.getGlows().padIntensity(), changeChainGlows);
+                              radius.setText(String.valueOf(glowPadRadius = mPads.getGlows().padRadius())); }
                           }
                         });
                 glow_cfg_window
@@ -824,26 +849,30 @@ public class PlayPads extends Activity {
                         new Button.OnClickListener() {
                           @Override
                           public void onClick(View v) {
-                            radius.setText(
-                                "" + (Integer.parseInt(radius.getText().toString()) + 1));
+                            if(changeChainGlows) {
+                              mPads.getGlows().changeCfg(mPads.getGlows().chainRadius() + 1, mPads.getGlows().chainIntensity(), changeChainGlows);
+                              radius.setText(String.valueOf(glowChainRadius = mPads.getGlows().chainRadius())); }
+                            else {
+                              mPads.getGlows().changeCfg(mPads.getGlows().padRadius()+1, mPads.getGlows().padIntensity(), changeChainGlows);
+                              radius.setText(String.valueOf(glowPadRadius = mPads.getGlows().padRadius())); }
                           }
                         });
 
                 EditText intensity =
                     glow_cfg_window.findViewById(R.id.glow_config_edit_intensidade);
-                intensity.setText("" + glowIntensity);
+                intensity.setText(String.valueOf(glowPadIntensity));
                 glow_cfg_window
                     .findViewById(R.id.glow_cfg_i_minus)
                     .setOnClickListener(
                         new Button.OnClickListener() {
                           @Override
                           public void onClick(View v) {
-                            intensity.setText(
-                                ""
-                                    + BigDecimal.valueOf(
-                                            Double.parseDouble(intensity.getText().toString()))
-                                        .subtract(BigDecimal.valueOf(0.01))
-                                        .floatValue());
+                            if(changeChainGlows) {
+                              mPads.getGlows().changeCfg(mPads.getGlows().chainRadius(), mPads.getGlows().chainIntensity()+1, changeChainGlows);
+                              radius.setText(String.valueOf(glowChainIntensity = mPads.getGlows().chainIntensity())); }
+                            else {
+                              mPads.getGlows().changeCfg(mPads.getGlows().padRadius(), mPads.getGlows().padIntensity()+1, changeChainGlows);
+                              radius.setText(String.valueOf(glowPadIntensity = mPads.getGlows().padIntensity())); }
                           }
                         });
                 glow_cfg_window
@@ -852,21 +881,15 @@ public class PlayPads extends Activity {
                         new Button.OnClickListener() {
                           @Override
                           public void onClick(View v) {
-                            if (BigDecimal.valueOf(
-                                        Double.parseDouble(intensity.getText().toString()))
-                                    .add(BigDecimal.valueOf(0.01))
-                                    .floatValue()
-                                <= 1.0f)
-                              intensity.setText(
-                                  ""
-                                      + BigDecimal.valueOf(
-                                              Double.parseDouble(intensity.getText().toString()))
-                                          .add(BigDecimal.valueOf(0.01))
-                                          .floatValue());
+                            if(changeChainGlows) {
+                              mPads.getGlows().changeCfg(mPads.getGlows().chainRadius(), mPads.getGlows().chainIntensity()-1, changeChainGlows);
+                              radius.setText(String.valueOf(glowChainIntensity = mPads.getGlows().chainIntensity())); }
+                            else {
+                              mPads.getGlows().changeCfg(mPads.getGlows().padRadius(), mPads.getGlows().padIntensity()-1, changeChainGlows);
+                              radius.setText(String.valueOf(glowPadIntensity = mPads.getGlows().padIntensity())); }
                           }
                         });
                 // widgets
-                boolean chainGlow = false;
                 Switch padOrChain = glow_cfg_window.findViewById(R.id.glow_cfg_switch);
                 changeChainGlows = padOrChain.isChecked();
                 Button hide = glow_cfg_window.findViewById(R.id.glow_cfg_exit);
@@ -886,19 +909,16 @@ public class PlayPads extends Activity {
                       @Override
                       public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
                         changeChainGlows = arg1;
-                        radius.setText("" + glows.radius(arg1));
-
                         if (arg1) {
                           glow_cfg_window.findViewById(R.id.textPad).setAlpha(0.5f);
                           glow_cfg_window.findViewById(R.id.textChain).setAlpha(1.0f);
-                          intensity.setText("" + glowChainIntensity);
-                          // glowRadius =
-                          // Integer.parseInt(radius.getText().toString());
+                          intensity.setText(String.valueOf(glowChainIntensity));
+                          radius.setText(String.valueOf(mPads.getGlows().chainRadius()));
                         } else {
                           glow_cfg_window.findViewById(R.id.textChain).setAlpha(0.5f);
                           glow_cfg_window.findViewById(R.id.textPad).setAlpha(1.0f);
-                          intensity.setText("" + glowIntensity);
-                        }
+                          intensity.setText(String.valueOf(glowPadIntensity));
+                          radius.setText(String.valueOf(mPads.getGlows().padRadius()));}
                       }
                     });
                 change.setOnClickListener(
@@ -907,10 +927,9 @@ public class PlayPads extends Activity {
                       public void onClick(View arg0) {
                         if (radius.getText().toString().matches("([1-9]|[1-9][0-9]{0,3})")) {
                           float radiusSize = Float.parseFloat(radius.getText().toString());
-                          if (intensity.getText().toString().matches("(0.[0-9]?[1-9]|1.0)")) {
-                            float intensityAlpha = Float.parseFloat(intensity.getText().toString());
-                            //	glowIntensity = intensityAlpha;
-                            glows.changeCfg((int) radiusSize, intensityAlpha, changeChainGlows);
+                          if (intensity.getText().toString().matches("\\d*")) {
+                            int intensityAlpha = Integer.parseInt(intensity.getText().toString());
+                            mPads.getGlows().changeCfg((int) radiusSize, intensityAlpha, changeChainGlows);
                             if (changeChainGlows) {
                               glowChainRadius = Integer.parseInt(radius.getText().toString());
                             } else {
@@ -918,9 +937,9 @@ public class PlayPads extends Activity {
                             }
                             save_cfg.putInt("glowChainRadius", glowChainRadius);
                             save_cfg.putInt("glowPadRadius", glowPadRadius);
-                            save_cfg.putFloat("glowChainIntensity", glowChainIntensity);
-                            save_cfg.putFloat("glowPadIntensity", glowIntensity);
-                            save_cfg.commit();
+                            save_cfg.putInt("glowChainIntensity", glowChainIntensity);
+                            save_cfg.putInt("glowPadIntensity", glowPadIntensity);
+                            save_cfg.apply();
                           } else {
                             Toast.makeText(
                                     PlayPads.this,
@@ -1006,10 +1025,10 @@ public class PlayPads extends Activity {
               View window = findViewById(R.id.layer_cfg_window);
 
               float layer_h = layer.getScaleX();
-              int pads_hw = MakePads.layoutpads.getLayoutParams().height;
+              int pads_hw = mPads.getGrid().getLayoutParams().height;
 
-              layer_size_h.setText("" + layer_h);
-              pads_size.setText("" + pads_hw);
+              layer_size_h.setText(String.valueOf(layer_h));
+              pads_size.setText(String.valueOf(pads_hw));
 
               layer_size_w.setVisibility(View.GONE);
 
@@ -1032,38 +1051,26 @@ public class PlayPads extends Activity {
                   new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                      int pads_hw = MakePads.layoutpads.getLayoutParams().height + 10;
-                      MakePads.layoutpads.getLayoutParams().height = pads_hw;
-                      MakePads.layoutpads.getLayoutParams().width = pads_hw;
-                      pads_size.setText("" + pads_hw);
-                      MakePads.layoutpads.setVisibility(View.GONE);
-                      MakePads.layoutpads.setVisibility(View.VISIBLE);
+                      int pads_hw = mPads.getGrid().getLayoutParams().height + 10;
+                      mPads.getGrid().getLayoutParams().height = pads_hw;
+                      mPads.getGrid().getLayoutParams().width = pads_hw;
+                      pads_size.setText(String.valueOf(pads_hw));
+                      mPads.getGrid().setVisibility(View.GONE);
+                      mPads.getGrid().setVisibility(View.VISIBLE);
                       display_height = pads_hw;
-                      if (mk2) {
-                        padWH = pads_hw / 9;
-                      } else {
-                        padWH = pads_hw / 10;
-                      }
-                      if (glows != null) glows.resize();
                     }
                   });
               pads_size_minus.setOnClickListener(
                   new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                      int pads_hw = MakePads.layoutpads.getLayoutParams().height - 10;
-                      MakePads.layoutpads.getLayoutParams().height = pads_hw;
-                      MakePads.layoutpads.getLayoutParams().width = pads_hw;
-                      pads_size.setText("" + pads_hw);
-                      MakePads.layoutpads.setVisibility(View.GONE);
-                      MakePads.layoutpads.setVisibility(View.VISIBLE);
+                      int pads_hw = mPads.getGrid().getLayoutParams().height - 10;
+                      mPads.getGrid().getLayoutParams().height = pads_hw;
+                      mPads.getGrid().getLayoutParams().width = pads_hw;
+                      pads_size.setText(String.valueOf(pads_hw));
+                      mPads.getGrid().setVisibility(View.GONE);
+                      mPads.getGrid().setVisibility(View.VISIBLE);
                       display_height = pads_hw;
-                      if (mk2) {
-                        padWH = pads_hw / 9;
-                      } else {
-                        padWH = pads_hw / 10;
-                      }
-                      if (glows != null) glows.resize();
                     }
                   });
               change.setOnClickListener(
@@ -1097,21 +1104,15 @@ public class PlayPads extends Activity {
                       int pads_hw = Integer.parseInt(phw);
                       layer.setScaleX(layer_h);
                       layer.setScaleY(layer_w);
-                      MakePads.layoutpads.getLayoutParams().height = pads_hw;
-                      MakePads.layoutpads.getLayoutParams().width = pads_hw;
-                      pads_size.setText("" + pads_hw);
+                      mPads.getGrid().getLayoutParams().height = pads_hw;
+                      mPads.getGrid().getLayoutParams().width = pads_hw;
+                      pads_size.setText(String.valueOf(pads_hw));
 
                       layer.setVisibility(View.GONE);
                       layer.setVisibility(View.VISIBLE);
-                      MakePads.layoutpads.setVisibility(View.GONE);
-                      MakePads.layoutpads.setVisibility(View.VISIBLE);
+                      mPads.getGrid().setVisibility(View.GONE);
+                      mPads.getGrid().setVisibility(View.VISIBLE);
                       display_height = pads_hw;
-                      if (mk2) {
-                        padWH = pads_hw / 9;
-                      } else {
-                        padWH = pads_hw / 10;
-                      }
-                      if (glows != null) glows.resize();
                     }
                   });
               close.setOnClickListener(
@@ -1133,9 +1134,8 @@ public class PlayPads extends Activity {
           public void onClick(View arg0) {
             if (spamLeds) {
               spamLeds = false;
-              led_spam_check.setChecked(spamSounds);
-            } else {
               led_spam_check.setChecked(false);
+            } else {
               AlertDialog.Builder spam_alert = new AlertDialog.Builder(PlayPads.this);
               spam_alert.setCancelable(false);
               spam_alert.setMessage(R.string.led_spam_dialog);
@@ -1145,7 +1145,7 @@ public class PlayPads extends Activity {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                       spamLeds = true;
-                      led_spam_check.setChecked(spamLeds);
+                      led_spam_check.setChecked(true);
                     }
                   });
               spam_alert.setNegativeButton(R.string.no, null);
@@ -1168,7 +1168,6 @@ public class PlayPads extends Activity {
     layer.setScaleX(new_size);
     layer.setVisibility(View.GONE);
     layer.setVisibility(View.VISIBLE);
-    if (glows != null) glows.resize();
-    return "" + new_size;
+    return String.valueOf(new_size);
   }
 }

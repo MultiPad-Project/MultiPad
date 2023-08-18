@@ -17,7 +17,7 @@ public class AutoplayRecFunc {
 	
 	public AutoplayRecFunc(Activity context){
 		autoPlayRecord = new ArrayList<String>();
-		autoPlayRecord.add("c " + PlayPads.chainSl);
+		autoPlayRecord.add("c " + PlayPads.currentChainMC);
 		oldTime = SystemClock.uptimeMillis();
 		this.context = context;
 	}

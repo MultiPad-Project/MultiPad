@@ -4,16 +4,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.view.MotionEvent;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import com.xayup.multipad.PlayPads;
-import com.xayup.multipad.SkinTheme;
+import android.content.Context;
+import android.os.Handler;
+import android.view.*;
+import com.xayup.multipad.pads.Render.MakePads;
+
 import java.io.IOException;
 
 public class XayUpFunctions {
@@ -66,33 +61,37 @@ public class XayUpFunctions {
 	}
 
 	//stop leds
-	public static void clearLeds(Activity context, View root) {
-		for (int i = 1; (i <= 98); i++) {
-			if (i != 9 & i != 90) {
-				int fi = i;
-				context.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (PlayPads.glows != null)
-							PlayPads.glows.offGlows();
-						root.getRootView().findViewById(fi).findViewById(R.id.led).setBackgroundColor(0);
-						try {
-							if (MidiStaticVars.midiInput != null) {
-								int offset = 0;
-								int numBytes = 0;
-								byte[] bytes = new byte[32];
-								bytes[numBytes++] = (byte) ((MidiStaticVars.NOTE_OFF & 0xFF)
-										+ (MidiStaticVars.CHANNEL - 1));
-								bytes[numBytes++] = (byte) (UsbDeviceActivity.rowProgramMode(fi, false));
-								bytes[numBytes++] = (byte) 0;
-								MidiStaticVars.midiInput.send(bytes, numBytes, offset);
+	public static void clearLeds(Context context, MakePads.Pads mPads) {
+		Handler handler = new Handler(context.getMainLooper());
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				for (int i = 1; (i <= 98); i++) {
+					if (i != 90) {
+						int row = i/10;
+						int colum = i%10;
+						mPads.getPadView(row, colum).findViewById(MakePads.PadInfo.PadLayerType.LED).setBackgroundColor(0);
+						if(i != 9) {
+							mPads.getGlows().getGlow(row, colum).setBackgroundColor(0);
+							try {
+								if (MidiStaticVars.midiInput != null) {
+									int offset = 0;
+									int numBytes = 0;
+									byte[] bytes = new byte[32];
+									bytes[numBytes++] = (byte) ((MidiStaticVars.NOTE_OFF & 0xFF)
+											+ (MidiStaticVars.CHANNEL - 1));
+									bytes[numBytes++] = (byte) (UsbDeviceActivity.rowProgramMode(i, false));
+									bytes[numBytes++] = (byte) 0;
+									MidiStaticVars.midiInput.send(bytes, numBytes, offset);
+								}
+							} catch (IOException ignored) {
 							}
-						} catch (IOException e) {
 						}
 					}
-				});
+				}
+				handler.removeCallbacks(this);
 			}
-		}
+		});
 	}
 
 	//stop sounds
@@ -140,16 +139,23 @@ public class XayUpFunctions {
 	}
 
 	//hide pad/chains overlay
-	protected static void hidePC(int visibility) {
-		for (int i = 0; i < SkinTheme.pads.size(); i++) {
-			SkinTheme.pads.get(i).setVisibility(visibility);
+	protected static void changePadsPhantomLayerVisibility(ViewGroup grid, int visibility) {
+		for(int i = grid.getChildCount()-1; !(i < 0); i--){
+			View view = grid.getChildAt(i);
+			if(view instanceof ViewGroup) {
+				ViewGroup pad = (ViewGroup) view;
+				for (int li = pad.getChildCount() - 1; !(li < 0); li--) {
+					View layer = pad.getChildAt(li);
+					switch ((int) layer.getTag()){
+						case MakePads.PadInfo.PadLayerType.PHANTOM:
+						case MakePads.PadInfo.PadLayerType.PHANTOM_:
+						case MakePads.PadInfo.PadLayerType.LOGO:
+						case MakePads.PadInfo.PadLayerType.CHAIN_LED:
+							layer.setVisibility(visibility);
+							i = -1;
+					}
+				}
+			}
 		}
-		for (int i = 0; i < SkinTheme.padsCenter.size(); i++) {
-			SkinTheme.padsCenter.get(i).setVisibility(visibility);
-		}
-		for (int i = 0; i < SkinTheme.chainsled.size(); i++) {
-			SkinTheme.chainsled.get(i).setVisibility(visibility);
-		}
-        SkinTheme.logo.setVisibility(visibility);
 	}
 }

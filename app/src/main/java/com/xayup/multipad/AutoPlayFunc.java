@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Toast;
-import androidx.annotation.IntegerRes;
+import com.xayup.multipad.pads.Render.MakePads;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoPlayFunc {
@@ -105,7 +104,7 @@ public class AutoPlayFunc {
 	}
     
 	protected void chainChanged(){
-		if(!((String)""+PlayPads.chainId).equals(chain))
+		if(!((String)""+PlayPads.currentChainId).equals(chain))
 			if(!request_returnto_chain){
 				request_returnto_chain = true;
 				chainChanged = true;
@@ -133,16 +132,20 @@ public class AutoPlayFunc {
 				View touchInView = context.findViewById(ViewId);
 				switch(request){
 					case REQUEST_CHAIN:
-						((ImageView)touchInView.findViewById(R.id.press)).setAlpha(PlayPads.watermark);
-						((ImageView)touchInView.findViewById(R.id.press)).setImageDrawable(context.getDrawable(R.drawable.currentchain));
+						((ImageView)touchInView.findViewById(R.id.btn_)).setAlpha(PlayPads.watermark);
+						((ImageView)touchInView.findViewById(R.id.btn_)).setImageDrawable(SkinTheme.led);
 						break;
 					case REQUEST_BTN:
-						((ImageView)touchInView.findViewById(R.id.press)).setAlpha(alpha);
-						((ImageView)touchInView.findViewById(R.id.press)).setImageDrawable(SkinTheme.btn_);
+						((ImageView)touchInView.findViewById(R.id.btn_)).setAlpha(alpha);
+						((ImageView)touchInView.findViewById(R.id.btn_)).setImageDrawable(SkinTheme.btn_);
 				        break;
 					default:
-						((ImageView)touchInView.findViewById(R.id.press)).setAlpha(1.0f);
-						((ImageView)touchInView.findViewById(R.id.press)).setImageDrawable(new ColorDrawable(Color.GREEN));
+						((ImageView)touchInView.findViewById(R.id.btn_)).setAlpha(1.0f);
+						if(SkinTheme.chain__ != null && touchInView.getTag() instanceof MakePads.ChainInfo) {
+							((ImageView) touchInView.findViewById(R.id.btn_)).setImageDrawable(SkinTheme.chain__);
+						} else {
+							((ImageView) touchInView.findViewById(R.id.btn_)).setImageDrawable(SkinTheme.practice);
+						}
 						break;
 				}
 			}
@@ -227,7 +230,7 @@ public class AutoPlayFunc {
                         default:
                           inDelay = false;
                           touchViewId = Integer.parseInt(line.substring(line.length() - 2));
-                          if (!(((String) "" + PlayPads.chainId).equals(chain) && paused.get()))
+                          if (!(((String) "" + PlayPads.currentChainId).equals(chain) && paused.get()))
                                     /*
                                     * Caso eu esbarre em outra chain
                                     * Isso fara o trabalho de retornar
@@ -287,7 +290,7 @@ public class AutoPlayFunc {
                                 * Remove as visualizaces de controle do autoPlay
                                 */
                         stop();        
-                        ((ImageView) context.findViewById(3).findViewById(R.id.press))
+                        ((ImageView) context.findViewById(3).findViewById(R.id.btn_))
                             .setAlpha(0.0f);
                         ((RelativeLayout) context.findViewById(4))
                             .removeView(context.findViewById(3004));

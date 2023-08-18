@@ -16,6 +16,7 @@ public class GetFilesTask implements Runnable {
   private int started_led_thread;
   private int ended_led_thread;
   private long started_time;
+  public long time;
   private View dialog_loading;
 
   public GetFilesTask(Activity context) {
@@ -33,10 +34,6 @@ public class GetFilesTask implements Runnable {
   }
 
   protected void onPostExecute() {
-    context.runOnUiThread(
-        () -> {
-          PlayPads.end(context, SystemClock.uptimeMillis() - started_time);
-        });
     bar.dismiss();
   }
 
@@ -92,7 +89,7 @@ public class GetFilesTask implements Runnable {
           changeView(0, text_keyled, "keyLeds: Reading...");
           changeView(1, text_keyled, "VISIBLE");
           PlayPads.ledFiles = new HashMap<>();
-          int end_index = Math.round(file.listFiles().length / 2);
+          int end_index = Math.round((float) file.listFiles().length / 2);
           started_led_thread = 0;
           ended_led_thread = 0;
           new Thread(
@@ -128,7 +125,6 @@ public class GetFilesTask implements Runnable {
       PlayPads.autoPlay = Readers.readautoPlay(context, file_autoplay);
       PlayPads.autoPlayThread = new AutoPlayFunc(context);
       PlayPads.progressAutoplay = context.findViewById(R.id.seekBarProgressAutoplay);
-      PlayPads.progressAutoplay.setMin(0);
       PlayPads.progressAutoplay.setMax(PlayPads.autoPlay.size() - 1);
       PlayPads.progressAutoplay.setContext(context);
       changeView(0, text_autoplay, "AutoPlay: Done!");
@@ -137,6 +133,7 @@ public class GetFilesTask implements Runnable {
       while (ended_led_thread < started_led_thread) {}
     }
     if (text_keyled != null) changeView(0, text_keyled, "keyLeds: Done!");
+    time = SystemClock.uptimeMillis() - started_time;
     onPostExecute();
   }
 }

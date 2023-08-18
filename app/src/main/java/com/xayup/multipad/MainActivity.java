@@ -3,33 +3,19 @@ package com.xayup.multipad;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.InsetDrawable;
-import android.hardware.display.DisplayManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
-import android.media.midi.MidiInputPort;
-import android.media.midi.MidiManager;
 import android.net.Uri;
 import android.os.*;
 import android.provider.Settings;
 import android.text.ClipboardManager;
-import android.text.Layout;
-import android.util.*;
 import android.view.*;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.xayup.filesexplorer.FileExplorerDialog;
-import com.xayup.multipad.MidiStaticVars;
-import com.xayup.multipad.UsbDeviceActivity;
-import com.xayup.multipad.VariaveisStaticas;
+
 import java.io.*;
-import java.net.URL;
 
 public class MainActivity extends Activity {
     String[] pastadeprojetos;
@@ -47,7 +33,7 @@ public class MainActivity extends Activity {
     public static int width;
     public static int heightCustom;
 
-    private Context context = this;
+    private Context context;
 
     File rootFolder = new File(Environment.getExternalStorageDirectory() + "/MultiPad/Projects");
     final String[] per =
@@ -115,6 +101,7 @@ public class MainActivity extends Activity {
                             WindowManager.LayoutParams.FLAG_FULLSCREEN,
                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.main);
+            this.context = this;
             getWindow()
                     .setFlags(
                             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -173,7 +160,7 @@ public class MainActivity extends Activity {
 
     public void makeActivity(boolean granted) {
         XayUpFunctions.hideSystemBars(getWindow());
-        SkinTheme.cachedSkinSet(this);
+        SkinTheme.cachedSkinSet((Activity) context);
         SharedPreferences app_config = getSharedPreferences("app_configs", MODE_PRIVATE);
         skinConfig = app_config.getString("skin", "default");
         useUnipadFolderConfig = app_config.getBoolean("useUnipadFolder", false);
@@ -402,12 +389,16 @@ public class MainActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
+                        ListView list_skins;
                         SkinTheme getThemes =
                                 new SkinTheme(
                                         MainActivity.this,
-                                        (ListView) swit.getChildAt(SKINS),
-                                        false);
-                        getThemes.getSkinsTheme();
+                                        (list_skins = (ListView) swit.getChildAt(SKINS)));
+                        getThemes.updateListSkin();
+                        list_skins.setOnItemClickListener(
+                            (AdapterView<?> adapterView, View view, int i, long l) ->
+                                SkinTheme.loadSkin(context, ((PackageInfo) adapterView.getItemAtPosition(i)).packageName)
+                        );
                         barTitle.setText(getString(R.string.skins));
                         swit.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
                         swit.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);

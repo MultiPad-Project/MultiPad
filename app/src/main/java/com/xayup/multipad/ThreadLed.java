@@ -1,15 +1,13 @@
 package com.xayup.multipad;
 
 import android.app.*;
+import android.content.Context;
 import android.graphics.Color;
-import android.media.midi.MidiInputPort;
-import android.media.midi.MidiOutputPort;
-import android.media.midi.MidiReceiver;
+import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.view.View;
-import android.widget.*;
-import com.xayup.multipad.MidiStaticVars;
-import java.io.IOException;
+import com.xayup.multipad.pads.Render.MakePads;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.*;
@@ -18,15 +16,15 @@ public class ThreadLed implements Runnable {
     private AtomicBoolean running = new AtomicBoolean(false);
     private Activity context;
     private String cpled;
-    private int rpt;
-    private View root;
+    private final int rpt;
+    private final MakePads.Pads mPads;
     private int loop = -1;
 
-    public ThreadLed(final Activity context, final String cpled, final int rpt, View root) {
-        this.context = context;
+    public ThreadLed(final Context context, final String cpled, final int rpt, MakePads.Pads mPads) {
+        this.context = (Activity) context;
         this.cpled = cpled;
         this.rpt = rpt;
-        this.root = root;
+        this.mPads = mPads;
     }
 
     boolean isRunning() {
@@ -103,26 +101,24 @@ public class ThreadLed implements Runnable {
                 new Runnable() {
                     @Override
                     public void run() {
+                        //View pad = context.findViewById(padid);
                         byte NOTE = MidiStaticVars.NOTE_ON;
                         if (color_velocity == 0) NOTE = MidiStaticVars.NOTE_OFF;
                         if (PlayPads.glowEf && padid != 9) {
-                            ImageView glowEF =
-                                    context.findViewById(Integer.parseInt("100" + padid));
+                            View glowEF = mPads.getGlows().getGlow(padid/10, padid%10);
                             if (color == 0) {
                                 glowEF.setAlpha(0.0f);
                             } else {
                                 if (MC) {
                                     glowEF.setAlpha(PlayPads.glowChainIntensity);
                                 } else {
-                                    glowEF.setAlpha(PlayPads.glowIntensity);
+                                    glowEF.setAlpha(PlayPads.glowPadIntensity);
                                 }
-
-                                glowEF.setColorFilter(color);
+                                Drawable glow = glowEF.getBackground();
+                                glow.setTint(color);
                             }
                         }
-                        context.findViewById(padid)
-                                .findViewById(R.id.led)
-                                .setBackgroundColor(color);
+                        context.findViewById(padid).findViewById(MakePads.PadInfo.PadLayerType.LED).setBackgroundColor(color);
                         if(MidiStaticVars.midiMessage != null){
                             MidiStaticVars.midiMessage.send((MidiStaticVars.midiOutputReceiver == null) ? MidiStaticVars.MIDI_INPUT : MidiStaticVars.MIDI_RECEIVER, padid, 1, NOTE, color_velocity);
                         }
@@ -156,7 +152,7 @@ public class ThreadLed implements Runnable {
                     line = PlayPads.ledFiles.get(cpled).get(rpt).get(i);
                     if (!isRunning() || PlayPads.stopAll) {
                         if (loop == 0) offCurrentLedLoop(PlayPads.ledFiles.get(cpled).get(rpt));
-                        else XayUpFunctions.clearLeds(context, root);
+                        else XayUpFunctions.clearLeds(context, mPads);
                         break looper;
                     }
                     //	String line = PlayPads.ledFiles.get(cpled).get(rpt).get(i);
@@ -185,11 +181,12 @@ public class ThreadLed implements Runnable {
                                 padId = Integer.parseInt(line.substring(1, 3));
                             }
                             if (hex) {
+                                String hex_code = line.substring(line.length() - 6);
                                 corcode =
-                                        (line.substring(line.length() - 6).equals("000000"))
+                                        (hex_code.equals("000000"))
                                                 ? 0
                                                 : Color.parseColor(
-                                                        "#" + line.substring(line.length() - 6));
+                                                        "#" + hex_code);
                             } else {
                                 color_velocity =
                                         Integer.parseInt(line.substring(substring_index + 1));

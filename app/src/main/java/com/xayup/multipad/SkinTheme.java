@@ -8,171 +8,114 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.widget.AdapterView;
 import android.graphics.drawable.Drawable;
 import android.widget.ListView;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.Toast;
-import com.xayup.multipad.PlayPads;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SkinTheme {
-
-	boolean lodedSkin = false;
-
 	private static List<PackageInfo> listSkinsPackage;
 
-	SkinThemeAdapter skinlistadapter;
+	public static Drawable phantom_, phantom, chainled, btn, btn_, playBg, customLogo, practice, led,
+			chain, chain__; //old_unipad_skin
 
-	public static Drawable phantomCenter, phantons, chains, btn, btn_, playBg, customLogo;
+	public PackageInfo current_Skin;
 
-	public static List<ImageView> pads, padsCenter, chainsled, btnlist;
-
-	public static ImageView logo;
-
-	public static boolean inplayPads;
-
-	private View bg;
-	public static ImageView playBgimg;
-
-	private static String packageName;
-	public static String skin;
-	static Activity context;
+	Activity context;
 	ListView listSkins;
 
-	public SkinTheme(Activity context, ListView listSkins, boolean inplayPads) {
+	public SkinTheme(Activity context, ListView listSkins) {
 		this.context = context;
 		this.listSkins = listSkins;
-		this.inplayPads = inplayPads;
-		this.listSkinsPackage = new ArrayList<PackageInfo>();
+		listSkinsPackage = new ArrayList<>();
 	}
 
-	public static void varInstance(boolean inplayPads) {
-		pads = new ArrayList<ImageView>();
-		padsCenter = new ArrayList<ImageView>();
-		chainsled = new ArrayList<ImageView>();
-		btnlist = new ArrayList<ImageView>();
-		listSkinsPackage = new ArrayList<PackageInfo>();
-
-		//	if(inplayPads) playBgimg = context.findViewById(R.id.playbgimg);
+	public static void varInstance() {
+		listSkinsPackage = new ArrayList<>();
 	}
 
-	private static boolean setResources(Activity context) {
+	/**
+	 * Carrega a skin pelo nome de pacote. Caso essa skin não exista, a skin padrão será carregada.
+	 * @param skin_package_name nome do pacote da skin (com.kimjisub.launchpad.theme...).
+	 * @return false se a skin não existir.
+	 */
+	public static boolean loadSkin(Context context, String skin_package_name) {
+		Resources res;
+		boolean result;
 		try {
-			Resources skinRes = context.getPackageManager().getResourcesForApplication(packageName);
-			Drawable bgDrawable;
-			try {
-				bgDrawable = skinRes.getDrawable(skinRes.getIdentifier("playbg_pro", "drawable", packageName));
-			} catch (Resources.NotFoundException nfr) {
-				bgDrawable = skinRes.getDrawable(skinRes.getIdentifier("playbg", "drawable", packageName));
-			}
-			int tmp_res_id;
-			setDrawables(
-				skinRes.getDrawable(skinRes.getIdentifier("phantom_", "drawable", packageName), null),	//phantomCenter
-				skinRes.getDrawable(skinRes.getIdentifier("phantom", "drawable", packageName), null),	//phantom
-				skinRes.getDrawable(skinRes.getIdentifier("chainled", "drawable", packageName), null),	//chain
-				skinRes.getDrawable(skinRes.getIdentifier("btn", "drawable", packageName), null),	//btn
-				skinRes.getDrawable(skinRes.getIdentifier("btn_", "drawable", packageName), null),	//btn_
-				bgDrawable,						 //playbg
-						(tmp_res_id = skinRes.getIdentifier("logo", "drawable", packageName)) == 0
-								? (tmp_res_id = skinRes.getIdentifier("custom_logo", "drawable", packageName)) == 0
-									? context.getDrawable(R.drawable.customlogo)
-									: skinRes.getDrawable(tmp_res_id, null)
-								: skinRes.getDrawable(tmp_res_id, null));   //logo
-			return true;
-		} catch (PackageManager.NameNotFoundException nnfe) {
-			return false;
+			res = context.getPackageManager().getResourcesForApplication(skin_package_name);
+			result = true;
+		} catch (PackageManager.NameNotFoundException ignore){
+			res = context.getResources();
+			skin_package_name = context.getPackageName();
+			result = false;
+		}
+
+		practice = new ColorDrawable(Color.GREEN);
+
+		int tmp_id;
+		// playbg
+		playBg = res.getDrawable(
+				((tmp_id = res.getIdentifier("playbg_pro", "drawable", skin_package_name)) == 0) ?
+						res.getIdentifier("playbg", "drawable", skin_package_name) : tmp_id
+				, null);
+
+		//chainled
+		chainled = null;
+		chain = null;
+		led = null;
+		chain__ = null;
+		if((tmp_id = res.getIdentifier("chainled", "drawable", skin_package_name)) == 0){
+			// Support Old Skins
+			chain = res.getDrawable(res.getIdentifier("chain", "drawable", skin_package_name), null);
+			led = res.getDrawable(res.getIdentifier("chain_", "drawable", skin_package_name), null);
+			chain__ = res.getDrawable(res.getIdentifier("chain__", "drawable", skin_package_name), null);
+		} else {
+			chainled = res.getDrawable(tmp_id, null);
+			led = new ColorDrawable(Color.WHITE);
+		}
+
+		if((tmp_id = res.getIdentifier("applogo", "drawable", skin_package_name)) != 0
+		|| (tmp_id = res.getIdentifier("logo", "drawable", skin_package_name)) != 0
+		|| (tmp_id = res.getIdentifier("custom_logo", "drawable", skin_package_name)) != 0)
+			customLogo = res.getDrawable(tmp_id, null);
+		else customLogo = context.getDrawable(
+				context.getResources().getIdentifier("customlogo", "drawable", context.getPackageName()));
+
+		//btn
+		btn = res.getDrawable(res.getIdentifier("btn", "drawable", skin_package_name), null);
+
+		//btn_
+		btn_ = res.getDrawable(res.getIdentifier("btn_", "drawable", skin_package_name), null);
+
+		//phantom
+		phantom = res.getDrawable(res.getIdentifier("phantom", "drawable", skin_package_name), null);
+
+		//phantom_
+		phantom_ = res.getDrawable(res.getIdentifier("phantom_", "drawable", skin_package_name), null);
+		return result;
+	}
+
+	public static void cachedSkinSet(Context context) {
+		SharedPreferences skinSaved = context.getSharedPreferences("app_configs", Context.MODE_PRIVATE);
+		if(!loadSkin(context, skinSaved.getString("skin", context.getPackageName()))){
+			skinSaved.edit().putString("skin", context.getPackageName()).apply();
 		}
 	}
 
-	public static void cachedSkinSet(Activity context) {
-		SharedPreferences skinSaved = context.getSharedPreferences("app_configs", context.MODE_PRIVATE);
-		skin = skinSaved.getString("skin", "default");
-		SharedPreferences.Editor getSkinSaved = skinSaved.edit();
-		switch (skin) {
-		case "default":
-			setDrawables(context.getDrawable(R.drawable.phantom_), context.getDrawable(R.drawable.phantom),
-					context.getDrawable(R.drawable.chainled), context.getDrawable(R.drawable.btn),
-					context.getDrawable(R.drawable.btn_), context.getDrawable(R.drawable.playbg),
-					context.getDrawable(R.drawable.customlogo));
-			if(inplayPads){
-				((ImageView)context.findViewById(9).findViewById(R.id.pad)).setImageDrawable(new ColorDrawable(Color.WHITE));
-			}
-			
-			break;
-		default:
-		packageName = skin;
-			if (!setResources(context)) {
-				getSkinSaved.putString("skin", "default");
-			}
-			break;
-		}
-		getSkinSaved.commit();
-	}
-
-	private static void setDrawables(Drawable phatomCente, Drawable phanton, Drawable chain, Drawable btnn,
-			Drawable btnn_, Drawable playBgg, Drawable customLogoo) {
-		phantomCenter = phatomCente;
-		phantons = phanton;
-		chains = chain;
-		btn = btnn;
-		btn_ = btnn_;
-		playBg = playBgg;
-		customLogo = customLogoo;
-	}
-
-	public void getSkinsTheme() {
-		skinlistadapter = getSkins();
+	public void updateListSkin() {
 		listSkins.setEnabled(true);
-		listSkins.setAdapter(skinlistadapter);
-		listSkins.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				SharedPreferences app_configs = context.getSharedPreferences("app_configs", context.MODE_PRIVATE);
-				SharedPreferences.Editor editConfigs = app_configs.edit();
-				if (arg2 != 0) {
-					packageName = listSkinsPackage.get(arg2).packageName;
-					editConfigs.putString("skin", packageName);
-					
-					if (!setResources(context)) {
-						editConfigs.putString("skin", "default");
-					}
-				} else {
-					setDrawables(context.getDrawable(R.drawable.phantom_), context.getDrawable(R.drawable.phantom),
-							context.getDrawable(R.drawable.chainled), context.getDrawable(R.drawable.btn),
-							context.getDrawable(R.drawable.btn_), context.getDrawable(R.drawable.playbg),
-							context.getDrawable(R.drawable.customlogo));
-					if(inplayPads){
-						((ImageView)context.findViewById(9).findViewById(R.id.pad)).setImageDrawable(new ColorDrawable(Color.WHITE));
-					}
-					editConfigs.putString("skin", "default");
-				}
-				editConfigs.commit();
-				if (inplayPads) {
-					for (int i = 0; i < pads.size(); i++) {
-						pads.get(i).setImageDrawable(phantons);
-					}
-					for (int i = 0; i < padsCenter.size(); i++) {
-						padsCenter.get(i).setImageDrawable(phantomCenter);
-					}
-					for (int i = 0; i < chainsled.size(); i++) {
-						chainsled.get(i).setImageDrawable(chains);
-					}
-					for (int i = 0; i < btnlist.size(); i++) {
-						btnlist.get(i).setImageDrawable(btn);
-					}
-					logo.setImageDrawable(customLogo);
-					playBgimg.setImageDrawable(playBg);
-				}
-			}
-		});
+		listSkins.setAdapter(getListSkinsAdapter());
 	}
 
-	private SkinThemeAdapter getSkins() {
+	private SkinThemeAdapter getListSkinsAdapter() {
 		final List<PackageInfo> packages = context.getPackageManager().getInstalledPackages(0);
-		listSkinsPackage.add(null);
+
+		// Default skin (First)
+		try { listSkinsPackage.add(context.getPackageManager().getPackageInfo(context.getPackageName(), 0)); }
+		catch (PackageManager.NameNotFoundException ignore){}
+		// Custom Skins
 		for (PackageInfo pi : packages) {
 			if (pi.packageName.contains("com.kimjisub.launchpad.theme.")) {
 				listSkinsPackage.add(pi);

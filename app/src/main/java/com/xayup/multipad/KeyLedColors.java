@@ -1,10 +1,13 @@
 package com.xayup.multipad;
 
+import android.content.Context;
 import android.os.SystemClock;
 import android.util.ArrayMap;
 import android.view.View;
 import android.widget.*;
 import android.app.*;
+import com.xayup.multipad.pads.Render.MakePads;
+
 import java.util.ArrayList;
 import java.lang.*;
 
@@ -17,54 +20,16 @@ public class KeyLedColors {
     private int rpt;
     private int corcode;
     private int padId;
-	/*
-	private void runUithread(Activity context, final int padid, final int corCode){
-		//final int padid = padId;
-		//final int corCode = corcode;
-		
-		context.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				ImageView pad = context.findViewById(padid).findViewById(R.id.led);
-				pad.setBackgroundColor(colorInt[corCode]);
-			}
-		});
-	}
-	*/
-    public KeyLedColors(){
-		PlayPads.threadMap = new ArrayMap<String, ThreadLed>();
-	/*	for(int i = 1; i <= 8; i++){
-			for(int o = 1; o <= 8; o++){
-				PlayPads.threadMap.put(i + "" + o, null);
-			}
-		}
-        */
-    }
-/*
-    private boolean formato(String linha) {
-        switch (linha.substring(0, 1).toLowerCase()) {
-            case "o":
-                linha = linha.replace("n", "");
-                return linha.length() >= 5;
-            case "f":
-                return linha.length() == 3;
-            default:
-                if (linha.length() >= 2) {
-                    return true;
-                }
-        }
-        return false;
-    }
-*/
-    public void readKeyLed(int rpt, String cpled, Activity context, View root){
+
+    public KeyLedColors() { PlayPads.threadMap = new ArrayMap<String, ThreadLed>(); }
+
+    public void readKeyLed(int rpt, String cpled, Context context, MakePads.Pads mPads){
 		
 		if((PlayPads.threadMap.get(cpled) != null) && !PlayPads.spamLeds && PlayPads.threadMap.get(cpled).isRunning()){
-		//	try{
 				PlayPads.threadMap.get(cpled).stop();
-		//	} catch (InterruptedException i){}
 		}
-		PlayPads.threadMap.put(cpled, null);
-		PlayPads.threadMap.put(cpled, new ThreadLed(context, cpled, rpt, root));
+		//PlayPads.threadMap.put(cpled, null);
+		PlayPads.threadMap.put(cpled, new ThreadLed(context, cpled, rpt, mPads));
 		PlayPads.threadMap.get(cpled).start();
     }
 }

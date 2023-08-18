@@ -57,12 +57,12 @@
     <string name="glow_cfg_intensidade">Glow Intensity</string>
     <string name="glow_cfg_title">Show glow settings</string>
     <string name="glow_cfg_subtitle">Change glow radius/intensity</string>
-    <string name="invalid_radius"> The radius only supports integers (12, 168), floating (35.9, 27.2) and above 0. </string>
-    <string name="invalid_intensity"> The intensity supports only numbers floating. Maximum: 1.0, Minimum: 0.01 or 0.3, 0.04, 0.24, etc... </string>
-    <string name="phantom_select_title">Select Phatom</string>
-    <string name="phantom_select_subtitle">Selec your phatom.png</string>
-    <string name="phantomC_select_title">Select Phatom Central</string>
-    <string name="phantomC_select_subtitle">Select yor phatom_.png</string>
+    <string name="invalid_radius"> The radius only supports integers > 0. </string>
+    <string name="invalid_intensity"> The intensity supports only numbers 0 – 100 </string>
+    <string name="phantom_select_title">Select Phantom</string>
+    <string name="phantom_select_subtitle">Select your phantom.png</string>
+    <string name="phantomC_select_title">Select Phantom Central</string>
+    <string name="phantomC_select_subtitle">Select yor phantom_.png</string>
     <string name="logo_select_title">Select Logo</string>
     <string name="logo_select_subtitle">Select your logo.png</string>
     <string name="logo_bg_select_title">Select Logo color</string>
@@ -82,7 +82,7 @@
     <string name="done">Done</string>
     <string name="recordAutoplay">Record to autoplay</string>
     <string name="old_colors">Old Colors</string>
-    <string name="old_colors_subtitle">Use the colors of the Unipad instead of the Eyedrop</string>
+    <string name="old_colors_subtitle">Use the colors of the Unipad instead of the Eyerdrop</string>
     <string name="layer_cfg">Set layer and size</string>
     <string name="layer_cfg_subtitle"></string>
     <string name="change_value">Change value</string>

@@ -4,7 +4,9 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical|center|center_horizontal"
     android:gravity="center_vertical|center|center_horizontal"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+	android:clipChildren="false"
+	android:clipToPadding="false">
 
     <ImageView
         android:id="@+id/playbgimg"
@@ -28,7 +30,7 @@
         android:layout_width="50dp"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/contAllPads"
+        android:layout_toStartOf="@id/contAllPads"
         android:padding="30dp"
         android:thumb="@android:color/transparent"
         android:visibility="gone" />
