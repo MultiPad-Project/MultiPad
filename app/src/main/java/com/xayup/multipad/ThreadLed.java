@@ -3,6 +3,8 @@ package com.xayup.multipad;
 import android.app.*;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.view.View;
@@ -104,18 +106,18 @@ public class ThreadLed implements Runnable {
                         //View pad = context.findViewById(padid);
                         byte NOTE = MidiStaticVars.NOTE_ON;
                         if (color_velocity == 0) NOTE = MidiStaticVars.NOTE_OFF;
-                        if (PlayPads.glowEf && padid != 9) {
+                        if (PlayPads.glowEf) {
                             View glowEF = mPads.getGlows().getGlow(padid/10, padid%10);
-                            if (color == 0) {
-                                glowEF.setAlpha(0.0f);
+                            if(color == 0){
+                                glowEF.setAlpha(0f);
                             } else {
-                                if (MC) {
-                                    glowEF.setAlpha(PlayPads.glowChainIntensity);
-                                } else {
-                                    glowEF.setAlpha(PlayPads.glowPadIntensity);
-                                }
                                 Drawable glow = glowEF.getBackground();
                                 glow.setTint(color);
+                                if(MC){
+                                    glowEF.setAlpha(PlayPads.glowChainIntensity/100f);
+                                } else {
+                                    glowEF.setAlpha(PlayPads.glowChainIntensity/100f);
+                                }
                             }
                         }
                         context.findViewById(padid).findViewById(MakePads.PadInfo.PadLayerType.LED).setBackgroundColor(color);

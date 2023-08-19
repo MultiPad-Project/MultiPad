@@ -2,6 +2,9 @@ package com.xayup.multipad.pads.Render;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.service.autofill.FillEventHistory;
 import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
@@ -257,7 +260,9 @@ public class MakePads {
 
             private View newGlow(){
                 View glow = new View(context);
-                glow.setBackground(context.getDrawable(R.drawable.glow));
+                Drawable glow_drawable = context.getDrawable(R.drawable.glow);
+                glow_drawable.setTint(Color.TRANSPARENT);
+                glow.setBackground(glow_drawable);
                 glow.setId(GLOW_ID);
                 return glow;
             }
@@ -295,14 +300,12 @@ public class MakePads {
                 if(chain) forAllChildInstance(PadType.CHAIN, (pad, info) -> {
                     Log.v("Resize", info.getRow() + " " + info.getColum());
                     View glow = (View) pads[info.getRow()][info.getColum()][GLOW];
-                    glow.setAlpha(glowChainIntensity/100f);
                     glow.setScaleX(glowChainRadius/100f);
                     glow.setScaleY(glowChainRadius/100f);
                 });
                 else forAllChildInstance(PadType.PAD, (pad, info) -> {
                     Log.v("Resize", info.getRow() + " " + info.getColum());
                     View glow = (View) pads[info.getRow()][info.getColum()][GLOW];
-                    glow.setAlpha(glowPadIntensity/100f);
                     glow.setScaleX(glowPadRadius/100f);
                     glow.setScaleY(glowPadRadius/100f);
                 });
@@ -337,13 +340,19 @@ public class MakePads {
             this.columns = grid_columns;
             this.pads = new Object[grid_rows][grid_columns][6];
             this.mGrid = new GridLayout(context);
-            this.mGrid.setClipChildren(false);
-            this.mGrid.setClipToPadding(false);
-            this.layout = GRID_LAYOUT_PRO;
             this.glows = new Glows();
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
             (this.root = new RelativeLayout(context)).addView(this.mGrid, params);
             this.root.addView(this.getGlows().glowsGrid, params);
+
+            this.root.setClipToPadding(false);
+            this.root.setClipChildren(false);
+            this.mGrid.setClipToPadding(false);
+            this.glows.glowsGrid.setClipToPadding(false);
+            this.mGrid.setClipChildren(false);
+            this.glows.glowsGrid.setClipChildren(false);
+
+            this.layout = GRID_LAYOUT_PRO;
         }
         private void add(byte row, byte colum, View pad, byte type){
             switch (type){
@@ -414,25 +423,24 @@ public class MakePads {
                     case GRID_LAYOUT_PRO: {
                         // Switch to PRO
                         forAllChildInstance(-1, (pad, padInfo) -> {
-                            if (padInfo.getColum() == 0 || padInfo.getColum() == 9 ||
-                                    padInfo.getRow() == 0 || padInfo.getRow() == 9) {
+                            if (padInfo.getColum() == 0 || padInfo.getColum() == getColumns()-1 ||
+                                    padInfo.getRow() == 0 || padInfo.getRow() == getRows()-1) {
                                 pad.setVisibility(View.VISIBLE);
                                 pad.setAlpha(1f);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.VISIBLE);
                             }
                         });
                         //Calculator
-                        getGrid().getLayoutParams().width = getGrid().getLayoutParams().height;
-                        glows.glowsGrid.setLayoutParams(getGrid().getLayoutParams());
+                        getRoot().getLayoutParams().width = getRoot().getLayoutParams().height;
                         break;
                     }
                     case GRID_LAYOUT_MATRIX: {
                         // Switch to MATRIX
                         forAllChildInstance(-1, (pad, padInfo) -> {
-                            if (padInfo.getRow() == 0 || padInfo.getRow() == 9) {
+                            if (padInfo.getRow() == 0 || padInfo.getRow() == getRows()-1) {
                                 pad.setVisibility(View.GONE);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.GONE);
-                            } else if (padInfo.getColum() == 0 || padInfo.getColum() == 9) {
+                            } else if (padInfo.getColum() == 0 || padInfo.getColum() == getColumns()-1) {
                                 pad.setAlpha(0f);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.INVISIBLE);
                             } else {
@@ -442,15 +450,14 @@ public class MakePads {
                             }
                         });
                         //Calculator
-                        getGrid().getLayoutParams().width =
-                                getGrid().getLayoutParams().height + ((getGrid().getLayoutParams().height / 10) * 2);
-                        glows.glowsGrid.setLayoutParams(getGrid().getLayoutParams());
+                        getRoot().getLayoutParams().width =
+                                (int) (getRoot().getLayoutParams().height + ((getRoot().getLayoutParams().height / 10f) * 2));
                         break;
                     }
                     case GRID_LAYOUT_MK2: {
                         // Switch to MK2
                         forAllChildInstance(-1, (pad, padInfo) -> {
-                            if (padInfo.getRow() == 9) {
+                            if (padInfo.getRow() == getRows()-1) {
                                 pad.setVisibility(View.GONE);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.GONE);
                             } else if (padInfo.getColum() == 0) {
@@ -463,16 +470,15 @@ public class MakePads {
                             }
                         });
                         //Calculator
-                        getGrid().getLayoutParams().width =
-                                getGrid().getLayoutParams().height + (getGrid().getLayoutParams().height / 10);
-                        glows.glowsGrid.setLayoutParams(getGrid().getLayoutParams());
+                        getRoot().getLayoutParams().width =
+                                (int) (getRoot().getLayoutParams().height + (getRoot().getLayoutParams().height / 10f));
 
                         break;
                     }
                     case GRID_LAYOUT_UNIPAD: {
                         // Switch to UNIPAD
                         forAllChildInstance(-1, (pad, padInfo) -> {
-                            if (padInfo.getRow() == 0 || padInfo.getRow() == 9) {
+                            if (padInfo.getRow() == 0 || padInfo.getRow() == getRows()-1) {
                                 pad.setVisibility(View.GONE);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.GONE);
                             } else {
@@ -482,14 +488,12 @@ public class MakePads {
                             }
                         });
                         //Calculator
-                        getGrid().getLayoutParams().width =
-                                getGrid().getLayoutParams().height + ((getGrid().getLayoutParams().height / 10) * 2);
-                        glows.glowsGrid.setLayoutParams(getGrid().getLayoutParams());
-
+                        getRoot().getLayoutParams().width =
+                                (int) (getRoot().getLayoutParams().height + ((getRoot().getLayoutParams().height / 10f) * 2));
                         break;
                     }
                 }
-                mGrid.requestLayout();
+                getRoot().requestLayout();
                 this.layout = layout;
             }
         }
@@ -539,7 +543,7 @@ public class MakePads {
         pad_children_params.addRule(RelativeLayout.CENTER_IN_PARENT);
         for (byte r = 0; r < rows; r++) {
             for (byte c = 0; c < columns; c++) {
-                if ((r == 0 && c == 0) || (r == 9 && c == 0) || (r == 9 && c == 9)) {
+                if ((r == 0 && c == 0) || (r == rows-1 && c == 0) || (r == 9 && c == columns-1)) {
                     View pad = new View(context);
                     pad.setVisibility(View.INVISIBLE);
                     mPads.add(r, c, pad, PadType.NONE);
@@ -550,6 +554,9 @@ public class MakePads {
                     (btn = new ImageView(context)).setId(PadInfo.PadLayerType.BTN);
                     (btn_ = new ImageView(context)).setId(PadInfo.PadLayerType.BTN_);
                     (led = new ImageView(context)).setId(PadInfo.PadLayerType.LED);
+                    btn.setScaleType(ImageView.ScaleType.FIT_XY);
+                    btn_.setScaleType(ImageView.ScaleType.FIT_XY);
+                    phantom.setScaleType(ImageView.ScaleType.FIT_XY);
                     //Make pad layout
                     pad.addView(btn, pad_children_params);
                     pad.addView(led, pad_children_params);
@@ -557,8 +564,8 @@ public class MakePads {
                     pad.addView(phantom, pad_children_params);
                     pad.addView(touch_map, pad_children_params);
                     pad.setId(PadID.assign(r, c));
-                    if (r == 0 || r == 9 || c == 0 || c == 9) {
-                        if (r == 0 && c == 9) {
+                    if (r == 0 || r == rows-1 || c == 0 || c == columns-1) {
+                        if (r == 0 && c == columns-1) {
                             mPads.add(r, c, pad, PadType.PAD_LOGO);
                             phantom.setId(PadInfo.PadLayerType.LOGO);
                         } else {

@@ -146,6 +146,7 @@ public class PlayPads extends Activity {
     }.getFiles();
   }
 
+  @SuppressLint("ClickableViewAccessibility")
   public void varInstance() {
 
     padPlayer = new HashMap<>();
@@ -201,7 +202,10 @@ public class PlayPads extends Activity {
     pressLed = false;
 
     playBgimg = findViewById(R.id.playbgimg);
-    playBgimg.setOnClickListener((view) -> mPads.switchLayout());
+    playBgimg.setOnLongClickListener(view -> {
+      mPads.switchLayout();
+      return true;
+    });
   }
 
   public void exitPads() {
@@ -347,6 +351,7 @@ public class PlayPads extends Activity {
         }
     });
     playBgimg.setImageDrawable(SkinTheme.playBg);
+    mPads.getRoot().requestLayout();
   }
 
   @Override
@@ -868,11 +873,11 @@ public class PlayPads extends Activity {
                           @Override
                           public void onClick(View v) {
                             if(changeChainGlows) {
-                              mPads.getGlows().changeCfg(mPads.getGlows().chainRadius(), mPads.getGlows().chainIntensity()+1, changeChainGlows);
-                              radius.setText(String.valueOf(glowChainIntensity = mPads.getGlows().chainIntensity())); }
+                              mPads.getGlows().changeCfg(mPads.getGlows().chainRadius(), mPads.getGlows().chainIntensity()-1, changeChainGlows);
+                              intensity.setText(String.valueOf(glowChainIntensity = mPads.getGlows().chainIntensity())); }
                             else {
-                              mPads.getGlows().changeCfg(mPads.getGlows().padRadius(), mPads.getGlows().padIntensity()+1, changeChainGlows);
-                              radius.setText(String.valueOf(glowPadIntensity = mPads.getGlows().padIntensity())); }
+                              mPads.getGlows().changeCfg(mPads.getGlows().padRadius(), mPads.getGlows().padIntensity()-1, changeChainGlows);
+                              intensity.setText(String.valueOf(glowPadIntensity = mPads.getGlows().padIntensity())); }
                           }
                         });
                 glow_cfg_window
@@ -882,12 +887,12 @@ public class PlayPads extends Activity {
                           @Override
                           public void onClick(View v) {
                             if(changeChainGlows) {
-                              mPads.getGlows().changeCfg(mPads.getGlows().chainRadius(), mPads.getGlows().chainIntensity()-1, changeChainGlows);
-                              radius.setText(String.valueOf(glowChainIntensity = mPads.getGlows().chainIntensity())); }
+                              mPads.getGlows().changeCfg(mPads.getGlows().chainRadius(), mPads.getGlows().chainIntensity()+1, changeChainGlows);
+                              intensity.setText(String.valueOf(glowChainIntensity = mPads.getGlows().chainIntensity())); }
                             else {
-                              mPads.getGlows().changeCfg(mPads.getGlows().padRadius(), mPads.getGlows().padIntensity()-1, changeChainGlows);
-                              radius.setText(String.valueOf(glowPadIntensity = mPads.getGlows().padIntensity())); }
-                          }
+                              mPads.getGlows().changeCfg(mPads.getGlows().padRadius(), mPads.getGlows().padIntensity()+1, changeChainGlows);
+                              intensity.setText(String.valueOf(glowPadIntensity = mPads.getGlows().padIntensity())); }
+                          }r
                         });
                 // widgets
                 Switch padOrChain = glow_cfg_window.findViewById(R.id.glow_cfg_switch);

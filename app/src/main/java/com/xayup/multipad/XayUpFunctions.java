@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.view.*;
 import com.xayup.multipad.pads.Render.MakePads;
@@ -70,9 +71,9 @@ public class XayUpFunctions {
 					if (i != 90) {
 						int row = i/10;
 						int colum = i%10;
-						mPads.getPadView(row, colum).findViewById(MakePads.PadInfo.PadLayerType.LED).setBackgroundColor(0);
+						mPads.getPadView(row, colum).findViewById(MakePads.PadInfo.PadLayerType.LED).setBackgroundColor(Color.TRANSPARENT);
+						mPads.getGlows().getGlow(row, colum).setAlpha(0f);
 						if(i != 9) {
-							mPads.getGlows().getGlow(row, colum).setBackgroundColor(0);
 							try {
 								if (MidiStaticVars.midiInput != null) {
 									int offset = 0;
