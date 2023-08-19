@@ -341,8 +341,9 @@ public class MakePads {
             this.mGrid.setClipToPadding(false);
             this.layout = GRID_LAYOUT_PRO;
             this.glows = new Glows();
-
-            (this.root = new RelativeLayout(context)).addView(this.mGrid);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(-1, -1);
+            (this.root = new RelativeLayout(context)).addView(this.mGrid, params);
+            this.root.addView(this.getGlows().glowsGrid, params);
         }
         private void add(byte row, byte colum, View pad, byte type){
             switch (type){
@@ -387,6 +388,7 @@ public class MakePads {
         public byte getColumns()                        { return columns; }
         public Glows getGlows()                         { return glows; }
         public GridLayout getGrid()                     { return mGrid; }
+        public RelativeLayout getRoot()                     { return root; }
         public View getPadView(int row, int colum)      { return (View) pads[row][colum][VIEW]; }
         public ImageView getLed(int row, int colum)     { return getPadView(row, colum).findViewById(PadInfo.PadLayerType.LED); }
         //public int getId(int row, int colum)          { return (int) pads[row][colum][ID]; }

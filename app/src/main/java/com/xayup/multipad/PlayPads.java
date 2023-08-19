@@ -252,7 +252,7 @@ public class PlayPads extends Activity {
     RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(MainActivity.height, MainActivity.height);
     param.addRule(RelativeLayout.CENTER_IN_PARENT);
     ((RelativeLayout) ((Activity) context).findViewById(R.id.layoutbackground)).addView(
-            mPads.getGrid(), param);
+            mPads.getRoot(), param);
     //Render Glows
     mPads.getGlows().changeCfg(glowPadRadius, glowPadIntensity, false);
     mPads.getGlows().changeCfg(glowChainRadius, glowChainIntensity, true);
