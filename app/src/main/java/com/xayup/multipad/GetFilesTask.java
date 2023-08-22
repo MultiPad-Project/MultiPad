@@ -123,7 +123,6 @@ public class GetFilesTask implements Runnable {
       changeView(0, text_autoplay, "AutoPlay: Reading...");
       changeView(1, text_autoplay, "VISIBLE");
       PlayPads.autoPlay = Readers.readautoPlay(context, file_autoplay);
-      PlayPads.autoPlayThread = new AutoPlayFunc(context);
       PlayPads.progressAutoplay = context.findViewById(R.id.seekBarProgressAutoplay);
       PlayPads.progressAutoplay.setMax(PlayPads.autoPlay.size() - 1);
       PlayPads.progressAutoplay.setContext(context);

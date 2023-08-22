@@ -291,6 +291,25 @@ public class PlayPads extends Activity {
             stopRecAutoplay.setVisibility(View.GONE);
           }
         });
+    autoPlayThread = new AutoPlayFunc((Activity) context) {
+      @Override
+      public void onStopAutoPlay() {
+        /*
+         * Remove as visualizaces de controle do autoPlay
+         */
+        stop();
+        mPads.getPadView(0, 3).findViewById(MakePads.PadInfo.PadLayerType.BTN_).setAlpha(0f);
+        ViewGroup prev = (ViewGroup) mPads.getPadView(0, 4);
+        ViewGroup state = (ViewGroup) mPads.getPadView(0, 5);
+        ViewGroup next = (ViewGroup) mPads.getPadView(0, 6);
+        prev.removeView(prev.findViewById(AutoPlayFunc.ICON_ID_PREV));
+        state.removeView(state.findViewById(AutoPlayFunc.ICON_ID_STATE));
+        next.removeView(next.findViewById(AutoPlayFunc.ICON_ID_NEXT));
+        PlayPads.autoPlayCheck = false;
+        padWaiting = -1;
+        PlayPads.progressAutoplay.setVisibility(View.GONE);
+      }
+    };
     //Show dialog
     XayUpFunctions.showDiagInFullscreen(alertInvalidFiles.create());
   }
@@ -892,7 +911,7 @@ public class PlayPads extends Activity {
                             else {
                               mPads.getGlows().changeCfg(mPads.getGlows().padRadius(), mPads.getGlows().padIntensity()+1, changeChainGlows);
                               intensity.setText(String.valueOf(glowPadIntensity = mPads.getGlows().padIntensity())); }
-                          }r
+                          }
                         });
                 // widgets
                 Switch padOrChain = glow_cfg_window.findViewById(R.id.glow_cfg_switch);

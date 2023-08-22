@@ -85,9 +85,9 @@ public class ConfigurePads {
                                         RelativeLayout pause = view.getRootView().findViewById(5);
                                         RelativeLayout next = view.getRootView().findViewById(6);
                                         if (PlayPads.autoPlayCheck) {
-                                            prev.removeView(mPads.getGrid().findViewById(3004));
-                                            pause.removeView(mPads.getGrid().findViewById(3005));
-                                            next.removeView(mPads.getGrid().findViewById(3006));
+                                            prev.removeView(mPads.getGrid().findViewById(AutoPlayFunc.ICON_ID_PREV));
+                                            pause.removeView(mPads.getGrid().findViewById(AutoPlayFunc.ICON_ID_STATE));
+                                            next.removeView(mPads.getGrid().findViewById(AutoPlayFunc.ICON_ID_NEXT));
                                             press.setAlpha(0.0f);
                                             PlayPads.autoPlayThread.stop();
                                             PlayPads.autoPlayCheck = false;
@@ -98,17 +98,20 @@ public class ConfigurePads {
                                             PlayPads.progressAutoplay.setVisibility(View.VISIBLE);
                                             PlayPads.progressAutoplay.setProgress(0);
                                             ImageView prev_img = new ImageView(context);
-                                            prev_img.setId(3004);
+                                            prev_img.setId(AutoPlayFunc.ICON_ID_PREV);
                                             prev_img.setImageDrawable(context.getDrawable(R.drawable.play_prev));
                                             prev_img.setAlpha(PlayPads.watermark);
+                                            prev_img.setRotation(90f);
                                             ImageView pause_img = new ImageView(context);
-                                            pause_img.setId(3005);
+                                            pause_img.setId(AutoPlayFunc.ICON_ID_STATE);
                                             pause_img.setImageDrawable(context.getDrawable(R.drawable.play_pause));
                                             pause_img.setAlpha(PlayPads.watermark);
+                                            pause_img.setRotation(90f);
                                             ImageView next_img = new ImageView(context);
-                                            next_img.setId(3006);
+                                            next_img.setId(AutoPlayFunc.ICON_ID_NEXT);
                                             next_img.setImageDrawable(context.getDrawable(R.drawable.play_prev));
-                                            next_img.setRotationY(180.0f);
+                                            next_img.setRotation(90f);
+                                            next_img.setScaleX(-1f);
                                             next_img.setAlpha(PlayPads.watermark);
                                             prev.addView(prev_img);
                                             pause.addView(pause_img);
