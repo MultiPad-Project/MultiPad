@@ -482,7 +482,7 @@ public class MakePads {
                     case GRID_LAYOUT_UNIPAD: {
                         // Switch to UNIPAD
                         forAllChildInstance(-1, (pad, padInfo) -> {
-                            if (padInfo.getRow() == 0 || padInfo.getRow() == getRows()-1) {
+                            if (padInfo.getRow() == 0 || padInfo.getRow() == getRows() -1) {
                                 pad.setVisibility(View.GONE);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.GONE);
                             } else {

@@ -35,6 +35,7 @@ import android.widget.VerticalSeekBar;
 import android.widget.ViewFlipper;
 
 import com.google.android.exoplayer2.ExoPlayer;
+import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.pads.Render.MakePads;
 
 import java.io.*;
@@ -345,14 +346,16 @@ public class PlayPads extends Activity {
     mPads.forAllChildInstance(-1, (pad, padInfo) -> {
       Log.v("updateSkin", padInfo.getRow() + " " + padInfo.getColum());
       if (padInfo.getType() == MakePads.PadType.CHAIN) {
+        ImageView btn_ = ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_));
           if (SkinTheme.chain != null) {
             ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(SkinTheme.chain);
-            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.led);
+            btn_.setImageDrawable(SkinTheme.led);
+            btn_.setBackground(null);
             ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(null);
             pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.INVISIBLE);
           } else {
             ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(SkinTheme.btn);
-            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.btn_);
+            btn_.setImageDrawable(SkinTheme.btn_);
             ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(SkinTheme.chainled);
             pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.VISIBLE);
           }
@@ -516,8 +519,11 @@ public class PlayPads extends Activity {
     SharedPreferences.Editor save_cfg = getSharedPreferences("app_configs", MODE_PRIVATE).edit();
     //List skin
     listSkins.setOnItemClickListener((adapter, view, pos, id)-> {
-      SkinTheme.loadSkin(context, ((PackageInfo) adapter.getItemAtPosition(pos)).packageName);
-      updateSkin();
+      String skin = ((PackageInfo) adapter.getItemAtPosition(pos)).packageName;
+      if(SkinTheme.loadSkin(context, skin)) {
+        updateSkin();
+        GlobalConfigs.saveSkin(skin);
+      }
     });
 
     // Ir para a pagina de configuraçoes

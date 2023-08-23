@@ -78,7 +78,8 @@ public class SkinTheme {
 
 		if((tmp_id = res.getIdentifier("applogo", "drawable", skin_package_name)) != 0
 		|| (tmp_id = res.getIdentifier("logo", "drawable", skin_package_name)) != 0
-		|| (tmp_id = res.getIdentifier("custom_logo", "drawable", skin_package_name)) != 0)
+		|| (tmp_id = res.getIdentifier("custom_logo", "drawable", skin_package_name)) != 0
+		|| (tmp_id = res.getIdentifier("theme_ic", "drawable", skin_package_name)) != 0)
 			customLogo = res.getDrawable(tmp_id, null);
 		else customLogo = context.getDrawable(
 				context.getResources().getIdentifier("customlogo", "drawable", context.getPackageName()));
