@@ -47,7 +47,6 @@ public abstract class AutoPlayFunc {
 		paused = new AtomicBoolean(false);
 		touch = false;
 		lineInt = 0;
-		autoplaySize = PlayPads.autoPlay.size();
 		time = 0;
 		padWaiting = 0;
 		chain = "19";
@@ -85,6 +84,7 @@ public abstract class AutoPlayFunc {
     protected void exit(){
         running.set(false);
         to_exit = true;
+		clear();
     }
 	protected void touch(int chpadId){
 		if(chpadId == padWaiting || chpadId == 0){
@@ -192,8 +192,10 @@ public abstract class AutoPlayFunc {
             XayUpFunctions.touchAndRelease(context, ViewId, TOUCH);
 		}
 	}
-    public void play(){
-    final Thread thread =
+    public boolean play(){
+	if(PlayPads.autoPlay == null) return false;
+	autoplaySize = PlayPads.autoPlay.size();
+    Thread thread =
         new Thread(
             new Runnable() {
               @Override
@@ -294,5 +296,11 @@ public abstract class AutoPlayFunc {
               }
             });
         thread.start();
+		return true;
     }
+	
+	public void clear(){
+		if(PlayPads.autoPlay != null) PlayPads.autoPlay.clear();
+		PlayPads.autoPlay = null;
+	}
 }

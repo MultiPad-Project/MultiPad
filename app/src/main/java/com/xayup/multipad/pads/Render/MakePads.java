@@ -401,8 +401,10 @@ public class MakePads {
         public byte getColumns()                        { return columns; }
         public Glows getGlows()                         { return glows; }
         public GridLayout getGrid()                     { return mGrid; }
-        public RelativeLayout getRoot()                     { return root; }
-        public View getPadView(int row, int colum)      { return (View) pads[row][colum][VIEW]; }
+        public RelativeLayout getRoot()                 { return root; }
+        public View getPadView(int row, int colum)      {
+            return row < 10 && row >= 0 && colum < 10 && colum >= 0 ?
+                    (View) pads[row][colum][VIEW] : null;}
         public ImageView getLed(int row, int colum)     { return getPadView(row, colum).findViewById(PadInfo.PadLayerType.LED); }
         //public int getId(int row, int colum)          { return (int) pads[row][colum][ID]; }
         public PadInfo getPadInfo(int row, int colum)   { return (PadInfo) pads[row][colum][PAD_INFO]; }
