@@ -17,6 +17,7 @@ import com.xayup.filesexplorer.FileExplorerDialog;
 import com.xayup.multipad.configs.GlobalConfigs;
 
 import java.io.*;
+import java.util.Map;
 
 public class MainActivity extends Activity {
     ListView listaprojetos;
@@ -189,8 +190,8 @@ public class MainActivity extends Activity {
                     }
                 });
         Readers getInfo = new Readers();
-        CustomArray arrayCustom =
-                new CustomArray(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
+        ProjectListAdapter arrayCustom =
+                new ProjectListAdapter(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
         listaprojetos = findViewById(R.id.listViewProjects);
         listaprojetos.setAdapter(arrayCustom);
 
@@ -198,14 +199,12 @@ public class MainActivity extends Activity {
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(
-                            AdapterView<?> adapterView, View view, int Int, long Long) {
-                        TextView pathTextv = view.findViewById(R.id.pathText);
+                            AdapterView<?> adapterView, View view, int pos, long Long) {
                         View itemStt = view.findViewById(R.id.currentItemState);
                         switch ((Integer) itemStt.getTag()) {
                             case 0:
                                 Intent playPads = new Intent(getBaseContext(), PlayPads.class);
-                                playPads.putExtra("currentPath", pathTextv.getText().toString());
-                                playPads.putExtra("height", height);
+                                playPads.putExtra("project", (Serializable) adapterView.getItemAtPosition(pos));
                                 startActivity(playPads);
                                 break;
                             case 2:

@@ -44,7 +44,6 @@ public class UsbDeviceActivity extends Activity {
 
     // Dados recebidos
     public List<int[]> received;
-    private MidiToLed receiver_thread;
 
     @Override
     public void onCreate(Bundle instance) {
@@ -228,7 +227,6 @@ public class UsbDeviceActivity extends Activity {
                                         if (MidiStaticVars.device == null) {
                                             MidiStaticVars.midiOutputReceiver =
                                                     new MidiControlerMode(context);
-                                            receiver_thread = new MidiToLed(context);
                                         } else {
                                             MidiStaticVars.midiOutputReceiver =
                                                     new MidiOutputReceiver(context);
@@ -288,72 +286,6 @@ public class UsbDeviceActivity extends Activity {
         }
     }
 
-    class MidiToLed implements Runnable {
-        protected AtomicBoolean running;
-        Activity context;
-
-        public MidiToLed(Context context) {
-            this.context = (Activity) context;
-            running = new AtomicBoolean(false);
-        }
-
-        public void start() {
-            new Thread(this).start();
-        }
-
-        public boolean isStoped() {
-            return !running.get();
-        }
-
-        @Override
-        public void run() {
-            running.set(true);
-            /* int[] data:
-             * 0 - Channel
-             * 1 - Note
-             * 2 - Velocity
-             * 3 - View root (grid id)
-             */
-            int[] data;
-            long null_time;
-            while (running.get()) {
-                while (received.size() != 0) {
-                    null_time = SystemClock.uptimeMillis() + 10; // 50 milisegundos
-                    while (SystemClock.uptimeMillis() < null_time) {}
-                    data = received.get(0);
-                    received.remove(0);
-                    if (data != null) {
-                        final ImageView led =
-                                PlayPads.grids
-                                        .get("grid_1")
-                                        .findViewById(rowProgramMode(data[1], true))
-                                        .findViewById(R.id.led);
-                        final int color =
-                                VariaveisStaticas.colorInt(
-                                        data[2], PlayPads.custom_color_table, PlayPads.oldColors);
-                        runOnUiThread(
-                                () -> {
-                                    try {
-                                        led.setBackgroundColor(color);
-                                    } catch (NullPointerException n) {
-                                        Toast.makeText(
-                                                        context,
-                                                        "Controller mode: " + n.toString(),
-                                                        0)
-                                                .show();
-                                    }
-                                });
-                    }
-                }
-                null_time = SystemClock.uptimeMillis() + 5000; // 5 segundos
-                while (SystemClock.uptimeMillis() < null_time && received.size() == 0) {}
-                if (received.size() == 0) {
-                    running.set(false);
-                }
-            }
-        }
-    }
-
     class MidiControlerMode extends MidiReceiver {
         Activity context;
 
@@ -382,6 +314,7 @@ public class UsbDeviceActivity extends Activity {
                                                 .findViewById(R.id.led);
                                 final int color =
                                         VariaveisStaticas.colorInt(
+                                                PlayPads.currentChainMC,
                                                 VELOCITY,
                                                 PlayPads.custom_color_table,
                                                 PlayPads.oldColors);

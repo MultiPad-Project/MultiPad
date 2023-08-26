@@ -19,13 +19,15 @@ public class ThreadLed implements Runnable {
     private AtomicBoolean running = new AtomicBoolean(false);
     private Activity context;
     private String cpled;
+    private int chain;
     private final int rpt;
     private final MakePads.Pads mPads;
     private int loop = -1;
 
-    public ThreadLed(final Context context, final String cpled, final int rpt, MakePads.Pads mPads) {
+    public ThreadLed(final Context context, final int chain, int padid, final int rpt, MakePads.Pads mPads) {
         this.context = (Activity) context;
-        this.cpled = cpled;
+        this.cpled = String.valueOf(chain) + padid;
+        this.chain = chain;
         this.rpt = rpt;
         this.mPads = mPads;
     }
@@ -197,6 +199,7 @@ public class ThreadLed implements Runnable {
                                         Integer.parseInt(line.substring(substring_index + 1));
                                 corcode =
                                         VariaveisStaticas.colorInt(
+                                                chain,
                                                 color_velocity,
                                                 PlayPads.custom_color_table,
                                                 PlayPads.oldColors);

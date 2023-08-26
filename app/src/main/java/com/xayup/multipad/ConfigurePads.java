@@ -273,7 +273,7 @@ public class ConfigurePads {
                                                 Integer.parseInt(String.valueOf(PlayPads.currentChainId) + chainInfo.getId()));
                                     }
                                     if (PlayPads.currentChainId != PlayPads.otherChain) {
-                                        PlayPads.currentChainMC = String.valueOf(chainInfo.getMc());
+                                        PlayPads.currentChainMC = chainInfo.getMc();
 
                                         ImageView img =
                                                 mPads.getGrid().findViewById(PlayPads.otherChain)
@@ -290,7 +290,7 @@ public class ConfigurePads {
                                         if(PlayPads.mSoundLoader != null) PlayPads.mSoundLoader.resetSequencer();
 
                                         if (PlayPads.recAutoplay) {
-                                            AutoplayRecFunc.addChain(PlayPads.currentChainMC);
+                                            AutoplayRecFunc.addChain(String.valueOf(PlayPads.currentChainMC));
                                         }
                                     }
                                     return true;
@@ -342,7 +342,7 @@ public class ConfigurePads {
                                         }
 
                                         if ((PlayPads.autoPlayThread == null)
-                                                || !((String) PlayPads.currentChainMC + "9" + padInfo.getId())
+                                                || !(PlayPads.currentChainMC + "9" + padInfo.getId())
                                                 .equals("" + PlayPads.autoPlayThread.padWaiting))
                                             view.findViewById(MakePads.PadInfo.PadLayerType.BTN_).setAlpha(0.0f);
                                         // Stop led 0 looper
@@ -459,7 +459,7 @@ public class ConfigurePads {
 
     private void playSound(MakePads.PadInfo padInfo) {
         int viewId = padInfo.getId();
-        String pad = PlayPads.currentChainMC + padInfo.getId();
+        String pad = String.valueOf(PlayPads.currentChainMC) + padInfo.getId();
         String toChain = null;
 
         // Play sound sample
@@ -474,7 +474,7 @@ public class ConfigurePads {
                 PlayPads.ledrpt.put(String.valueOf(padInfo.getId()), 0);
             }
             PlayPads.ledFunc.readKeyLed(
-                    PlayPads.ledrpt.get(String.valueOf(padInfo.getId())), pad, context, padInfo.getPads());
+                    PlayPads.ledrpt.get(String.valueOf(padInfo.getId())), PlayPads.currentChainMC, padInfo.getId(), context, padInfo.getPads());
             PlayPads.ledrpt.put(String.valueOf(padInfo.getId()), PlayPads.ledrpt.get(String.valueOf(padInfo.getId())) + 1);
         }
     }

@@ -2,14 +2,9 @@ package com.xayup.multipad;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
-import android.net.Uri;
-import android.util.Log;
-import android.util.TimeUtils;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
-import com.google.android.exoplayer2.MediaItem;
+import androidx.annotation.Nullable;
 import com.google.common.io.Files;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -57,26 +52,27 @@ public class Readers {
 
   // Algoritimo info
   public Map<String, Map> readInfo(Activity context, File projectDir, boolean granted) {
-    Map<String, String> infoInfo;
-    Map<String, Map> mapFolder = new HashMap<String, Map>();
+    Map<String, Object> infoInfo;
+    Map<String, Map> mapFolder = new HashMap<>();
     if (!granted) {
-      mapFolder.put("pr", null);
+      mapFolder.put(ProjectListAdapter.KEY_STORAGE_PERMISSION, null);
       return mapFolder;
     } else {
       if (projectDir.listFiles(filterFolder).length != 0) {
         for (final File projectFolder : projectDir.listFiles(filterFolder)) {
           File info = new File(projectFolder.getPath() + "/info");
-          infoInfo = new HashMap<String, String>();
+          infoInfo = new HashMap<>();
           File ableton = new File(projectFolder.getPath() + "/[a-Z]*.als");
           if (ableton.isFile()) {
             String producerName = "?";
             String title = ableton.getName();
-            infoInfo.put("bad", "False");
+            infoInfo.put(ProjectListAdapter.KEY_BAD, "False");
 
           } else if (info.exists()) {
             String producerName = "?";
             String title = "?";
-            infoInfo.put("bad", "False");
+            String chains = "?";
+            infoInfo.put(ProjectListAdapter.KEY_BAD, "False");
 
             try {
               BufferedReader bufferInfo = new BufferedReader(new FileReader(info));
@@ -84,34 +80,38 @@ public class Readers {
               while (line != null) {
                 if (line.toLowerCase().replaceAll("\\s+", "").contains("producername=")) {
                   producerName = line;
-                }
-                if (line.toLowerCase().replaceAll("\\s+", "").contains("title=")) {
+                } else if (line.toLowerCase().replaceAll("\\s+", "").contains("title=")) {
                   title = line;
+                } else if (line.toLowerCase().replaceAll("\\s+", "").contains("chain=")) {
+                  chains = line;
                 }
-                // infoInfo.put("title", title);
-                // infoInfo.put("producerName", producerName);
                 line = bufferInfo.readLine();
               }
               bufferInfo.close();
             } catch (IOException e) {
             }
             infoInfo.put(
-                "title", title.replaceFirst(title.substring(0, title.indexOf("=") + 1), "").trim());
+                ProjectListAdapter.KEY_TITLE, title.replaceFirst(title.substring(0, title.indexOf("=") + 1), "").trim());
             infoInfo.put(
-                "producerName",
+                ProjectListAdapter.KEY_PRODUCER_NAME,
                 producerName
                     .replaceFirst(producerName.substring(0, producerName.indexOf("=") + 1), "")
                     .trim());
+            infoInfo.put(
+                ProjectListAdapter.KEY_CHAINS,
+                Integer.parseInt(chains
+                    .replaceFirst(chains.substring(0, chains.indexOf("=") + 1), "")
+                    .trim()));
           } else {
-            infoInfo.put("title", projectFolder.getName());
-            infoInfo.put("producerName", context.getString(R.string.incomplet_project));
-            infoInfo.put("bad", "True");
+            infoInfo.put(ProjectListAdapter.KEY_TITLE, projectFolder.getName());
+            infoInfo.put(ProjectListAdapter.KEY_PRODUCER_NAME, context.getString(R.string.incomplet_project));
+            infoInfo.put(ProjectListAdapter.KEY_BAD, "True");
           }
-          infoInfo.put("local", projectFolder.getPath());
-          mapFolder.put(infoInfo.get("title"), infoInfo);
+          infoInfo.put(ProjectListAdapter.KEY_PATH, projectFolder.getPath());
+          mapFolder.put((String) infoInfo.get(ProjectListAdapter.KEY_TITLE), infoInfo);
         }
       } else {
-        mapFolder.put("Empyt", infoInfo = null);
+        mapFolder.put(ProjectListAdapter.KEY_EMPTY, null);
       }
 
       return mapFolder;
@@ -351,34 +351,20 @@ public class Readers {
     return autoplayLineList;
   }
   // Ler arquivo .ct
-  public static void getColorTableForCTFile(File rootDir, int list_pos, boolean EYEDROP) {
+  public static void getColorTableForCTFile(File table_file, int list_pos, boolean EYEDROP, int for_chain) {
     final String FILE_EXTENSION = ".ct";
-    File[] files_list_index =
-        rootDir.listFiles(
-            new FileFilter() {
-              @Override
-              public boolean accept(File pathname) {
-                return (pathname.isFile()
-                    && pathname
-                        .getName()
-                        .substring(pathname.getName().indexOf("."))
-                        .equals(FILE_EXTENSION));
-              }
-            });
+    VariaveisStaticas.customColorMap = new int[PlayPads.project_chains][VariaveisStaticas.color_map_lenght];
     if (EYEDROP) {
       for (int i = 0; i < VariaveisStaticas.newColorInt.length; i++) {
-        VariaveisStaticas.customColorInt.put(i, VariaveisStaticas.newColorInt[i]);
+        VariaveisStaticas.customColorMap[for_chain][i] = VariaveisStaticas.newColorInt[i];
       }
     } else {
       for (int i = 0; i < VariaveisStaticas.colorInt.length; i++) {
-        VariaveisStaticas.customColorInt.put(i, VariaveisStaticas.colorInt[i]);
+        VariaveisStaticas.customColorMap[for_chain][i] = VariaveisStaticas.colorInt[i];
       }
     }
     try {
-      BufferedReader ct_file =
-          new BufferedReader(
-              new FileReader(
-                  rootDir.getPath().toString() + "/" + files_list_index[list_pos].getName()));
+      BufferedReader ct_file = new BufferedReader(new FileReader(table_file));
       String line = ct_file.readLine();
       // Map<Integer, Map<String, Integer>> color_table = new HashMap<Integer, Map<String,
       // Integer>>();
@@ -409,7 +395,7 @@ public class Readers {
             b = Integer.parseInt(line.replaceAll("b=", ""));
           }
         } else if (line.contains("}")) {
-          VariaveisStaticas.customColorInt.put(color_code, Color.rgb(r, g, b));
+          VariaveisStaticas.customColorMap[for_chain][color_code] = Color.rgb(r, g, b);
         }
 
         line = ct_file.readLine();
@@ -421,20 +407,20 @@ public class Readers {
     }
   }
 
-  public static ArrayAdapter listColorTable(Context context) {
+  public static ColorTableAdapter listColorTable(Context context) {
     final String FILE_EXTENSION = ".ct";
-    String[] file_ct_name =
+    File[] file_ct_name =
         new File(VariaveisStaticas.COLOR_TABLE_PATH)
-            .list(
+            .listFiles(
                 new FilenameFilter() {
                   @Override
                   public boolean accept(File dir, String name) {
-                    return (name.substring(name.indexOf(".")).equals(FILE_EXTENSION));
+                    return (name.contains(".") && name.substring(name.indexOf(".")).equals(FILE_EXTENSION));
                   }
                 });
-    if (file_ct_name == null) {
-      return null;
+    if (file_ct_name != null) {
+      return new ColorTableAdapter(context, file_ct_name);
     }
-    return new ArrayAdapter<String>(context, R.layout.simple_list_item, file_ct_name);
+    return null;
   }
 }
