@@ -316,6 +316,10 @@ public class PlayPads extends Activity {
         PlayPads.progressAutoplay.setVisibility(View.GONE);
       }
     };
+
+    //Initialize color pallet
+    VariaveisStaticas.customColorMap = new int[PlayPads.project_chains][];
+
     //Show dialog
     XayUpFunctions.showDiagInFullscreen(alertInvalidFiles.create());
   }
@@ -634,13 +638,14 @@ public class PlayPads extends Activity {
                     Button button = select_chain_view.findViewById(R.id.dwe_btn1);
                     button.setVisibility(View.VISIBLE);
                     button.setOnClickListener((button_view) -> {
-                      int chain = Integer.parseInt(edit.getText().toString())-1;
-                      if(chain >= 0 && chain < project_chains){
-                        Readers.getColorTableForCTFile( (File) adapter.getItemAtPosition(pos), pos, !oldColors, 1);
+                      int chain = Integer.parseInt(edit.getText().toString());
+                      if(chain >= 0 && chain <= project_chains){
+                        Readers.getColorTableForCTFile((File) adapter.getItemAtPosition(pos), pos, !oldColors, (chain == 0) ? chain : chain-1);
                         if(chain == 0){
                           VariaveisStaticas.defaultColorMap = VariaveisStaticas.customColorMap[chain];
                           Arrays.fill(VariaveisStaticas.customColorMap, null);
                         }
+                        custom_color_table = true;
                       } else {
                         Toast.makeText(context, context.getString(R.string.invalid_chain_code), Toast.LENGTH_SHORT).show();
                       }

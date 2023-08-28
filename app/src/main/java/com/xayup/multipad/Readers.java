@@ -3,8 +3,6 @@ package com.xayup.multipad;
 import android.content.Context;
 import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
-import android.widget.ArrayAdapter;
-import androidx.annotation.Nullable;
 import com.google.common.io.Files;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -353,15 +351,17 @@ public class Readers {
   // Ler arquivo .ct
   public static void getColorTableForCTFile(File table_file, int list_pos, boolean EYEDROP, int for_chain) {
     final String FILE_EXTENSION = ".ct";
-    VariaveisStaticas.customColorMap = new int[PlayPads.project_chains][VariaveisStaticas.color_map_lenght];
+    VariaveisStaticas.customColorMap[for_chain] = new int[VariaveisStaticas.color_map_length];
     if (EYEDROP) {
       for (int i = 0; i < VariaveisStaticas.newColorInt.length; i++) {
         VariaveisStaticas.customColorMap[for_chain][i] = VariaveisStaticas.newColorInt[i];
       }
+      VariaveisStaticas.defaultColorMap = VariaveisStaticas.newColorInt;
     } else {
       for (int i = 0; i < VariaveisStaticas.colorInt.length; i++) {
         VariaveisStaticas.customColorMap[for_chain][i] = VariaveisStaticas.colorInt[i];
       }
+      VariaveisStaticas.defaultColorMap = VariaveisStaticas.colorInt;
     }
     try {
       BufferedReader ct_file = new BufferedReader(new FileReader(table_file));
@@ -396,6 +396,9 @@ public class Readers {
           }
         } else if (line.contains("}")) {
           VariaveisStaticas.customColorMap[for_chain][color_code] = Color.rgb(r, g, b);
+          if(VariaveisStaticas.customColorMap[for_chain][color_code] == Color.BLACK){
+            VariaveisStaticas.customColorMap[for_chain][color_code] = Color.TRANSPARENT;
+          }
         }
 
         line = ct_file.readLine();
