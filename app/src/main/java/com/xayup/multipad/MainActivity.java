@@ -168,8 +168,7 @@ public class MainActivity extends Activity {
                 width = GlobalConfigs.display_width;
                 heightCustom = height;
                 root.removeCallbacks(this);
-            }
-        });
+
         if (GlobalConfigs.use_unipad_folder) {
             rootFolder = new File(Environment.getExternalStorageDirectory() + "/Unipad");
             VariaveisStaticas.use_unipad_folder = true;
@@ -191,7 +190,7 @@ public class MainActivity extends Activity {
                 });
         Readers getInfo = new Readers();
         ProjectListAdapter arrayCustom =
-                new ProjectListAdapter(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
+                new ProjectListAdapter(MainActivity.this, getInfo.readInfo(context, rootFolder, granted));
         listaprojetos = findViewById(R.id.listViewProjects);
         listaprojetos.setAdapter(arrayCustom);
 
@@ -214,8 +213,12 @@ public class MainActivity extends Activity {
                     }
                 });
         View splash_screen = findViewById(R.id.splash);
-        splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
+        splash_screen.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out_splash));
         splash_screen.setVisibility(View.GONE);
+
+        root.removeCallbacks(this);
+            }
+        });
     }
 
     public void checarPermissao() {

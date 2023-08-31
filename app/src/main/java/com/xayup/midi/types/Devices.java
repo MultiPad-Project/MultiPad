@@ -1,0 +1,110 @@
+package com.xayup.midi.types;
+
+import android.media.midi.MidiDevice;
+import android.media.midi.MidiDeviceInfo;
+import android.media.midi.MidiDeviceInfo.PortInfo;
+import android.media.midi.MidiInputPort;
+import android.media.midi.MidiOutputPort;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Map;
+
+public class Devices {
+
+    public static class DeviceKeyID {
+        protected final Object keyID;
+        public DeviceKeyID(Object[][] keyID){ this.keyID = keyID; }
+        public DeviceKeyID(int keyID){ this.keyID = keyID; }
+
+        public Object getId(int x, int y){
+            return (isArray()) ? ((Object[][])keyID)[x][y] : keyID; };
+
+        public boolean isArray(){ return  keyID.getClass().isArray(); }
+    }
+
+    public static class KeyID{
+        protected final int[] key;
+        public KeyID(@KeyType byte type){ key = new int[]{type, 0}; }
+        public KeyID(int x, int y){ key = new int[]{x, y}; }
+        public KeyID(int id){ key = new int[]{id, -127}; }
+
+        /**
+         * @return -1 if XY
+         */
+        public int getId(){ return (isArray()) ? -1: key[0]; }
+
+        public String getType(){
+            switch (key[0]){
+                case KeyType.Note:          return "Note";
+                case KeyType.CC:            return "Control Change";
+                case KeyType.Sysex:         return "Sys-ex";
+                case KeyType.SPECIAL_LED:   return "Special Led";
+                case KeyType.CHAIN:         return "Chain";
+            }
+            return null;
+        }
+
+        public int[] getXY(){ return key; }
+
+        public boolean isArray(){ return key[1] != -127; }
+    }
+
+    public interface NoteToXY { int[] notToXY(int note); }
+    public interface RgbSysexGen { int[] rgbSysexGen(int[][] keyID, int[][][] color); }
+
+    @IntDef({KeyType.Note, KeyType.CC, KeyType.Sysex, KeyType.SPECIAL_LED, KeyType.CHAIN})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface KeyType {
+        byte Note = 0;
+        byte CC = 1;
+        byte Sysex = 2;
+        byte SPECIAL_LED = 3;
+        byte CHAIN = 4;
+    }
+
+    public static class GridDeviceConfig {
+        public String name = null;
+        public Map<String, Integer> paletteChannel;
+        public String midiNameRegex = "";
+        public Object[][] keymap;
+        /** [Width, Height] */
+        public int[] dimension;
+        /** Grid Only: [Width, Height] */
+        public int[] gridDimension;
+        /** [X, Y] */
+        public int[] gridOffset;
+        public int[][] chainKey;
+        public NoteToXY noteToXY;
+        public @Nullable KeyID specialLED;
+        public @Nullable RgbSysexGen rgbSysexGen;
+        public byte[][] initializationSysex;
+    }
+
+    public static class MidiDevice {
+
+        public final MidiDeviceInfo deviceInfo;
+        public final String name;
+        @Nullable final public PortInfo input;
+        @Nullable final public PortInfo output;
+        @Nullable
+        public final GridDeviceConfig config;
+
+        public MidiDevice(
+                MidiDeviceInfo deviceInfo,
+                String name,
+                @Nullable PortInfo input,
+                @Nullable PortInfo output,
+                @Nullable GridDeviceConfig config
+        ) {
+            this.deviceInfo = deviceInfo;
+            this.name = name;
+            this.input = input;
+            this.output = output;
+            this.config = config;
+        }
+    }
+}

@@ -637,6 +637,7 @@ public class PlayPads extends Activity {
                     edit.setVisibility(View.VISIBLE);
                     Button button = select_chain_view.findViewById(R.id.dwe_btn1);
                     button.setVisibility(View.VISIBLE);
+                    button.setText(context.getString(android.R.string.ok));
                     button.setOnClickListener((button_view) -> {
                       int chain = Integer.parseInt(edit.getText().toString());
                       if(chain >= 0 && chain <= project_chains){

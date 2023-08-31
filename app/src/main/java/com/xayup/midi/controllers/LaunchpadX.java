@@ -1,6 +1,7 @@
 package com.xayup.midi.controllers;
 
 import com.xayup.midi.types.Devices;
+import com.xayup.midi.types.Devices.KeyID;
 
 import java.util.Map;
 
@@ -8,12 +9,12 @@ import java.util.Map;
  * Class created based on <a href="https://github.com/Project-Amethyst/amethyst-player/tree/code/src/hardware">this</a> package
  * Thanks <a href="https://github.com/203Null">@203null</a>
  */
-public class LaunchpadMiniMK3 extends Devices.GridDeviceConfig {
-   public static Devices.GridDeviceConfig configs = new Devices.GridDeviceConfig(){{
-        name = "Launchpad Mini MK3";
-        midiNameRegex = "Launchpad Mini|LPMiniMK3 MIDI";
+public class LaunchpadX {
+    public static Devices.GridDeviceConfig configs = new Devices.GridDeviceConfig(){{
+        name = "Launchpad X";
+        midiNameRegex = "Launchpad X|LPX MIDI";
 
-        paletteChannel = Map.of("channel", 1);
+        paletteChannel = Map.of("classic", 1);
 
         keymap = new Object[][]{
         {91, 92, 93, 94, 95, 96, 97, 98, 99},
@@ -31,13 +32,17 @@ public class LaunchpadMiniMK3 extends Devices.GridDeviceConfig {
         gridOffset = new int[]{0, 1};
         chainKey = new int[][]{{8, 0}, {8, 1}, {8, 2}, {8, 3}, {8, 4}, {8, 5}, {8, 6}, {8, 7}};
 
-        noteToXY = (int note) ->
+        noteToXY = (note) ->
         {
             if(note >= 1 && note <= 99 && note != 9 && note != 90)
-                return new int[]{(note % 10 - 1 - this.gridOffset[0]), 9 - (note / 10) - this.gridOffset[1]};
+                return new int[]{note % 10 - 1 - this.gridOffset[0], 9 - (note / 10)  - this.gridOffset[1]};
             return new int[]{-1, -1};
         };
-        specialLED = new Devices.KeyID(8, -1);
-        initializationSysex = new byte[][]{{0, 32, 41, 2, 13, 14, 1}}; //Enter Programmer Mode
+
+        specialLED = new KeyID(8, -1);
+
+        initializationSysex = new byte[][]{
+            {0, 32, 41, 2, 12, 14, 1}, //Enter Programmer Mode
+        };
     }};
 }

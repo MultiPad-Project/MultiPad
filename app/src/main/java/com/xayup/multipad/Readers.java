@@ -49,7 +49,7 @@ public class Readers {
       };
 
   // Algoritimo info
-  public Map<String, Map> readInfo(Activity context, File projectDir, boolean granted) {
+  public Map<String, Map> readInfo(Context context, File projectDir, boolean granted) {
     Map<String, Object> infoInfo;
     Map<String, Map> mapFolder = new HashMap<>();
     if (!granted) {
