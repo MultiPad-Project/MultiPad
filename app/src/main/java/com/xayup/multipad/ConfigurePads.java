@@ -295,7 +295,7 @@ public class ConfigurePads {
                             }
                         });
                     }
-                } else {
+                } else { //Pads
                     MakePads.PadInfo padInfo = (MakePads.PadInfo) tag;
                     pad.setOnTouchListener(new OnTouchListener() {
                         @Override
@@ -449,9 +449,6 @@ public class ConfigurePads {
         int viewId = padInfo.getId();
         String pad = PlayPads.currentChainMC + padInfo.getId();
         String toChain = null;
-
-        // Play sound sample
-        if(PlayPads.have_sounds) PlayPads.mSoundLoader.playSound(pad);
        
         // Show leds
         if (((!PlayPads.stopAll) && PlayPads.ledFiles != null)
@@ -465,5 +462,8 @@ public class ConfigurePads {
                     PlayPads.ledrpt.get(String.valueOf(padInfo.getId())), pad, context, padInfo.getPads());
             PlayPads.ledrpt.put(String.valueOf(padInfo.getId()), PlayPads.ledrpt.get(String.valueOf(padInfo.getId())) + 1);
         }
+
+        // Play sound sample
+        if(PlayPads.have_sounds) PlayPads.mSoundLoader.playSound(pad);
     }
 }

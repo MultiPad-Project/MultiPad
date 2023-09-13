@@ -116,7 +116,7 @@ public class ThreadLed implements Runnable {
                                 if(MC){
                                     glowEF.setAlpha(PlayPads.glowChainIntensity/100f);
                                 } else {
-                                    glowEF.setAlpha(PlayPads.glowChainIntensity/100f);
+                                    glowEF.setAlpha(PlayPads.glowPadIntensity/100f);
                                 }
                             }
                         }
