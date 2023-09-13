@@ -44,9 +44,7 @@ public class AutoplayRecFunc {
 			}
 			save_autoplay_file.close();
 			PlayPads.autoPlay = Readers.readautoPlay(context, autoplay_file);
-			PlayPads.autoPlayThread = new AutoPlayFunc(context);
 			PlayPads.progressAutoplay = context.findViewById(R.id.seekBarProgressAutoplay);
-			PlayPads.progressAutoplay.setMin(0);
 			PlayPads.progressAutoplay.setMax(PlayPads.autoPlay.size()-1);
 			PlayPads.progressAutoplay.setContext(context);
 			PlayPads.progressAutoplay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

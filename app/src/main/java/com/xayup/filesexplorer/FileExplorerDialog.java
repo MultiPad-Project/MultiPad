@@ -5,22 +5,16 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.*;
-import android.se.omapi.Reader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 import com.xayup.debug.XLog;
-import com.xayup.multipad.CustomArray;
+import com.xayup.multipad.ProjectListAdapter;
 import com.xayup.multipad.R;
 import com.xayup.multipad.Readers;
 import com.xayup.multipad.VariaveisStaticas;
@@ -35,7 +29,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -182,7 +175,7 @@ public class FileExplorerDialog {
                                                                   context.findViewById(
                                                                       R.id.listViewProjects))
                                                               .setAdapter(
-                                                                  new CustomArray(
+                                                                  new ProjectListAdapter(
                                                                       context,
                                                                       new Readers()
                                                                           .readInfo(

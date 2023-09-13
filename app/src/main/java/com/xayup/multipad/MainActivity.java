@@ -14,20 +14,16 @@ import android.view.*;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.xayup.filesexplorer.FileExplorerDialog;
+import com.xayup.multipad.configs.GlobalConfigs;
 
 import java.io.*;
+import java.util.Map;
 
 public class MainActivity extends Activity {
-    String[] pastadeprojetos;
     ListView listaprojetos;
     Button button_floating_menu;
-    File info;
 
     public PendingIntent permissionIntent;
-
-    public static String skinConfig;
-    public static boolean useUnipadFolderConfig;
-    public static boolean useSoundPool;
 
     public static int height;
     public static int width;
@@ -106,7 +102,6 @@ public class MainActivity extends Activity {
                     .setFlags(
                             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
             checarPermissao();
         }
     }
@@ -160,24 +155,21 @@ public class MainActivity extends Activity {
 
     public void makeActivity(boolean granted) {
         XayUpFunctions.hideSystemBars(getWindow());
-        SkinTheme.cachedSkinSet((Activity) context);
-        SharedPreferences app_config = getSharedPreferences("app_configs", MODE_PRIVATE);
-        skinConfig = app_config.getString("skin", "default");
-        useUnipadFolderConfig = app_config.getBoolean("useUnipadFolder", false);
-        useSoundPool = app_config.getBoolean("use_soundpool", false);
-        Display.Mode display = getDisplay().getMode();
+        SkinTheme.cachedSkinSet(context);
+        GlobalConfigs.loadSharedPreferences(context);
         registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
-        // Display.Mode mode = Display.
-        if (display.getPhysicalHeight() < display.getPhysicalWidth()) {
-            height = display.getPhysicalHeight();
-            width = display.getPhysicalWidth(); // getWindow().getDecorView().getWidth();
-        } else {
-            height = display.getPhysicalWidth(); // getWindow().getDecorView().getWidth();
-            width = display.getPhysicalHeight();
-        }
-        heightCustom = height;
+        View root = ((Activity) context).findViewById(R.id.ActivityLinearLayout);
+        root.post(new Runnable() {
+            @Override
+            public void run() {
+                GlobalConfigs.display_width = root.getMeasuredWidth();
+                GlobalConfigs.display_height = root.getMeasuredHeight();
+                height = GlobalConfigs.display_height;
+                width = GlobalConfigs.display_width;
+                heightCustom = height;
+                root.removeCallbacks(this);
 
-        if (useUnipadFolderConfig) {
+        if (GlobalConfigs.use_unipad_folder) {
             rootFolder = new File(Environment.getExternalStorageDirectory() + "/Unipad");
             VariaveisStaticas.use_unipad_folder = true;
         }
@@ -197,8 +189,8 @@ public class MainActivity extends Activity {
                     }
                 });
         Readers getInfo = new Readers();
-        CustomArray arrayCustom =
-                new CustomArray(MainActivity.this, getInfo.readInfo(this, rootFolder, granted));
+        ProjectListAdapter arrayCustom =
+                new ProjectListAdapter(MainActivity.this, getInfo.readInfo(context, rootFolder, granted));
         listaprojetos = findViewById(R.id.listViewProjects);
         listaprojetos.setAdapter(arrayCustom);
 
@@ -206,14 +198,12 @@ public class MainActivity extends Activity {
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(
-                            AdapterView<?> adapterView, View view, int Int, long Long) {
-                        TextView pathTextv = view.findViewById(R.id.pathText);
+                            AdapterView<?> adapterView, View view, int pos, long Long) {
                         View itemStt = view.findViewById(R.id.currentItemState);
                         switch ((Integer) itemStt.getTag()) {
                             case 0:
                                 Intent playPads = new Intent(getBaseContext(), PlayPads.class);
-                                playPads.putExtra("currentPath", pathTextv.getText().toString());
-                                playPads.putExtra("height", height);
+                                playPads.putExtra("project", (Serializable) adapterView.getItemAtPosition(pos));
                                 startActivity(playPads);
                                 break;
                             case 2:
@@ -223,8 +213,12 @@ public class MainActivity extends Activity {
                     }
                 });
         View splash_screen = findViewById(R.id.splash);
-        splash_screen.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out_splash));
+        splash_screen.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out_splash));
         splash_screen.setVisibility(View.GONE);
+
+        root.removeCallbacks(this);
+            }
+        });
     }
 
     public void checarPermissao() {
@@ -279,7 +273,7 @@ public class MainActivity extends Activity {
         Button list_usb_midi = menu.findViewById(R.id.main_floating_menu_button_midi_devices);
 
         CheckBox unipadfolder = menu.findViewById(R.id.main_floating_menu_useunipadfolder_check);
-        unipadfolder.setChecked(useUnipadFolderConfig);
+        unipadfolder.setChecked(GlobalConfigs.use_unipad_folder);
 
         floating_menu.setView(menu);
         Button floating_button_exit =
@@ -396,8 +390,9 @@ public class MainActivity extends Activity {
                                         (list_skins = (ListView) swit.getChildAt(SKINS)));
                         getThemes.updateListSkin();
                         list_skins.setOnItemClickListener(
-                            (AdapterView<?> adapterView, View view, int i, long l) ->
-                                SkinTheme.loadSkin(context, ((PackageInfo) adapterView.getItemAtPosition(i)).packageName)
+                            (AdapterView<?> adapterView, View view, int i, long l) -> {
+                                String skin = ((PackageInfo) adapterView.getItemAtPosition(i)).packageName;
+                                if(SkinTheme.loadSkin(context, skin)) GlobalConfigs.saveSkin(skin); }
                         );
                         barTitle.setText(getString(R.string.skins));
                         swit.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
@@ -409,17 +404,14 @@ public class MainActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                        SharedPreferences app_configs =
-                                getSharedPreferences("app_configs", MODE_PRIVATE);
-                        SharedPreferences.Editor editConfigs = app_configs.edit();
-                        if (app_configs.getBoolean("useUnipadFolder", false)) {
+                        if (GlobalConfigs.app_configs.getBoolean("useUnipadFolder", false)) {
                             unipadfolder.setChecked(false);
-                            editConfigs.putBoolean("useUnipadFolder", false);
+                            GlobalConfigs.app_configs.edit().putBoolean("useUnipadFolder", false).apply();
                         } else {
                             unipadfolder.setChecked(true);
-                            editConfigs.putBoolean("useUnipadFolder", true);
+                            GlobalConfigs.app_configs.edit().putBoolean("useUnipadFolder", true).apply();
                         }
-                        editConfigs.commit();
+                        //editConfigs.commit();
                         MainActivity.this.recreate();
                     }
                 });

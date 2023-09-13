@@ -1,6 +1,7 @@
 package com.xayup.multipad.configs;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.widget.Button;
@@ -24,34 +25,31 @@ public class GlobalConfigs {
     /* Persistent */
 
     // PlayPads
-    public static class PlayPadsConfigs {
-
-        public static int glowPadRadius = 180;
-        public static int glowChainRadius = 160;
-        public static float glowIntensity = 0.9f;
-        public static float glowChainIntensity = 0.6f;
-        public static boolean mk2,
-                autoPlayCheck,
-                spamSounds,
-                spamLeds,
-                pressLed,
-                layer_decoration,
-                recAutoplay,
-                glow_cfg_visible = false;
-        /* Persistent */
-        public static boolean slideMode;
-        public static boolean hide_buttoms_b;
-        public static boolean glow_enabled;
-        public static boolean reverse_rows = false;
-        public static boolean reverse_columns = false;
-        public static String skin_package = "com.xayup.multipad";
-        public static String current_table = "EyeDrop_default.ct";
-        public static String default_table_name = "EyeDrop_default.ct";
-        public String table_path = DefaultConfigs.MULTIPAD_PATH;
-        /* Widgets */
-        public VerticalSeekBar progressAutoplay;
-        public static Button stopRecAutoplay;
-    }
+    public static int glowPadRadius = 180;
+    public static int glowChainRadius = 160;
+    public static float glowIntensity = 0.9f;
+    public static float glowChainIntensity = 0.6f;
+    public static boolean mk2,
+                        autoPlayCheck,
+                        spamSounds,
+                        spamLeds,
+                        pressLed,
+                        layer_decoration,
+                        recAutoplay,
+                        glow_cfg_visible = false;
+    /* Persistent */
+    public static boolean slideMode;
+    public static boolean hide_buttoms_b;
+    public static boolean glow_enabled;
+    public static boolean reverse_rows = false;
+    public static boolean reverse_columns = false;
+    public static String skin_package = "com.xayup.multipad";
+    public static String current_table = "EyeDrop_default.ct";
+    public static String default_table_name = "EyeDrop_default.ct";
+    public String table_path = DefaultConfigs.MULTIPAD_PATH;
+    /* Widgets */
+    public VerticalSeekBar progressAutoplay;
+    public static Button stopRecAutoplay;
 
     public interface DefaultConfigs {
         public String MULTIPAD_PATH = Environment.getExternalStorageDirectory() + "/MultiPad";
@@ -60,11 +58,16 @@ public class GlobalConfigs {
         public String PROJECTS_PATH = MULTIPAD_PATH + "/Projects";
     }
 
-    public static void loadSharedPreferences(Activity context) {
+    public static void loadSharedPreferences(Context context) {
         app_configs = context.getSharedPreferences("app_configs", 0 /*MODE_PRIVATE*/);
         app_configs.registerOnSharedPreferenceChangeListener(
                 (arg0, arg1) -> arg0.edit().commit());
 
         use_unipad_folder = app_configs.getBoolean("useUnipadFolder", false);
+        skin_package = app_configs.getString("skin", context.getPackageName());
+    }
+
+    public static void saveSkin(String skin_package){
+        app_configs.edit().putString("skin", skin_package).apply();
     }
 }

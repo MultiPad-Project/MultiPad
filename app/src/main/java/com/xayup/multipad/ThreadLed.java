@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.view.View;
+import android.widget.ImageView;
 import com.xayup.multipad.pads.Render.MakePads;
 
 import java.util.ArrayList;
@@ -18,13 +19,15 @@ public class ThreadLed implements Runnable {
     private AtomicBoolean running = new AtomicBoolean(false);
     private Activity context;
     private String cpled;
+    private int chain;
     private final int rpt;
     private final MakePads.Pads mPads;
     private int loop = -1;
 
-    public ThreadLed(final Context context, final String cpled, final int rpt, MakePads.Pads mPads) {
+    public ThreadLed(final Context context, final int chain, int padid, final int rpt, MakePads.Pads mPads) {
         this.context = (Activity) context;
-        this.cpled = cpled;
+        this.cpled = String.valueOf(chain) + padid;
+        this.chain = chain;
         this.rpt = rpt;
         this.mPads = mPads;
     }
@@ -105,22 +108,24 @@ public class ThreadLed implements Runnable {
                     public void run() {
                         //View pad = context.findViewById(padid);
                         byte NOTE = MidiStaticVars.NOTE_ON;
+                        int row = padid/10;
+                        int colum = padid%10;
                         if (color_velocity == 0) NOTE = MidiStaticVars.NOTE_OFF;
                         if (PlayPads.glowEf) {
-                            View glowEF = mPads.getGlows().getGlow(padid/10, padid%10);
+                            ImageView glowEF = mPads.getGlows().getGlow(row, colum);
                             if(color == 0){
                                 glowEF.setAlpha(0f);
+                                glowEF.setColorFilter(null);
                             } else {
-                                Drawable glow = glowEF.getBackground();
-                                glow.setTint(color);
                                 if(MC){
                                     glowEF.setAlpha(PlayPads.glowChainIntensity/100f);
                                 } else {
                                     glowEF.setAlpha(PlayPads.glowPadIntensity/100f);
                                 }
+                                glowEF.setColorFilter(color);
                             }
                         }
-                        context.findViewById(padid).findViewById(MakePads.PadInfo.PadLayerType.LED).setBackgroundColor(color);
+                        mPads.getPadView(row, colum).findViewById(MakePads.PadInfo.PadLayerType.LED).setBackgroundColor(color);
                         if(MidiStaticVars.midiMessage != null){
                             MidiStaticVars.midiMessage.send((MidiStaticVars.midiOutputReceiver == null) ? MidiStaticVars.MIDI_INPUT : MidiStaticVars.MIDI_RECEIVER, padid, 1, NOTE, color_velocity);
                         }
@@ -194,6 +199,7 @@ public class ThreadLed implements Runnable {
                                         Integer.parseInt(line.substring(substring_index + 1));
                                 corcode =
                                         VariaveisStaticas.colorInt(
+                                                chain,
                                                 color_velocity,
                                                 PlayPads.custom_color_table,
                                                 PlayPads.oldColors);

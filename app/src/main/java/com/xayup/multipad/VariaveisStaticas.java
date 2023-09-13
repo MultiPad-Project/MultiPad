@@ -2,7 +2,7 @@ package com.xayup.multipad;
 
 import android.os.Environment;
 import com.google.common.primitives.Ints;
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +74,24 @@ public class VariaveisStaticas {
     }
 			
 	public static Map<Integer, Integer> customColorInt = new HashMap<Integer, Integer>();
+
+	public static int[] defaultColorMap;
+
+	public static int[][] customColorMap;
+	public static final int color_map_length = 128;
+
+	public static int colorInt(int chain, int color, boolean CUSTOM, boolean UNIPAD_COLOR) {
+		if (CUSTOM) {
+			chain--;
+			return (customColorMap[chain] == null) ? defaultColorMap[color] : customColorMap[chain][color];
+		} else {
+			if (UNIPAD_COLOR) {
+				return colorInt[color];
+			} else {
+				return newColorInt[color];
+			}
+		}
+	}
 
 	public static int colorInt(int color, boolean CUSTOM, boolean UNIPAD_COLOR) {
 		if (CUSTOM) {

@@ -13,7 +13,12 @@ import com.xayup.multipad.pads.Render.MakePads;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class AutoPlayFunc {
+public abstract class AutoPlayFunc {
+
+	public static int ICON_ID_PREV = 3004;
+	public static int ICON_ID_STATE = 3005;
+	public static int ICON_ID_NEXT = 3006;
+
     private Activity context;
 	private AtomicBoolean running;
 	private boolean touch;
@@ -33,13 +38,15 @@ public class AutoPlayFunc {
 	private int waitViewId;
 	private int waitRequest;
     private boolean to_exit;
+	
+	public abstract void onStopAutoPlay();
+	
     AutoPlayFunc(Activity context){
         this.context = context;
 		running = new AtomicBoolean(false);
 		paused = new AtomicBoolean(false);
 		touch = false;
 		lineInt = 0;
-		autoplaySize = PlayPads.autoPlay.size();
 		time = 0;
 		padWaiting = 0;
 		chain = "19";
@@ -77,6 +84,7 @@ public class AutoPlayFunc {
     protected void exit(){
         running.set(false);
         to_exit = true;
+		clear();
     }
 	protected void touch(int chpadId){
 		if(chpadId == padWaiting || chpadId == 0){
@@ -132,19 +140,19 @@ public class AutoPlayFunc {
 				View touchInView = context.findViewById(ViewId);
 				switch(request){
 					case REQUEST_CHAIN:
-						((ImageView)touchInView.findViewById(R.id.btn_)).setAlpha(PlayPads.watermark);
-						((ImageView)touchInView.findViewById(R.id.btn_)).setImageDrawable(SkinTheme.led);
+						((ImageView)touchInView.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setAlpha(PlayPads.watermark);
+						((ImageView)touchInView.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.led);
 						break;
 					case REQUEST_BTN:
-						((ImageView)touchInView.findViewById(R.id.btn_)).setAlpha(alpha);
-						((ImageView)touchInView.findViewById(R.id.btn_)).setImageDrawable(SkinTheme.btn_);
+						((ImageView)touchInView.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setAlpha(alpha);
+						((ImageView)touchInView.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.btn_);
 				        break;
 					default:
-						((ImageView)touchInView.findViewById(R.id.btn_)).setAlpha(1.0f);
+						((ImageView)touchInView.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setAlpha(1.0f);
 						if(SkinTheme.chain__ != null && touchInView.getTag() instanceof MakePads.ChainInfo) {
-							((ImageView) touchInView.findViewById(R.id.btn_)).setImageDrawable(SkinTheme.chain__);
+							((ImageView) touchInView.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.chain__);
 						} else {
-							((ImageView) touchInView.findViewById(R.id.btn_)).setImageDrawable(SkinTheme.practice);
+							((ImageView) touchInView.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.practice);
 						}
 						break;
 				}
@@ -184,8 +192,10 @@ public class AutoPlayFunc {
             XayUpFunctions.touchAndRelease(context, ViewId, TOUCH);
 		}
 	}
-    public void play(){
-    final Thread thread =
+    public boolean play(){
+	if(PlayPads.autoPlay == null) return false;
+	autoplaySize = PlayPads.autoPlay.size();
+    Thread thread =
         new Thread(
             new Runnable() {
               @Override
@@ -282,29 +292,15 @@ public class AutoPlayFunc {
                         */ 
                         PlayPads.autoPlay = null;
                     }
-                context.runOnUiThread(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                                /*
-                                * Remove as visualizaces de controle do autoPlay
-                                */
-                        stop();        
-                        ((ImageView) context.findViewById(3).findViewById(R.id.btn_))
-                            .setAlpha(0.0f);
-                        ((RelativeLayout) context.findViewById(4))
-                            .removeView(context.findViewById(3004));
-                        ((RelativeLayout) context.findViewById(5))
-                            .removeView(context.findViewById(3005));
-                        ((RelativeLayout) context.findViewById(6))
-                            .removeView(context.findViewById(3006));
-                        PlayPads.autoPlayCheck = false;
-                        padWaiting = -1;
-                        ((SeekBar) PlayPads.progressAutoplay).setVisibility(View.GONE);
-                      }
-                    });
+                context.runOnUiThread(() -> onStopAutoPlay());
               }
             });
         thread.start();
+		return true;
     }
+	
+	public void clear(){
+		if(PlayPads.autoPlay != null) PlayPads.autoPlay.clear();
+		PlayPads.autoPlay = null;
+	}
 }

@@ -13,7 +13,7 @@ import com.xayup.multipad.pads.Render.MakePads;
 
 public class ConfigurePads {
     private final Context context;
-    private Map<Integer, Map<Integer, Integer>> slidePad =
+    private Map<Integer, Map<Integer, Object>> slidePad =
             new HashMap<>();
     private final int SLIDE_PAD_ATUAL = 1;
     private final int SLIDE_LIMIT_X = 2;
@@ -85,39 +85,44 @@ public class ConfigurePads {
                                         RelativeLayout pause = view.getRootView().findViewById(5);
                                         RelativeLayout next = view.getRootView().findViewById(6);
                                         if (PlayPads.autoPlayCheck) {
-                                            prev.removeView(mPads.getGrid().findViewById(3004));
-                                            pause.removeView(mPads.getGrid().findViewById(3005));
-                                            next.removeView(mPads.getGrid().findViewById(3006));
+                                            prev.removeView(mPads.getGrid().findViewById(AutoPlayFunc.ICON_ID_PREV));
+                                            pause.removeView(mPads.getGrid().findViewById(AutoPlayFunc.ICON_ID_STATE));
+                                            next.removeView(mPads.getGrid().findViewById(AutoPlayFunc.ICON_ID_NEXT));
                                             press.setAlpha(0.0f);
                                             PlayPads.autoPlayThread.stop();
                                             PlayPads.autoPlayCheck = false;
                                             PlayPads.progressAutoplay.setVisibility(View.GONE);
                                             //		PlayPads.stopAll = true;
                                         } else {
-                                            PlayPads.progressAutoplay.setAlpha(PlayPads.watermark);
-                                            PlayPads.progressAutoplay.setVisibility(View.VISIBLE);
-                                            PlayPads.progressAutoplay.setProgress(0);
-                                            ImageView prev_img = new ImageView(context);
-                                            prev_img.setId(3004);
-                                            prev_img.setImageDrawable(context.getDrawable(R.drawable.play_prev));
-                                            prev_img.setAlpha(PlayPads.watermark);
-                                            ImageView pause_img = new ImageView(context);
-                                            pause_img.setId(3005);
-                                            pause_img.setImageDrawable(context.getDrawable(R.drawable.play_pause));
-                                            pause_img.setAlpha(PlayPads.watermark);
-                                            ImageView next_img = new ImageView(context);
-                                            next_img.setId(3006);
-                                            next_img.setImageDrawable(context.getDrawable(R.drawable.play_prev));
-                                            next_img.setRotationY(180.0f);
-                                            next_img.setAlpha(PlayPads.watermark);
-                                            prev.addView(prev_img);
-                                            pause.addView(pause_img);
-                                            next.addView(next_img);
-                                            press.setAlpha(PlayPads.watermark);
-                                            PlayPads.autoPlayCheck = true;
-                                            PlayPads.stopAll = false;
-                                            //	System.out.println("btn play");
-                                            PlayPads.autoPlayThread.play();
+                                            if(PlayPads.autoPlay != null) {
+                                                PlayPads.progressAutoplay.setAlpha(PlayPads.watermark);
+                                                PlayPads.progressAutoplay.setVisibility(View.VISIBLE);
+                                                PlayPads.progressAutoplay.setProgress(0);
+                                                ImageView prev_img = new ImageView(context);
+                                                prev_img.setId(AutoPlayFunc.ICON_ID_PREV);
+                                                prev_img.setImageDrawable(context.getDrawable(R.drawable.play_prev));
+                                                prev_img.setAlpha(PlayPads.watermark);
+                                                prev_img.setRotation(90f);
+                                                ImageView pause_img = new ImageView(context);
+                                                pause_img.setId(AutoPlayFunc.ICON_ID_STATE);
+                                                pause_img.setImageDrawable(context.getDrawable(R.drawable.play_pause));
+                                                pause_img.setAlpha(PlayPads.watermark);
+                                                pause_img.setRotation(90f);
+                                                ImageView next_img = new ImageView(context);
+                                                next_img.setId(AutoPlayFunc.ICON_ID_NEXT);
+                                                next_img.setImageDrawable(context.getDrawable(R.drawable.play_prev));
+                                                next_img.setRotation(90f);
+                                                next_img.setScaleX(-1f);
+                                                next_img.setAlpha(PlayPads.watermark);
+                                                prev.addView(prev_img);
+                                                pause.addView(pause_img);
+                                                next.addView(next_img);
+                                                press.setAlpha(PlayPads.watermark);
+                                                PlayPads.autoPlayCheck = true;
+                                                PlayPads.stopAll = false;
+                                                //	System.out.println("btn play");
+                                                PlayPads.autoPlayThread.play();
+                                            }
                                         }
                                         return true;
                                     } else {
@@ -268,7 +273,7 @@ public class ConfigurePads {
                                                 Integer.parseInt(String.valueOf(PlayPads.currentChainId) + chainInfo.getId()));
                                     }
                                     if (PlayPads.currentChainId != PlayPads.otherChain) {
-                                        PlayPads.currentChainMC = String.valueOf(chainInfo.getMc());
+                                        PlayPads.currentChainMC = chainInfo.getMc();
 
                                         ImageView img =
                                                 mPads.getGrid().findViewById(PlayPads.otherChain)
@@ -285,7 +290,7 @@ public class ConfigurePads {
                                         if(PlayPads.mSoundLoader != null) PlayPads.mSoundLoader.resetSequencer();
 
                                         if (PlayPads.recAutoplay) {
-                                            AutoplayRecFunc.addChain(PlayPads.currentChainMC);
+                                            AutoplayRecFunc.addChain(String.valueOf(PlayPads.currentChainMC));
                                         }
                                     }
                                     return true;
@@ -318,18 +323,18 @@ public class ConfigurePads {
                                     }
 
                                     if (PlayPads.slideMode && motionEvent.getDeviceId() != 100) {
-                                        slidePad.put(padInfo.getId(), new HashMap<Integer, Integer>());
+                                        slidePad.put(padInfo.getId(), new HashMap<>());
                                         slidePad.get(padInfo.getId()).put(SLIDE_LIMIT_X, 0);
                                         slidePad.get(padInfo.getId()).put(SLIDE_LIMIT_Y, 0);
-                                        slidePad.get(padInfo.getId()).put(SLIDE_PAD_ATUAL, padInfo.getId());
+                                        slidePad.get(padInfo.getId()).put(SLIDE_PAD_ATUAL, new int[]{padInfo.getRow(), padInfo.getColum()});
                                     }
                                     playSound(padInfo);
                                     return true;
                                 case MotionEvent.ACTION_UP:
-                                    if (PlayPads.slideMode && motionEvent.getDeviceId() != 100)
-                                        view =
-                                                mPads.getGrid().findViewById(
-                                                        slidePad.get(padInfo.getId()).get(SLIDE_PAD_ATUAL));
+                                    if (PlayPads.slideMode && motionEvent.getDeviceId() != 100) {
+                                        int[] current_pad = (int[]) slidePad.get(padInfo.getId()).get(SLIDE_PAD_ATUAL);
+                                        view = mPads.getPadView(current_pad[0], current_pad[1]);
+                                    }
                                     if(view != null) {
                                         if (PlayPads.pressLed) {
                                             PlayPads.padPressAlpha = 0.0f;
@@ -337,7 +342,7 @@ public class ConfigurePads {
                                         }
 
                                         if ((PlayPads.autoPlayThread == null)
-                                                || !((String) PlayPads.currentChainMC + "9" + padInfo.getId())
+                                                || !(PlayPads.currentChainMC + "9" + padInfo.getId())
                                                 .equals("" + PlayPads.autoPlayThread.padWaiting))
                                             view.findViewById(MakePads.PadInfo.PadLayerType.BTN_).setAlpha(0.0f);
                                         // Stop led 0 looper
@@ -355,42 +360,49 @@ public class ConfigurePads {
                                         try {
                                             float x = motionEvent.getX();
                                             float y = motionEvent.getY();
-                                            int slidelimit_x = slidePad.get(padInfo.getId()).get(SLIDE_LIMIT_X);
-                                            int slidelimit_y = slidePad.get(padInfo.getId()).get(SLIDE_LIMIT_Y);
-                                            int padAtual = slidePad.get(padInfo.getId()).get(SLIDE_PAD_ATUAL);
-                                            int oldPad = padAtual;
-                                            int padWH = PlayPads.padWH;
-                                            if ((x > slidelimit_x + padWH || x < slidelimit_x)
-                                                    || (y > slidelimit_y + padWH || y < slidelimit_y)) {
-                                                mPads.getGrid().findViewById(oldPad).dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0, 1, 0, 1, 1, 100, 0));
-                                                if (x > slidelimit_x + padWH) {
-                                                    padAtual += 1;
-                                                    slidelimit_x += padWH;
+                                            int slidelimit_x = (int) slidePad.get(padInfo.getId()).get(SLIDE_LIMIT_X);
+                                            int slidelimit_y = (int) slidePad.get(padInfo.getId()).get(SLIDE_LIMIT_Y);
+                                            int[] current_pad = (int[]) slidePad.get(padInfo.getId()).get(SLIDE_PAD_ATUAL);
+                                            int[] old_pad = new int[]{current_pad[0], current_pad[1]};
+                                            int pad_height = view.getMeasuredHeight();
+                                            int pad_width = view.getMeasuredWidth();
+                                            if ((x > slidelimit_x + pad_width || x < slidelimit_x)
+                                                    || (y > slidelimit_y + pad_height || y < slidelimit_y)) {
+
+                                                View old_view = mPads.getPadView(old_pad[0], old_pad[1]);
+
+                                                if (old_view != null)
+                                                    old_view.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0, 1, 0, 1, 1, 100, 0));
+                                                if (x > slidelimit_x + pad_width) {
+                                                    current_pad[1] += 1;
+                                                    slidelimit_x += pad_width;
                                                 } else if (x < slidelimit_x) {
-                                                    padAtual -= 1;
-                                                    slidelimit_x -= padWH;
+                                                    current_pad[1] -= 1;
+                                                    slidelimit_x -= pad_width;
                                                 }
-                                                if (y > slidelimit_y + padWH) {
-                                                    padAtual += 10;
-                                                    slidelimit_y += padWH;
+                                                if (y > slidelimit_y + pad_height) {
+                                                    current_pad[0] += 1;
+                                                    slidelimit_y += pad_height;
                                                 } else if (y < slidelimit_y) {
-                                                    padAtual -= 10;
-                                                    slidelimit_y -= padWH;
+                                                    current_pad[0] -= 1;
+                                                    slidelimit_y -= pad_height;
                                                 }
 
-                                                slidePad.get(padInfo.getId()).put(SLIDE_PAD_ATUAL, padAtual);
+                                                current_pad[0] *= view.getScaleX();
+                                                current_pad[1] *= view.getScaleY();
+
+                                                slidePad.get(padInfo.getId()).put(SLIDE_PAD_ATUAL, current_pad);
                                                 slidePad.get(padInfo.getId()).put(SLIDE_LIMIT_X, slidelimit_x);
                                                 slidePad.get(padInfo.getId()).put(SLIDE_LIMIT_Y, slidelimit_y);
 
-                                                int w = mPads.getGrid().getLayoutParams().width;
+                                                int w = mPads.getRoot().getMeasuredWidth();
                                                 int ww = (MainActivity.width / 2) - (w / 2);
                                                 if (!(motionEvent.getRawX() < ww
                                                         || motionEvent.getRawX() > ww + w)
-                                                        && !(padAtual == 90
-                                                        || padAtual == 99
-                                                        || padAtual == 9
-                                                        || padAtual == 0)) {
-                                                    view = mPads.getGrid().findViewById(padAtual);
+                                                        && !((current_pad[0] == 0 || current_pad[0] == 9)
+                                                        && (current_pad[1] == 9 || current_pad[1] == 0))) {
+                                                    Log.e("Try touch pad on slide mode", Arrays.toString(current_pad));
+                                                    view = mPads.getPadView(current_pad[0], current_pad[1]);
                                                     view.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0, 1, 0, 1, 1, 100, 0));
                                                 }
                                             }
@@ -447,7 +459,7 @@ public class ConfigurePads {
 
     private void playSound(MakePads.PadInfo padInfo) {
         int viewId = padInfo.getId();
-        String pad = PlayPads.currentChainMC + padInfo.getId();
+        String pad = String.valueOf(PlayPads.currentChainMC) + padInfo.getId();
         String toChain = null;
        
         // Show leds
@@ -459,7 +471,7 @@ public class ConfigurePads {
                 PlayPads.ledrpt.put(String.valueOf(padInfo.getId()), 0);
             }
             PlayPads.ledFunc.readKeyLed(
-                    PlayPads.ledrpt.get(String.valueOf(padInfo.getId())), pad, context, padInfo.getPads());
+                    PlayPads.ledrpt.get(String.valueOf(padInfo.getId())), PlayPads.currentChainMC, padInfo.getId(), context, padInfo.getPads());
             PlayPads.ledrpt.put(String.valueOf(padInfo.getId()), PlayPads.ledrpt.get(String.valueOf(padInfo.getId())) + 1);
         }
 

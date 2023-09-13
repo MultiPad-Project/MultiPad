@@ -15,6 +15,7 @@ import android.media.*;
 import android.net.*;
 import android.os.*;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
@@ -35,6 +36,7 @@ import android.widget.VerticalSeekBar;
 import android.widget.ViewFlipper;
 
 import com.google.android.exoplayer2.ExoPlayer;
+import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.pads.Render.MakePads;
 
 import java.io.*;
@@ -45,10 +47,10 @@ public class PlayPads extends Activity {
 
   public Context context;
 
-  public static String currentChainMC = "1";
+  public static int currentChainMC = 1;
   public static String getCurrentPath;
 
-
+  public static Map<String, Object> project;
   public static Map<String, MediaPlayer> padPlayer;
   public static Map<Integer, Integer> soundrpt;
   public static Map<String, Integer> ledrpt;
@@ -61,6 +63,7 @@ public class PlayPads extends Activity {
 
   public static int glowPadRadius, glowChainRadius;
 
+  public static int project_chains;
   public static int otherChain;
   public static int oldPad;
   public static int currentChainId;
@@ -129,7 +132,10 @@ public class PlayPads extends Activity {
     XayUpFunctions.hideSystemBars(getWindow());
     varInstance();
     SkinTheme.varInstance();
-    getCurrentPath = getIntent().getExtras().getString("currentPath");
+    project = (Map<String, Object>) getIntent().getSerializableExtra("project");
+    getCurrentPath = (String) project.get(ProjectListAdapter.KEY_PATH);
+    project_chains = (int) project.get(ProjectListAdapter.KEY_CHAINS);
+
     new GetFilesTask(this){
       @Override
       protected void onPostExecute() {
@@ -291,6 +297,29 @@ public class PlayPads extends Activity {
             stopRecAutoplay.setVisibility(View.GONE);
           }
         });
+    autoPlayThread = new AutoPlayFunc((Activity) context) {
+      @Override
+      public void onStopAutoPlay() {
+        /*
+         * Remove as visualizaces de controle do autoPlay
+         */
+        stop();
+        mPads.getPadView(0, 3).findViewById(MakePads.PadInfo.PadLayerType.BTN_).setAlpha(0f);
+        ViewGroup prev = (ViewGroup) mPads.getPadView(0, 4);
+        ViewGroup state = (ViewGroup) mPads.getPadView(0, 5);
+        ViewGroup next = (ViewGroup) mPads.getPadView(0, 6);
+        prev.removeView(prev.findViewById(AutoPlayFunc.ICON_ID_PREV));
+        state.removeView(state.findViewById(AutoPlayFunc.ICON_ID_STATE));
+        next.removeView(next.findViewById(AutoPlayFunc.ICON_ID_NEXT));
+        PlayPads.autoPlayCheck = false;
+        padWaiting = -1;
+        PlayPads.progressAutoplay.setVisibility(View.GONE);
+      }
+    };
+
+    //Initialize color pallet
+    VariaveisStaticas.customColorMap = new int[PlayPads.project_chains][];
+
     //Show dialog
     XayUpFunctions.showDiagInFullscreen(alertInvalidFiles.create());
   }
@@ -326,14 +355,16 @@ public class PlayPads extends Activity {
     mPads.forAllChildInstance(-1, (pad, padInfo) -> {
       Log.v("updateSkin", padInfo.getRow() + " " + padInfo.getColum());
       if (padInfo.getType() == MakePads.PadType.CHAIN) {
+        ImageView btn_ = ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_));
           if (SkinTheme.chain != null) {
             ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(SkinTheme.chain);
-            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.led);
+            btn_.setImageDrawable(SkinTheme.led);
+            btn_.setBackground(null);
             ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(null);
             pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.INVISIBLE);
           } else {
             ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(SkinTheme.btn);
-            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.btn_);
+            btn_.setImageDrawable(SkinTheme.btn_);
             ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(SkinTheme.chainled);
             pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.VISIBLE);
           }
@@ -497,8 +528,11 @@ public class PlayPads extends Activity {
     SharedPreferences.Editor save_cfg = getSharedPreferences("app_configs", MODE_PRIVATE).edit();
     //List skin
     listSkins.setOnItemClickListener((adapter, view, pos, id)-> {
-      SkinTheme.loadSkin(context, ((PackageInfo) adapter.getItemAtPosition(pos)).packageName);
-      updateSkin();
+      String skin = ((PackageInfo) adapter.getItemAtPosition(pos)).packageName;
+      if(SkinTheme.loadSkin(context, skin)) {
+        updateSkin();
+        GlobalConfigs.saveSkin(skin);
+      }
     });
 
     // Ir para a pagina de configuraçoes
@@ -592,9 +626,32 @@ public class PlayPads extends Activity {
                 new AdapterView.OnItemClickListener() {
                   @Override
                   public void onItemClick(AdapterView<?> adapter, View view, int pos, long id) {
-                    custom_color_table = true;
-                    Readers.getColorTableForCTFile(
-                        new File(VariaveisStaticas.COLOR_TABLE_PATH), pos, !oldColors);
+                    AlertDialog.Builder select_chain_dialog = new AlertDialog.Builder(context);
+                    View select_chain_view = LayoutInflater.from(context).inflate(R.layout.dialog_with_edittext, null);
+                    select_chain_dialog.setView(select_chain_view);
+                    TextView text = select_chain_view.findViewById(R.id.dwe_title);
+                    text.setText(context.getString(R.string.select_chain_color_table));
+                    text.setVisibility(View.VISIBLE);
+                    EditText edit = select_chain_view.findViewById(R.id.dwe_editText);
+                    edit.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    edit.setVisibility(View.VISIBLE);
+                    Button button = select_chain_view.findViewById(R.id.dwe_btn1);
+                    button.setVisibility(View.VISIBLE);
+                    button.setText(context.getString(android.R.string.ok));
+                    button.setOnClickListener((button_view) -> {
+                      int chain = Integer.parseInt(edit.getText().toString());
+                      if(chain >= 0 && chain <= project_chains){
+                        Readers.getColorTableForCTFile((File) adapter.getItemAtPosition(pos), pos, !oldColors, (chain == 0) ? chain : chain-1);
+                        if(chain == 0){
+                          VariaveisStaticas.defaultColorMap = VariaveisStaticas.customColorMap[chain];
+                          Arrays.fill(VariaveisStaticas.customColorMap, null);
+                        }
+                        custom_color_table = true;
+                      } else {
+                        Toast.makeText(context, context.getString(R.string.invalid_chain_code), Toast.LENGTH_SHORT).show();
+                      }
+                    });
+                    select_chain_dialog.create().show();
                   }
                 });
             default_color_table.setOnClickListener(
