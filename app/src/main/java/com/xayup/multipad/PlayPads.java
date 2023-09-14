@@ -258,11 +258,6 @@ public class PlayPads extends Activity {
 
     new ConfigurePads(context).configure(mPads);
     updateSkin();
-    //Render Grid
-    RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(MainActivity.height, MainActivity.height);
-    param.addRule(RelativeLayout.CENTER_IN_PARENT);
-    ((RelativeLayout) ((Activity) context).findViewById(R.id.layoutbackground)).addView(
-            mPads.getRoot(), param);
     //Render Glows
     mPads.getGlows().changeCfg(glowPadRadius, glowPadIntensity, false);
     mPads.getGlows().changeCfg(glowChainRadius, glowChainIntensity, true);
@@ -322,6 +317,12 @@ public class PlayPads extends Activity {
 
     //Show dialog
     XayUpFunctions.showDiagInFullscreen(alertInvalidFiles.create());
+
+    //Render Grid
+    MainActivity.height = super.findViewById(R.id.layoutbackground).getMeasuredHeight();
+    RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(MainActivity.height, MainActivity.height);
+    param.addRule(RelativeLayout.CENTER_IN_PARENT);
+    ((RelativeLayout) ((Activity) context).findViewById(R.id.layoutbackground)).addView(mPads.getRoot(), param);
   }
 
   /**
@@ -345,6 +346,19 @@ public class PlayPads extends Activity {
           }
         }
       }
+    }
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    View main_layout = super.findViewById(R.id.layoutbackground);
+    MainActivity.height = main_layout.getMeasuredHeight();
+    MainActivity.width = main_layout.getMeasuredWidth();
+    if(mPads != null){
+      mPads.getRoot().getLayoutParams().height = MainActivity.height;
+      mPads.getRoot().getLayoutParams().width = MainActivity.height;
+      main_layout.requestLayout();
     }
   }
 

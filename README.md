@@ -20,10 +20,4 @@ In addition to the basic functions of Unipad, MultiPad has:
 
 ## Social
 - Discord: https://discord.gg/Tka4SenAHN
-
-## Change log:
-### 2.2.1
-- SoundLoader fixes
-
-### 2.2
-- ...
+- YouTube: https://youtube.com/@XayUp
