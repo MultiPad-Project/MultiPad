@@ -59,7 +59,7 @@ public class PlayPads extends Activity {
   public static Map<String, ThreadLed> threadMap;
   public static Map<String, ExoPlayer> exoplayers;
   public static Map<String, Integer> chainClickable;
-  public static Map<String, View> grids;
+  public static Map<String, MakePads.Pads> grids;
 
   public static int glowPadRadius, glowChainRadius;
 
@@ -127,6 +127,7 @@ public class PlayPads extends Activity {
     // TODO: Implement this method
     super.onCreate(savedInstanceState);
     setContentView(R.layout.playpads);
+
     this.context = this;
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     XayUpFunctions.hideSystemBars(getWindow());
@@ -247,14 +248,11 @@ public class PlayPads extends Activity {
     if (ledFiles != null) { PlayPads.ledFunc = new KeyLedColors(); }
 
     makepad = new com.xayup.multipad.pads.Render.MakePads(context);
-    mPads = makepad.make((byte) 10, (byte) 10, new MakePads.OnPadCreated() {
-      @Override
-      public void padCreated(RelativeLayout pad) {
+    (grids = new HashMap<>()).put("grid_1", mPads = makepad.make((byte) 10, (byte) 10, (RelativeLayout pad) -> {
         View layer = pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_);
         layer.setAlpha(0f);
         if(pad.getTag() instanceof MakePads.ChainInfo) layer.setBackgroundColor(Color.WHITE);
-      }
-    });
+      }));
 
     new ConfigurePads(context).configure(mPads);
     updateSkin();
@@ -315,11 +313,15 @@ public class PlayPads extends Activity {
     //Initialize color pallet
     VariaveisStaticas.customColorMap = new int[PlayPads.project_chains][];
 
+    //Update size variables;
+    View main_layout = super.findViewById(R.id.layoutbackground);
+    MainActivity.height = main_layout.getMeasuredHeight();
+    MainActivity.width = main_layout.getMeasuredWidth();
+
     //Show dialog
     XayUpFunctions.showDiagInFullscreen(alertInvalidFiles.create());
 
     //Render Grid
-    MainActivity.height = super.findViewById(R.id.layoutbackground).getMeasuredHeight();
     RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(MainActivity.height, MainActivity.height);
     param.addRule(RelativeLayout.CENTER_IN_PARENT);
     ((RelativeLayout) ((Activity) context).findViewById(R.id.layoutbackground)).addView(mPads.getRoot(), param);
