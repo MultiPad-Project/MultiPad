@@ -13,9 +13,11 @@ import android.media.midi.MidiManager;
 import android.media.midi.MidiOutputPort;
 import android.media.midi.MidiReceiver;
 import android.os.*;
+import android.util.Log;
 import android.widget.*;
 import android.view.*;
 import android.content.*;
+import com.xayup.midi.controllers.LaunchpadMK2;
 import com.xayup.multipad.MidiStaticVars;
 import com.xayup.multipad.PlayPads;
 import com.xayup.multipad.VariaveisStaticas;
@@ -96,20 +98,7 @@ public class UsbDeviceActivity extends Activity {
     }
 
     public Drawable getMidiImagem(Context context, String product) {
-        switch (product) {
-            case LP_X:
-                return context.getDrawable(R.drawable.lp_x);
-            case LP_PRO:
-                return context.getDrawable(R.drawable.lp_pro);
-            case LP_OPEN:
-                return context.getDrawable(R.drawable.lp_pro);
-            case LP_PRO_MK3:
-                return context.getDrawable(R.drawable.lp_pro_mk3);
-            case LP_MK2:
-                return context.getDrawable(R.drawable.lp_mk2);
-            default:
-                return context.getDrawable(R.drawable.desconhecido);
-        }
+        return null;
     }
 
     public void openMidiDevice(Context context, final MidiDeviceInfo midi) {
@@ -295,31 +284,26 @@ public class UsbDeviceActivity extends Activity {
         }
 
         @Override
-        public void onSend(byte[] data, int arg1, int arg2, long arg3) throws IOException {
-            final int CHANNEL = data[1] & 0x0F;
-            final int NOTE = data[2] & 0xFF;
-            final int VELOCITY = data[3] & 0xFF;
-            if (NOTE >= 0 && NOTE < 128 && VELOCITY >= 0 && VELOCITY < 128) {
-                // received.add(
-                //        new int[] {CHANNEL, NOTE, VELOCITY,
-                // PlayPads.grids.get("grid_1").getId()});
-                // if (receiver_thread.isStoped()) receiver_thread.start();
+        public void onSend(byte[] data, int offset, int count, long arg3) throws IOException {
+            final int STATUS = data[offset] & 0xFF;
+            final int CHANNEL = STATUS & 0x0F;
+            final int MESSAGETYPE = (STATUS & 0xF0) >> 4;
+            final int NOTE = data[offset + 1] & 0xFF;
+            final int VELOCITY = data[offset + 2] & 0xFF;
+            if (NOTE < 128 && CHANNEL > 0) {
                 runOnUiThread(
                         () -> {
+                            Log.v("MIDI Message", "Status: " + STATUS + " Channel: " + CHANNEL + " Message Type: " + MESSAGETYPE + " Note: " + NOTE + " " + Arrays.toString(LaunchpadMK2.configs.noteToXY.notToXY(NOTE)) + " Velocity: " + VELOCITY);
                             try {
-                                final ImageView led =
-                                        PlayPads.grids
-                                                .get("grid_1")
-                                                .findViewById(rowProgramMode(NOTE, true))
-                                                .findViewById(R.id.led);
-                                final int color =
-                                        VariaveisStaticas.colorInt(
-                                                PlayPads.currentChainMC,
-                                                VELOCITY,
-                                                PlayPads.custom_color_table,
-                                                PlayPads.oldColors);
-                                led.setBackgroundColor(color);
+                                int[] xy = LaunchpadMK2.configs.noteToXY.notToXY(NOTE);
+                                if(xy[0] > -1 && xy[1] > -1){
+                                    final View pad =
+                                            PlayPads.grids
+                                                    .get("grid_1").getPadView(xy[0], xy[1]);
+                                    pad.dispatchTouchEvent(MotionEvent.obtain(0, 0, (MESSAGETYPE == 9 || VELOCITY > 0) ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_UP, 0, 0, 0));
+                                }
                             } catch (NullPointerException n) {
+                                n.printStackTrace(System.out);
                                 Toast.makeText(context, "Controller mode: " + CHANNEL +" "+rowProgramMode(NOTE, true)+" "+VELOCITY, 0)
                                         .show();
                             }
@@ -350,15 +334,6 @@ public class UsbDeviceActivity extends Activity {
                                 : MotionEvent.ACTION_DOWN;
                 runOnUiThread(
                         () -> {
-                            try {
-                                PlayPads.grids
-                                        .get("grid_1")
-                                        .findViewById(rowProgramMode(button, true))
-                                        .dispatchTouchEvent(
-                                                MotionEvent.obtain(0, 0, ACTION, 0, 0, 0));
-                            } catch (NullPointerException n) {
-                                Toast.makeText(context, n.toString(), 0).show();
-                            }
                         });
                 /*
                 if (MidiStaticVars.device != null) {

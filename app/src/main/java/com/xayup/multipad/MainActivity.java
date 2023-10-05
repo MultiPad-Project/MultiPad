@@ -1,10 +1,12 @@
 package com.xayup.multipad;
 
+import android.Manifest;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.net.Uri;
 import android.os.*;
@@ -14,6 +16,8 @@ import android.view.*;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.xayup.filesexplorer.FileExplorerDialog;
+import com.xayup.midi.manager.DevicesManager;
+import com.xayup.midi.types.Devices;
 import com.xayup.multipad.configs.GlobalConfigs;
 
 import java.io.*;
@@ -121,11 +125,10 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case ANDROID_11_REQUEST_PERMISSION_AMF:
-                if (Environment.isExternalStorageManager()) {
-                    makeActivity(true);
-                } else {
-                    makeActivity(false);
-                }
+                makeActivity(
+                        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) ? Environment.isExternalStorageManager()
+                                : super.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                );
                 break;
         }
     }
@@ -153,6 +156,20 @@ public class MainActivity extends Activity {
         return false;
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(context != null) {
+            View root = ((Activity) context).findViewById(R.id.ActivityLinearLayout);
+            if (root != null) {
+                GlobalConfigs.display_width = root.getMeasuredWidth();
+                GlobalConfigs.display_height = root.getMeasuredHeight();
+                height = GlobalConfigs.display_height;
+                width = GlobalConfigs.display_width;
+            }
+        }
+    }
+
     public void makeActivity(boolean granted) {
         XayUpFunctions.hideSystemBars(getWindow());
         SkinTheme.cachedSkinSet(context);
@@ -167,56 +184,58 @@ public class MainActivity extends Activity {
                 height = GlobalConfigs.display_height;
                 width = GlobalConfigs.display_width;
                 heightCustom = height;
+
+                if (GlobalConfigs.use_unipad_folder) {
+                    rootFolder = new File(Environment.getExternalStorageDirectory() + "/Unipad");
+                    VariaveisStaticas.use_unipad_folder = true;
+                }
+                if (granted) {
+                    if (!rootFolder.exists()) {
+                        rootFolder.mkdirs();
+                    }
+                }
+
+                button_floating_menu = findViewById(R.id.main_floating_menu_button);
+                button_floating_menu.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View arg0) {
+
+                                setMenuFunctions();
+                            }
+                        });
+                Readers getInfo = new Readers();
+                ProjectListAdapter arrayCustom =
+                        new ProjectListAdapter(MainActivity.this, getInfo.readInfo(context, rootFolder, granted));
+                listaprojetos = findViewById(R.id.listViewProjects);
+                listaprojetos.setAdapter(arrayCustom);
+
+                listaprojetos.setOnItemClickListener(
+                        new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(
+                                    AdapterView<?> adapterView, View view, int pos, long Long) {
+                                View itemStt = view.findViewById(R.id.currentItemState);
+                                switch ((Integer) itemStt.getTag()) {
+                                    case 0:
+                                        Intent playPads = new Intent(getBaseContext(), PlayPads.class);
+                                        playPads.putExtra("project", (Serializable) adapterView.getItemAtPosition(pos));
+                                        startActivity(playPads);
+                                        break;
+                                    case 2:
+                                        checarPermissao();
+                                        break;
+                                }
+                            }
+                        });
+                View splash_screen = findViewById(R.id.splash);
+                splash_screen.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out_splash));
+                splash_screen.setVisibility(View.GONE);
+
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                    MidiStaticVars.devicesManager = new DevicesManager(getApplicationContext());
+                }
                 root.removeCallbacks(this);
-
-        if (GlobalConfigs.use_unipad_folder) {
-            rootFolder = new File(Environment.getExternalStorageDirectory() + "/Unipad");
-            VariaveisStaticas.use_unipad_folder = true;
-        }
-        if (granted) {
-            if (!rootFolder.exists()) {
-                rootFolder.mkdirs();
-            }
-        }
-
-        button_floating_menu = findViewById(R.id.main_floating_menu_button);
-        button_floating_menu.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View arg0) {
-
-                        setMenuFunctions();
-                    }
-                });
-        Readers getInfo = new Readers();
-        ProjectListAdapter arrayCustom =
-                new ProjectListAdapter(MainActivity.this, getInfo.readInfo(context, rootFolder, granted));
-        listaprojetos = findViewById(R.id.listViewProjects);
-        listaprojetos.setAdapter(arrayCustom);
-
-        listaprojetos.setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(
-                            AdapterView<?> adapterView, View view, int pos, long Long) {
-                        View itemStt = view.findViewById(R.id.currentItemState);
-                        switch ((Integer) itemStt.getTag()) {
-                            case 0:
-                                Intent playPads = new Intent(getBaseContext(), PlayPads.class);
-                                playPads.putExtra("project", (Serializable) adapterView.getItemAtPosition(pos));
-                                startActivity(playPads);
-                                break;
-                            case 2:
-                                checarPermissao();
-                                break;
-                        }
-                    }
-                });
-        View splash_screen = findViewById(R.id.splash);
-        splash_screen.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out_splash));
-        splash_screen.setVisibility(View.GONE);
-
-        root.removeCallbacks(this);
             }
         });
     }
@@ -290,57 +309,36 @@ public class MainActivity extends Activity {
                     }
                 });
 
-        list_usb_midi.setOnClickListener(
-                new Button.OnClickListener() {
-                    @Override
-                    public void onClick(View arg0) {
-                        list_usb_midi.setVisibility(View.GONE);
-                        barTitle.setText(getString(R.string.usb_midi));
-                        swit.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
-                        swit.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
-                        swit.setDisplayedChild(USB_MIDI);
-                        ListView list_mids = ((ListView) swit.getChildAt(USB_MIDI));
-                        list_mids.setAdapter(new UsbMidiAdapter(getApplicationContext(), true));
-                        list_mids.setOnItemClickListener(
-                                new AdapterView.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(
-                                            AdapterView<?> adapter, View v, int pos, long id) {
-                                        MidiDeviceInfo usb_midi =
-                                                (MidiDeviceInfo) adapter.getItemAtPosition(pos);
-                                        if (MidiStaticVars.midiDevice == usb_midi) {
-                                            Toast.makeText(
-                                                            context,
-                                                            context.getString(
-                                                                    R.string.midi_aready_connected),
-                                                            0)
-                                                    .show();
-                                            return;
-                                        }
-                                        MidiStaticVars.device =
-                                                (UsbDevice)
-                                                        usb_midi.getProperties()
-                                                                .getParcelable(
-                                                                        MidiDeviceInfo
-                                                                                .PROPERTY_USB_DEVICE);
-                                        if (MidiStaticVars.device != null) {
-                                            MidiStaticVars.midiDevice = usb_midi;
-                                            permissionIntent =
-                                                    PendingIntent.getBroadcast(
-                                                            context,
-                                                            0,
-                                                            new Intent(ACTION_USB_PERMISSION),
-                                                            PendingIntent.FLAG_MUTABLE);
-                                            MidiStaticVars.manager.requestPermission(
-                                                    MidiStaticVars.device, permissionIntent);
-                                        } else {
-                                            new UsbDeviceActivity()
-                                                    .openMidiDevice(context, usb_midi);
-                                        }
-                                    }
-                                });
+        if(MidiStaticVars.devicesManager == null){
+            list_usb_midi.setVisibility(View.GONE);
+        } else {
+            list_usb_midi.setOnClickListener((view) -> {
+                list_usb_midi.setVisibility(View.GONE);
+                barTitle.setText(getString(R.string.usb_midi));
+                swit.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
+                swit.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
+                swit.setDisplayedChild(USB_MIDI);
+                ListView list_midis = ((ListView) swit.getChildAt(USB_MIDI));
+                list_midis.setAdapter(MidiStaticVars.devicesManager.getListAdapter());
+                list_midis.setOnItemClickListener((adapterView, listView, pos, id) -> {
+                    Devices.MidiDevice mDevice = (Devices.MidiDevice) adapterView.getItemAtPosition(pos);
+                    if(MidiStaticVars.midiDeviceController != null && MidiStaticVars.midiDeviceController.midiDevice.name.equals(mDevice.name)){
+                        Toast.makeText(getApplicationContext(), mDevice.name + ": " + getString(R.string.midi_aready_connected), Toast.LENGTH_SHORT).show();
+                        return;
                     }
+                    MidiStaticVars.devicesManager.callWhenMidiDeviceOpened(
+                        new DevicesManager.OpenedDeviceCallback() {
+                            @Override
+                            public void onDeviceOpened(MidiDevice device) {
+                                MidiStaticVars.devicesManager.removeCallWhenMidiDeviceOpened(this);
+                                MidiStaticVars.midiDeviceController = new MidiDeviceController(getApplicationContext(), device, mDevice);
+                            }
+                        }
+                    );
+                    MidiStaticVars.devicesManager.openDevice(mDevice);
                 });
+            });
+        }
 
         import_project.setOnClickListener(
                 new Button.OnClickListener() {

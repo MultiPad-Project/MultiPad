@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import com.xayup.multipad.pads.Render.MakePads;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.*;
@@ -106,11 +107,8 @@ public class ThreadLed implements Runnable {
                 new Runnable() {
                     @Override
                     public void run() {
-                        //View pad = context.findViewById(padid);
-                        byte NOTE = MidiStaticVars.NOTE_ON;
                         int row = padid/10;
                         int colum = padid%10;
-                        if (color_velocity == 0) NOTE = MidiStaticVars.NOTE_OFF;
                         if (PlayPads.glowEf) {
                             ImageView glowEF = mPads.getGlows().getGlow(row, colum);
                             if(color == 0){
@@ -126,8 +124,10 @@ public class ThreadLed implements Runnable {
                             }
                         }
                         mPads.getPadView(row, colum).findViewById(MakePads.PadInfo.PadLayerType.LED).setBackgroundColor(color);
-                        if(MidiStaticVars.midiMessage != null){
-                            MidiStaticVars.midiMessage.send((MidiStaticVars.midiOutputReceiver == null) ? MidiStaticVars.MIDI_INPUT : MidiStaticVars.MIDI_RECEIVER, padid, 1, NOTE, color_velocity);
+                        if(MidiStaticVars.midiDeviceController != null){
+                            try { MidiStaticVars.midiDeviceController.led(row, colum, color_velocity); }
+                            catch (IOException io){ io.printStackTrace(System.out); }
+                            //MidiStaticVars.midiMessage.send((MidiStaticVars.midiOutputReceiver == null) ? MidiStaticVars.MIDI_INPUT : MidiStaticVars.MIDI_RECEIVER, padid, 1, NOTE, color_velocity);
                         }
                     }
                 });

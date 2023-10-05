@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="midi_device_list_item_product" type="id" />
+    <item name="midi_device_list_item_thumb" type="id" />
+    <item name="midi_device_list_item_manufacturer" type="id" />
+</resources>

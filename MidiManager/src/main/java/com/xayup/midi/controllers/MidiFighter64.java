@@ -16,14 +16,17 @@ public class MidiFighter64 {
         paletteChannel = Map.of("classic", 1);
 
         keymap = new Object[][]{
-        {64, 65, 66, 67, 96, 97, 98, 99},
-        {60, 61, 62, 63, 92, 93, 94, 95},
-        {56, 57, 58, 59, 88, 89, 90, 91},
-        {52, 53, 54, 55, 84, 85, 86, 87},
-        {48, 49, 50, 51, 80, 81, 82, 83},
-        {44, 45, 46, 47, 76, 77, 78, 79},
-        {40, 41, 42, 43, 72, 73, 74, 75},
-        {36, 37, 38, 39, 68, 69, 70, 71}};
+            {null, null, null, null, null, null, null, null, null, null},
+            {null, 64, 65, 66, 67, 96, 97, 98, 99, null},
+            {null, 60, 61, 62, 63, 92, 93, 94, 95, null},
+            {null, 56, 57, 58, 59, 88, 89, 90, 91, null},
+            {null, 52, 53, 54, 55, 84, 85, 86, 87, null},
+            {null, 48, 49, 50, 51, 80, 81, 82, 83, null},
+            {null, 44, 45, 46, 47, 76, 77, 78, 79, null},
+            {null, 40, 41, 42, 43, 72, 73, 74, 75, null},
+            {null, 36, 37, 38, 39, 68, 69, 70, 71, null},
+            {null, null, null, null, null, null, null, null, null, null}
+        };
 
         dimension = new int[]{8, 8};
         gridDimension = new int[]{8, 8};

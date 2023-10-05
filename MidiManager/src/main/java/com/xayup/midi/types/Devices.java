@@ -6,6 +6,7 @@ import android.media.midi.MidiDeviceInfo.PortInfo;
 import android.media.midi.MidiInputPort;
 import android.media.midi.MidiOutputPort;
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
@@ -88,17 +89,16 @@ public class Devices {
 
         public final MidiDeviceInfo deviceInfo;
         public final String name;
-        @Nullable final public PortInfo input;
-        @Nullable final public PortInfo output;
-        @Nullable
+        public final PortInfo input;
+        public final PortInfo output;
         public final GridDeviceConfig config;
 
         public MidiDevice(
                 MidiDeviceInfo deviceInfo,
                 String name,
                 @Nullable PortInfo input,
-                @Nullable PortInfo output,
-                @Nullable GridDeviceConfig config
+                @NonNull PortInfo output,
+                @NonNull GridDeviceConfig config
         ) {
             this.deviceInfo = deviceInfo;
             this.name = name;

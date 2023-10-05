@@ -388,8 +388,10 @@ public class ConfigurePads {
                                                     slidelimit_y -= pad_height;
                                                 }
 
-                                                current_pad[0] *= view.getScaleX();
-                                                current_pad[1] *= view.getScaleY();
+                                                current_pad[0] *= (int) view.getScaleX();
+                                                current_pad[1] *= (int) view.getScaleY();
+
+                                                Log.v("Current pad", "X: " + current_pad[0] + ", Y: " + current_pad[1]);
 
                                                 slidePad.get(padInfo.getId()).put(SLIDE_PAD_ATUAL, current_pad);
                                                 slidePad.get(padInfo.getId()).put(SLIDE_LIMIT_X, slidelimit_x);
@@ -406,7 +408,9 @@ public class ConfigurePads {
                                                     view.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0, 1, 0, 1, 1, 100, 0));
                                                 }
                                             }
-                                        } catch (NullPointerException ignore){}
+                                        } catch (NullPointerException ignore){
+                                            ignore.printStackTrace(System.out);
+                                        }
                                     }
                                     break;
                             }

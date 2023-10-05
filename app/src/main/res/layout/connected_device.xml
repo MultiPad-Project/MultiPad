@@ -7,7 +7,7 @@
 	android:id="@+id/cd_background">
 
 	<ImageView
-		android:src="@drawable/desconhecido"
+		android:src="@drawable/unknow"
 		android:layout_width="130dp"
 		android:layout_height="130dp"
 		android:id="@+id/connecteddeviceImageView1"

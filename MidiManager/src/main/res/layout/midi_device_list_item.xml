@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/main_device_list_item_padding"
+>
+    <ImageView
+            android:id="@id/midi_device_list_item_thumb"
+            android:layout_width="@dimen/main_device_list_item_thumb_size"
+            android:layout_height="@dimen/main_device_list_item_thumb_size"
+            android:layout_centerVertical="true"
+    />
+    <TextView
+            android:text="aaaaaa"
+            android:id="@id/midi_device_list_item_product"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/main_device_list_item_product_size"
+            android:layout_toEndOf="@id/midi_device_list_item_thumb"
+            android:layout_marginLeft="@dimen/main_device_list_item_text_margin"
+    />
+    <TextView
+            android:text="aaaaaa"
+            android:id="@id/midi_device_list_item_manufacturer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/main_device_list_item_manufacturer_size"
+            android:layout_toEndOf="@id/midi_device_list_item_thumb"
+            android:layout_below="@id/midi_device_list_item_product"
+            android:layout_marginLeft="@dimen/main_device_list_item_text_margin"
+    />
+</RelativeLayout>
