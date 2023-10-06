@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
+import android.util.Log;
 import android.view.*;
 import com.xayup.multipad.pads.Render.MakePads;
 
@@ -140,23 +141,24 @@ public class XayUpFunctions {
 	}
 
 	//hide pad/chains overlay
-	protected static void changePadsPhantomLayerVisibility(ViewGroup grid, int visibility) {
-		for(int i = grid.getChildCount()-1; !(i < 0); i--){
-			View view = grid.getChildAt(i);
-			if(view instanceof ViewGroup) {
-				ViewGroup pad = (ViewGroup) view;
-				for (int li = pad.getChildCount() - 1; !(li < 0); li--) {
-					View layer = pad.getChildAt(li);
-					switch ((int) layer.getTag()){
-						case MakePads.PadInfo.PadLayerType.PHANTOM:
-						case MakePads.PadInfo.PadLayerType.PHANTOM_:
-						case MakePads.PadInfo.PadLayerType.LOGO:
-						case MakePads.PadInfo.PadLayerType.CHAIN_LED:
-							layer.setVisibility(visibility);
-							i = -1;
+	public static void changePadsPhantomLayerVisibility(ViewGroup grid, int visibility) {
+		if(grid != null) {
+			for(int i = 0; i < grid.getChildCount(); i++){
+				if(grid.getChildAt(i) instanceof ViewGroup){
+					ViewGroup pad = (ViewGroup) grid.getChildAt(i);
+					for(int pi = 0; pi < grid.getChildCount(); pi++){
+						switch (pad.getChildAt(pi).getId()){
+							case MakePads.PadInfo.PadLayerType.PHANTOM:
+							case MakePads.PadInfo.PadLayerType.PHANTOM_:
+							case MakePads.PadInfo.PadLayerType.LOGO:
+							case MakePads.PadInfo.PadLayerType.CHAIN_LED:
+								pad.getChildAt(pi).setVisibility(visibility);
+								pi = grid.getChildCount();
+						}
 					}
 				}
 			}
+			grid.requestLayout();
 		}
 	}
 }
