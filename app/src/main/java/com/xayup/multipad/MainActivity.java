@@ -5,6 +5,7 @@ import android.app.*;
 import android.content.*;
 import android.content.pm.*;
 import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.*;
 import android.provider.Settings;
 import android.text.ClipboardManager;
+import android.util.Log;
 import android.view.*;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
@@ -322,20 +324,21 @@ public class MainActivity extends Activity {
                 list_midis.setAdapter(MidiStaticVars.devicesManager.getListAdapter());
                 list_midis.setOnItemClickListener((adapterView, listView, pos, id) -> {
                     Devices.MidiDevice mDevice = (Devices.MidiDevice) adapterView.getItemAtPosition(pos);
-                    if(MidiStaticVars.midiDeviceController != null && MidiStaticVars.midiDeviceController.midiDevice.name.equals(mDevice.name)){
-                        Toast.makeText(getApplicationContext(), mDevice.name + ": " + getString(R.string.midi_aready_connected), Toast.LENGTH_SHORT).show();
+                    if(MidiStaticVars.midiDeviceController != null && MidiStaticVars.midiDeviceController.midiDevice.name.equals(mDevice.usbDevice.getDeviceName())){
+                        Toast.makeText(getApplicationContext(), mDevice.usbDevice.getDeviceName() + ": " + getString(R.string.midi_aready_connected), Toast.LENGTH_SHORT).show();
                         return;
                     }
                     MidiStaticVars.devicesManager.callWhenMidiDeviceOpened(
                         new DevicesManager.OpenedDeviceCallback() {
                             @Override
-                            public void onDeviceOpened(MidiDevice device) {
-                                MidiStaticVars.devicesManager.removeCallWhenMidiDeviceOpened(this);
+                            public void onDeviceOpened(UsbDeviceConnection device) {
+                                Log.i("Device opened", "callback");
                                 MidiStaticVars.midiDeviceController = new MidiDeviceController(getApplicationContext(), device, mDevice);
+                                MidiStaticVars.devicesManager.removeCallWhenMidiDeviceOpened(this);
                             }
                         }
                     );
-                    MidiStaticVars.devicesManager.openDevice(mDevice);
+                    Log.e("Try open USB", "Opened " + MidiStaticVars.devicesManager.openDevice(mDevice.usbDevice));
                 });
             });
         }

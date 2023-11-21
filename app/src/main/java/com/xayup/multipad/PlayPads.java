@@ -325,6 +325,9 @@ public class PlayPads extends Activity {
     RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(MainActivity.height, MainActivity.height);
     param.addRule(RelativeLayout.CENTER_IN_PARENT);
     ((RelativeLayout) ((Activity) context).findViewById(R.id.layoutbackground)).addView(mPads.getRoot(), param);
+
+    //USB device thread
+    if(MidiStaticVars.midiDeviceController != null) MidiStaticVars.midiDeviceController.dataReceiverThread.start();
   }
 
   /**

@@ -1,5 +1,8 @@
 package com.xayup.midi.types;
 
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbEndpoint;
+import android.hardware.usb.UsbInterface;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiDeviceInfo.PortInfo;
@@ -87,21 +90,24 @@ public class Devices {
 
     public static class MidiDevice {
 
-        public final MidiDeviceInfo deviceInfo;
+        public final UsbDevice usbDevice;
         public final String name;
-        public final PortInfo input;
-        public final PortInfo output;
+        public final UsbInterface usbInterface;
+        public final UsbEndpoint input;
+        public final UsbEndpoint output;
         public final GridDeviceConfig config;
 
         public MidiDevice(
-                MidiDeviceInfo deviceInfo,
+                @NonNull UsbDevice usbDevice,
                 String name,
-                @Nullable PortInfo input,
-                @NonNull PortInfo output,
+                UsbInterface usbInterface,
+                UsbEndpoint input,
+                UsbEndpoint output,
                 @NonNull GridDeviceConfig config
         ) {
-            this.deviceInfo = deviceInfo;
+            this.usbDevice = usbDevice;
             this.name = name;
+            this.usbInterface = usbInterface;
             this.input = input;
             this.output = output;
             this.config = config;

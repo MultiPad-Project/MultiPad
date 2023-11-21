@@ -7,6 +7,7 @@ import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import com.xayup.multipad.pads.Render.MakePads;
@@ -126,7 +127,9 @@ public class ThreadLed implements Runnable {
                         mPads.getPadView(row, colum).findViewById(MakePads.PadInfo.PadLayerType.LED).setBackgroundColor(color);
                         if(MidiStaticVars.midiDeviceController != null){
                             try { MidiStaticVars.midiDeviceController.led(row, colum, color_velocity); }
-                            catch (IOException io){ io.printStackTrace(System.out); }
+                            catch (IOException io){
+                                Log.e("Led Exception", Log.getStackTraceString(io));
+                                io.printStackTrace(System.out); }
                             //MidiStaticVars.midiMessage.send((MidiStaticVars.midiOutputReceiver == null) ? MidiStaticVars.MIDI_INPUT : MidiStaticVars.MIDI_RECEIVER, padid, 1, NOTE, color_velocity);
                         }
                     }

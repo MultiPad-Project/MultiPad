@@ -1,6 +1,7 @@
 package com.xayup.midi.manager;
 
 import android.content.Context;
+import android.hardware.usb.*;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiManager;
 import android.os.Bundle;
@@ -22,11 +23,12 @@ import java.util.List;
 public class MidiDevicesAdapter extends BaseAdapter {
 
     private Context context;
-    private MidiManager midiManager;
+    private UsbManager midiManager;
 
+    //private List<Devices.MidiDevice> devices;
     private List<Devices.MidiDevice> devices;
 
-    public MidiDevicesAdapter(Context context, MidiManager midiManager){
+    public MidiDevicesAdapter(Context context, UsbManager midiManager){
         this.context = context;
         this.midiManager = midiManager;
         this.devices = new ArrayList<>();
@@ -34,23 +36,42 @@ public class MidiDevicesAdapter extends BaseAdapter {
 
     public void updateList(){
         devices.clear();
-        for(MidiDeviceInfo device : midiManager.getDevices())
-            if(device.getInputPortCount() >= 1 && device.getOutputPortCount() >= 1)
-                for(MidiDeviceInfo.PortInfo portInfoOutput : device.getPorts())
-                    if(portInfoOutput.getType() == MidiDeviceInfo.PortInfo.TYPE_OUTPUT) {
-                        MidiDeviceInfo.PortInfo portInfoInput = null;
-                        for (MidiDeviceInfo.PortInfo portInput : device.getPorts())
-                            if (portInput.getType() == MidiDeviceInfo.PortInfo.TYPE_INPUT)
-                                if (portInput.getName().equals(portInfoOutput.getName())) {
-                                    portInfoInput = portInput; break; }
-
-                        Devices.GridDeviceConfig device_config = Index.launchpads.get(device.getProperties().getString(MidiDeviceInfo.PROPERTY_PRODUCT));
-                        if (device_config == null) device_config = MidiKeyboard.configs;
-                        this.devices.add(new Devices.MidiDevice(device, device.getProperties().getString(MidiDeviceInfo.PROPERTY_PRODUCT), portInfoInput, portInfoOutput, device_config));
-                        if(portInfoInput != null) {
-                            break;
+        if(midiManager == null) return;
+        for(UsbDevice device : midiManager.getDeviceList().values()) {
+            Log.v("UsbDevice", device.getProductName());
+            for (int i = 0; i < device.getInterfaceCount(); i++) {
+                UsbInterface usbInterface = device.getInterface(i);
+                Log.v("UsbInterface", usbInterface.getName() + ": Class: " + usbInterface.getInterfaceClass());
+                if (usbInterface.getEndpointCount() > 0 && usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_AUDIO) {
+                    Log.v("USbInterface",  "is type Audio");
+                    UsbEndpoint output = null;
+                    Log.v("UsbEndpoint count", String.valueOf(usbInterface.getEndpointCount()));
+                    for (i = 0; i < usbInterface.getEndpointCount(); i++) {
+                        UsbEndpoint input = usbInterface.getEndpoint(i);
+                        if (input.getDirection() == UsbConstants.USB_DIR_IN) {
+                            Log.v("UsbEndpoint", "Input");
+                            for (int ei = 0; ei < usbInterface.getEndpointCount(); ei++) {
+                                if (i != ei) {
+                                    output = usbInterface.getEndpoint(ei);
+                                    if (output.getDirection() != UsbConstants.USB_DIR_OUT) {
+                                        output = null;
+                                        continue;
+                                    }
+                                    Log.v("UsbEndpoint", "Output");
+                                }
+                            }
+                            Devices.GridDeviceConfig device_config = Index.launchpads.get(device.getProductName());
+                            if (device_config == null) device_config = MidiKeyboard.configs;
+                            this.devices.add(new Devices.MidiDevice(device, device.getProductName(), usbInterface, input, output, device_config));
+                            if (output != null) {
+                                break;
+                            }
                         }
                     }
+                    break;
+                }
+            }
+        }
         super.notifyDataSetChanged();
     }
 
@@ -72,10 +93,10 @@ public class MidiDevicesAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         if(view == null) view = LayoutInflater.from(context).inflate(R.layout.midi_device_list_item, null);
-        Bundle midi_properties = devices.get(i).deviceInfo.getProperties();
-        ((TextView) view.findViewById(R.id.midi_device_list_item_product)).setText(midi_properties.getString(MidiDeviceInfo.PROPERTY_PRODUCT));
-        ((TextView) view.findViewById(R.id.midi_device_list_item_manufacturer)).setText(midi_properties.getString(MidiDeviceInfo.PROPERTY_MANUFACTURER));
-        ((ImageView) view.findViewById(R.id.midi_device_list_item_thumb)).setImageDrawable(Thumb.getThumbFromProduct(context, midi_properties.getString(MidiDeviceInfo.PROPERTY_PRODUCT)));
+        UsbDevice midi_properties = devices.get(i).usbDevice;
+        ((TextView) view.findViewById(R.id.midi_device_list_item_product)).setText(midi_properties.getProductName());
+        ((TextView) view.findViewById(R.id.midi_device_list_item_manufacturer)).setText(midi_properties.getManufacturerName());
+        ((ImageView) view.findViewById(R.id.midi_device_list_item_thumb)).setImageDrawable(Thumb.getThumbFromProduct(context, midi_properties.getProductName()));
 
         return view;
     }
