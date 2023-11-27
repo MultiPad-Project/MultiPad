@@ -9,6 +9,7 @@ import android.widget.*;
 
 import java.util.*;
 
+import com.xayup.multipad.midi.MidiStaticVars;
 import com.xayup.multipad.pads.Render.MakePads;
 
 public class ConfigurePads {
@@ -328,7 +329,11 @@ public class ConfigurePads {
                                         slidePad.get(padInfo.getId()).put(SLIDE_LIMIT_Y, 0);
                                         slidePad.get(padInfo.getId()).put(SLIDE_PAD_ATUAL, new int[]{padInfo.getRow(), padInfo.getColum()});
                                     }
-                                    playSound(padInfo);
+                                    if(MidiStaticVars.controllerManager != null){
+                                        MidiStaticVars.controllerManager.send(padInfo.getRow(), padInfo.getColum(), (int)(motionEvent.getPressure() * 127));
+                                    } else {
+                                        playSound(padInfo);
+                                    }
                                     return true;
                                 case MotionEvent.ACTION_UP:
                                     if (PlayPads.slideMode && motionEvent.getDeviceId() != 100) {
@@ -352,6 +357,9 @@ public class ConfigurePads {
                                                     .stopZeroLooper();
                                         } catch (NullPointerException n) {
                                             Log.e("Stop zero looper", n.getStackTrace()[0].toString());
+                                        }
+                                        if(MidiStaticVars.controllerManager != null){
+                                            MidiStaticVars.controllerManager.send(padInfo.getRow(), padInfo.getColum(), 0);
                                         }
                                     }
                                     break;

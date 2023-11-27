@@ -3,13 +3,10 @@ package com.xayup.multipad;
 import android.app.*;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
+import com.xayup.multipad.midi.MidiStaticVars;
 import com.xayup.multipad.pads.Render.MakePads;
 
 import java.io.IOException;
@@ -131,6 +128,9 @@ public class ThreadLed implements Runnable {
                                 Log.e("Led Exception", Log.getStackTraceString(io));
                                 io.printStackTrace(System.out); }
                             //MidiStaticVars.midiMessage.send((MidiStaticVars.midiOutputReceiver == null) ? MidiStaticVars.MIDI_INPUT : MidiStaticVars.MIDI_RECEIVER, padid, 1, NOTE, color_velocity);
+                        }
+                        if(MidiStaticVars.controllerManager != null){
+                            MidiStaticVars.controllerManager.send(row, colum, color_velocity);
                         }
                     }
                 });

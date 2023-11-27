@@ -1,4 +1,4 @@
-package com.xayup.multipad;
+package com.xayup.multipad.midi;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,6 +17,7 @@ import androidx.annotation.IntRange;
 import com.xayup.midi.controllers.LaunchpadMK2;
 import com.xayup.midi.manager.thread.DataReceiverThread;
 import com.xayup.midi.types.Devices;
+import com.xayup.multipad.PlayPads;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ public class MidiDeviceController {
     protected Context context;
     protected UsbDeviceConnection device;
     protected Handler handler;
-    protected Devices.MidiDevice midiDevice;
+    public final Devices.MidiDevice midiDevice;
     public final DataReceiverThread dataReceiverThread;
 
     public MidiDeviceController(Context context, UsbDeviceConnection device, Devices.MidiDevice midiDevice){
@@ -46,12 +47,12 @@ public class MidiDeviceController {
                 final int NOTE = data[offset + 1] & 0xFF;
                 final int VELOCITY = data[offset + 2] & 0xFF;
                 Log.v("MIDI Message", "Status: " + STATUS + " Channel: " + CHANNEL + " Message Type: " + MESSAGETYPE + " Note: " + NOTE + " Velocity: " + VELOCITY + " " + Arrays.toString(midiDevice.config.noteToXY.notToXY(VELOCITY)));
-                handler.post(new Runnable() {
+                /*handler.post(new Runnable() {
                     public void run() {
                         Toast.makeText(context, "MIDI Message:" + "Status: " + STATUS + " Channel: " + CHANNEL + " Message Type: " + MESSAGETYPE + " Note: " + NOTE + " Velocity: " + VELOCITY + " " + Arrays.toString(midiDevice.config.noteToXY.notToXY(VELOCITY)), Toast.LENGTH_SHORT).show();
                         handler.removeCallbacks(this);
                     }
-                });
+                });*/
                 if (VELOCITY < 128) {
                     handler.post(
                             new Runnable() {
@@ -77,7 +78,6 @@ public class MidiDeviceController {
                 }
             }
         };
-        //dataReceiverThread.start();
 
         /*device.openOutputPort(midiDevice.output.getPortNumber()).onConnect(
             new MidiReceiver() {

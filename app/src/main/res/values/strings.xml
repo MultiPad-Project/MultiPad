@@ -1,5 +1,9 @@
 <resources>
 
+    <!--Project List-->
+    <string name="controller_mode_option_title">Controller mode</string>
+    <string name="controller_mode_option_description">Use MultiPad in Controller mode</string>
+
     <string name="app_name">MultiPad</string>
     <string name="permission_storage_necessary">Permission to storage needed!</string>
     <string name="diag_invalidfiles_title">Erros...</string>

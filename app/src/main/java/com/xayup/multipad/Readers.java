@@ -64,13 +64,13 @@ public class Readers {
           if (ableton.isFile()) {
             String producerName = "?";
             String title = ableton.getName();
-            infoInfo.put(ProjectListAdapter.KEY_BAD, "False");
+            infoInfo.put(ProjectListAdapter.KEY_TYPE, ProjectListAdapter.TYPE_BAD);
 
           } else if (info.exists()) {
             String producerName = "?";
             String title = "?";
             String chains = "?";
-            infoInfo.put(ProjectListAdapter.KEY_BAD, "False");
+            infoInfo.put(ProjectListAdapter.KEY_TYPE, ProjectListAdapter.TYPE_BAD);
 
             try {
               BufferedReader bufferInfo = new BufferedReader(new FileReader(info));
@@ -103,7 +103,7 @@ public class Readers {
           } else {
             infoInfo.put(ProjectListAdapter.KEY_TITLE, projectFolder.getName());
             infoInfo.put(ProjectListAdapter.KEY_PRODUCER_NAME, context.getString(R.string.incomplet_project));
-            infoInfo.put(ProjectListAdapter.KEY_BAD, "True");
+            infoInfo.put(ProjectListAdapter.KEY_TYPE, ProjectListAdapter.TYPE_GOOD);
           }
           infoInfo.put(ProjectListAdapter.KEY_PATH, projectFolder.getPath());
           mapFolder.put((String) infoInfo.get(ProjectListAdapter.KEY_TITLE), infoInfo);

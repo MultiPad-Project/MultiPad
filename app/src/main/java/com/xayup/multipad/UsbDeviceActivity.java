@@ -1,16 +1,11 @@
 package com.xayup.multipad;
 
-import android.*;
 import android.app.*;
 import android.graphics.drawable.Drawable;
 import android.hardware.usb.*;
-import android.media.Image;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
-import android.media.midi.MidiDeviceService;
-import android.media.midi.MidiInputPort;
 import android.media.midi.MidiManager;
-import android.media.midi.MidiOutputPort;
 import android.media.midi.MidiReceiver;
 import android.os.*;
 import android.util.Log;
@@ -18,18 +13,12 @@ import android.widget.*;
 import android.view.*;
 import android.content.*;
 import com.xayup.midi.controllers.LaunchpadMK2;
-import com.xayup.multipad.MidiStaticVars;
-import com.xayup.multipad.PlayPads;
-import com.xayup.multipad.VariaveisStaticas;
-import com.xayup.multipad.MidiMessage;
+import com.xayup.multipad.midi.MidiStaticVars;
+import com.xayup.multipad.midi.MidiMessage;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UsbDeviceActivity extends Activity {
     public static final int CONNECTED_USB = 1;

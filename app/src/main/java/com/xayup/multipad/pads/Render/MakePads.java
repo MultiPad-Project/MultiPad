@@ -522,7 +522,7 @@ public class MakePads {
         public void setLedColor(int row, int colum, int android_color){
             PadInfo padInfo = getPadInfo(row, colum);
             if(padInfo != null && !padInfo.isActivated()) {
-                getLed(row, colum).getDrawable().setTint(android_color);
+                getLed(row, colum).setBackgroundColor(android_color);
             }
         }
     }

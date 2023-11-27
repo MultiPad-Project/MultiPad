@@ -61,8 +61,8 @@ public class DevicesManager {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     if(intent.getAction().equals(PERMISSION_ACCESS_USB)) {
-                        UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                        if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false) && usbDevice != null) {
+                        //UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                             openGrantedDevice(midiDevice);
                         } else {
                             Log.e("Usb permission", "Denied");
@@ -71,7 +71,7 @@ public class DevicesManager {
                     context.unregisterReceiver(this);
                 }
             }, new IntentFilter(PERMISSION_ACCESS_USB));
-            midiManager.requestPermission(midiDevice, PendingIntent.getBroadcast(context, 0, new Intent(PERMISSION_ACCESS_USB), PendingIntent.FLAG_IMMUTABLE));
+            midiManager.requestPermission(midiDevice, PendingIntent.getBroadcast(context, 0, new Intent(PERMISSION_ACCESS_USB), PendingIntent.FLAG_MUTABLE));
             return false;
         } else { openGrantedDevice(midiDevice);}
         return true;

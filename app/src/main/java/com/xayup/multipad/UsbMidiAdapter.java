@@ -1,7 +1,6 @@
 package com.xayup.multipad;
 
 import android.content.Context;
-import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.media.midi.MidiDeviceInfo;
 import android.os.Bundle;
@@ -12,7 +11,7 @@ import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import java.util.Map;
+import com.xayup.multipad.midi.MidiStaticVars;
 
 public class UsbMidiAdapter extends BaseAdapter {
 	Context context;

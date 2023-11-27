@@ -8,13 +8,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.*;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.icu.math.BigDecimal;
 import android.media.*;
+import android.media.midi.MidiDevice;
+import android.media.midi.MidiDeviceInfo;
+import android.media.midi.MidiManager;
 import android.net.*;
 import android.os.*;
 import android.provider.MediaStore;
+import android.text.AndroidCharacter;
 import android.text.InputType;
 import android.util.Log;
 import android.view.*;
@@ -37,6 +44,8 @@ import android.widget.ViewFlipper;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.xayup.multipad.configs.GlobalConfigs;
+import com.xayup.multipad.midi.MidiStaticVars;
+import com.xayup.multipad.midi.controller.ControllerManager;
 import com.xayup.multipad.pads.Render.MakePads;
 
 import java.io.*;
@@ -134,23 +143,66 @@ public class PlayPads extends Activity {
     varInstance();
     SkinTheme.varInstance();
     project = (Map<String, Object>) getIntent().getSerializableExtra("project");
-    getCurrentPath = (String) project.get(ProjectListAdapter.KEY_PATH);
-    project_chains = (int) project.get(ProjectListAdapter.KEY_CHAINS);
+    if (project != null) {
+      getCurrentPath = (String) project.get(ProjectListAdapter.KEY_PATH);
+      project_chains = (int) project.get(ProjectListAdapter.KEY_CHAINS);
 
-    new GetFilesTask(this){
-      @Override
-      protected void onPostExecute() {
-        Handler handler = new Handler(context.getMainLooper());
-        handler.post(new Runnable() {
-          @Override
-          public void run() {
-            end(context, time);
-            handler.removeCallbacks(this);
+      new GetFilesTask(this) {
+        @Override
+        protected void onPostExecute() {
+          Handler handler = new Handler(context.getMainLooper());
+          handler.post(new Runnable() {
+            @Override
+            public void run() {
+              end(context, time);
+              handler.removeCallbacks(this);
+            }
+          });
+          super.onPostExecute();
+        }
+      }.getFiles();
+    } else {
+      // Controller mode
+      if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_MIDI)){
+        MidiManager manager = (MidiManager) getSystemService(Context.MIDI_SERVICE);
+        for(MidiDeviceInfo midi : manager.getDevices()){
+          if(
+              //midi.getProperties().getString(MidiDeviceInfo.PROPERTY_NAME).equals(getString(android.os.)) &&
+              //midi.getProperties().getString(MidiDeviceInfo.PROPERTY_PRODUCT).equals(getString(android.R.string.usb_midi_peripheral_product_name)) &&
+              midi.getProperties().getString(MidiDeviceInfo.PROPERTY_MANUFACTURER).equalsIgnoreCase("Android")
+          ){
+            manager.openDevice(midi, new MidiManager.OnDeviceOpenedListener() {
+              @Override
+              public void onDeviceOpened(MidiDevice midiDevice) {
+                MidiDeviceInfo.PortInfo input = null, output = null;
+                MidiDeviceInfo.PortInfo[] ports = midi.getPorts();
+                for(int i = 0; i < ports.length; i++){
+                  for(int o = i; o < ports.length; o++){
+                    if(ports[i].getName().equals(ports[o].getName())){
+                      if(ports[i].getType() == MidiDeviceInfo.PortInfo.TYPE_INPUT && ports[o].getType() == MidiDeviceInfo.PortInfo.TYPE_OUTPUT){
+                        input = ports[i]; output = ports[o]; i = ports.length; o = ports.length;
+                      } else if(ports[i].getType() == MidiDeviceInfo.PortInfo.TYPE_OUTPUT && ports[o].getType() == MidiDeviceInfo.PortInfo.TYPE_INPUT){
+                        input = ports[o]; output = ports[i]; i = ports.length; o = ports.length;
+                      }
+                    }
+                  }
+                }
+                if(input != null || output != null) {
+                  MidiStaticVars.controllerManager = new ControllerManager(midiDevice, input, output){
+                    @Override
+                    public void received(int row, int colum, int velocity){
+                      runOnUiThread(()-> mPads.setLedColor(row, colum, VariaveisStaticas.colorInt(currentChainMC, velocity, custom_color_table, oldColors)));
+                    }
+                  };
+                  Log.v("Controller mode", "Midi opened");
+                }
+              }
+            }, null);
           }
-        });
-        super.onPostExecute();
+        }
       }
-    }.getFiles();
+      end(context, 0);
+    }
   }
 
   @SuppressLint("ClickableViewAccessibility")
@@ -315,8 +367,6 @@ public class PlayPads extends Activity {
 
     //Update size variables;
     View main_layout = super.findViewById(R.id.layoutbackground);
-    MainActivity.height = main_layout.getMeasuredHeight();
-    MainActivity.width = main_layout.getMeasuredWidth();
 
     //Show dialog
     XayUpFunctions.showDiagInFullscreen(alertInvalidFiles.create());
@@ -327,7 +377,8 @@ public class PlayPads extends Activity {
     ((RelativeLayout) ((Activity) context).findViewById(R.id.layoutbackground)).addView(mPads.getRoot(), param);
 
     //USB device thread
-    if(MidiStaticVars.midiDeviceController != null) MidiStaticVars.midiDeviceController.dataReceiverThread.start();
+    //if(MidiStaticVars.midiDeviceController != null) MidiStaticVars.midiDeviceController.dataReceiverThread.start();
+    Log.v("Connect MIDI", String.valueOf(MidiStaticVars.midiDeviceController != null));
   }
 
   /**
@@ -358,13 +409,23 @@ public class PlayPads extends Activity {
   protected void onResume() {
     super.onResume();
     View main_layout = super.findViewById(R.id.layoutbackground);
-    MainActivity.height = main_layout.getMeasuredHeight();
-    MainActivity.width = main_layout.getMeasuredWidth();
-    if(mPads != null){
-      mPads.getRoot().getLayoutParams().height = MainActivity.height;
-      mPads.getRoot().getLayoutParams().width = MainActivity.height;
-      main_layout.requestLayout();
-    }
+    main_layout.post(new Runnable() {
+      @Override
+      public void run() {
+        MainActivity.height = main_layout.getMeasuredHeight();
+        MainActivity.width = main_layout.getMeasuredWidth();
+        if(mPads != null) {
+          mPads.getRoot().post(new Runnable() {
+            @Override
+            public void run() {
+              mPads.changeLayout(mPads.layout);
+              mPads.getRoot().removeCallbacks(this);
+            }
+          });
+        }
+        main_layout.removeCallbacks(this);
+      }
+    });
   }
 
   /**

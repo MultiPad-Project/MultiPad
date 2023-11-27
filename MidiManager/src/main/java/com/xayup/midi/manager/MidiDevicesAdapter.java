@@ -37,6 +37,7 @@ public class MidiDevicesAdapter extends BaseAdapter {
     public void updateList(){
         devices.clear();
         if(midiManager == null) return;
+        Log.v("USB List", "Get list");
         for(UsbDevice device : midiManager.getDeviceList().values()) {
             Log.v("UsbDevice", device.getProductName());
             for (int i = 0; i < device.getInterfaceCount(); i++) {
@@ -44,11 +45,11 @@ public class MidiDevicesAdapter extends BaseAdapter {
                 Log.v("UsbInterface", usbInterface.getName() + ": Class: " + usbInterface.getInterfaceClass());
                 if (usbInterface.getEndpointCount() > 0 && usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_AUDIO) {
                     Log.v("USbInterface",  "is type Audio");
-                    UsbEndpoint output = null;
                     Log.v("UsbEndpoint count", String.valueOf(usbInterface.getEndpointCount()));
-                    for (i = 0; i < usbInterface.getEndpointCount(); i++) {
+                    UsbEndpoint output = null;
+//                    for (i = 0; i < usbInterface.getEndpointCount(); i++) {
                         UsbEndpoint input = usbInterface.getEndpoint(i);
-                        if (input.getDirection() == UsbConstants.USB_DIR_IN) {
+                       /* if (input.getDirection() == UsbConstants.USB_DIR_IN) {
                             Log.v("UsbEndpoint", "Input");
                             for (int ei = 0; ei < usbInterface.getEndpointCount(); ei++) {
                                 if (i != ei) {
@@ -59,15 +60,15 @@ public class MidiDevicesAdapter extends BaseAdapter {
                                     }
                                     Log.v("UsbEndpoint", "Output");
                                 }
-                            }
+                            }*/
                             Devices.GridDeviceConfig device_config = Index.launchpads.get(device.getProductName());
                             if (device_config == null) device_config = MidiKeyboard.configs;
                             this.devices.add(new Devices.MidiDevice(device, device.getProductName(), usbInterface, input, output, device_config));
-                            if (output != null) {
+                            /*if (output != null) {
                                 break;
                             }
                         }
-                    }
+                    }*/
                     break;
                 }
             }

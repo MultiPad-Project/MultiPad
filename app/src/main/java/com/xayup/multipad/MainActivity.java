@@ -4,10 +4,8 @@ import android.Manifest;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
-import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
-import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.net.Uri;
 import android.os.*;
@@ -21,9 +19,10 @@ import com.xayup.filesexplorer.FileExplorerDialog;
 import com.xayup.midi.manager.DevicesManager;
 import com.xayup.midi.types.Devices;
 import com.xayup.multipad.configs.GlobalConfigs;
+import com.xayup.multipad.midi.MidiDeviceController;
+import com.xayup.multipad.midi.MidiStaticVars;
 
 import java.io.*;
-import java.util.Map;
 
 public class MainActivity extends Activity {
     ListView listaprojetos;
@@ -221,7 +220,7 @@ public class MainActivity extends Activity {
                                 switch ((Integer) itemStt.getTag()) {
                                     case 0:
                                         Intent playPads = new Intent(getBaseContext(), PlayPads.class);
-                                        playPads.putExtra("project", (Serializable) adapterView.getItemAtPosition(pos));
+                                        if(pos > 1) playPads.putExtra("project", (Serializable) adapterView.getItemAtPosition(pos));
                                         startActivity(playPads);
                                         break;
                                     case 2:
@@ -324,16 +323,21 @@ public class MainActivity extends Activity {
                 list_midis.setAdapter(MidiStaticVars.devicesManager.getListAdapter());
                 list_midis.setOnItemClickListener((adapterView, listView, pos, id) -> {
                     Devices.MidiDevice mDevice = (Devices.MidiDevice) adapterView.getItemAtPosition(pos);
-                    if(MidiStaticVars.midiDeviceController != null && MidiStaticVars.midiDeviceController.midiDevice.name.equals(mDevice.usbDevice.getDeviceName())){
-                        Toast.makeText(getApplicationContext(), mDevice.usbDevice.getDeviceName() + ": " + getString(R.string.midi_aready_connected), Toast.LENGTH_SHORT).show();
-                        return;
+                    if(MidiStaticVars.midiDeviceController != null){
+                        if (MidiStaticVars.midiDeviceController.midiDevice.name.equals(mDevice.usbDevice.getDeviceName())){
+                            Toast.makeText(getApplicationContext(), mDevice.usbDevice.getDeviceName() + ": " + getString(R.string.midi_aready_connected), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        MidiStaticVars.midiDeviceController.dataReceiverThread.stop();
+                        MidiStaticVars.midiDeviceController = null;
                     }
                     MidiStaticVars.devicesManager.callWhenMidiDeviceOpened(
                         new DevicesManager.OpenedDeviceCallback() {
                             @Override
                             public void onDeviceOpened(UsbDeviceConnection device) {
                                 Log.i("Device opened", "callback");
-                                MidiStaticVars.midiDeviceController = new MidiDeviceController(getApplicationContext(), device, mDevice);
+                                (MidiStaticVars.midiDeviceController = new MidiDeviceController(getApplicationContext(), device, mDevice))
+                                        .dataReceiverThread.start();
                                 MidiStaticVars.devicesManager.removeCallWhenMidiDeviceOpened(this);
                             }
                         }

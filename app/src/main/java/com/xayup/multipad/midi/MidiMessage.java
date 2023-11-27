@@ -1,16 +1,9 @@
-package com.xayup.multipad;
-
-import android.media.midi.MidiInputPort;
+package com.xayup.multipad.midi;
 
 import android.util.Log;
-import com.xayup.multipad.MidiStaticVars;
+import com.xayup.multipad.UsbDeviceActivity;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import com.xayup.multipad.MidiStaticVars;
 
 public class MidiMessage {
     int numBytes = 0;

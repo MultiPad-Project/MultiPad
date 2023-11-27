@@ -7,8 +7,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
-import android.util.Log;
 import android.view.*;
+import com.xayup.multipad.midi.MidiStaticVars;
 import com.xayup.multipad.pads.Render.MakePads;
 
 import java.io.IOException;
