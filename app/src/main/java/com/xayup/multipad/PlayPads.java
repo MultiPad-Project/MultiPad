@@ -536,6 +536,23 @@ public class PlayPads extends Activity {
   }
 
   @Override
+  public void onDestroy(){
+    Log.v("onDestroy", "Called");
+    super.onDestroy();
+    if(MidiStaticVars.controllerManager != null) {
+      MidiStaticVars.controllerManager.close();
+      MidiStaticVars.controllerManager = null;
+    }
+  }
+
+  @Override
+  public void finish(){
+    Log.v("Finish", "Called");
+    super.finish();
+    onDestroy();
+  }
+
+  @Override
   public void onBackPressed() {
     // Layout
     View onExitDialog = getLayoutInflater().inflate(R.layout.alertexit_dialog, null);

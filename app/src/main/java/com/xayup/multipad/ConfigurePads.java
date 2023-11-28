@@ -294,8 +294,14 @@ public class ConfigurePads {
                                             AutoplayRecFunc.addChain(String.valueOf(PlayPads.currentChainMC));
                                         }
                                     }
+                                    if(MidiStaticVars.controllerManager != null){
+                                        MidiStaticVars.controllerManager.send(chainInfo.getRow(), chainInfo.getColum(), (int)(motionEvent.getPressure() * 127));
+                                    }
                                     return true;
                                 } else {
+                                    if(MidiStaticVars.controllerManager != null){
+                                        MidiStaticVars.controllerManager.send(chainInfo.getRow(), chainInfo.getColum(), 0);
+                                    }
                                     return false;
                                 }
                             }
