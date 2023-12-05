@@ -286,9 +286,7 @@ public class UsbDeviceActivity extends Activity {
                             try {
                                 int[] xy = LaunchpadMK2.configs.noteToXY.notToXY(NOTE);
                                 if(xy[0] > -1 && xy[1] > -1){
-                                    final View pad =
-                                            PlayPads.grids
-                                                    .get("grid_1").getPadView(xy[0], xy[1]);
+                                    final View pad = PlayPads.grids.getPadView(xy[0], xy[1]);
                                     pad.dispatchTouchEvent(MotionEvent.obtain(0, 0, (MESSAGETYPE == 9 || VELOCITY > 0) ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_UP, 0, 0, 0));
                                 }
                             } catch (NullPointerException n) {

@@ -4,6 +4,8 @@
     <string name="controller_mode_option_title">Controller mode</string>
     <string name="controller_mode_option_description">Use MultiPad in Controller mode</string>
 
+    <string name="controller_mode_not_supported">Controller mode is not supported. It is supported on android 6 and above.</string>
+
     <string name="app_name">MultiPad</string>
     <string name="permission_storage_necessary">Permission to storage needed!</string>
     <string name="diag_invalidfiles_title">Erros...</string>
@@ -101,6 +103,9 @@
 	<string name="midi_aready_connected">MIDI aready connected!</string>
     <string name="midi_lp_pro_live">Set your launchpad to "Live" mode manually, please.</string>
     <string name="danied_midi_permission">Permission to access %m was denied</string>
+    <string name="device_selected">Selected device: %d</string>
+    <string name="controller_mode_usb_error">It looks like your Android isn\'t connected as a MIDI device via USB.</string>
+
 
     <string name="progress_extract">Extracting:</string>
     <string name="dialog_replace_title">Existing file</string>

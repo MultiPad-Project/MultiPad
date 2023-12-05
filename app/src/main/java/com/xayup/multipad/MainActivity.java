@@ -175,7 +175,7 @@ public class MainActivity extends Activity {
         XayUpFunctions.hideSystemBars(getWindow());
         SkinTheme.cachedSkinSet(context);
         GlobalConfigs.loadSharedPreferences(context);
-        registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
+        //registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
         View root = ((Activity) context).findViewById(R.id.ActivityLinearLayout);
         root.post(new Runnable() {
             @Override
@@ -232,10 +232,7 @@ public class MainActivity extends Activity {
                 View splash_screen = findViewById(R.id.splash);
                 splash_screen.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out_splash));
                 splash_screen.setVisibility(View.GONE);
-
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                    MidiStaticVars.devicesManager = new DevicesManager(getApplicationContext());
-                }
+                MidiStaticVars.devicesManager = new DevicesManager(getApplicationContext());
                 root.removeCallbacks(this);
             }
         });
@@ -321,7 +318,7 @@ public class MainActivity extends Activity {
                 swit.setDisplayedChild(USB_MIDI);
                 ListView list_midis = ((ListView) swit.getChildAt(USB_MIDI));
                 list_midis.setAdapter(MidiStaticVars.devicesManager.getListAdapter());
-                list_midis.setOnItemClickListener((adapterView, listView, pos, id) -> {
+                list_midis.setOnItemClickListener((adapterView, iview, pos, id) -> {
                     Devices.MidiDevice mDevice = (Devices.MidiDevice) adapterView.getItemAtPosition(pos);
                     if(MidiStaticVars.midiDeviceController != null){
                         if (MidiStaticVars.midiDeviceController.midiDevice.name.equals(mDevice.usbDevice.getDeviceName())){
@@ -339,6 +336,7 @@ public class MainActivity extends Activity {
                                 (MidiStaticVars.midiDeviceController = new MidiDeviceController(getApplicationContext(), device, mDevice))
                                         .dataReceiverThread.start();
                                 MidiStaticVars.devicesManager.removeCallWhenMidiDeviceOpened(this);
+                                Toast.makeText(context, context.getString(R.string.device_selected).replace("%d", mDevice.name), Toast.LENGTH_SHORT).show();
                             }
                         }
                     );

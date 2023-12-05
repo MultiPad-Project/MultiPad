@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 import com.xayup.midi.BuildConfig;
 import com.xayup.midi.controllers.Index;
 import com.xayup.midi.controllers.MidiKeyboard;

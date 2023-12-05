@@ -40,19 +40,18 @@ public class MidiDeviceController {
             @Override
             public void dataReceived(byte[] data) {
                 int offset = 0;
-                Log.v("Received data", Arrays.toString(data));
                 final int STATUS = data[offset] & 0xFF;
                 final int CHANNEL = STATUS & 0x0F;
                 final int MESSAGETYPE = (STATUS & 0xF0) >> 4;
                 final int NOTE = data[offset + 1] & 0xFF;
                 final int VELOCITY = data[offset + 2] & 0xFF;
                 Log.v("MIDI Message", "Status: " + STATUS + " Channel: " + CHANNEL + " Message Type: " + MESSAGETYPE + " Note: " + NOTE + " Velocity: " + VELOCITY + " " + Arrays.toString(midiDevice.config.noteToXY.notToXY(VELOCITY)));
-                /*handler.post(new Runnable() {
+                handler.post(new Runnable() {
                     public void run() {
                         Toast.makeText(context, "MIDI Message:" + "Status: " + STATUS + " Channel: " + CHANNEL + " Message Type: " + MESSAGETYPE + " Note: " + NOTE + " Velocity: " + VELOCITY + " " + Arrays.toString(midiDevice.config.noteToXY.notToXY(VELOCITY)), Toast.LENGTH_SHORT).show();
                         handler.removeCallbacks(this);
                     }
-                });*/
+                });
                 if (VELOCITY < 128) {
                     handler.post(
                             new Runnable() {
@@ -62,9 +61,7 @@ public class MidiDeviceController {
                                     try {
                                         int[] xy = midiDevice.config.noteToXY.notToXY(VELOCITY);
                                         if (xy[0] > -1 && xy[1] > -1) {
-                                            final View pad =
-                                                    PlayPads.grids
-                                                            .get("grid_1").getPadView(xy[0], xy[1]);
+                                            final View pad = PlayPads.grids.getPadView(xy[0], xy[1]);
                                             pad.dispatchTouchEvent(MotionEvent.obtain(0, 0, (STATUS == 9 && VELOCITY > 0) ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_UP, 0, 0, 0));
                                         }
                                     } catch (NullPointerException n) {
@@ -78,51 +75,6 @@ public class MidiDeviceController {
                 }
             }
         };
-
-        /*device.openOutputPort(midiDevice.output.getPortNumber()).onConnect(
-            new MidiReceiver() {
-                @Override
-                public void onSend(byte[] data, int offset, int count, long time) throws IOException {
-                    final int STATUS = data[offset] & 0xFF;
-                    final int CHANNEL = STATUS & 0x0F;
-                    final int MESSAGETYPE = (STATUS & 0xF0) >> 4;
-                    final int NOTE = data[offset + 1] & 0xFF;
-                    final int VELOCITY = data[offset + 2] & 0xFF;
-                    Log.v("MIDI Message", "Status: " + STATUS + " Channel: " + CHANNEL + " Message Type: " + MESSAGETYPE + " Note: " + NOTE + " " + Arrays.toString(LaunchpadMK2.configs.noteToXY.notToXY(NOTE)) + " Velocity: " + VELOCITY);
-                        handler.post(new Runnable() {
-                            public void run() {
-                                Toast.makeText(context, "MIDI Message:" + "Status: " + STATUS + " Channel: " + CHANNEL + " Message Type: " + MESSAGETYPE + " Note: " + NOTE + " " + Arrays.toString(LaunchpadMK2.configs.noteToXY.notToXY(NOTE)) + " Velocity: " + VELOCITY, Toast.LENGTH_SHORT).show();
-                                handler.removeCallbacks(this);
-                            }
-                        });
-                        if (NOTE < 128) {
-                        handler.post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Log.v("MIDI Message: Handler: ", "Status: " + STATUS + " Channel: " + CHANNEL + " Message Type: " + MESSAGETYPE + " Note: " + NOTE + " " + Arrays.toString(LaunchpadMK2.configs.noteToXY.notToXY(NOTE)) + " Velocity: " + VELOCITY);
-                                    try {
-                                        int[] xy = midiDevice.config.noteToXY.notToXY(NOTE);
-                                        if (xy[0] > -1 && xy[1] > -1) {
-                                            final View pad =
-                                                    PlayPads.grids
-                                                            .get("grid_1").getPadView(xy[0], xy[1]);
-                                            pad.dispatchTouchEvent(MotionEvent.obtain(0, 0, (MESSAGETYPE == 9 && VELOCITY > 0) ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_UP, 0, 0, 0));
-                                        }
-                                    } catch (NullPointerException n) {
-                                        n.printStackTrace(System.out);
-                                        //Toast.makeText(context, "Controller mode: " + CHANNEL +" "+rowProgramMode(NOTE, true)+" "+VELOCITY, 0).show();
-                                    }
-                                    handler.removeCallbacks(this);
-                                }
-                            }
-                        );
-                    }
-                }
-            }
-        );
-
-         */
     }
 
     public void led(int row, int colum, @IntRange(from=0, to=127) int velocity) throws IOException {

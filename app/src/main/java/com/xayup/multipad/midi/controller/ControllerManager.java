@@ -4,6 +4,7 @@ import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiInputPort;
 import android.media.midi.MidiOutputPort;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import com.xayup.midi.controllers.MidiKeyboard;
 import com.xayup.midi.types.Devices;
@@ -35,6 +36,7 @@ public abstract class ControllerManager {
         if(input != null){
             this.inputPort = midiDevice.openInputPort(input.getPortNumber());
             send = new ControllerSend(deviceCfg, inputPort);
+            Log.v("Send", "Opened");
         }
         if(output != null){
             this.outputPort = midiDevice.openOutputPort(output.getPortNumber());
@@ -45,6 +47,7 @@ public abstract class ControllerManager {
                 }
             };
             this.receiver.start();
+            Log.v("Receiver", "Opened");
         }
     }
 

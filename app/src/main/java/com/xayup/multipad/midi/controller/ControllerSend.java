@@ -21,7 +21,7 @@ public class ControllerSend {
     }
 
     public void sendNote(int row, int colum, int velocity)throws IOException {
-        Log.v("app to midi device message", "input: " + input + ", KeyMap: " + deviceCfg.launchpadCfg.keymap + ", Palette Channel " + LaunchpadProMK2.configs.paletteChannel);
+        Log.v("app to midi device message", "input: " + input + ", KeyMap: " + deviceCfg.launchpadCfg.keymap + ", Palette Channel " + deviceCfg.launchpadCfg.paletteChannel);
         if(input != null && deviceCfg.launchpadCfg.keymap != null && deviceCfg.launchpadCfg.paletteChannel != null) {
             Object note = deviceCfg.launchpadCfg.keymap[row][colum];
             if (note == null) return;
