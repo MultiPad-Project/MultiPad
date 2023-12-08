@@ -30,7 +30,8 @@ public class MidiFighter64 {
 
         dimension = new int[]{8, 8};
         gridDimension = new int[]{8, 8};
-        gridOffset = new int[]{0, 0};
+        //gridOffset = new int[]{0, 0};
+        gridOffset = new int[]{-1, -1};
         chainKey = new int[][]{};
 
 

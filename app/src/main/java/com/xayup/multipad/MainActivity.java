@@ -220,7 +220,7 @@ public class MainActivity extends Activity {
                                 switch ((Integer) itemStt.getTag()) {
                                     case 0:
                                         Intent playPads = new Intent(getBaseContext(), PlayPads.class);
-                                        if(pos > 1) playPads.putExtra("project", (Serializable) adapterView.getItemAtPosition(pos));
+                                        if(pos > 0) playPads.putExtra("project", (Serializable) adapterView.getItemAtPosition(pos));
                                         startActivity(playPads);
                                         break;
                                     case 2:

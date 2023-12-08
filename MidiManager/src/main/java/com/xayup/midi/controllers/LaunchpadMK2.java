@@ -33,7 +33,8 @@ public class LaunchpadMK2 {
 
         dimension = new int[]{9, 9};
         gridDimension = new int[]{8, 8};
-        gridOffset = new int[]{0, 1};
+        //gridOffset = new int[]{0, 1};
+        gridOffset = new int[]{-1, 0};
         chainKey = new int[][]{{8, 0}, {8, 1}, {8, 2}, {8, 3}, {8, 4}, {8, 5}, {8, 6}, {8, 7}};
 
         noteToXY = (note) ->
