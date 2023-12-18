@@ -3,60 +3,58 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width"/>
-        <title>Skins</title>
         <link id="mp" rel="canonical" href="https://multipad.com"/>
-        <link href="styles/style.css" rel="stylesheet"/>
+        <link href="../styles/style.css" rel="stylesheet"/>
     </head>
-    <body>
+    <body id="home_page">
         <section class="cabecalho">
-            <h1 class="titulo">Skins</h1>
+            <h1 class="titulo" id="title"></h1>
             <nav class="main-menu-background">
                 <ul class="main_menu">
                     <li>
-                        <a href="index.html" id="bt_home">Home</a>
+                        <a href="../contents/home_content.html" id="bt_home">Home</a>
                     </li>
                     <li>
-                        <a href="download_multipad.html" id="bt_last_multipad">Download MultiPad</a>
+                        <a href="../contents/download_multipad_content.html" id="bt_last_multipad">Download MultiPad</a>
                     </li>
                     <li>
-                        <a href="project_files.html" id="bt_project_files">Project Files</a>
+                        <a href="../contents/project_files_content.html" id="bt_project_files">Project Files</a>
                     </li>
                     <li>
-                        <a href="skins.html" id="bt_skins">Skins</a>
+                        <a href="../contents/skins_content.html" id="bt_skins">Skins</a>
                     </li>
                     <li>
-                        <a href="colors_table.html" id="bt_skins">Colors Table</a>
+                        <a href="../contents/colors_table_content.html" id="bt_skins">Colors Table</a>
                     </li>
                     <li>
-                        <a href="about.html" id="bt_about">About</a>
+                        <a href="../contents/about_content.html" id="bt_about">About</a>
                     </li>
                 </ul>
             </nav>
         </section>
-        <dir class="conteudo">
-            <!-- Aqui fica o conteúdo -->
-        </dir>
+        <div class="content" id="content"></div> <!--Append a child-->
         <footer>
             <ul>
                 <li>
                     <a class="link-com-textoimagem" href="https://www.youtube.com/@XayUp" id="youtube-channel">
-                        <img src="img/youtube-svgrepo-com.svg"/>
+                        <img src="../img/youtube-svgrepo-com.svg"/>
                         <p>YouTube Channel</p>
                     </a>
                 </li>
                 <li>
                     <a class="link-com-textoimagem" href="https://github.com/XayUp/MultiPad" id="multipad-source">
-                        <img src="img/github-svgrepo-com.svg"/>
+                        <img src="../img/github-svgrepo-com.svg"/>
                         <p>MultiPad Source</p>
                     </a>
                 </li>
                 <li>
                     <a class="link-com-textoimagem" href="https://github.com/XayUp" id="github-repo">
-                        <img src="img/github-svgrepo-com.svg"/>
+                        <img src="../img/github-svgrepo-com.svg"/>
                         <p>Github Profile</p>
                     </a>
                 </li>
             </ul>
         </footer>
+        <script src="../scripts/script.js" type="module"></script>
     </body>
 </html>
