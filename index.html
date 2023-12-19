@@ -4,7 +4,8 @@
         <script type="module">
             window.onload = function() {
                 let complements = "/MultiPad";
-                if(window.location.hostname != "xayup.github.oi"){
+                console.log(window.location.hostname);
+                if(window.location.hostname != "xayup.github.io"){
                     complements = "";
                 }
                 window.location.href = window.location.origin + complements + "/contents/home_content.html";

@@ -1,7 +1,7 @@
 import { CONTENT, TITLE, TAB_TITLE, HTML } from "../constants/page_body_ids.js";
 
 let complements = "/MultiPad";
-if(window.location.hostname != "xayup.github.oi"){
+if(window.location.hostname != "xayup.github.io"){
     complements = "";
 }
 fetch(window.location.origin + complements + '/page_models/default.html')
