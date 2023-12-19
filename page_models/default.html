@@ -57,18 +57,22 @@
             </ul>
         </footer>
         <script type="text/javascript">
+            let complements = "/MultiPad";
+            if(window.location.hostname != "xayup.github.io"){
+                complements = "";
+            }
             // Update buttons functions
-            document.getElementById("bt_home").href = window.location.origin+ "/contents/home_content.html";
-            document.getElementById("bt_last_multipad").href = window.location.origin+ "/contents/download_multipad_content.html";
-            document.getElementById("bt_project_files").href = window.location.origin+ "/contents/project_files_content.html";
-            document.getElementById("bt_skins").href = window.location.origin+ "/contents/skins_content.html";
-            document.getElementById("bt_colors_table").href = window.location.origin+ "/contents/colors_table_content.html";
-            document.getElementById("bt_about").href = window.location.origin+ "/contents/about_content.html";
+            document.getElementById("bt_home").href = window.location.origin + complements +"/contents/home_content.html";
+            document.getElementById("bt_last_multipad").href = window.location.origin + complements + "/contents/download_multipad_content.html";
+            document.getElementById("bt_project_files").href = window.location.origin + complements + "/contents/project_files_content.html";
+            document.getElementById("bt_skins").href = window.location.origin + complements + "/contents/skins_content.html";
+            document.getElementById("bt_colors_table").href = window.location.origin + complements + "/contents/colors_table_content.html";
+            document.getElementById("bt_about").href = window.location.origin + complements + "/contents/about_content.html";
             // images
-            document.getElementById("link_img_youtube").src = window.location.origin+ "/img/youtube-svgrepo-com.svg";
-            document.getElementById("link_img_source").src = window.location.origin+ "/img/github-svgrepo-com.svg";
-            document.getElementById("link_img_github").src = window.location.origin+ "/img/github-svgrepo-com.svg";
-            document.getElementById("page_style").href = window.location.origin+ "/styles/style.css"
+            document.getElementById("link_img_youtube").src = window.location.origin + complements + "/img/youtube-svgrepo-com.svg";
+            document.getElementById("link_img_source").src = window.location.origin + complements + "/img/github-svgrepo-com.svg";
+            document.getElementById("link_img_github").src = window.location.origin + complements + "/img/github-svgrepo-com.svg";
+            document.getElementById("page_style").href = window.location.origin + complements + "/styles/style.css";
             console.log("Readed script: default.html");
         </script>
     </body>
