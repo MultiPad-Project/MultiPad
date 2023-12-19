@@ -2,11 +2,12 @@
 <html>
     <head>
         <script type="module">
-            import {HOST_DIR_KEY} from '/constants/statics.js';
             window.onload = function() {
-                let host = window.location.href;
-                localStorage.setItem(HOST_DIR_KEY, host.replace("/index.html", ""));
-                window.location.href = localStorage.getItem(HOST_DIR_KEY) + "/contents/home_content.html";
+                let complements = "/MultiPad";
+                if(window.location.hostname != "xayup.github.oi"){
+                    complements = "";
+                }
+                window.location.href = window.location.origin + complements + "/contents/home_content.html";
             }
         </script>
     </head>
