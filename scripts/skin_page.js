@@ -1,6 +1,6 @@
 import { SKIN_DESCRIPTION, SKIN_PREVIEW, SKIN_LINK_DOWNLOAD } from "../constants/skin_page_elements.js";
 import { HTML, TITLE } from "../constants/page_body_ids.js";
-import {HOST_DIR_KEY} from '/constants/statics.js';
+import {HOST_DIR_KEY} from '../constants/statics.js';
 
 fetch(localStorage.getItem(HOST_DIR_KEY) + + '/page_models/skin.html')
   .then(response => response.text())

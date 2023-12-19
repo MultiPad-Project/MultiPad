@@ -1,5 +1,5 @@
 import { CONTENT, TITLE, TAB_TITLE, HTML } from "../constants/page_body_ids.js";
-import {HOST_DIR_KEY} from '/constants/statics.js';
+import {HOST_DIR_KEY} from '../constants/statics.js';
 
 fetch(localStorage.getItem(HOST_DIR_KEY) + '/page_models/default.html')
   .then(response => response.text())
