@@ -1,33 +1,34 @@
 <!doctype html>
-<html>
+<html id="html">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width"/>
         <link id="mp" rel="canonical" href="https://multipad.com"/>
-        <link href="../styles/style.css" rel="stylesheet"/>
+        <title id="tab_title"></title> 
+        <link id="page_style" rel="stylesheet"/>
     </head>
-    <body id="home_page">
+    <body id="body">
         <section class="cabecalho">
-            <h1 class="titulo" id="title"></h1>
+            <h1 class="title" id="title"></h1>
             <nav class="main-menu-background">
                 <ul class="main_menu">
                     <li>
-                        <a href="../contents/home_content.html" id="bt_home">Home</a>
+                        <a id="bt_home">Home</a>
                     </li>
                     <li>
-                        <a href="../contents/download_multipad_content.html" id="bt_last_multipad">Download MultiPad</a>
+                        <a id="bt_last_multipad">Download MultiPad</a>
                     </li>
                     <li>
-                        <a href="../contents/project_files_content.html" id="bt_project_files">Project Files</a>
+                        <a id="bt_project_files">Project Files</a>
                     </li>
                     <li>
-                        <a href="../contents/skins_content.html" id="bt_skins">Skins</a>
+                        <a id="bt_skins">Skins</a>
                     </li>
                     <li>
-                        <a href="../contents/colors_table_content.html" id="bt_skins">Colors Table</a>
+                        <a id="bt_colors_table">Colors Table</a>
                     </li>
                     <li>
-                        <a href="../contents/about_content.html" id="bt_about">About</a>
+                        <a id="bt_about">About</a>
                     </li>
                 </ul>
             </nav>
@@ -37,24 +38,38 @@
             <ul>
                 <li>
                     <a class="link-com-textoimagem" href="https://www.youtube.com/@XayUp" id="youtube-channel">
-                        <img src="../img/youtube-svgrepo-com.svg"/>
+                        <img id="link_img_youtube" />
                         <p>YouTube Channel</p>
                     </a>
                 </li>
                 <li>
                     <a class="link-com-textoimagem" href="https://github.com/XayUp/MultiPad" id="multipad-source">
-                        <img src="../img/github-svgrepo-com.svg"/>
+                        <img id="link_img_source" />
                         <p>MultiPad Source</p>
                     </a>
                 </li>
                 <li>
                     <a class="link-com-textoimagem" href="https://github.com/XayUp" id="github-repo">
-                        <img src="../img/github-svgrepo-com.svg"/>
+                        <img id="link_img_github" />
                         <p>Github Profile</p>
                     </a>
                 </li>
             </ul>
         </footer>
-        <script src="../scripts/script.js" type="module"></script>
+        <script type="text/javascript">
+            // Update buttons functions
+            document.getElementById("bt_home").href = window.location.origin+ "/contents/home_content.html";
+            document.getElementById("bt_last_multipad").href = window.location.origin+ "/contents/download_multipad_content.html";
+            document.getElementById("bt_project_files").href = window.location.origin+ "/contents/project_files_content.html";
+            document.getElementById("bt_skins").href = window.location.origin+ "/contents/skins_content.html";
+            document.getElementById("bt_colors_table").href = window.location.origin+ "/contents/colors_table_content.html";
+            document.getElementById("bt_about").href = window.location.origin+ "/contents/about_content.html";
+            // images
+            document.getElementById("link_img_youtube").src = window.location.origin+ "/img/youtube-svgrepo-com.svg";
+            document.getElementById("link_img_source").src = window.location.origin+ "/img/github-svgrepo-com.svg";
+            document.getElementById("link_img_github").src = window.location.origin+ "/img/github-svgrepo-com.svg";
+            document.getElementById("page_style").href = window.location.origin+ "/styles/style.css"
+            console.log("Readed script: default.html");
+        </script>
     </body>
 </html>

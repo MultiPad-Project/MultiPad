@@ -1,14 +1,21 @@
-import { CONTENT, TITLE } from "../constants/page_body_ids.js";
+import { CONTENT, TITLE, TAB_TITLE, HTML } from "../constants/page_body_ids.js";
 
-fetch('../page_models/default.html')
+fetch(window.location.origin + '/page_models/default.html')
   .then(response => response.text())
   .then(data => {
-    var content = document.getElementById(CONTENT);
-    var title = document.getElementById(TITLE);
-    document.body.outerHTML = data;
+    let content = document.getElementById(CONTENT);
+    let title = document.getElementById(TITLE);
+    let tab_title = document.getElementById(TAB_TITLE);
+    document.getElementById(HTML).innerHTML = data;
     document.getElementById(CONTENT).replaceWith(content);
-    document.getElementById(TITLE).replaceWith(title);
+    document.getElementById(TITLE).textContent = title.textContent;
+    document.getElementById(TAB_TITLE).replaceWith(tab_title);
+    let scripts = document.getElementsByTagName('script');
+    for(let i = 0; i < scripts.length; i++){
+      eval(scripts[i].innerHTML);
+    }
   })
   .catch((error) => {
     console.error('Erro:', error);
   });
+console.log("Finish content.js");
