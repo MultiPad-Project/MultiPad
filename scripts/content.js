@@ -1,6 +1,7 @@
 import { CONTENT, TITLE, TAB_TITLE, HTML } from "../constants/page_body_ids.js";
+import {HOST_DIR_KEY} from '/constants/statics.js';
 
-fetch(window.location.origin + '/page_models/default.html')
+fetch(localStorage.getItem(HOST_DIR_KEY) + '/page_models/default.html')
   .then(response => response.text())
   .then(data => {
     let content = document.getElementById(CONTENT);

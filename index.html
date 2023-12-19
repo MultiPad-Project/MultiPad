@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script type="text/javascript">
+        <script type="module">
+            import {HOST_DIR_KEY} from '/constants/statics.js';
             window.onload = function() {
-            window.location.href = "contents/home_content.html";
+                let host = window.location.href;
+                localStorage.setItem(HOST_DIR_KEY, host.replace("/index.html", ""));
+                window.location.href = localStorage.getItem(HOST_DIR_KEY) + "/contents/home_content.html";
             }
         </script>
     </head>

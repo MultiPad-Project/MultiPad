@@ -1,0 +1,1 @@
+export const HOST_DIR_KEY = "host_dir";
