@@ -2,9 +2,6 @@ package com.xayup.midi.manager;
 
 import android.content.Context;
 import android.hardware.usb.*;
-import android.media.midi.MidiDeviceInfo;
-import android.media.midi.MidiManager;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;

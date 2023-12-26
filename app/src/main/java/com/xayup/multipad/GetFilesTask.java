@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import java.io.File;
@@ -97,6 +98,7 @@ public class GetFilesTask implements Runnable {
                     started_led_thread++;
                     PlayPads.ledFiles.putAll(Readers.readKeyLEDs(context, file, 0, end_index));
                     ended_led_thread++;
+                    Log.v("Thread 1", "finished");
                   })
               .start();
           new Thread(
@@ -105,6 +107,7 @@ public class GetFilesTask implements Runnable {
                     PlayPads.ledFiles.putAll(
                         Readers.readKeyLEDs(context, file, end_index, file.listFiles().length));
                     ended_led_thread++;
+                    Log.v("Thread 2", "finished");
                   })
               .start();
           break;

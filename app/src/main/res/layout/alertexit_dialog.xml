@@ -97,10 +97,7 @@
         android:layout_above="@id/alertExitButtonExit"
         android:layout_below="@id/alertExit_bar" >
 
-        <ListView
-            android:id="@+id/alertExitListSkins"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <include layout="@layout/skins_list" />
 
         <include layout="@layout/exit_configs" />
 

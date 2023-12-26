@@ -38,7 +38,7 @@ public class LaunchpadProMK3 {
         noteToXY = (note) ->
         {
             if(note >= 1 && note <= 99 && note != 9 && note != 90)
-                return new int[]{note % 10 - this.gridOffset[0], 9 - (note / 10)  - this.gridOffset[1]};
+                return new int[]{9 - (note / 10)  - this.gridOffset[1], note % 10 - this.gridOffset[0]};
             return new int[]{-1, -1};
         };
 

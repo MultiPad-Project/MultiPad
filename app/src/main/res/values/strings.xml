@@ -6,6 +6,17 @@
 
     <string name="controller_mode_not_supported">Controller mode is not supported. It is supported on android 6 and above.</string>
 
+    <!--Skins list-->
+        <!--Layout-->
+    <string name="skins_list_from_storage">Storage</string>
+    <string name="skins_list_from_apps">Applications</string>
+    <string name="skins_list_default_skin_button">Use default skin</string>
+        <!--Messages-->
+    <string name="skin_failed_get_resources_from_app">Impossible to carry the skin. Did you uninstall the skin after loading this list?</string>
+    <string name="skin_failed_get_resources_from_storage">Impossible to carry the skin. Did you deleted the skin after loading this list?</string>
+    <string name="skin_failed_get_resources_skin">Impossible to carry the skin.</string>
+    <string name="skin_set_default">Standard skin will be used.</string>
+
     <string name="app_name">MultiPad</string>
     <string name="permission_storage_necessary">Permission to storage needed!</string>
     <string name="diag_invalidfiles_title">Erros...</string>

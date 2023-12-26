@@ -1,11 +1,7 @@
 package com.xayup.multipad.midi;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.media.midi.MidiDeviceInfo;
-import android.media.midi.MidiInputPort;
-import android.media.midi.MidiManager;
-import android.media.midi.MidiOutputPort;
-import android.media.midi.MidiReceiver;
+import android.media.midi.*;
 import com.xayup.midi.manager.DevicesManager;
 import com.xayup.multipad.midi.controller.ControllerManager;
 
@@ -21,7 +17,6 @@ public class MidiStaticVars {
     public static MidiInputPort midiInput = null;
     public static MidiOutputPort midiOutput = null;
     public static MidiReceiver midiOutputReceiver = null;
-    public static MidiMessage midiMessage = null;
     public static MidiDeviceController midiDeviceController = null;
     public static int input_type = 1;
     public static String midiDevicePropertie = null;

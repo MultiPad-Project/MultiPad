@@ -1,20 +1,13 @@
 package com.xayup.multipad.midi;
 
-import android.app.Activity;
 import android.content.Context;
-import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
-import android.media.midi.MidiDevice;
-import android.media.midi.MidiDeviceInfo;
-import android.media.midi.MidiInputPort;
-import android.media.midi.MidiReceiver;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.IntRange;
-import com.xayup.midi.controllers.LaunchpadMK2;
 import com.xayup.midi.manager.thread.DataReceiverThread;
 import com.xayup.midi.types.Devices;
 import com.xayup.multipad.PlayPads;
@@ -23,14 +16,14 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class MidiDeviceController {
-    protected Context context;
+    //protected Context context;
     protected UsbDeviceConnection device;
     protected Handler handler;
     public final Devices.MidiDevice midiDevice;
     public final DataReceiverThread dataReceiverThread;
 
     public MidiDeviceController(Context context, UsbDeviceConnection device, Devices.MidiDevice midiDevice){
-        this.context = context;
+        //this.context = context;
         this.device = device;
         this.midiDevice = midiDevice;
         this.handler = new Handler(context.getMainLooper());
@@ -62,7 +55,7 @@ public class MidiDeviceController {
                                         int[] xy = midiDevice.config.noteToXY.notToXY(VELOCITY);
                                         if (xy[0] > -1 && xy[1] > -1) {
                                             final View pad = PlayPads.grids.getPadView(xy[0], xy[1]);
-                                            pad.dispatchTouchEvent(MotionEvent.obtain(0, 0, (STATUS == 9 && VELOCITY > 0) ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_UP, 0, 0, 0));
+                                            pad.dispatchTouchEvent(MotionEvent.obtain(0, 0, (STATUS != 8 && VELOCITY > 0) ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_UP, 0, 0, 0));
                                         }
                                     } catch (NullPointerException n) {
                                         n.printStackTrace(System.out);

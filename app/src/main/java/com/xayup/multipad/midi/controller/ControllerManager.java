@@ -1,5 +1,6 @@
 package com.xayup.multipad.midi.controller;
 
+import android.content.Context;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiInputPort;
@@ -32,7 +33,7 @@ public abstract class ControllerManager {
         }
     }
 
-    public ControllerManager(MidiDevice midiDevice, MidiDeviceInfo.PortInfo input, MidiDeviceInfo.PortInfo output){
+    public ControllerManager(Context context, MidiDevice midiDevice, MidiDeviceInfo.PortInfo input, MidiDeviceInfo.PortInfo output){
         if(input != null){
             this.inputPort = midiDevice.openInputPort(input.getPortNumber());
             send = new ControllerSend(deviceCfg, inputPort);
@@ -40,7 +41,7 @@ public abstract class ControllerManager {
         }
         if(output != null){
             this.outputPort = midiDevice.openOutputPort(output.getPortNumber());
-            this.receiver = new ControllerReceiver(deviceCfg, outputPort) {
+            this.receiver = new ControllerReceiver(context, deviceCfg, outputPort) {
                 @Override
                 public void showLed(int row, int colum, int velocity) {
                     received(row, colum, velocity);

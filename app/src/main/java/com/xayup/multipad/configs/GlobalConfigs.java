@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.widget.Button;
 import android.widget.VerticalSeekBar;
+import com.xayup.multipad.BuildConfig;
 import com.xayup.multipad.VariaveisStaticas;
 
 public class GlobalConfigs {
@@ -43,7 +44,7 @@ public class GlobalConfigs {
     public static boolean glow_enabled;
     public static boolean reverse_rows = false;
     public static boolean reverse_columns = false;
-    public static String skin_package = "com.xayup.multipad";
+    public static String skin_package = BuildConfig.APPLICATION_ID;
     public static String current_table = "EyeDrop_default.ct";
     public static String default_table_name = "EyeDrop_default.ct";
     public String table_path = DefaultConfigs.MULTIPAD_PATH;
@@ -68,6 +69,6 @@ public class GlobalConfigs {
     }
 
     public static void saveSkin(String skin_package){
-        app_configs.edit().putString("skin", skin_package).apply();
+        app_configs.edit().putString("skin", GlobalConfigs.skin_package = skin_package).apply();
     }
 }

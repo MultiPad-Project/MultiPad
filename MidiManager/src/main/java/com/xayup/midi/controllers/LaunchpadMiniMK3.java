@@ -13,7 +13,7 @@ public class LaunchpadMiniMK3 extends Devices.GridDeviceConfig {
         name = "Launchpad Mini MK3";
         midiNameRegex = "Launchpad Mini|LPMiniMK3 MIDI";
 
-        paletteChannel = Map.of("channel", 1);
+        paletteChannel = Map.of("classic", 1);
 
         keymap = new Object[][]{
             {null, 91, 92, 93, 94, 95, 96, 97, 98, 99, null},
@@ -37,7 +37,7 @@ public class LaunchpadMiniMK3 extends Devices.GridDeviceConfig {
         noteToXY = (int note) ->
         {
             if(note >= 1 && note <= 99 && note != 9 && note != 90)
-                return new int[]{(note % 10 - 1 - this.gridOffset[0]), 9 - (note / 10) - this.gridOffset[1]};
+                return new int[]{9 - (note / 10) - this.gridOffset[1], (note % 10 - 1 - this.gridOffset[0])};
             return new int[]{-1, -1};
         };
         specialLED = new Devices.KeyID(8, -1);

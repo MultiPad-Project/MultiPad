@@ -74,10 +74,7 @@
 	<!-- 0 -->
 	<include layout="@layout/main_floating_menu_main" />
 	<!-- 1 -->
-	<ListView
-		android:id="@+id/list_skins"
-		android:layout_height="match_parent"
-		android:layout_width="match_parent" />
+	<include layout="@layout/skins_list" />
 	<!-- 2 -->
 	<ListView
 		android:id="@+id/list_usb_midi_devices"

@@ -1,10 +1,7 @@
 package com.xayup.multipad.midi.controller;
 
-import android.media.midi.MidiDevice;
-import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiInputPort;
 import android.util.Log;
-import com.xayup.midi.controllers.LaunchpadProMK2;
 import com.xayup.midi.types.Devices;
 
 import java.io.IOException;

@@ -6,7 +6,6 @@ import android.content.*;
 import android.content.pm.*;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
-import android.media.midi.MidiDeviceInfo;
 import android.net.Uri;
 import android.os.*;
 import android.provider.Settings;
@@ -21,6 +20,9 @@ import com.xayup.midi.types.Devices;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.midi.MidiDeviceController;
 import com.xayup.multipad.midi.MidiStaticVars;
+import com.xayup.multipad.skin.SkinManager;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.*;
 
@@ -386,17 +388,29 @@ public class MainActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View arg0) {
-                        ListView list_skins;
-                        SkinTheme getThemes =
-                                new SkinTheme(
-                                        MainActivity.this,
-                                        (list_skins = (ListView) swit.getChildAt(SKINS)));
-                        getThemes.updateListSkin();
-                        list_skins.setOnItemClickListener(
-                            (AdapterView<?> adapterView, View view, int i, long l) -> {
-                                String skin = ((PackageInfo) adapterView.getItemAtPosition(i)).packageName;
-                                if(SkinTheme.loadSkin(context, skin)) GlobalConfigs.saveSkin(skin); }
-                        );
+                        View layout = swit.getChildAt(SKINS);
+                        ListView list_skins = (ListView) layout.findViewById(R.id.skins_list_view);
+                        Switch wSwitch = (Switch) layout.findViewById(R.id.skins_list_switch);
+                        wSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                                if(b) list_skins.setAdapter(SkinManager.getAdapterSkinsFromApps(context));
+                                else list_skins.setAdapter(SkinManager.getAdapterSkinsFromStorage(context));
+                            }
+                        });
+                        list_skins.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                if(wSwitch.isChecked()) GlobalConfigs.saveSkin((String) ((String[]) adapterView.getItemAtPosition(i))[SkinManager.SkinInfo.package_name]);
+                                else { try { GlobalConfigs.saveSkin((String) ((JSONObject) adapterView.getItemAtPosition(i)).getString(SkinManager.JSON_SKIN_PATH));
+                                    } catch (JSONException e) { Log.e("Load skin path", "Failed to get path"); }}
+                            }
+                        });
+                        layout.findViewById(R.id.skins_list_button_default_skin).setOnClickListener((button)->{
+                            GlobalConfigs.saveSkin(BuildConfig.APPLICATION_ID);
+                            Toast.makeText(context, context.getString(R.string.skin_set_default), Toast.LENGTH_SHORT).show();
+                        });
+                        wSwitch.setChecked(true);
                         barTitle.setText(getString(R.string.skins));
                         swit.setInAnimation(MainActivity.this, R.anim.move_in_to_left);
                         swit.setOutAnimation(MainActivity.this, R.anim.move_out_to_left);
@@ -464,39 +478,6 @@ public class MainActivity extends Activity {
         show.getWindow().setGravity(Gravity.RIGHT);
         show.getWindow().setBackgroundDrawable(getDrawable(R.drawable.inset_floating_menu));
     }
-
-    private final BroadcastReceiver usbReceiver =
-            new BroadcastReceiver() {
-                public void onReceive(Context context, Intent intent) {
-                    Toast.makeText(context, "onReceive", 0).show();
-                    String action = intent.getAction();
-                    if (ACTION_USB_PERMISSION.equals(action)) {
-                        synchronized (this) {
-                            Toast.makeText(context, "equal", 0).show();
-                            if (intent.getBooleanExtra(
-                                    UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                                Toast.makeText(context, "granted", 0).show();
-                                new UsbDeviceActivity()
-                                        .openMidiDevice(context, MidiStaticVars.midiDevice);
-                            } else {
-                                Toast.makeText(
-                                                context,
-                                                context.getString(R.string.danied_midi_permission)
-                                                        .replace(
-                                                                "%m",
-                                                                MidiStaticVars.midiDevice
-                                                                        .getProperties()
-                                                                        .getString(
-                                                                                MidiDeviceInfo
-                                                                                        .PROPERTY_PRODUCT)),
-                                                0)
-                                        .show();
-                                MidiStaticVars.midiDevice = null;
-                            }
-                        }
-                    }
-                }
-            };
 
     @Override
     public void onWindowFocusChanged(boolean bool) {

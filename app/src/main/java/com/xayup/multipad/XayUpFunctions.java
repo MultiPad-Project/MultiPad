@@ -74,21 +74,6 @@ public class XayUpFunctions {
 						int colum = i%10;
 						mPads.getPadView(row, colum).findViewById(MakePads.PadInfo.PadLayerType.LED).setBackgroundColor(Color.TRANSPARENT);
 						mPads.getGlows().getGlow(row, colum).setAlpha(0f);
-						if(i != 9) {
-							try {
-								if (MidiStaticVars.midiInput != null) {
-									int offset = 0;
-									int numBytes = 0;
-									byte[] bytes = new byte[32];
-									bytes[numBytes++] = (byte) ((MidiStaticVars.NOTE_OFF & 0xFF)
-											+ (MidiStaticVars.CHANNEL - 1));
-									bytes[numBytes++] = (byte) (UsbDeviceActivity.rowProgramMode(i, false));
-									bytes[numBytes++] = (byte) 0;
-									MidiStaticVars.midiInput.send(bytes, numBytes, offset);
-								}
-							} catch (IOException ignored) {
-							}
-						}
 					}
 				}
 				handler.removeCallbacks(this);
@@ -96,27 +81,6 @@ public class XayUpFunctions {
 		});
 	}
 
-	//stop sounds
-    /*
-	public static void stopSounds() {
-		if (PlayPads.exoplayers != null) {
-			for (String p : PlayPads.exoplayers.keySet()) {
-				if (PlayPads.exoplayers.get(p).isPlaying()) {
-					PlayPads.exoplayers.get(p).pause();
-				}
-				PlayPads.exoplayers.get(p).release();
-			}
-            PlayPads.keySound = null;
-		} else if (PlayPads.keySoundPool != null) {
-            for(Integer stream : PlayPads.streamsPool.values()){
-                PlayPads.soundPool.stop(stream);
-            }
-            PlayPads.soundPool.release();
-            PlayPads.keySoundPool = null;
-            PlayPads.toChainPool = null;
-        }
-	}
-    */
 	//Toque na visualizacao
 	public static void touchAndRelease(final Activity context, final int ViewId, final int type) {
 		context.runOnUiThread(new Runnable() {

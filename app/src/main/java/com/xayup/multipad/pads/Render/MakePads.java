@@ -467,8 +467,8 @@ public class MakePads {
                                 pad.setVisibility(View.GONE);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.GONE);
                             } else if (padInfo.getColum() == 0) {
-                                pad.setAlpha(0f);
-                                ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.INVISIBLE);
+                                pad.setVisibility(View.GONE);
+                                ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.GONE);
                             } else {
                                 pad.setVisibility(View.VISIBLE);
                                 pad.setAlpha(1f);
@@ -477,7 +477,7 @@ public class MakePads {
                         });
                         //Calculator
                         getRoot().getLayoutParams().width =
-                                (int) (getRoot().getMeasuredHeight() + (getRoot().getMeasuredHeight() / 9f));
+                                (int) (getRoot().getMeasuredHeight());
 
                         break;
                     }
@@ -487,6 +487,9 @@ public class MakePads {
                             if (padInfo.getRow() == 0 || padInfo.getRow() == getRows() -1) {
                                 pad.setVisibility(View.GONE);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.GONE);
+                            } else if (padInfo.getColum() == 0){
+                                pad.setVisibility(View.VISIBLE);
+                                ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.VISIBLE);
                             } else {
                                 pad.setVisibility(View.VISIBLE);
                                 pad.setAlpha(1f);

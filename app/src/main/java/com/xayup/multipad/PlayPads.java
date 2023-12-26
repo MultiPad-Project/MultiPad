@@ -44,6 +44,9 @@ import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.midi.MidiStaticVars;
 import com.xayup.multipad.midi.controller.ControllerManager;
 import com.xayup.multipad.pads.Render.MakePads;
+import com.xayup.multipad.skin.SkinManager;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.util.*;
@@ -189,7 +192,7 @@ public class PlayPads extends Activity {
                                     }
                                 }
                                 if (input != null || output != null) {
-                                    MidiStaticVars.controllerManager = new ControllerManager(midiDevice, input, output) {
+                                    MidiStaticVars.controllerManager = new ControllerManager(context, midiDevice, input, output) {
                                         @Override
                                         public void received(int row, int colum, int velocity) {
                                             if (row > -1 & colum > -1)
@@ -313,7 +316,7 @@ public class PlayPads extends Activity {
         }));
 
         new ConfigurePads(context).configure(mPads);
-        updateSkin();
+        updateSkin(GlobalConfigs.skin_package);
         //Render Glows
         mPads.getGlows().changeCfg(glowPadRadius, glowPadIntensity, false);
         mPads.getGlows().changeCfg(glowChainRadius, glowChainIntensity, true);
@@ -440,39 +443,48 @@ public class PlayPads extends Activity {
     /**
      * Após usar .loadSkin(), será necessário usar isto para aplicar a skin.
      */
-    public void updateSkin() {
-        mPads.forAllChildInstance(-1, (pad, padInfo) -> {
-            Log.v("updateSkin", padInfo.getRow() + " " + padInfo.getColum());
-            if (padInfo.getType() == MakePads.PadType.CHAIN) {
-                ImageView btn_ = ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_));
-                if (SkinTheme.chain != null) {
-                    ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(SkinTheme.chain);
-                    btn_.setImageDrawable(SkinTheme.led);
-                    btn_.setBackground(null);
-                    ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(null);
-                    pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.INVISIBLE);
-                } else {
-                    ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(SkinTheme.btn);
-                    btn_.setImageDrawable(SkinTheme.btn_);
-                    ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(SkinTheme.chainled);
-                    pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.VISIBLE);
-                }
-            } else if (padInfo.getType() != MakePads.PadType.NONE) {
-                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(SkinTheme.btn);
-                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(SkinTheme.btn_);
-                if (padInfo.getType() == MakePads.PadType.PAD) {
-                    try {
-                        ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM)).setImageDrawable(SkinTheme.phantom);
-                    } catch (NullPointerException n) {
-                        ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM_)).setImageDrawable(SkinTheme.phantom_);
+    public void updateSkin(String package_or_path) {
+        Log.v("Try apply skin", package_or_path);
+        try {
+            if(!SkinManager.loadSkinResources(context, package_or_path, (skinResources) -> {
+                mPads.forAllChildInstance(-1, (pad, padInfo) -> {
+                    //Log.v("updateSkin", padInfo.getRow() + " " + padInfo.getColum());
+                    if (padInfo.getType() == MakePads.PadType.CHAIN) {
+                        ImageView btn_ = ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_));
+                        if (skinResources.CHAIN != null) {
+                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(skinResources.CHAIN);
+                            btn_.setImageDrawable(skinResources.CHAIN_);
+                            btn_.setBackground(null);
+                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(null);
+                            pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.INVISIBLE);
+                        } else {
+                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(skinResources.BTN);
+                            btn_.setImageDrawable(skinResources.BTN_);
+                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(skinResources.CHAINLED);
+                            pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.VISIBLE);
+                        }
+                    } else if (padInfo.getType() != MakePads.PadType.NONE) {
+                        ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(skinResources.BTN);
+                        ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(skinResources.BTN_);
+                        if (padInfo.getType() == MakePads.PadType.PAD) {
+                            try {
+                                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM)).setImageDrawable(skinResources.PHANTOM);
+                            } catch (NullPointerException n) {
+                                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM_)).setImageDrawable(skinResources.PHANTOM_);
+                            }
+                        } else if (padInfo.getType() == MakePads.PadType.PAD_LOGO) {
+                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.LOGO)).setImageDrawable(skinResources.CUSTOMLOGO);
+                        }
                     }
-                } else if (padInfo.getType() == MakePads.PadType.PAD_LOGO) {
-                    ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.LOGO)).setImageDrawable(SkinTheme.customLogo);
-                }
-            }
-        });
-        playBgimg.setImageDrawable(SkinTheme.playBg);
-        mPads.getRoot().requestLayout();
+                });
+                playBgimg.setImageDrawable(skinResources.PLAYBG);
+                mPads.getRoot().requestLayout();
+            })){Toast.makeText(context, context.getString(R.string.skin_failed_get_resources_skin), Toast.LENGTH_SHORT).show();}
+        } catch (JSONException je){
+            Toast.makeText(context, context.getString(R.string.skin_failed_get_resources_from_storage), Toast.LENGTH_SHORT).show();
+        } catch (PackageManager.NameNotFoundException nnfe){
+            Toast.makeText(context, context.getString(R.string.skin_failed_get_resources_from_app), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -573,7 +585,8 @@ public class PlayPads extends Activity {
         Button color_table = onExitDialog.findViewById(R.id.alert_color_table_buttom);
         Button pad_grids = onExitDialog.findViewById(R.id.alert_exit_pad_grids);
         // Select Skin page
-        ListView listSkins = onExitDialog.findViewById(R.id.alertExitListSkins);
+        ListView listSkins = onExitDialog.findViewById(R.id.skins_list_view);
+        Switch skinSwitch = onExitDialog.findViewById(R.id.skins_list_switch);
         TextView barTitle = onExitDialog.findViewById(R.id.alertExitTitle);
         ViewFlipper flipper = onExitDialog.findViewById(R.id.exitMenuSwitcher);
 
@@ -621,8 +634,6 @@ public class PlayPads extends Activity {
         if (glowEf) glow_cfg_show.setAlpha(1.0f);
         glow_cfg_check.setChecked(ifglow_cfg_show);
         glow_check.setChecked(glowEf);
-        SkinTheme getSkinList = new SkinTheme(PlayPads.this, listSkins);
-        getSkinList.updateListSkin();
         sound_spam.setChecked(spamSounds);
         hide_check.setChecked(hide_buttons_b);
         decoration_show.setChecked(layer_decoration);
@@ -634,13 +645,32 @@ public class PlayPads extends Activity {
         item_customHeight.setAlpha(1.0f);
         SharedPreferences.Editor save_cfg = getSharedPreferences("app_configs", MODE_PRIVATE).edit();
         //List skin
-        listSkins.setOnItemClickListener((adapter, view, pos, id) -> {
-            String skin = ((PackageInfo) adapter.getItemAtPosition(pos)).packageName;
-            if (SkinTheme.loadSkin(context, skin)) {
-                updateSkin();
-                GlobalConfigs.saveSkin(skin);
+        skinSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b) listSkins.setAdapter(SkinManager.getAdapterSkinsFromApps(context));
+                else listSkins.setAdapter(SkinManager.getAdapterSkinsFromStorage(context));
             }
         });
+        listSkins.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String package_or_path;
+                if(skinSwitch.isChecked()){
+                    package_or_path = ((String[]) adapterView.getItemAtPosition(i))[SkinManager.SkinInfo.package_name]; }
+                else { try {
+                    package_or_path = ((JSONObject) adapterView.getItemAtPosition(i)).getString(SkinManager.JSON_SKIN_PATH);
+                } catch (JSONException e) { Log.e("Load skin path", "Failed to get path"); return; }}
+
+                updateSkin(package_or_path);
+                GlobalConfigs.saveSkin(package_or_path);
+            }
+        });
+        onExitDialog.findViewById(R.id.skins_list_button_default_skin).setOnClickListener((button)->{
+            updateSkin(BuildConfig.APPLICATION_ID);
+            GlobalConfigs.saveSkin(BuildConfig.APPLICATION_ID);
+        });
+        skinSwitch.setChecked(true);
 
         // Ir para a pagina de configuraçoes
         exit_config.setOnClickListener(
@@ -700,15 +730,6 @@ public class PlayPads extends Activity {
                     }
                 });
 
-        // Voltar para a lista de Unipacks
-        onExitButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        exitPads();
-                        PlayPads.super.onBackPressed();
-                    }
-                });
         // Ver a lista de pad grids
         if (MidiStaticVars.controllerManager != null) {
             pad_grids.setOnClickListener(
@@ -1348,6 +1369,7 @@ public class PlayPads extends Activity {
                         }
                     }
                 });
+
         // Finalmente criar e mostrar a Janela
         AlertDialog.Builder alertExit = new AlertDialog.Builder(this);
         alertExit.setView(onExitDialog);
@@ -1355,6 +1377,17 @@ public class PlayPads extends Activity {
         XayUpFunctions.showDiagInFullscreen(alertDialog);
         alertDialog.getWindow().setLayout(MainActivity.height, WindowManager.LayoutParams.MATCH_PARENT);
         alertDialog.getWindow().setGravity(Gravity.RIGHT);
+
+        // Voltar para a lista de Unipacks
+        onExitButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        exitPads();
+                        alertDialog.dismiss();
+                        PlayPads.super.onBackPressed();
+                    }
+                });
     }
 
     private String resizeLayer(final View layer, Double increment) {
