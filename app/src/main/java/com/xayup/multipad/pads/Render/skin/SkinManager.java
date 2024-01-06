@@ -1,4 +1,4 @@
-package com.xayup.multipad.skin;
+package com.xayup.multipad.pads.Render.skin;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.xayup.multipad.BuildConfig;
 import com.xayup.multipad.R;
 import com.xayup.multipad.global.Vars;
+import com.xayup.multipad.pads.Render.MakePads;
 import com.xayup.utils.Files;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -132,10 +133,20 @@ public class SkinManager {
             CHAIN = chain; CHAIN_ = chain_; CHAIN__ = chain__; PLAYBG = playbg; CUSTOMLOGO = customlogo;
         }
     }
-    public interface OnSkinResourceLoaded{ void resourceLoaded(SkinResources resources); }
+    public interface OnSkinResourceLoaded{
+        void resourceLoadedBasic(View pad, MakePads.ChildInfo padInfo, SkinResources resources);
+        void resourceLoadedAdvanced(View pad, MakePads.ChildInfo padInfo, Drawable resource, SkinResources defaultResources);
 
-    public static boolean loadSkinResources(Context context, Object skin_info, OnSkinResourceLoaded resourceLoaded) throws PackageManager.NameNotFoundException, JSONException {
+        /**
+         * Apply background and others
+         * @param defaultResources .
+         */
+        void finishResourceLoaded(SkinResources defaultResources);
+    }
+
+    public static boolean loadSkinResources(Context context, Object skin_info, MakePads.Pads mPads, OnSkinResourceLoaded resourceLoaded) throws PackageManager.NameNotFoundException, JSONException, IOException {
         String package_or_path;
+        SkinResources sResources;
         if((skin_info instanceof String && ((package_or_path = (String) skin_info).startsWith("com.kimjisub.launchpad.theme.") || package_or_path.equals(BuildConfig.APPLICATION_ID))) ||
                 skin_info instanceof String[] && !(package_or_path = ((String[]) skin_info)[SkinInfo.package_name]).isEmpty()){
             try {
@@ -158,47 +169,71 @@ public class SkinManager {
                         context.getResources().getIdentifier("customlogo", "drawable", context.getPackageName()));
                 if((tmpid = res.getIdentifier("playbg_pro", "drawable", package_or_path)) != 0 || (tmpid = res.getIdentifier("playbg", "drawable", package_or_path)) != 0)
                     PLAYBG = res.getDrawable(tmpid, null);
-
-                resourceLoaded.resourceLoaded(
-                        new SkinResources(
-                                res.getDrawable(res.getIdentifier("phantom", "drawable", package_or_path), null),
-                                res.getDrawable(res.getIdentifier("phantom_", "drawable", package_or_path), null),
-                                CHAINLED, res.getDrawable(res.getIdentifier("btn", "drawable", package_or_path), null),
-                                res.getDrawable(res.getIdentifier("btn_", "drawable", package_or_path), null),
-                                CHAIN, CHAIN_, CHAIN__, PLAYBG, CUSTOMLOGO
-                                )
-                );
+                for(byte row = 0; row < mPads.getRows(); row++)
+                    for(byte colum = 0; colum < mPads.getColumns(); colum++)
+                        resourceLoaded.resourceLoadedBasic(mPads.getPadView(row, colum), mPads.getPadInfo(row, colum),
+                                sResources = new SkinResources(
+                                        res.getDrawable(res.getIdentifier("phantom", "drawable", package_or_path), null),
+                                        res.getDrawable(res.getIdentifier("phantom_", "drawable", package_or_path), null),
+                                        CHAINLED, res.getDrawable(res.getIdentifier("btn", "drawable", package_or_path), null),
+                                        res.getDrawable(res.getIdentifier("btn_", "drawable", package_or_path), null),
+                                        CHAIN, CHAIN_, CHAIN__, PLAYBG, CUSTOMLOGO
+                                        )
+                        );
             } catch (PackageManager.NameNotFoundException nnfe){
                 Toast.makeText(context, context.getString(R.string.skin_failed_get_resources_from_app), Toast.LENGTH_SHORT).show();
             }
         } else if((skin_info instanceof String && new File((package_or_path = (String) skin_info)).isDirectory()) ||
-                skin_info instanceof JSONObject && !(package_or_path = ((JSONObject) skin_info).getString(JSON_SKIN_PATH)).isEmpty()){
-                List<String> files = Arrays.asList(new File(package_or_path).list());
-                Drawable CHAINLED = null, CHAIN = null, CHAIN_ = null, CHAIN__ = null, PLAYBG = null, CUSTOMLOGO = null;
+            skin_info instanceof JSONObject && !(package_or_path = ((JSONObject) skin_info).getString(JSON_SKIN_PATH)).isEmpty()){
+            List<String> files = Arrays.asList(new File(package_or_path).list());
+            JSONObject json = Files.readJson(new File(package_or_path, "skin_info.json"));
 
-                if(files.contains("chainled.xml")) { CHAINLED = Drawable.createFromPath(package_or_path.concat("/chainled.xml"));
-                } else if(files.contains("chainled.png")) { CHAINLED = Drawable.createFromPath(package_or_path.concat("/chainled.png"));
-                } else if(files.contains("chain.png")){
-                    CHAIN = Drawable.createFromPath(package_or_path.concat("/chain.png"));
-                    CHAIN_ = Drawable.createFromPath(package_or_path.concat("/chain_.png"));
-                    CHAIN__ = Drawable.createFromPath(package_or_path.concat("/chain__.png"));
+            Drawable CHAINLED = null, CHAIN = null, CHAIN_ = null, CHAIN__ = null, PLAYBG = null, CUSTOMLOGO = null;
+
+            if (files.contains("chainled.xml")) {
+                CHAINLED = Drawable.createFromPath(package_or_path.concat("/chainled.xml"));
+            } else if (files.contains("chainled.png")) {
+                CHAINLED = Drawable.createFromPath(package_or_path.concat("/chainled.png"));
+            } else if (files.contains("chain.png")) {
+                CHAIN = Drawable.createFromPath(package_or_path.concat("/chain.png"));
+                CHAIN_ = Drawable.createFromPath(package_or_path.concat("/chain_.png"));
+                CHAIN__ = Drawable.createFromPath(package_or_path.concat("/chain__.png"));
+            }
+            if (files.contains("applogo.png"))
+                CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/applogo.png"));
+            else if (files.contains("logo.png"))
+                CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/logo.png"));
+            else if (files.contains("custom_logo.png"))
+                CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/custom_logo.png"));
+            else if (files.contains("theme_ic.png"))
+                CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/theme_ic.png"));
+            else
+                CUSTOMLOGO = context.getDrawable(context.getResources().getIdentifier("customlogo", "drawable", context.getPackageName()));
+            PLAYBG = (files.contains("playbg_pro.png")) ? Drawable.createFromPath(package_or_path.concat("/playbg_pro.png")) : Drawable.createFromPath(package_or_path.concat("/playbg.png"));
+
+            sResources = new SkinResources(
+                    Drawable.createFromPath(package_or_path.concat("/phantom").concat((files.contains("phantom.xml")) ? ".xml" : ".png")),
+                    Drawable.createFromPath(package_or_path.concat("/phantom_").concat((files.contains("phantom_.xml")) ? ".xml" : ".png")),
+                    CHAINLED, Drawable.createFromPath(package_or_path.concat("/btn").concat((files.contains("btn.xml")) ? ".xml" : ".png")),
+                    Drawable.createFromPath(package_or_path.concat("/btn_").concat((files.contains("btn_.xml")) ? ".xml" : ".png")),
+                    CHAIN, CHAIN_, CHAIN__, PLAYBG, CUSTOMLOGO
+            );
+            if(json.has("skin_type") && json.getString("skin_type").equalsIgnoreCase("advanced")){
+                if(!json.has("skin_pads")) return false;
+                else {
+                    JSONObject jsonObj = json.getJSONObject("skin_pads");
+                    for(byte row = 0; row < mPads.getRows(); row++)
+                        for(byte colum = 0; colum < mPads.getColumns(); colum++)
+                            resourceLoaded.resourceLoadedAdvanced(mPads.getPadView(row, colum), mPads.getPadInfo(row, colum),
+                                        (jsonObj.has(row+","+colum)) ? Drawable.createFromPath(package_or_path.concat("/"+jsonObj.getString(row+","+colum)))
+                                        : null, sResources);
                 }
-                if(files.contains("applogo.png")) CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/applogo.png"));
-                else if(files.contains("logo.png")) CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/logo.png"));
-                else if(files.contains("custom_logo.png")) CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/custom_logo.png"));
-                else if(files.contains("theme_ic.png")) CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/theme_ic.png"));
-                else CUSTOMLOGO = context.getDrawable(context.getResources().getIdentifier("customlogo", "drawable", context.getPackageName()));
-                PLAYBG = (files.contains("playbg_pro.png")) ? Drawable.createFromPath(package_or_path.concat("/playbg_pro.png")) : Drawable.createFromPath(package_or_path.concat("/playbg.png"));
+            } else
+                for(byte row = 0; row < mPads.getRows(); row++)
+                    for(byte colum = 0; colum < mPads.getColumns(); colum++)
+                        resourceLoaded.resourceLoadedBasic(mPads.getPadView(row, colum), mPads.getPadInfo(row, colum), sResources);
 
-                resourceLoaded.resourceLoaded(
-                        new SkinResources(
-                                Drawable.createFromPath(package_or_path.concat("/phantom").concat((files.contains("phantom.xml")) ? ".xml" : ".png")),
-                                Drawable.createFromPath(package_or_path.concat("/phantom_").concat((files.contains("phantom_.xml")) ? ".xml" : ".png")),
-                                CHAINLED, Drawable.createFromPath(package_or_path.concat("/btn").concat((files.contains("btn.xml")) ? ".xml" : ".png")),
-                                Drawable.createFromPath(package_or_path.concat("/btn_").concat((files.contains("btn_.xml")) ? ".xml" : ".png")),
-                                CHAIN, CHAIN_, CHAIN__, PLAYBG, CUSTOMLOGO
-                        )
-                );
+            resourceLoaded.finishResourceLoaded(sResources);
         } else return false;
         return true;
     }

@@ -7,10 +7,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.*;
+import android.graphics.drawable.Drawable;
 import android.icu.math.BigDecimal;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
@@ -44,7 +44,7 @@ import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.midi.MidiStaticVars;
 import com.xayup.multipad.midi.controller.ControllerManager;
 import com.xayup.multipad.pads.Render.MakePads;
-import com.xayup.multipad.skin.SkinManager;
+import com.xayup.multipad.pads.Render.skin.SkinManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -446,44 +446,90 @@ public class PlayPads extends Activity {
     public void updateSkin(String package_or_path) {
         Log.v("Try apply skin", package_or_path);
         try {
-            if(!SkinManager.loadSkinResources(context, package_or_path, (skinResources) -> {
-                mPads.forAllChildInstance(-1, (pad, padInfo) -> {
-                    //Log.v("updateSkin", padInfo.getRow() + " " + padInfo.getColum());
-                    if (padInfo.getType() == MakePads.PadType.CHAIN) {
-                        ImageView btn_ = ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_));
-                        if (skinResources.CHAIN != null) {
-                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(skinResources.CHAIN);
-                            btn_.setImageDrawable(skinResources.CHAIN_);
-                            btn_.setBackground(null);
-                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(null);
-                            pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.INVISIBLE);
-                        } else {
-                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(skinResources.BTN);
-                            btn_.setImageDrawable(skinResources.BTN_);
-                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(skinResources.CHAINLED);
-                            pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.VISIBLE);
-                        }
-                    } else if (padInfo.getType() != MakePads.PadType.NONE) {
-                        ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(skinResources.BTN);
-                        ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(skinResources.BTN_);
-                        if (padInfo.getType() == MakePads.PadType.PAD) {
-                            try {
-                                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM)).setImageDrawable(skinResources.PHANTOM);
-                            } catch (NullPointerException n) {
-                                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM_)).setImageDrawable(skinResources.PHANTOM_);
+            if(!SkinManager.loadSkinResources(context, package_or_path, mPads, new SkinManager.OnSkinResourceLoaded() {
+                @Override
+                public void resourceLoadedBasic(View pad, MakePads.ChildInfo padInfo, SkinManager.SkinResources skinResources) {
+                        //Log.v("updateSkin", padInfo.getRow() + " " + padInfo.getColum());
+                        if(padInfo == null) return;
+                        if (padInfo.getType() == MakePads.PadType.CHAIN) {
+                            ImageView btn_ = ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_));
+                            if (skinResources.CHAIN != null) {
+                                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(skinResources.CHAIN);
+                                btn_.setImageDrawable(skinResources.CHAIN_);
+                                btn_.setBackground(null);
+                                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(null);
+                                pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.INVISIBLE);
+                            } else {
+                                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(skinResources.BTN);
+                                btn_.setImageDrawable(skinResources.BTN_);
+                                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.CHAIN_LED)).setImageDrawable(skinResources.CHAINLED);
+                                pad.findViewById(MakePads.PadInfo.PadLayerType.LED).setVisibility(View.VISIBLE);
                             }
-                        } else if (padInfo.getType() == MakePads.PadType.PAD_LOGO) {
-                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.LOGO)).setImageDrawable(skinResources.CUSTOMLOGO);
+                        } else if (padInfo.getType() != MakePads.PadType.NONE) {
+                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(skinResources.BTN);
+                            ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(skinResources.BTN_);
+                            if (padInfo.getType() == MakePads.PadType.PAD) {
+                                try {
+                                    ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM)).setImageDrawable(skinResources.PHANTOM);
+                                } catch (NullPointerException n) {
+                                    ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM_)).setImageDrawable(skinResources.PHANTOM_);
+                                }
+                            } else if (padInfo.getType() == MakePads.PadType.PAD_LOGO) {
+                                ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.LOGO)).setImageDrawable(skinResources.CUSTOMLOGO);
+                            }
                         }
-                    }
-                });
-                playBgimg.setImageDrawable(skinResources.PLAYBG);
-                mPads.getRoot().requestLayout();
+                    playBgimg.setImageDrawable(skinResources.PLAYBG);
+                    mPads.getRoot().requestLayout();
+                }
+
+                @Override
+                public void resourceLoadedAdvanced(View pad, MakePads.ChildInfo padInfo, Drawable resource, SkinManager.SkinResources skinResources) {
+                    if(padInfo == null) return;
+                    byte viewId = 0;
+                    if(resource != null)  {pad.setRotation(0); pad.setScaleX(1); pad.setScaleY(1);}
+                    if (padInfo.getType() == MakePads.PadType.CHAIN){
+                        viewId = MakePads.PadInfo.PadLayerType.CHAIN_LED;
+                        if(resource == null)
+                            if((resource = skinResources.CHAINLED) == null)
+                                resource = context.getDrawable(R.drawable.chainled);
+                    }  else if (padInfo.getType() != MakePads.PadType.NONE)
+                        if (padInfo.getType() == MakePads.PadType.PAD)
+                            if(pad.findViewById(MakePads.PadInfo.PadLayerType.PHANTOM) != null) {
+                                viewId = MakePads.PadInfo.PadLayerType.PHANTOM;
+                                if(resource == null)
+                                    if((resource = skinResources.PHANTOM) == null)
+                                        resource = context.getDrawable(R.drawable.phantom);
+                            } else {
+                                viewId = MakePads.PadInfo.PadLayerType.PHANTOM_;
+                                if(resource == null)
+                                    if((resource = skinResources.PHANTOM_) == null)
+                                        resource = context.getDrawable(R.drawable.phantom_);
+                            }
+                        else if (padInfo.getType() == MakePads.PadType.PAD_LOGO) {
+                            viewId = MakePads.PadInfo.PadLayerType.LOGO;
+                            if (resource == null)
+                                if ((resource = skinResources.CUSTOMLOGO) == null)
+                                    resource = context.getDrawable(R.drawable.customlogo);
+                        }
+                    else return;
+                    ((ImageView) pad.findViewById(viewId)).setImageDrawable(resource);
+                    ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN)).setImageDrawable(skinResources.BTN);
+                    ((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.BTN_)).setImageDrawable(skinResources.BTN_);
+                }
+
+                @Override
+                public void finishResourceLoaded(SkinManager.SkinResources skinResources){
+                    playBgimg.setImageDrawable(skinResources.PLAYBG);
+                    mPads.getRoot().requestLayout();
+                }
             })){Toast.makeText(context, context.getString(R.string.skin_failed_get_resources_skin), Toast.LENGTH_SHORT).show();}
-        } catch (JSONException je){
+        } catch (JSONException | IOException je){
             Toast.makeText(context, context.getString(R.string.skin_failed_get_resources_from_storage), Toast.LENGTH_SHORT).show();
+            Log.e("JSON or IO exception", je.toString());
         } catch (PackageManager.NameNotFoundException nnfe){
             Toast.makeText(context, context.getString(R.string.skin_failed_get_resources_from_app), Toast.LENGTH_SHORT).show();
+            Log.e("NameNotFoundException", nnfe.toString());
+
         }
     }
 

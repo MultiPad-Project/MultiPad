@@ -5,7 +5,6 @@ import android.app.*;
 import android.content.*;
 import android.content.pm.*;
 import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.*;
 import android.provider.Settings;
@@ -20,7 +19,7 @@ import com.xayup.midi.types.Devices;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.midi.MidiDeviceController;
 import com.xayup.multipad.midi.MidiStaticVars;
-import com.xayup.multipad.skin.SkinManager;
+import com.xayup.multipad.pads.Render.skin.SkinManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
