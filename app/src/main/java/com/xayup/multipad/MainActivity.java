@@ -189,7 +189,7 @@ public class MainActivity extends Activity {
 
                 if (GlobalConfigs.use_unipad_folder) {
                     rootFolder = new File(Environment.getExternalStorageDirectory() + "/Unipad");
-                    VariaveisStaticas.use_unipad_folder = true;
+                    GlobalConfigs.use_unipad_folder = true;
                 }
                 if (granted) {
                     if (!rootFolder.exists()) {

@@ -419,6 +419,29 @@ public class MakePads {
             this.changeLayout(this.layout);
         }
 
+        public void defaultRotationSetting(byte r, byte c) {
+            View pad = getPadView(r, c);
+            if(pad == null) return;
+            if (r == 0 && c != 9) {
+                pad.setRotation(-90);
+            } else if (r == 9) {
+                pad.setRotation(90);
+            } else if (c == 0) {
+                pad.setScaleX(-1);
+            } else if (r == 4 && c == 5) {
+                pad.setScaleX(-1);
+            } else if (r == 5 && c == 4) {
+                pad.setScaleY(-1);
+            } else if (r == 5 && c == 5) {
+                pad.setScaleX(-1);
+                pad.setScaleY(-1);
+            }
+        }
+
+        public void defaultRotationSetting(){
+            forAllChildInstance(-1, (pad, padInfo)-> defaultRotationSetting(padInfo.row, padInfo.colum));
+        }
+
         /**
          * Change grid layout type
          * @param layout layout type. Get with MakePads.Pads.GRID_LAYOUT_....
@@ -581,22 +604,13 @@ public class MakePads {
                             /*CHAIN*/
                             phantom.setId(PadInfo.PadLayerType.CHAIN_LED);
                             mPads.add(r, c, pad, PadType.CHAIN);
-                            if (r == 0) { pad.setRotation(-90); }
-                            else if (r == 9) { pad.setRotation(90); }
-                            else if (c == 0) { pad.setScaleX(pad.getScaleX() * -1); }
+                            mPads.defaultRotationSetting(r, c);
                         }
                     } else {
                         mPads.add(r, c, pad, PadType.PAD);
                         if ((r == 4 || r == 5) && (c == 4 || c == 5)) {
                             phantom.setId(PadInfo.PadLayerType.PHANTOM_);
-                            if (r == 4 && c == 5) {
-                                pad.setScaleX(pad.getScaleX() * -1);
-                            } else if (r == 5 && c == 4) {
-                                pad.setScaleY(pad.getScaleY() * -1);
-                            } else if (r == 5) {
-                                pad.setScaleX(pad.getScaleX() * -1);
-                                pad.setScaleY(pad.getScaleY() * -1);
-                            }
+                            mPads.defaultRotationSetting(r, c);
                         } else {
                             phantom.setId(PadInfo.PadLayerType.PHANTOM);
                         }

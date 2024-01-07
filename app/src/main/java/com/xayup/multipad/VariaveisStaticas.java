@@ -119,7 +119,5 @@ public class VariaveisStaticas {
 	public static final String MULTIPAD_PATH = Environment.getExternalStorageDirectory() + "/MultiPad";
 	public static final String COLOR_TABLE_PATH = MULTIPAD_PATH + "/LCT";
   public static final String PROJECTS_PATH = MULTIPAD_PATH + "/Projects";
-  
-  //Configuraçoes
-  public static boolean use_unipad_folder = false;
+
 }

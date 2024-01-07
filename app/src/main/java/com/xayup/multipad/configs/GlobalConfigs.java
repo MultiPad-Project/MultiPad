@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.VerticalSeekBar;
 import com.xayup.multipad.BuildConfig;
@@ -60,15 +61,16 @@ public class GlobalConfigs {
     }
 
     public static void loadSharedPreferences(Context context) {
-        app_configs = context.getSharedPreferences("app_configs", 0 /*MODE_PRIVATE*/);
-        app_configs.registerOnSharedPreferenceChangeListener(
-                (arg0, arg1) -> arg0.edit().commit());
+        app_configs = context.getSharedPreferences("app_configs", Context.MODE_PRIVATE /*MODE_PRIVATE*/);
+        /*app_configs.registerOnSharedPreferenceChangeListener(
+                (arg0, arg1) -> arg0.edit().commit());*/
 
-        use_unipad_folder = app_configs.getBoolean("useUnipadFolder", false);
-        skin_package = app_configs.getString("skin", context.getPackageName());
+        GlobalConfigs.use_unipad_folder = app_configs.getBoolean("useUnipadFolder", false);
+        GlobalConfigs.skin_package = app_configs.getString("skin", BuildConfig.APPLICATION_ID);
+        Log.v("Skin saved", GlobalConfigs.skin_package);
     }
 
     public static void saveSkin(String skin_package){
-        app_configs.edit().putString("skin", GlobalConfigs.skin_package = skin_package).apply();
+        app_configs.edit().putString("skin", (GlobalConfigs.skin_package = skin_package)).apply();
     }
 }

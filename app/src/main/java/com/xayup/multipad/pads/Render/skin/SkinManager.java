@@ -146,7 +146,7 @@ public class SkinManager {
 
     public static boolean loadSkinResources(Context context, Object skin_info, MakePads.Pads mPads, OnSkinResourceLoaded resourceLoaded) throws PackageManager.NameNotFoundException, JSONException, IOException {
         String package_or_path;
-        SkinResources sResources;
+        SkinResources sResources = null;
         if((skin_info instanceof String && ((package_or_path = (String) skin_info).startsWith("com.kimjisub.launchpad.theme.") || package_or_path.equals(BuildConfig.APPLICATION_ID))) ||
                 skin_info instanceof String[] && !(package_or_path = ((String[]) skin_info)[SkinInfo.package_name]).isEmpty()){
             try {
@@ -169,17 +169,16 @@ public class SkinManager {
                         context.getResources().getIdentifier("customlogo", "drawable", context.getPackageName()));
                 if((tmpid = res.getIdentifier("playbg_pro", "drawable", package_or_path)) != 0 || (tmpid = res.getIdentifier("playbg", "drawable", package_or_path)) != 0)
                     PLAYBG = res.getDrawable(tmpid, null);
+                sResources = new SkinResources(
+                        res.getDrawable(res.getIdentifier("phantom", "drawable", package_or_path), null),
+                        res.getDrawable(res.getIdentifier("phantom_", "drawable", package_or_path), null),
+                        CHAINLED, res.getDrawable(res.getIdentifier("btn", "drawable", package_or_path), null),
+                        res.getDrawable(res.getIdentifier("btn_", "drawable", package_or_path), null),
+                        CHAIN, CHAIN_, CHAIN__, PLAYBG, CUSTOMLOGO
+                );
                 for(byte row = 0; row < mPads.getRows(); row++)
                     for(byte colum = 0; colum < mPads.getColumns(); colum++)
-                        resourceLoaded.resourceLoadedBasic(mPads.getPadView(row, colum), mPads.getPadInfo(row, colum),
-                                sResources = new SkinResources(
-                                        res.getDrawable(res.getIdentifier("phantom", "drawable", package_or_path), null),
-                                        res.getDrawable(res.getIdentifier("phantom_", "drawable", package_or_path), null),
-                                        CHAINLED, res.getDrawable(res.getIdentifier("btn", "drawable", package_or_path), null),
-                                        res.getDrawable(res.getIdentifier("btn_", "drawable", package_or_path), null),
-                                        CHAIN, CHAIN_, CHAIN__, PLAYBG, CUSTOMLOGO
-                                        )
-                        );
+                        resourceLoaded.resourceLoadedBasic(mPads.getPadView(row, colum), mPads.getPadInfo(row, colum), sResources);
             } catch (PackageManager.NameNotFoundException nnfe){
                 Toast.makeText(context, context.getString(R.string.skin_failed_get_resources_from_app), Toast.LENGTH_SHORT).show();
             }
@@ -235,6 +234,7 @@ public class SkinManager {
 
             resourceLoaded.finishResourceLoaded(sResources);
         } else return false;
+        resourceLoaded.finishResourceLoaded(sResources);
         return true;
     }
 }

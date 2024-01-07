@@ -18,6 +18,8 @@ import com.xayup.multipad.ProjectListAdapter;
 import com.xayup.multipad.R;
 import com.xayup.multipad.Readers;
 import com.xayup.multipad.VariaveisStaticas;
+import com.xayup.multipad.configs.GlobalConfigs;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -170,7 +172,7 @@ public class FileExplorerDialog {
                                                       0);
                                                   context.runOnUiThread(
                                                       () -> {
-                                                        if (!VariaveisStaticas.use_unipad_folder)
+                                                        if (!GlobalConfigs.use_unipad_folder)
                                                           ((ListView)
                                                                   context.findViewById(
                                                                       R.id.listViewProjects))
