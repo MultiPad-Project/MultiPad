@@ -2,7 +2,7 @@ import { SKIN_DESCRIPTION, SKIN_PREVIEW, SKIN_LINK_DOWNLOAD } from "../constants
 import { HTML, TITLE } from "../constants/page_body_ids.js";
 
 let complements = "/MultiPad";
-if(window.location.hostname != "xayup.github.io"){
+if(window.location.hostname != "multipad-project.github.io"){
     complements = "";
 }
 fetch(window.location.origin + complements + '/page_models/skin.html')
