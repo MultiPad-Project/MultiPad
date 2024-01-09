@@ -1,6 +1,22 @@
 {
     "skins": [
         {
+            "name": "Poligonal Skin",
+            "author": "XayUp",
+            "author_link": "https://youtube.com/@XayUp",
+            "preview_image": "https://lh3.google.com/u/1/d/1-Q8dw_WUFYMlfzf7QiQy6meJlI7lM8IV=s320-w320-h200-k-p",
+            "description": "Skin work only <a href=\"https://github.com/MultiPad-Project/MultiPad/releases/tag/v2.4.0\">MultiPad v2.5.0</a> and above",
+            "link_download": "https://drive.google.com/file/d/1-KngKb8QicF_hZi8l6_ZE3QL6edOA_ie/view?usp=drive_link"
+        },
+        {
+            "name": "Trizek Sticker v2",
+            "author": "XayUp",
+            "author_link": "https://youtube.com/@XayUp",
+            "preview_image": "https://github.com/MultiPad-Project/MultiPad-Skin-Template/blob/main/Advanced%20Skin/preview.png",
+            "description": "Skin work only <a href=\"https://github.com/MultiPad-Project/MultiPad/releases/tag/v2.4.0\">MultiPad v2.5.0</a> and above. This skin was inspired by the model made by <a href=\"https://youtube.com/@Trizek\">Trizek</a> to have an experience as close as possible to this beautiful skin, with support for Unipad and MultiPad.",
+            "link_download": "https://codeload.github.com/MultiPad-Project/MultiPad-Skin-Template/zip/refs/heads/main"
+        },
+        {
             "name": "Trizek Sticker",
             "author": "XayUp",
             "author_link": "https://youtube.com/@XayUp",
