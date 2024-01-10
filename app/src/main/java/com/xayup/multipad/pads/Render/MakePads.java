@@ -8,20 +8,28 @@ import android.graphics.drawable.Drawable;
 import android.service.autofill.FillEventHistory;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import androidx.annotation.IntDef;
+import androidx.annotation.RequiresFeature;
 import com.xayup.multipad.R;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import static com.xayup.multipad.pads.Render.MakePads.ForAllChild.FOR_ALL;
 
 public class MakePads {
     protected Context context;
 
-    public abstract static class ChildInfo implements PadType {
+    public abstract static class ChildInfo {
 
         protected byte row;
         protected byte colum;
-        protected byte type;
+        protected @PadType byte type;
 
         public ChildInfo(byte row, byte colum, byte type){
             this.row = row;
@@ -31,11 +39,14 @@ public class MakePads {
         public abstract Pads getPads();
         public int getRow(){ return row; }
         public int getColum(){ return colum; }
-        public byte getType(){ return type; }
+        public @PadType byte getType(){ return type; }
     }
 
     public static class PadInfo extends ChildInfo {
-        public interface PadLayerType {
+        @Retention(RetentionPolicy.SOURCE)
+        @IntDef({PadLayerType.BTN, PadLayerType.BTN_, PadLayerType.CHAIN_LED, PadLayerType.LED,
+                PadLayerType.LOGO, PadLayerType.LOGO_BTN, PadLayerType.PHANTOM, PadLayerType.PHANTOM_, PadLayerType.TOUCH_MAP})
+        public @interface PadLayerType {
             /**
              * Skin identification
              */
@@ -52,6 +63,10 @@ public class MakePads {
              * Skin identification
              */
             byte LOGO = 107;
+            /**
+             * Skin identification
+             */
+            byte LOGO_BTN = 112;
             /**
              * Skin identification
              */
@@ -78,7 +93,7 @@ public class MakePads {
          * @param colum .
          * @param type . Set type with PadInfoIdentifier
          */
-        protected PadInfo(byte row, byte colum, byte type) {
+        protected PadInfo(byte row, byte colum, @PadType byte type) {
             super(row, colum, type);
             this.activated = false;
         }
@@ -99,8 +114,8 @@ public class MakePads {
     public static class ChainInfo extends PadInfo {
         protected byte mc;
         public ChainInfo(int row, int colum){
-            super((byte) row, (byte) colum, CHAIN);
-            if(this.type == CHAIN){
+            super((byte) row, (byte) colum, PadType.CHAIN);
+            if(this.type == PadType.CHAIN){
                 this.mc = (byte) PadID.getChainMc(row, colum, 9);
             } else {
                 this.mc = -1;
@@ -211,7 +226,9 @@ public class MakePads {
         }
     }
 
-    public interface PadType {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({PadType.NONE, PadType.CHAIN, PadType.PAD, PadType.PAD_LOGO})
+    public @interface PadType {
         /**
          * Button identification
          */
@@ -228,6 +245,16 @@ public class MakePads {
          * Button identification
          */
         byte PAD_LOGO = 3;
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({ForAllChild.FOR_ALL, PadType.NONE, PadType.CHAIN, PadType.PAD, PadType.PAD_LOGO})
+    public @interface ForAllChild {
+        byte FOR_ALL = -1;
+    }
+
+    public interface ForPadLayers{
+        public abstract boolean onPadLayer(View padLayer, @PadInfo.PadLayerType byte padLayerType);
     }
     
     public MakePads(Context context) { this.context = context; }
@@ -419,6 +446,29 @@ public class MakePads {
             this.changeLayout(this.layout);
         }
 
+        public void changeSkinLayer(@PadInfo.PadLayerType byte padLayerType, Drawable drawable){
+            forAllPadsLayers((layer, padLayerTypee)->{
+                Log.v("changeSkinLayer()", "padLayerType: " + String.valueOf(padLayerType) + ", padLayerTypee: " + String.valueOf(padLayerTypee));
+                if(padLayerTypee == padLayerType) {
+                    ((ImageView) layer).setImageDrawable(drawable);
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        public void forAllPadsLayers(ForPadLayers forPadLayers){
+            forAllChildInstance(ForAllChild.FOR_ALL, (pad, padInfo)-> {
+                if(pad instanceof ViewGroup){
+                    ViewGroup vPad = (ViewGroup) pad;
+                    for(int l = 0; l < vPad.getChildCount(); l++){
+                        View layer = vPad.getChildAt(l);
+                        if(forPadLayers.onPadLayer(layer, (byte) layer.getId())) l = vPad.getChildCount(); //break
+                    }
+                }
+            });
+        }
+
         public void defaultRotationSetting(byte r, byte c) {
             View pad = getPadView(r, c);
             if(pad == null) return;
@@ -439,7 +489,7 @@ public class MakePads {
         }
 
         public void defaultRotationSetting(){
-            forAllChildInstance(-1, (pad, padInfo)-> defaultRotationSetting(padInfo.row, padInfo.colum));
+            forAllChildInstance(FOR_ALL, (pad, padInfo)-> defaultRotationSetting(padInfo.row, padInfo.colum));
         }
 
         /**
@@ -451,7 +501,7 @@ public class MakePads {
                 switch (layout) {
                     case GRID_LAYOUT_PRO: {
                         // Switch to PRO
-                        forAllChildInstance(-1, (pad, padInfo) -> {
+                        forAllChildInstance(FOR_ALL, (pad, padInfo) -> {
                             if (padInfo.getColum() == 0 || padInfo.getColum() == getColumns()-1 ||
                                     padInfo.getRow() == 0 || padInfo.getRow() == getRows()-1) {
                                 pad.setVisibility(View.VISIBLE);
@@ -465,7 +515,7 @@ public class MakePads {
                     }
                     case GRID_LAYOUT_MATRIX: {
                         // Switch to MATRIX
-                        forAllChildInstance(-1, (pad, padInfo) -> {
+                        forAllChildInstance(FOR_ALL, (pad, padInfo) -> {
                             if (padInfo.getRow() == 0 || padInfo.getRow() == getRows()-1) {
                                 pad.setVisibility(View.GONE);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.GONE);
@@ -485,7 +535,7 @@ public class MakePads {
                     }
                     case GRID_LAYOUT_MK2: {
                         // Switch to MK2
-                        forAllChildInstance(-1, (pad, padInfo) -> {
+                        forAllChildInstance(FOR_ALL, (pad, padInfo) -> {
                             if (padInfo.getRow() == getRows()-1) {
                                 pad.setVisibility(View.GONE);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.GONE);
@@ -506,7 +556,7 @@ public class MakePads {
                     }
                     case GRID_LAYOUT_UNIPAD: {
                         // Switch to UNIPAD
-                        forAllChildInstance(-1, (pad, padInfo) -> {
+                        forAllChildInstance(FOR_ALL, (pad, padInfo) -> {
                             if (padInfo.getRow() == 0 || padInfo.getRow() == getRows() -1) {
                                 pad.setVisibility(View.GONE);
                                 ((View) pads[padInfo.getRow()][padInfo.getColum()][GLOW]).setVisibility(View.GONE);
@@ -535,11 +585,11 @@ public class MakePads {
          * @param type child type. Use -1 for all
          * @param operation .
          */
-        public void forAllChildInstance(int type, ForAllPads operation){
+        public void forAllChildInstance(@ForAllChild int type, ForAllPads operation){
             for(int pi = mGrid.getChildCount()-1; !(pi < 0); pi--) {
                 View pad;
                 ChildInfo info;
-                if ((info = (ChildInfo) (pad = mGrid.getChildAt(pi)).getTag()).type == type || type == -1) {
+                if ((info = (ChildInfo) (pad = mGrid.getChildAt(pi)).getTag()).type == type || type == ForAllChild.FOR_ALL) {
                     operation.obtainedPad(pad, info);
                 }
             }

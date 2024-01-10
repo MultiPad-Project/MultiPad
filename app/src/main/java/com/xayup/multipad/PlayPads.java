@@ -407,7 +407,7 @@ public class PlayPads extends Activity {
                 if (pad_info_type == -1 || pad.getTag().equals(pad_info_layer_type)) {
                     for (int p = pad.getChildCount() - 1; !(p < 0); p--) {
                         View layer = pad.getChildAt(p);
-                        if (layer.getTag().equals(pad_info_layer_type)) {
+                        if (layer.getTag() != null && layer.getTag().equals(pad_info_layer_type)) {
                             ((ImageView) layer).setImageBitmap(imgdata);
                             p = -1; // Exit this loop
                         }
@@ -536,7 +536,7 @@ public class PlayPads extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (null != data) {
+        if (null != data && data.getData() != null) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
@@ -544,43 +544,36 @@ public class PlayPads extends Activity {
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
-            Bitmap imgdata = BitmapFactory.decodeFile(picturePath);
+            Log.v("IMG Path", picturePath);
+            Drawable imgdata = Drawable.createFromPath(picturePath);
+            Log.v("Img is null?", String.valueOf(imgdata == null));
+            //Bitmap imgdata = BitmapFactory.decodeFile(picturePath);
             switch (requestCode) {
                 case 12:
                     ImageView overlay = findViewById(R.id.launchpadOverride);
-                    overlay.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                    overlay.setImageDrawable(imgdata);
                     overlay.setVisibility(View.VISIBLE);
                     break;
                 case PICK_PHANTOM_IMG:
-                    setPadLayerSkin(
-                            MakePads.PadType.PAD,
-                            MakePads.PadInfo.PadLayerType.PHANTOM, imgdata);
+                    mPads.changeSkinLayer(MakePads.PadInfo.PadLayerType.PHANTOM, imgdata);
                     break;
                 case PICK_PHANTOMC_IMG:
-                    setPadLayerSkin(
-                            MakePads.PadType.PAD,
-                            MakePads.PadInfo.PadLayerType.PHANTOM_, imgdata);
+                    mPads.changeSkinLayer(MakePads.PadInfo.PadLayerType.PHANTOM_, imgdata);
                     break;
                 case PICK_LOGO_IMG:
-                    setPadLayerSkin(
-                            MakePads.PadType.PAD_LOGO,
-                            MakePads.PadInfo.PadLayerType.LOGO, imgdata);
+                    mPads.changeSkinLayer(MakePads.PadInfo.PadLayerType.LOGO, imgdata);
                     break;
                 case PICK_CHAIN_IMG:
-                    setPadLayerSkin(
-                            MakePads.PadType.CHAIN,
-                            MakePads.PadInfo.PadLayerType.CHAIN_LED, imgdata);
+                    mPads.changeSkinLayer(MakePads.PadInfo.PadLayerType.CHAIN_LED, imgdata);
                     break;
                 case PICK_LOGO_BG_IMG:
-                    setPadLayerSkin(
-                            MakePads.PadType.PAD_LOGO,
-                            MakePads.PadInfo.PadLayerType.BTN, imgdata);
+                    mPads.changeSkinLayer(MakePads.PadInfo.PadLayerType.LOGO_BTN, imgdata);
                     break;
                 case PICK_BTN_IMG:
-                    setPadLayerSkin(-1, MakePads.PadInfo.PadLayerType.BTN, imgdata);
+                    mPads.changeSkinLayer(MakePads.PadInfo.PadLayerType.BTN, imgdata);
                     break;
                 case PICK_BACKGROUND_IMG:
-                    playBgimg.setImageBitmap(imgdata);
+                    playBgimg.setImageDrawable(imgdata);
                     break;
 
             }
