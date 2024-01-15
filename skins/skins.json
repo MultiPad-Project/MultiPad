@@ -1,6 +1,7 @@
 {
     "skins": [
         {
+<<<<<<< HEAD
             "name": "Yato MK3",
             "author": "XayUp",
             "author_link": "https://youtube.com/@XayUp",
@@ -17,6 +18,16 @@
             "link_download": "https://drive.google.com/file/d/12NvkHLN2rpyi_rXRf83MrNe7-UI4Hl_z/view?usp=drive_link"
         },
 		{
+=======
+            "name": "BeastMod Skin",
+            "author": "XayUp",
+            "author_link": "https://youtube.com/@XayUp",
+            "preview_image": "https://lh3.google.com/u/1/d/1-xyX1gpqcAx70qnLefR3X7UuoXRJafdg=s320-w320-h200-k-p",
+            "description": "Skin work only <a href=\"https://github.com/MultiPad-Project/MultiPad/releases/tag/v2.4.0\">MultiPad v2.4.0</a> and above",
+            "link_download": "https://drive.google.com/file/d/1-kG1XjtoQkCyo--pAUMaQzu8xF1pizT7/view?usp=drive_link"
+        },
+        {
+>>>>>>> 639047bbda211194ca0ad87154e420a3d8eb8f04
             "name": "Poligonal Skin",
             "author": "XayUp",
             "author_link": "https://youtube.com/@XayUp",
