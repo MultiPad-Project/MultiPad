@@ -1,6 +1,22 @@
 {
     "skins": [
         {
+            "name": "Yato MK3",
+            "author": "XayUp",
+            "author_link": "https://youtube.com/@XayUp",
+            "preview_image": "https://lh3.google.com/u/1/d/12RwSdYp1Zg3ZREysPqJfvHMyOw1WF6te=s320-w320-h200-k-p",
+            "description": "Skin work only <a href=\"https://github.com/MultiPad-Project/MultiPad/releases/tag/v2.4.0\">MultiPad v2.4.0</a> and above",
+            "link_download": "https://drive.google.com/file/d/12ASBoYOMyGWiOcP2Ye-8kL3X-slfLiWS/view?usp=drive_link"
+        },
+		{
+            "name": "Yato MK3 (Without Sticker)",
+            "author": "XayUp",
+            "author_link": "https://youtube.com/@XayUp",
+            "preview_image": "https://lh3.google.com/u/1/d/12PAJoKN8q1nXNQnSetyDp6GPAs2Xinwl=s320-w320-h200-k-p",
+            "description": "Skin work only <a href=\"https://github.com/MultiPad-Project/MultiPad/releases/tag/v2.4.0\">MultiPad v2.4.0</a> and above",
+            "link_download": "https://drive.google.com/file/d/12NvkHLN2rpyi_rXRf83MrNe7-UI4Hl_z/view?usp=drive_link"
+        },
+		{
             "name": "Poligonal Skin",
             "author": "XayUp",
             "author_link": "https://youtube.com/@XayUp",
