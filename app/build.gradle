@@ -22,8 +22,8 @@ android {
         applicationId "com.xayup.multipad"
         minSdk 23
         targetSdk 32
-        versionCode 240107
-        versionName "2.4.0"
+        versionCode 240110
+        versionName "2.4.1"
     }
 
     buildTypes {

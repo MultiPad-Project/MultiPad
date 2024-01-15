@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -190,31 +191,31 @@ public class SkinManager {
             Drawable CHAINLED = null, CHAIN = null, CHAIN_ = null, CHAIN__ = null, PLAYBG = null, CUSTOMLOGO = null;
 
             if (files.contains("chainled.xml")) {
-                CHAINLED = Drawable.createFromPath(package_or_path.concat("/chainled.xml"));
+                CHAINLED = new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/chainled.xml")));
             } else if (files.contains("chainled.png")) {
-                CHAINLED = Drawable.createFromPath(package_or_path.concat("/chainled.png"));
+                CHAINLED = new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/chainled.png")));
             } else if (files.contains("chain.png")) {
-                CHAIN = Drawable.createFromPath(package_or_path.concat("/chain.png"));
-                CHAIN_ = Drawable.createFromPath(package_or_path.concat("/chain_.png"));
-                CHAIN__ = Drawable.createFromPath(package_or_path.concat("/chain__.png"));
+                CHAIN = new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/chain.png")));
+                CHAIN_ = new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/chain_.png")));
+                CHAIN__ = new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/chain__.png")));
             }
             if (files.contains("applogo.png"))
-                CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/applogo.png"));
+                CUSTOMLOGO = new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/applogo.png")));
             else if (files.contains("logo.png"))
-                CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/logo.png"));
+                CUSTOMLOGO = new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/logo.png")));
             else if (files.contains("custom_logo.png"))
-                CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/custom_logo.png"));
+                CUSTOMLOGO = new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/custom_logo.png")));
             else if (files.contains("theme_ic.png"))
-                CUSTOMLOGO = Drawable.createFromPath(package_or_path.concat("/theme_ic.png"));
+                CUSTOMLOGO = new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/theme_ic.png")));
             else
                 CUSTOMLOGO = context.getDrawable(context.getResources().getIdentifier("customlogo", "drawable", context.getPackageName()));
-            PLAYBG = (files.contains("playbg_pro.png")) ? Drawable.createFromPath(package_or_path.concat("/playbg_pro.png")) : Drawable.createFromPath(package_or_path.concat("/playbg.png"));
+            PLAYBG = (files.contains("playbg_pro.png")) ? new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/playbg_pro.png"))) : new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/playbg.png")));
 
             sResources = new SkinResources(
-                    Drawable.createFromPath(package_or_path.concat("/phantom").concat((files.contains("phantom.xml")) ? ".xml" : ".png")),
-                    Drawable.createFromPath(package_or_path.concat("/phantom_").concat((files.contains("phantom_.xml")) ? ".xml" : ".png")),
-                    CHAINLED, Drawable.createFromPath(package_or_path.concat("/btn").concat((files.contains("btn.xml")) ? ".xml" : ".png")),
-                    Drawable.createFromPath(package_or_path.concat("/btn_").concat((files.contains("btn_.xml")) ? ".xml" : ".png")),
+                    new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/phantom").concat((files.contains("phantom.xml")) ? ".xml" : ".png"))),
+                            new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/phantom_").concat((files.contains("phantom_.xml")) ? ".xml" : ".png"))),
+                    CHAINLED, new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/btn").concat((files.contains("btn.xml")) ? ".xml" : ".png"))),
+                                            new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/btn_").concat((files.contains("btn_.xml")) ? ".xml" : ".png"))),
                     CHAIN, CHAIN_, CHAIN__, PLAYBG, CUSTOMLOGO
             );
             if(json.has("skin_type") && json.getString("skin_type").equalsIgnoreCase("advanced")){
@@ -224,7 +225,7 @@ public class SkinManager {
                     for(byte row = 0; row < mPads.getRows(); row++)
                         for(byte colum = 0; colum < mPads.getColumns(); colum++)
                             resourceLoaded.resourceLoadedAdvanced(mPads.getPadView(row, colum), mPads.getPadInfo(row, colum),
-                                        (jsonObj.has(row+","+colum)) ? Drawable.createFromPath(package_or_path.concat("/"+jsonObj.getString(row+","+colum)))
+                                        (jsonObj.has(row+","+colum)) ? new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(package_or_path.concat("/"+jsonObj.getString(row+","+colum))))
                                         : null, sResources);
                 }
             } else

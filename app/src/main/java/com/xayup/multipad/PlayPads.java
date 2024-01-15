@@ -510,6 +510,7 @@ public class PlayPads extends Activity {
                             if (resource == null)
                                 if ((resource = skinResources.CUSTOMLOGO) == null)
                                     resource = context.getDrawable(R.drawable.customlogo);
+                            //((ImageView) pad.findViewById(MakePads.PadInfo.PadLayerType.LOGO_BTN)).setImageDrawable(skinResources.BTN);
                         }
                     else return;
                     ((ImageView) pad.findViewById(viewId)).setImageDrawable(resource);
