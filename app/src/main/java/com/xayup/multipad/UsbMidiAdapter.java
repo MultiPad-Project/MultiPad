@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.xayup.multipad.development.R;
+
 import java.util.Map;
 
 public class UsbMidiAdapter extends BaseAdapter {

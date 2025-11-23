@@ -14,7 +14,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
-import com.xayup.multipad.R;
+import com.xayup.multipad.development.R;
 import java.util.List;
 
 public class LoadScreen {

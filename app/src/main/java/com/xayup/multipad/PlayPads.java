@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 
 import com.xayup.debug.XLog;
 import com.xayup.multipad.configs.GlobalConfigs;
+import com.xayup.multipad.development.R;
 import com.xayup.multipad.layouts.options.PlayPadsOptionsInterface;
 
 import com.xayup.multipad.pads.*;

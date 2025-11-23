@@ -12,6 +12,7 @@ import android.widget.*;
 import com.xayup.debug.XLog;
 import com.xayup.multipad.configs.GlobalConfigs;
 
+import com.xayup.multipad.development.R;
 import com.xayup.multipad.layouts.grid.FloatingWindowGridResize;
 import com.xayup.multipad.layouts.loadscreen.LoadScreen;
 import com.xayup.multipad.layouts.main.panel.MainPanel;

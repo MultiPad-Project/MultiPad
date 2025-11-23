@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.xayup.multipad.development.R;
+
 public class UsbDeviceActivity extends Activity {
     public static final int CONNECTED_USB = 1;
     public static final int DEVICES_USB = 2;

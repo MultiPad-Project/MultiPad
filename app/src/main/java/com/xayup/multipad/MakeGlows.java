@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.xayup.multipad.configs.GlobalConfigs;
+import com.xayup.multipad.development.R;
 import com.xayup.multipad.pads.GridPadsReceptor;
 
 import java.util.Arrays;

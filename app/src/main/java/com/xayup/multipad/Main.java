@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.xayup.debug.Debug;
+import com.xayup.multipad.development.R;
 import com.xayup.storage.FileManagerPermission;
 import com.xayup.storage.ManagePermission;
 

@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import android.app.*;
+import com.xayup.multipad.development.R;
 
 public class Readers {
 

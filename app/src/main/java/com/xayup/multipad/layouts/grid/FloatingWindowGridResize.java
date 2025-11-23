@@ -6,7 +6,7 @@ import android.widget.*;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.pads.GridPadsReceptor;
 
-import com.xayup.multipad.R;
+import com.xayup.multipad.development.R;
 
 public abstract class FloatingWindowGridResize {
     public abstract GridPadsReceptor getGridPadsReceptor();

@@ -1,6 +1,7 @@
 package com.xayup.filesexplorer;
 
-import com.xayup.multipad.R;
+import com.xayup.multipad.development.R;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -8,7 +9,7 @@ import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.xayup.filesexplorer.FilesAdapter;
+
 import java.io.File;
 import java.util.Arrays;
 

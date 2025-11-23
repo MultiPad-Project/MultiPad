@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.xayup.multipad.R;
+import com.xayup.multipad.development.R;
 
 import java.util.List;
 import java.util.Map;

@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.Window;
 import android.view.View;
 import android.view.WindowManager;
+import com.xayup.multipad.development.R;
 
 import java.io.IOException;
 

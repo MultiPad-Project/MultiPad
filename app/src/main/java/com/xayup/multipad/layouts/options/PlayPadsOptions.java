@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.xayup.debug.XLog;
-import com.xayup.multipad.R;
+import com.xayup.multipad.development.R;
 import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.pads.GridPadsReceptor;

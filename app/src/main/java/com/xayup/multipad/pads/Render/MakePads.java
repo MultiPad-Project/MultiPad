@@ -11,7 +11,7 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.xayup.debug.XLog;
-import com.xayup.multipad.R;
+import com.xayup.multipad.development.R;
 import com.xayup.multipad.pads.PadInterface;
 
 public class MakePads {

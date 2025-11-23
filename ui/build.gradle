@@ -4,11 +4,11 @@ plugins {
 
 android {
     namespace 'com.xayup.ui'
-    compileSdk 32
+    compileSdk 36
 
     defaultConfig {
         minSdk 21
-        targetSdk 32
+        targetSdk 36
         versionCode 1
         versionName "1.0"
 

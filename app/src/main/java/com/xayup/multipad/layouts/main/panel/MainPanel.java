@@ -14,7 +14,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.xayup.debug.Debug;
-import com.xayup.multipad.R;
+import com.xayup.multipad.development.R;
 import com.xayup.multipad.Ui;
 import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;

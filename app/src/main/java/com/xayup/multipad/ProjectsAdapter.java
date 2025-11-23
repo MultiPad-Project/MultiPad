@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.view.*;
 import android.widget.*;
+import com.xayup.multipad.development.R;
 
 import java.util.*;
 
