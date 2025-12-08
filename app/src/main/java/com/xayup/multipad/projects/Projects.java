@@ -1,6 +1,7 @@
 package com.xayup.multipad.projects;
 
 import android.util.Log;
+import androidx.annotation.NonNull;
 import com.xayup.debug.XLog;
 
 import java.io.BufferedReader;
@@ -10,20 +11,21 @@ import java.io.IOException;
 import java.util.*;
 
 public class Projects implements ProjectIndexes {
-    protected List<ProjectManager> projects = null;
-    protected List<ProjectManager> projects_loaded = null;
+    final protected List<ProjectManager> projects = new ArrayList<>();
+    final protected List<ProjectManager> projects_loaded = new ArrayList<>();
     /**
      * Isto fará a leitura dos projetos.
-     * @param path pasta onde estão os projetos
+     * Caso a leitura já foi feita antes, entao ele irá atualizar a lista.
+     * @param path pasta onde estão os projetos (Diretório, e nunca null)
      * @param types determina o que será obtido.
      */
-    public void readProjectsPath(File path, boolean[] types) {
-        if(path == null) return;
+    public void readProjectsPath(@NonNull File path, boolean[] types) {
+        if(path.isFile()) throw new UnsupportedOperationException(path.getPath() + " it is not a directory");
         File[] folders = path.listFiles();
         if (folders != null && folders.length > 0) {
-            if(projects != null) return;
-            else projects = new ArrayList<>();
+            projects.clear();
             for (File folder : folders) {
+                if(folder.isFile()) continue;
                 Project project = new Project();
                 project.setInfoPath(folder + File.separator + "info");
                 XLog.v("Project folder name", folder.getName());
@@ -56,11 +58,12 @@ public class Projects implements ProjectIndexes {
                 }
                 // KeyLED op
                 if (types[TYPE_KEYLED_FOLDERS] || types[FLAG_KEYLED_COUNT]) {
-                    for (File file : folder.listFiles()) {
+                    // listFile is afe because the verification was already done before
+                    for (File file : Objects.requireNonNull(folder.listFiles())) {
                         if (file.isDirectory() && file.getName().toLowerCase().indexOf("keyled") == 0) {
                             project.addKeyLedPath(file);
                             if (types[FLAG_KEYLED_COUNT]) {
-                                project.setKeyLedCount(project.getKeyLedCount() + file.list().length);
+                                project.setKeyLedCount(project.getKeyLedCount() + Objects.requireNonNull(file.list()).length);
                             }
                         }
                     }
@@ -70,9 +73,10 @@ public class Projects implements ProjectIndexes {
                 if (types[TYPE_SAMPLE_FOLDER] || types[FLAG_SAMPLE_COUNT]) {
                     project.setSamplePath(folder + File.separator + "sounds");
                     project.setKeySoundPath(folder + File.separator + "keysound");
-                    if (project.getSamplePath().exists()) {
+                    File samplePath = project.getSamplePath();
+                    if (samplePath != null && samplePath.exists() && samplePath.isDirectory()) {
                         if (types[FLAG_SAMPLE_COUNT]) {
-                            project.setSampleCount(project.getSamplePath().list().length);
+                            project.setSampleCount(samplePath.list().length);
                         }
                     } else project.setSamplePath(null);
                     if (!project.getKeySoundPath().exists()) project.setKeySoundPath(null);
@@ -90,11 +94,9 @@ public class Projects implements ProjectIndexes {
                     projects.add(new ProjectManager(project));
                 }
             }
-            if (projects.size() > 0){
+            if (!projects.isEmpty()){
                 // Alphabetic order
                 alphabeticOrder(projects);
-            } else {
-                projects = null;
             }
         }
     }
@@ -108,8 +110,11 @@ public class Projects implements ProjectIndexes {
     }
     public List<ProjectManager> getLoadedProjects(){ return projects_loaded; }
     public void addLoadedProject(ProjectManager project){
-        if(projects_loaded == null) projects_loaded = new ArrayList<>();
         projects_loaded.add(project);
     }
-    public void removeLoadedProject(ProjectManager project){ if(projects_loaded != null) projects_loaded.remove(project); }
+    public void removeLoadedProject(ProjectManager project){
+        project.unloadProject();
+        project.getProject().setStatus(Project.STATUS_UNLOADED);
+        projects_loaded.remove(project);
+    }
 }

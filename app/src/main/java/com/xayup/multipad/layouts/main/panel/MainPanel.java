@@ -15,7 +15,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.xayup.debug.Debug;
 import com.xayup.multipad.development.R;
-import com.xayup.multipad.Ui;
 import com.xayup.multipad.XayUpFunctions;
 import com.xayup.multipad.configs.GlobalConfigs;
 import com.xayup.multipad.projects.Project;
@@ -56,6 +55,8 @@ public abstract class MainPanel {
     public abstract List<ProjectManager> getProjects();
     public abstract void addNewGrid();
     public abstract void loadProject(ProjectManager project, ProgressBar progressBar);
+
+    public abstract void discardProject(ProjectManager project);
     public abstract void showGridResize(boolean show);
     public abstract void onGriditemClick(GridPadsReceptor.PadGrid padGrid);
 
@@ -217,7 +218,9 @@ public abstract class MainPanel {
                 View item = mProjectItem.getView(i, null, null);
                 projects_page_layout.addView(item);
                 View description_view = item.findViewById(R.id.project_item_background);
-                if(mProjectItem.getItem(i).getProject().getStatus() != Project.STATUS_BROKEN) {
+                final Project project = mProjectItem.getItem(i).getProject();
+                if(project.getStatus() != Project.STATUS_BROKEN) {
+                    int finalI = i;
                     description_view.setOnClickListener(view -> {
                         View descriptions = item.findViewById(R.id.project_item_description_background);
                         vAnimatior = (ViewDraw.getMargin(descriptions, ViewDraw.MARGIN_TOP) > 0) ?
@@ -226,9 +229,16 @@ public abstract class MainPanel {
                         vAnimatior.addUpdateListener((valueAnimator -> ViewDraw.setMargins(descriptions, 0, (int) valueAnimator.getAnimatedValue(), 0, 0)));
                         vAnimatior.setDuration((long) (500 * Settings.Global.getFloat(context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f)));
                         vAnimatior.start();
-                        View play = descriptions.findViewById(R.id.project_item_description_play);
-                        play.setOnClickListener((view_play) -> loadProject(
-                                mProjectItem.getItem(projects_page_layout.indexOfChild(item)), view.findViewById(R.id.project_item_progress)));
+                        ImageView play = descriptions.findViewById(R.id.project_item_description_play);
+                        play.setOnClickListener((view_play)->{
+                            if(project.getStatus() == Project.STATUS_LOADED) {
+                                discardProject(mProjectItem.getItem(finalI));
+                            } else if(project.getStatus() != Project.STATUS_LOADING) {
+                                loadProject(
+                                        mProjectItem.getItem(finalI), view.findViewById(R.id.project_item_progress));
+
+                            }
+                        });
                     });
                 } else {
                     // A descrição do projeto é inútil se o projeto estiver quebrado, então é melhor remover

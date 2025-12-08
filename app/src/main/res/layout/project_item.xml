@@ -123,6 +123,7 @@
                     android:id="@+id/project_item_progress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:progress="30"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:progressDrawable="@drawable/project_item_progress"/>
 

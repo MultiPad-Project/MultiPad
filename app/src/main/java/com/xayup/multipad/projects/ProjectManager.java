@@ -98,7 +98,31 @@ public class ProjectManager implements KeyLedThread.ShowLed {
     /**
      * Feche este projeto e libere memoria
      */
-    public void release(){}
+    public void unloadProject(){
+        if(mKeySounds != null){
+            mKeySounds.release();
+            mKeySounds = null;
+        }
+        if(mKeyLED != null){
+            mKeyLED.clear();
+            mKeyLED = null;
+        }
+        if(mAutoPlay != null){
+            if(mAutoPlay.isRunning()) {
+                mAutoPlay.stopAutoPlay();
+            }
+            mAutoPlay = null;
+        }
+        if(grids != null){
+            grids.clear();
+            grids = null;
+        }
+        if(padPressCall != null){
+            padPressCall.calls.clear();
+            padPressCall = null;
+        }
+
+    }
 
     @Override
     public void onShowLed(int row, int colum, int color, int grid_id) {

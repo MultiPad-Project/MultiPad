@@ -24,10 +24,6 @@ public class KeySounds implements Project.SoundInterface, PadPressCallInterface 
         new KeySoundsReader().read(keysound_path, sample_path, mSoundLoader, mLoadingProject);
     }
     
-    public void clear(){
-        mSoundLoader.release();
-    }
-    
     @Override
     public boolean playSound(int chain, int x, int y) {
         XLog.v("Try play sound", String.valueOf(chain)+x+y);
@@ -48,5 +44,10 @@ public class KeySounds implements Project.SoundInterface, PadPressCallInterface 
     @Override
     public boolean call(GridPadsReceptor.PadGrid padGrid, MakePads.PadInfo padInfo) {
         return playSound(padGrid.getCurrentChain().getMc(), padInfo.getRow(), padInfo.getColum());
+    }
+
+    public void release() {
+        stopAll();
+        mSoundLoader.release();
     }
 }

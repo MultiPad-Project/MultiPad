@@ -167,7 +167,9 @@ public class MainActivity extends Activity {
                                     progressBar.setMax(
                                             ((projectManager.getProject().keysound_path != null) ? 1 + projectManager.getProject().sample_count : 0)
                                                     + projectManager.getProject().keyled_count + ((projectManager.getProject().autoplay_path != null) ? 1 : 0));
-                                    projectManager.getProject().setStatus(Project.STATUS_LOADING); }
+                                    projectManager.getProject().setStatus(Project.STATUS_LOADING);
+                                    mProjectItem.notifyDataSetChanged();
+                                }
                                 @Override
                                 public void onStartReadFile(String file_name) { progressBar.incrementProgressBy(1); }
                                 @Override
@@ -178,11 +180,20 @@ public class MainActivity extends Activity {
                                     projectManager.getProject().setStatus(Project.STATUS_LOADED);
                                     mPlayPads.getPads().notifyProject(projectManager);
                                     mProjects.addLoadedProject(projectManager);
-                                    mProjects.alphabeticOrder(mProjects.getLoadedProjects()); }
+                                    mProjects.alphabeticOrder(mProjects.getLoadedProjects());
+                                    mProjectItem.notifyDataSetChanged();
+                                }
                              });
                         } else if (projectManager.getProject().getStatus() == Project.STATUS_LOADED){ // Project loaded
                         }
                     }
+
+                    @Override
+                    public void discardProject(ProjectManager project){
+                        mProjects.removeLoadedProject(project);
+                        mProjectItem.notifyDataSetChanged();
+                    }
+
                     @Override
                     public void showGridResize(boolean show) {
                         if(show){
@@ -434,6 +445,10 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION), Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
+        }
     }
 }

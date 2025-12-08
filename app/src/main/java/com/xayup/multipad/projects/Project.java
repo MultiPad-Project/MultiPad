@@ -104,5 +104,6 @@ public class Project implements ProjectIndexes {
         public boolean playSound(int chain, int x, int y);
 
         public boolean stopSound(int chain, int x, int y);
+        public void release();
     }
 }
